@@ -1,0 +1,230 @@
+package io.taptap.stupidenglish.features.main.ui
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+
+
+@Composable
+fun MainListScreen(
+    state: MainListContract.State,
+    effectFlow: Flow<MainListContract.Effect>?,
+    onEventSent: (event: MainListContract.Event) -> Unit,
+    onNavigationRequested: (navigationEffect: MainListContract.Effect.Navigation) -> Unit
+) {
+    val scaffoldState: ScaffoldState = rememberScaffoldState()
+
+    // Listen for side effects from the VM
+    LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+        effectFlow?.onEach { effect ->
+            when (effect) {
+                is MainListContract.Effect.DataWasLoaded ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = "Food categories are loaded.",
+                        duration = SnackbarDuration.Short
+                    )
+                is MainListContract.Effect.Navigation.ToCategoryDetails -> onNavigationRequested(
+                    effect
+                )
+            }
+        }?.collect()
+    }
+
+    Scaffold(
+        scaffoldState = scaffoldState,
+        backgroundColor = MaterialTheme.colors.surface,
+    ) {
+//        backgroundColor = MaterialTheme.colors.surface,
+        Box {
+//            FoodCategoriesList(wordItems = state.categories) { itemId ->
+//                onEventSent(MainListContract.Event.CategorySelection(itemId))
+//            }
+            MainList(wordItems = state.mainList)
+            if (state.isLoading) {
+                LoadingBar()
+            }
+        }
+    }
+
+}
+
+@Composable
+fun MainList(
+    wordItems: List<MainListListModels>
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(bottom = 16.dp)
+    ) {
+        items(wordItems) { item ->
+            when (item) {
+                is NewWordUI -> NewWordItemRow(item = item)
+                is WordListItemUI -> WordItemRow(item = item)
+                is TitleUI -> TitleItem(item = item)
+            }
+        }
+    }
+}
+
+@Composable
+fun NewWordItemRow(item: NewWordUI) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = 0.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp)
+    ) {
+        Row {
+            NewWordItem(
+                item = item,
+                modifier = Modifier
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 22.dp,
+                        bottom = 22.dp
+                    )
+                    .fillMaxWidth(0.80f)
+                    .align(Alignment.CenterVertically)
+            )
+        }
+    }
+}
+
+@Composable
+fun TitleItem(
+    item: TitleUI
+) {
+    Text(
+        text = stringResource(id = item.valueRes),
+        textAlign = TextAlign.Left,
+        style = MaterialTheme.typography.subtitle1,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+    )
+}
+
+@Composable
+fun WordItemRow(
+    item: WordListItemUI
+) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = 0.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp)
+    ) {
+        Row {
+            WordItem(
+                item = item,
+                modifier = Modifier
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 16.dp,
+                        bottom = 16.dp
+                    )
+                    .fillMaxWidth(0.80f)
+                    .align(Alignment.CenterVertically)
+            )
+        }
+    }
+}
+
+@Composable
+fun NewWordItem(
+    item: NewWordUI,
+    modifier: Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = item.value,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.subtitle1,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+//        if (item.description?.trim()?.isNotEmpty() == true)
+//            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+//                Text(
+//                    text = item.description.trim(),
+//                    textAlign = TextAlign.Start,
+//                    overflow = TextOverflow.Ellipsis,
+//                    style = MaterialTheme.typography.caption,
+//                    maxLines = expandedLines
+//                )
+//            }
+    }
+}
+
+@Composable
+fun WordItem(
+    item: WordListItemUI,
+    modifier: Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = item.word,
+            textAlign = TextAlign.Left,
+            style = MaterialTheme.typography.subtitle1,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
+            text = item.description,
+            textAlign = TextAlign.Left,
+            style = MaterialTheme.typography.subtitle2,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+//        if (item.description?.trim()?.isNotEmpty() == true)
+//            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+//                Text(
+//                    text = item.description.trim(),
+//                    textAlign = TextAlign.Start,
+//                    overflow = TextOverflow.Ellipsis,
+//                    style = MaterialTheme.typography.caption,
+//                    maxLines = expandedLines
+//                )
+//            }
+    }
+}
+
+@Composable
+fun LoadingBar() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    StupidEnglishTheme {
+        MainListScreen(MainListContract.State(), null, { }, { })
+    }
+}
