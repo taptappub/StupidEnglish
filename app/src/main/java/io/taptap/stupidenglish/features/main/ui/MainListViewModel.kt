@@ -31,9 +31,9 @@ class MainListViewModel @Inject constructor(
     private suspend fun getMainList() {
         val savedWordList = repository.getWordList()
         val mainList = mutableListOf(
-            TitleUI(valueRes = R.string.main_list_new_word_title),
+            WordListTitleUI(valueRes = R.string.main_list_new_word_title),
             NewWordUI(valueRes = R.string.main_list_add_word),
-            TitleUI(valueRes = R.string.main_list_list_title),
+            WordListTitleUI(valueRes = R.string.main_list_list_title),
         ).apply {
             addAll(savedWordList.map {
                 WordListItemUI(

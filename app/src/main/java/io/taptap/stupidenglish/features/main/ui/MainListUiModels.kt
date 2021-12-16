@@ -8,7 +8,7 @@ data class WordListItemUI(
     val description: String
 ) : MainListListModels
 
-data class TitleUI(
+data class WordListTitleUI(
     val valueRes: Int
 ) : MainListListModels
 

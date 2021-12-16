@@ -17,6 +17,9 @@ import io.taptap.stupidenglish.features.details.ui.StupidWordViewModel
 import io.taptap.stupidenglish.features.main.ui.MainListContract
 import io.taptap.stupidenglish.features.main.ui.MainListScreen
 import io.taptap.stupidenglish.features.main.ui.MainListViewModel
+import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
+import io.taptap.stupidenglish.features.sentences.ui.SentencesListScreen
+import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 
 @AndroidEntryPoint
@@ -51,17 +54,28 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun MainListDestination(navController: NavHostController) {
-    val viewModel: MainListViewModel = hiltViewModel()
+    val viewModel: SentencesListViewModel = hiltViewModel()
     val state = viewModel.viewState.value
-    MainListScreen(
+    SentencesListScreen(
         state = state,
         effectFlow = viewModel.effect,
         onEventSent = { event -> viewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
-            if (navigationEffect is MainListContract.Effect.Navigation.ToCategoryDetails) {
+            if (navigationEffect is SentencesListContract.Effect.Navigation.ToCategoryDetails) {
                 navController.navigate("${NavigationKeys.Route.SE_LIST}/${navigationEffect.categoryName}")
             }
         })
+//    val viewModel: MainListViewModel = hiltViewModel()
+//    val state = viewModel.viewState.value
+//    MainListScreen(
+//        state = state,
+//        effectFlow = viewModel.effect,
+//        onEventSent = { event -> viewModel.setEvent(event) },
+//        onNavigationRequested = { navigationEffect ->
+//            if (navigationEffect is MainListContract.Effect.Navigation.ToCategoryDetails) {
+//                navController.navigate("${NavigationKeys.Route.SE_LIST}/${navigationEffect.categoryName}")
+//            }
+//        })
 }
 
 @Composable

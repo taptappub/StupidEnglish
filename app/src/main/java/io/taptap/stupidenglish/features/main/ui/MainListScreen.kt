@@ -7,18 +7,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import kotlinx.coroutines.flow.Flow
@@ -121,7 +118,7 @@ fun MainList(
             when (item) {
                 is NewWordUI -> NewWordItemRow(item = item)
                 is WordListItemUI -> WordItemRow(item = item)
-                is TitleUI -> TitleItem(item = item)
+                is WordListTitleUI -> TitleItem(item = item)
             }
         }
     }
@@ -156,7 +153,7 @@ fun NewWordItemRow(item: NewWordUI) {
 
 @Composable
 fun TitleItem(
-    item: TitleUI
+    item: WordListTitleUI
 ) {
     Text(
         text = stringResource(id = item.valueRes),
@@ -181,7 +178,7 @@ fun WordItemRow(
         elevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
     ) {
         Row {
             WordItem(

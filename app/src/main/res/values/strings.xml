@@ -19,9 +19,11 @@
     <!-- Main List -->
     <string name="main_list_new_word_title">New word</string>
     <string name="main_list_list_title">My words</string>
+    <string name="main_list_add_word">Add new word</string>
 
     <!-- Sentences List -->
-    <string name="my_courses">My Courses</string>
-    <string name="main_list_add_word">Add new word</string>
+    <string name="stns_list_new_word_title">Add new sentences</string>
+    <string name="stns_list_list_title">Stupid sentences</string>
+    <string name="stns_list_add_word">Make your stupid sentence…</string>
 
 </resources>

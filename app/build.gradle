@@ -58,7 +58,9 @@ dependencies {
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.17.0"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02"
     implementation "com.google.accompanist:accompanist-insets:0.21.4-beta"
+    implementation "com.google.accompanist:accompanist-pager:0.21.4-beta"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
     implementation 'androidx.activity:activity-compose:1.4.0'
 
