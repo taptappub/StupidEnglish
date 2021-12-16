@@ -3,13 +3,14 @@ package io.taptap.stupidenglish
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -32,6 +33,8 @@ import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListScreen
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
+import io.taptap.stupidenglish.ui.theme.getIndicatorActiveColor
+import io.taptap.stupidenglish.ui.theme.getIndicatorInactiveColor
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -68,9 +71,26 @@ class MainActivity : ComponentActivity() {
 @ExperimentalPagerApi
 @Composable
 private fun MainListDestination(navController: NavHostController) {
-    Box {
+    Column {
         val pagerState = rememberPagerState()
-
+        StupidEnglishTheme {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colors.background)
+                        .padding(top = 16.dp, bottom = 24.dp)
+                ) {
+                    HorizontalPagerIndicator(
+                        indicatorWidth = 10.dp,
+                        indicatorHeight = 10.dp,
+                        inactiveColor = getIndicatorInactiveColor(),
+                        activeColor = getIndicatorActiveColor(),
+                        pagerState = pagerState,
+                        spacing = 12.dp,
+                        modifier = Modifier.align(Alignment.TopCenter)
+                    )
+                }
+        }
         HorizontalPager(
             count = 2,
             state = pagerState
@@ -107,13 +127,6 @@ private fun MainListDestination(navController: NavHostController) {
 
             }
         }
-
-        HorizontalPagerIndicator(
-            pagerState = pagerState,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(16.dp),
-        )
     }
 }
 

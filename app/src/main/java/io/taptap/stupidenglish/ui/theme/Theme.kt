@@ -86,3 +86,25 @@ fun getContentTextColor(
         Grey600
     }
 }
+
+@Composable
+fun getIndicatorActiveColor(
+    darkTheme: Boolean = isSystemInDarkTheme()
+): Color {
+    return if (darkTheme) {
+        White100
+    } else {
+        Black200
+    }
+}
+
+@Composable
+fun getIndicatorInactiveColor(
+    darkTheme: Boolean = isSystemInDarkTheme()
+): Color {
+    return if (darkTheme) {
+        Grey100
+    } else {
+        Grey100
+    }
+}
