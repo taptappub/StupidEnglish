@@ -22,5 +22,6 @@
 
     <!-- Sentences List -->
     <string name="my_courses">My Courses</string>
+    <string name="main_list_add_word">Add new word</string>
 
 </resources>

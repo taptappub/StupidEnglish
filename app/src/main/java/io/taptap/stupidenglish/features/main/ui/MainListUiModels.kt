@@ -13,5 +13,5 @@ data class TitleUI(
 ) : MainListListModels
 
 data class NewWordUI(
-    val value: String
+    val valueRes: Int
 ) : MainListListModels

@@ -7,17 +7,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import com.google.accompanist.insets.ProvideWindowInsets
+import io.taptap.stupidenglish.ui.theme.getContentTextColor
+import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.onEach
 
 
@@ -28,7 +36,45 @@ fun MainListScreen(
     onEventSent: (event: MainListContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: MainListContract.Effect.Navigation) -> Unit
 ) {
-    val scaffoldState: ScaffoldState = rememberScaffoldState()
+    ProvideWindowInsets {
+        StupidEnglishTheme {
+            val scaffoldState: ScaffoldState = rememberScaffoldState()
+
+            // Listen for side effects from the VM
+            LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+                effectFlow?.onEach { effect ->
+                    when (effect) {
+                        is MainListContract.Effect.DataWasLoaded ->
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                message = "Food categories are loaded.",
+                                duration = SnackbarDuration.Short
+                            )
+                        is MainListContract.Effect.Navigation.ToCategoryDetails -> onNavigationRequested(
+                            effect
+                        )
+                    }
+                }?.collect()
+            }
+
+            Scaffold(
+                scaffoldState = scaffoldState,
+                backgroundColor = MaterialTheme.colors.background,
+            ) {
+//        backgroundColor = MaterialTheme.colors.surface,
+                Box {
+//            FoodCategoriesList(wordItems = state.categories) { itemId ->
+//                onEventSent(MainListContract.Event.CategorySelection(itemId))
+//            }
+                    MainList(wordItems = state.mainList)
+                    if (state.isLoading) {
+                        LoadingBar()
+                    }
+                }
+            }
+        }
+    }
+
+    /*val scaffoldState: ScaffoldState = rememberScaffoldState()
 
     // Listen for side effects from the VM
     LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
@@ -60,7 +106,7 @@ fun MainListScreen(
                 LoadingBar()
             }
         }
-    }
+    }*/
 
 }
 
@@ -85,7 +131,7 @@ fun MainList(
 fun NewWordItemRow(item: NewWordUI) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        backgroundColor = MaterialTheme.colors.surface,
+        backgroundColor = MaterialTheme.colors.primary,
         elevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth()
@@ -115,6 +161,9 @@ fun TitleItem(
     Text(
         text = stringResource(id = item.valueRes),
         textAlign = TextAlign.Left,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Bold,
+        color = getTitleTextColor(),
         style = MaterialTheme.typography.subtitle1,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
@@ -128,7 +177,7 @@ fun WordItemRow(
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        backgroundColor = MaterialTheme.colors.surface,
+        backgroundColor = MaterialTheme.colors.primary,
         elevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth()
@@ -158,8 +207,10 @@ fun NewWordItem(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = item.value,
+            text = stringResource(id = item.valueRes),
             textAlign = TextAlign.Center,
+            fontSize = 16.sp,
+            color = getContentTextColor(),
             style = MaterialTheme.typography.subtitle1,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
@@ -186,7 +237,10 @@ fun WordItem(
         Text(
             text = item.word,
             textAlign = TextAlign.Left,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.subtitle1,
+            color = getTitleTextColor(),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(bottom = 4.dp)
@@ -194,6 +248,8 @@ fun WordItem(
         Text(
             text = item.description,
             textAlign = TextAlign.Left,
+            fontSize = 14.sp,
+            color = getContentTextColor(),
             style = MaterialTheme.typography.subtitle2,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
@@ -217,7 +273,7 @@ fun LoadingBar() {
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()
     ) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(color = MaterialTheme.colors.secondary)
     }
 }
 
