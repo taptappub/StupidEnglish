@@ -1,16 +1,16 @@
-package io.taptap.stupidenglish.features.main.ui
+package io.taptap.stupidenglish.features.addword.ui
 
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewState
 
-class MainListContract {
+class AddWordContract {
     sealed class Event : ViewEvent {
-        object OnAddWordClick : MainListContract.Event()
+        data class CategorySelection(val categoryName: String) : Event()
     }
 
     data class State(
-        val mainList: List<MainListListModels> = listOf(),
+        val mainList: List<String> = listOf(),
         val isLoading: Boolean = false
     ) : ViewState
 
@@ -18,7 +18,7 @@ class MainListContract {
         object DataWasLoaded : Effect()
 
         sealed class Navigation : Effect() {
-            object ToAddWord : Navigation()
+            data class ToCategoryDetails(val categoryName: String) : Navigation()
         }
     }
 

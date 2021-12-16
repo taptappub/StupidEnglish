@@ -1,10 +1,10 @@
 package io.taptap.stupidenglish.features.sentences.ui
 
 import androidx.lifecycle.viewModelScope
-import io.taptap.stupidenglish.features.main.data.MainListRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
+import io.taptap.stupidenglish.features.main.data.MainListRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

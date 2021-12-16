@@ -1,10 +1,10 @@
 package io.taptap.stupidenglish.features.main.ui
 
 import androidx.lifecycle.viewModelScope
-import io.taptap.stupidenglish.features.main.data.MainListRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
+import io.taptap.stupidenglish.features.main.data.MainListRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,8 +22,8 @@ class MainListViewModel @Inject constructor(
 
     override fun handleEvents(event: MainListContract.Event) {
         when (event) {
-            is MainListContract.Event.CategorySelection -> {
-                setEffect { MainListContract.Effect.Navigation.ToCategoryDetails(event.categoryName) }
+            MainListContract.Event.OnAddWordClick -> {
+                setEffect { MainListContract.Effect.Navigation.ToAddWord }
             }
         }
     }

@@ -10,6 +10,7 @@ object NavigationKeys {
 
     object Route {
         const val SE_LIST = "stupid_english_list"
+        const val SE_ADD_WORD = "stupid_english_add_word"
         const val SE_WORD_DETAILS = "$SE_LIST/{$WORD_ID}"
     }
 }

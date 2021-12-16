@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.main.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -46,7 +47,7 @@ fun MainListScreen(
                                 message = "Food categories are loaded.",
                                 duration = SnackbarDuration.Short
                             )
-                        is MainListContract.Effect.Navigation.ToCategoryDetails -> onNavigationRequested(
+                        is MainListContract.Effect.Navigation.ToAddWord -> onNavigationRequested(
                             effect
                         )
                     }
@@ -62,7 +63,10 @@ fun MainListScreen(
 //            FoodCategoriesList(wordItems = state.categories) { itemId ->
 //                onEventSent(MainListContract.Event.CategorySelection(itemId))
 //            }
-                    MainList(wordItems = state.mainList)
+                    MainList(
+                        wordItems = state.mainList,
+                        onEventSent = onEventSent
+                    )
                     if (state.isLoading) {
                         LoadingBar()
                     }
@@ -109,14 +113,17 @@ fun MainListScreen(
 
 @Composable
 fun MainList(
-    wordItems: List<MainListListModels>
+    wordItems: List<MainListListModels>,
+    onEventSent: (event: MainListContract.Event) -> Unit,
 ) {
     LazyColumn(
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
         items(wordItems) { item ->
             when (item) {
-                is NewWordUI -> NewWordItemRow(item = item)
+                is NewWordUI -> NewWordItemRow(item = item) {
+                    onEventSent(MainListContract.Event.OnAddWordClick)
+                }
                 is WordListItemUI -> WordItemRow(item = item)
                 is WordListTitleUI -> TitleItem(item = item)
             }
@@ -125,14 +132,18 @@ fun MainList(
 }
 
 @Composable
-fun NewWordItemRow(item: NewWordUI) {
+fun NewWordItemRow(
+    item: NewWordUI,
+    onItemClicked: () -> Unit
+) {
     Card(
-        shape = RoundedCornerShape(12.dp),
         backgroundColor = MaterialTheme.colors.primary,
-        elevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp)
+            .clickable { onItemClicked() },
+        elevation = 0.dp,
+        shape = RoundedCornerShape(12.dp)
     ) {
         Row {
             NewWordItem(
@@ -278,6 +289,10 @@ fun LoadingBar() {
 @Composable
 fun DefaultPreview() {
     StupidEnglishTheme {
-        MainListScreen(MainListContract.State(), null, { }, { })
+        MainListScreen(
+            MainListContract.State(),
+            null,
+            { },
+            { })
     }
 }
