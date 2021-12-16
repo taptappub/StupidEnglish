@@ -1,15 +1,11 @@
 package io.taptap.stupidenglish.features.sentences.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -23,13 +19,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import coil.compose.rememberImagePainter
-import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import com.google.accompanist.insets.ProvideWindowInsets
 import io.taptap.stupidenglish.R
-import io.taptap.stupidenglish.ui.theme.*
+import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.ui.theme.Blue100
+import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
+import io.taptap.stupidenglish.ui.theme.getContentTextColor
+import io.taptap.stupidenglish.ui.theme.getTitleTextColor
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
 
