@@ -94,7 +94,6 @@ fun SentencesList(
 fun NewSentenceItemRow(item: SentencesListNewSentenceUI) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        backgroundColor = MaterialTheme.colors.primary,
         elevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth()
@@ -142,7 +141,6 @@ fun SentenceItemRow(
         val (button, card) = createRefs()
         Card(
             shape = RoundedCornerShape(12.dp),
-            backgroundColor = MaterialTheme.colors.primary,
             elevation = 0.dp,
             modifier = Modifier
                 .fillMaxWidth()

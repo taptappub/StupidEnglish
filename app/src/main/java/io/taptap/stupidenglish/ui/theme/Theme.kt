@@ -16,19 +16,17 @@ private val DarkColorPalette = darkColors(
 )
 
 private val LightColorPalette = lightColors(
-    surface = Red100,
-    primary = White100,
+    surface = White100,
+    primary = Black200,
     background = Grey200,
     secondary = Blue100,
-//    primaryVariant = Red100,
-//    secondaryVariant = Red100,
     error = Red100,
 
     onBackground = Black200,
-    onPrimary = Black200,
+    onPrimary = White100,
     onSecondary = Black200,
     onError = White100,
-    onSurface = White100
+    onSurface = Black200
 
     /* Other default colors to override
 background = Color.White,
@@ -60,7 +58,6 @@ fun StupidEnglishTheme(
     MaterialTheme(
         colors = colors,
         typography = Typography,
-        shapes = Shapes,
         content = content
     )
 }

@@ -14,7 +14,6 @@
   -->
 <resources>
     <string name="app_name">Stupid English</string>
-    <string name="label_back">Back</string>
 
     <!-- Main List -->
     <string name="main_list_new_word_title">New word</string>
@@ -26,4 +25,7 @@
     <string name="stns_list_list_title">Stupid sentences</string>
     <string name="stns_list_add_word">Make your stupid sentence…</string>
 
+    <!-- Add Word -->
+    <string name="addw_save_error">Error at the time of saving</string>
+    <string name="addw_word_placeholder">Unknown word</string>
 </resources>

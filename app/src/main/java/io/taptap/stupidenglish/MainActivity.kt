@@ -5,12 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -19,15 +19,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
-import com.google.accompanist.navigation.material.bottomSheet
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
+import androidx.navigation.plusAssign
+import com.google.accompanist.navigation.material.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import dagger.hilt.android.AndroidEntryPoint
+import io.taptap.stupidenglish.features.addword.ui.AddWordContract
+import io.taptap.stupidenglish.features.addword.ui.AddWordScreen
 import io.taptap.stupidenglish.features.addword.ui.AddWordViewModel
 import io.taptap.stupidenglish.features.details.ui.StupidWordScreen
 import io.taptap.stupidenglish.features.details.ui.StupidWordViewModel
@@ -37,9 +37,13 @@ import io.taptap.stupidenglish.features.main.ui.MainListViewModel
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListScreen
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
+import io.taptap.stupidenglish.ui.theme.Red100
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import io.taptap.stupidenglish.ui.theme.getIndicatorActiveColor
 import io.taptap.stupidenglish.ui.theme.getIndicatorInactiveColor
+import kotlinx.coroutines.launch
+
+typealias SheetContent = @Composable ColumnScope.() -> Unit
 
 @ExperimentalMaterialApi
 @AndroidEntryPoint
@@ -60,20 +64,19 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun StupidApp() {
         val bottomSheetNavigator = rememberBottomSheetNavigator()
-        val navController = rememberNavController(bottomSheetNavigator)
-        ModalBottomSheetLayout(bottomSheetNavigator) {
+        val navController = rememberNavController()
+        navController.navigatorProvider += bottomSheetNavigator
+        ModalBottomSheetLayout(
+            bottomSheetNavigator = bottomSheetNavigator,
+            sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            sheetElevation = 10.dp,
+            modifier = Modifier
+                .wrapContentHeight()
+        ) {
             NavHost(navController, startDestination = NavigationKeys.Route.SE_LIST) {
                 composable(route = NavigationKeys.Route.SE_LIST) {
                     MainListDestination(navController)
                 }
-//                composable(
-//                    route = NavigationKeys.Route.SE_WORD_DETAILS,
-//                    arguments = listOf(navArgument(NavigationKeys.Arg.WORD_ID) {
-//                        type = NavType.StringType
-//                    })
-//                ) {
-//                    StupidWordDestination()
-//                }
                 bottomSheet(route = NavigationKeys.Route.SE_ADD_WORD) {
                     AddWordDialogDestination(navController)
                 }
@@ -84,19 +87,19 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun AddWordDialogDestination(navController: NavHostController) {
-//    val addWordViewModel: AddWordViewModel = hiltViewModel()
-//    val addWordState = addWordViewModel.viewState.value
+    val addWordViewModel: AddWordViewModel = hiltViewModel()
+    val addWordState = addWordViewModel.viewState.value
 
-    Text(text = "Hello there!")
-//    AddWordScreen(
-//        state = addWordState,
-//        effectFlow = addWordViewModel.effect,
-//        onEventSent = { event -> addWordViewModel.setEvent(event) },
-//        onNavigationRequested = { navigationEffect ->
-//            if (navigationEffect is AddWordContract.Effect.Navigation.ToCategoryDetails) {
-//                navController.navigate("${NavigationKeys.Route.SE_LIST}/${navigationEffect.categoryName}")
-//            }
-//        })
+    AddWordScreen(
+        context = LocalContext.current,
+        state = addWordState,
+        effectFlow = addWordViewModel.effect,
+        onEventSent = { event -> addWordViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            if (navigationEffect is AddWordContract.Effect.Navigation.BackToWordList) {
+                navController.navigate(NavigationKeys.Route.SE_LIST)
+            }
+        })
 }
 
 @ExperimentalPagerApi

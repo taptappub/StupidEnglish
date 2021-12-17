@@ -137,7 +137,6 @@ fun NewWordItemRow(
     onItemClicked: () -> Unit
 ) {
     Card(
-        backgroundColor = MaterialTheme.colors.primary,
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp)
@@ -185,7 +184,6 @@ fun WordItemRow(
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        backgroundColor = MaterialTheme.colors.primary,
         elevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth()
