@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -162,7 +163,9 @@ private fun OnboardingItemRow(onClicked: () -> Unit) {
         Image(
             painter = painterResource(id = R.drawable.ic_main_onboarding),
             contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
+                .height(height = 140.dp)
                 .constrainAs(image) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
