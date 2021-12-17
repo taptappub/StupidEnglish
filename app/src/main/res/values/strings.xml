@@ -19,6 +19,7 @@
     <string name="main_list_new_word_title">New word</string>
     <string name="main_list_list_title">My words</string>
     <string name="main_list_add_word">Add new word</string>
+    <string name="main_get_list_error">Error at the time of getting words</string>
 
     <!-- Sentences List -->
     <string name="stns_list_new_word_title">Add new sentences</string>

@@ -33,8 +33,6 @@ import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceViewModel
 import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.stupidenglish.features.addword.ui.AddWordScreen
 import io.taptap.stupidenglish.features.addword.ui.AddWordViewModel
-import io.taptap.stupidenglish.features.details.ui.StupidWordScreen
-import io.taptap.stupidenglish.features.details.ui.StupidWordViewModel
 import io.taptap.stupidenglish.features.main.ui.MainListContract
 import io.taptap.stupidenglish.features.main.ui.MainListScreen
 import io.taptap.stupidenglish.features.main.ui.MainListViewModel
@@ -194,11 +192,4 @@ private fun MainListDestination(navController: NavHostController) {
             }
         }
     }
-}
-
-@Composable
-private fun StupidWordDestination() {
-    val viewModel: StupidWordViewModel = hiltViewModel()
-    val state = viewModel.viewState.value
-    StupidWordScreen(state)
 }

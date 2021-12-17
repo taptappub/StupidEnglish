@@ -6,6 +6,7 @@ import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.features.main.data.MainListRepository
 import kotlinx.coroutines.launch
+import taptap.pub.takeOrReturn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,7 +30,10 @@ class MainListViewModel @Inject constructor(
     }
 
     private suspend fun getMainList() {
-        val savedWordList = repository.getWordList()
+        val savedWordList = repository.getWordList().takeOrReturn {
+            setEffect { MainListContract.Effect.GetWordsError(R.string.main_get_list_error) }
+        }
+
         val mainList = mutableListOf(
             WordListTitleUI(valueRes = R.string.main_list_new_word_title),
             NewWordUI(valueRes = R.string.main_list_add_word),
@@ -37,9 +41,8 @@ class MainListViewModel @Inject constructor(
         ).apply {
             addAll(savedWordList.map {
                 WordListItemUI(
-                    id = it.id,
-                    word = it.value,
-                    description = "some description"
+                    word = it.word,
+                    description = it.description
                 )
             })
         }
