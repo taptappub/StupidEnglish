@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.sentences.ui
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -34,6 +35,7 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun SentencesListScreen(
+    context: Context,
     state: SentencesListContract.State,
     effectFlow: Flow<SentencesListContract.Effect>?,
     onEventSent: (event: SentencesListContract.Event) -> Unit,
@@ -50,6 +52,16 @@ fun SentencesListScreen(
                         is SentencesListContract.Effect.DataWasLoaded ->
                             scaffoldState.snackbarHostState.showSnackbar(
                                 message = "Food categories are loaded.",
+                                duration = SnackbarDuration.Short
+                            )
+                        is SentencesListContract.Effect.GetRandomWordsError ->
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                message = context.getString(effect.errorRes),
+                                duration = SnackbarDuration.Short
+                            )
+                        is SentencesListContract.Effect.GetSentencesError ->
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                message = context.getString(effect.errorRes),
                                 duration = SnackbarDuration.Short
                             )
                         is SentencesListContract.Effect.Navigation.ToAddSentence -> onNavigationRequested(
@@ -255,11 +267,3 @@ fun SentenceItemPreview() {
         )
     }
 }
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreview() {
-//    StupidEnglishTheme {
-//        SentencesListScreen(SentencesListContract.State(), null, { }, { })
-//    }
-//}

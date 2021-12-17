@@ -183,6 +183,7 @@ private fun MainListDestination(navController: NavHostController) {
                     val sentenceState = sentenceViewModel.viewState.value
 
                     SentencesListScreen(
+                        context = LocalContext.current,
                         state = sentenceState,
                         effectFlow = sentenceViewModel.effect,
                         onEventSent = { event -> sentenceViewModel.setEvent(event) },

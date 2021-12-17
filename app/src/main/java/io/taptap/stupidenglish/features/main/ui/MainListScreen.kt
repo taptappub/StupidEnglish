@@ -77,11 +77,7 @@ fun MainListScreen(
                 scaffoldState = scaffoldState,
                 backgroundColor = MaterialTheme.colors.background,
             ) {
-//        backgroundColor = MaterialTheme.colors.surface,
                 Box {
-//            FoodCategoriesList(wordItems = state.categories) { itemId ->
-//                onEventSent(MainListContract.Event.CategorySelection(itemId))
-//            }
                     MainList(
                         wordItems = state.mainList,
                         onEventSent = onEventSent
@@ -236,16 +232,6 @@ private fun NewWordItem(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-//        if (item.description?.trim()?.isNotEmpty() == true)
-//            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-//                Text(
-//                    text = item.description.trim(),
-//                    textAlign = TextAlign.Start,
-//                    overflow = TextOverflow.Ellipsis,
-//                    style = MaterialTheme.typography.caption,
-//                    maxLines = expandedLines
-//                )
-//            }
     }
 }
 
