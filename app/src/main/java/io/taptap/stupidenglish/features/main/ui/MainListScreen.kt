@@ -155,7 +155,7 @@ private fun OnboardingItemRow(onClicked: () -> Unit) {
                         bottom = 12.dp,
                         start = 16.dp,
                         top = 12.dp,
-                        end = 180.dp
+                        end = 150.dp
                     )
             )
         }
