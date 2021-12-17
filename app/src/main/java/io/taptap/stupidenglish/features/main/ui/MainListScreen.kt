@@ -1,6 +1,8 @@
 package io.taptap.stupidenglish.features.main.ui
 
 import android.content.Context
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,20 +13,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import com.google.accompanist.insets.ProvideWindowInsets
 import io.taptap.stupidenglish.R
+import io.taptap.stupidenglish.noRippleClickable
 import io.taptap.stupidenglish.ui.theme.Red100
 import io.taptap.stupidenglish.ui.theme.getContentTextColor
 import io.taptap.stupidenglish.ui.theme.getTitleTextColor
@@ -92,7 +99,7 @@ fun MainListScreen(
 }
 
 @Composable
-fun MainList(
+private fun MainList(
     wordItems: List<MainListListModels>,
     onEventSent: (event: MainListContract.Event) -> Unit,
 ) {
@@ -116,29 +123,52 @@ fun MainList(
 
 @Composable
 private fun OnboardingItemRow(onClicked: () -> Unit) {
-    Card(
-        backgroundColor = Red100,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp)
-            .clickable { onClicked() },
-        elevation = 0.dp,
-        shape = RoundedCornerShape(12.dp)
+    ConstraintLayout(
+        modifier = Modifier.noRippleClickable(onClick = onClicked)
     ) {
-        Row {
-            NewWordItem(
-                item = NewWordUI(R.string.stns_list_list_title),
+        val (card, image) = createRefs()
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            backgroundColor = MaterialTheme.colors.secondary,
+            elevation = 0.dp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
+                .constrainAs(card) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        ) {
+            Text(
+                text = stringResource(id = R.string.main_onboarding_text),
+                textAlign = TextAlign.Left,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.subtitle1,
+                color = getTitleTextColor(),
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
+                    .wrapContentWidth()
                     .padding(
+                        bottom = 12.dp,
                         start = 16.dp,
-                        end = 16.dp,
-                        top = 22.dp,
-                        bottom = 22.dp
+                        top = 12.dp,
+                        end = 180.dp
                     )
-                    .fillMaxWidth(0.80f)
-                    .align(Alignment.CenterVertically)
             )
         }
+        Image(
+            painter = painterResource(id = R.drawable.ic_main_onboarding),
+            contentDescription = null,
+            modifier = Modifier
+                .constrainAs(image) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
+                }
+        )
     }
 }
 
@@ -284,15 +314,24 @@ fun LoadingBar() {
     }
 }
 
+//@Preview(showBackground = true)
+//@Composable
+//fun DefaultPreview() {
+//    StupidEnglishTheme {
+//        MainListScreen(
+//            LocalContext.current,
+//            MainListContract.State(),
+//            null,
+//            { },
+//            { })
+//    }
+//}
+
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
+fun DefaultOnboardingItemRowPreview() {
     StupidEnglishTheme {
-        MainListScreen(
-            LocalContext.current,
-            MainListContract.State(),
-            null,
-            { },
-            { })
+        OnboardingItemRow {}
     }
 }
+

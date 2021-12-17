@@ -21,6 +21,7 @@
     <string name="main_list_add_word">Add new word</string>
     <string name="main_get_random_words_error">Can\'t find random words</string>
     <string name="main_get_list_error">Error at the time of getting words</string>
+    <string name="main_onboarding_text">Make the most stupidest sentence from your words</string>
 
     <!-- Sentences List -->
     <string name="stns_list_new_word_title">Add new sentences</string>
