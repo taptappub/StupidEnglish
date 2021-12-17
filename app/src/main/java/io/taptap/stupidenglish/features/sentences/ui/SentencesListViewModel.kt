@@ -9,6 +9,7 @@ import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import taptap.pub.map
 import taptap.pub.takeOrNull
 import taptap.pub.takeOrReturn
 import javax.inject.Inject
@@ -48,7 +49,11 @@ class SentencesListViewModel @Inject constructor(
     }
 
     private suspend fun getRandomWords(): List<Int>? {
-        return repository.getRandomWordsIds(3).takeOrNull()
+        return repository.getRandomWords(3)
+            .map { list ->
+                list.map { it.id }
+            }
+            .takeOrNull()
     }
 
     private suspend fun getSentenceList() {

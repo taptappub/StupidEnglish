@@ -1,12 +1,16 @@
 package io.taptap.stupidenglish.features.main.data
 
+import io.taptap.stupidenglish.base.logic.randomwords.IRandomWordsDataSource
+import io.taptap.stupidenglish.base.logic.randomwords.RandomWordsDataSource
 import io.taptap.stupidenglish.base.model.Word
 import taptap.pub.Reaction
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MainListRepository @Inject constructor() {
+class MainListRepository @Inject constructor(
+    randomWordsDataSource: RandomWordsDataSource
+) : IRandomWordsDataSource by randomWordsDataSource {
 
     suspend fun getWordList(): Reaction<List<Word>> {
         return Reaction.on {

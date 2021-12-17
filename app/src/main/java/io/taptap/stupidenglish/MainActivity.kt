@@ -161,12 +161,20 @@ private fun MainListDestination(navController: NavHostController) {
                     val wordState = wordViewModel.viewState.value
 
                     MainListScreen(
+                        context = LocalContext.current,
                         state = wordState,
                         effectFlow = wordViewModel.effect,
                         onEventSent = { event -> wordViewModel.setEvent(event) },
                         onNavigationRequested = { navigationEffect ->
-                            if (navigationEffect is MainListContract.Effect.Navigation.ToAddWord) {
-                                navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
+                            when (navigationEffect) {
+                                is MainListContract.Effect.Navigation.ToAddWord -> {
+                                    navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
+                                }
+                                is MainListContract.Effect.Navigation.ToAddSentence -> {
+                                    val json =
+                                        Uri.encode(Gson().toJson(navigationEffect.sentenceNavigation))
+                                    navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${json}")
+                                }
                             }
                         })
                 }
@@ -183,9 +191,6 @@ private fun MainListDestination(navController: NavHostController) {
                                 val json =
                                     Uri.encode(Gson().toJson(navigationEffect.sentenceNavigation))
                                 navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${json}")
-
-
-//                                navController.navigate("${NavigationKeys.Route.SE_ADD_SENTENCE}/$json")
                             }
                         })
                 }

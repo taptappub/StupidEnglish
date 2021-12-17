@@ -14,3 +14,5 @@ data class WordListTitleUI(
 data class NewWordUI(
     val valueRes: Int
 ) : MainListListModels
+
+object OnboardingWordUI : MainListListModels

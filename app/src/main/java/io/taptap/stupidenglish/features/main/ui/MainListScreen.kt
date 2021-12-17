@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.main.ui
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -22,6 +24,8 @@ import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import com.google.accompanist.insets.ProvideWindowInsets
+import io.taptap.stupidenglish.R
+import io.taptap.stupidenglish.ui.theme.Red100
 import io.taptap.stupidenglish.ui.theme.getContentTextColor
 import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.onEach
@@ -29,6 +33,7 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun MainListScreen(
+    context: Context,
     state: MainListContract.State,
     effectFlow: Flow<MainListContract.Effect>?,
     onEventSent: (event: MainListContract.Event) -> Unit,
@@ -50,6 +55,20 @@ fun MainListScreen(
                         is MainListContract.Effect.Navigation.ToAddWord -> onNavigationRequested(
                             effect
                         )
+                        is MainListContract.Effect.GetRandomWordsError ->
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                message = context.getString(effect.errorRes),
+                                duration = SnackbarDuration.Short
+                            )
+                        is MainListContract.Effect.GetWordsError ->
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                message = context.getString(effect.errorRes),
+                                duration = SnackbarDuration.Short
+                            )
+                        is MainListContract.Effect.Navigation.ToAddSentence -> onNavigationRequested(
+                            effect
+                        )
+
                     }
                 }?.collect()
             }
@@ -74,41 +93,6 @@ fun MainListScreen(
             }
         }
     }
-
-    /*val scaffoldState: ScaffoldState = rememberScaffoldState()
-
-    // Listen for side effects from the VM
-    LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-        effectFlow?.onEach { effect ->
-            when (effect) {
-                is MainListContract.Effect.DataWasLoaded ->
-                    scaffoldState.snackbarHostState.showSnackbar(
-                        message = "Food categories are loaded.",
-                        duration = SnackbarDuration.Short
-                    )
-                is MainListContract.Effect.Navigation.ToCategoryDetails -> onNavigationRequested(
-                    effect
-                )
-            }
-        }?.collect()
-    }
-
-    Scaffold(
-        scaffoldState = scaffoldState,
-        backgroundColor = MaterialTheme.colors.surface,
-    ) {
-//        backgroundColor = MaterialTheme.colors.surface,
-        Box {
-//            FoodCategoriesList(wordItems = state.categories) { itemId ->
-//                onEventSent(MainListContract.Event.CategorySelection(itemId))
-//            }
-            MainList(wordItems = state.mainList)
-            if (state.isLoading) {
-                LoadingBar()
-            }
-        }
-    }*/
-
 }
 
 @Composable
@@ -126,13 +110,44 @@ fun MainList(
                 }
                 is WordListItemUI -> WordItemRow(item = item)
                 is WordListTitleUI -> TitleItem(item = item)
+                is OnboardingWordUI -> OnboardingItemRow {
+                    onEventSent(MainListContract.Event.OnOnboardingClick)
+                }
             }
         }
     }
 }
 
 @Composable
-fun NewWordItemRow(
+private fun OnboardingItemRow(onClicked: () -> Unit) {
+    Card(
+        backgroundColor = Red100,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp)
+            .clickable { onClicked() },
+        elevation = 0.dp,
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row {
+            NewWordItem(
+                item = NewWordUI(R.string.stns_list_list_title),
+                modifier = Modifier
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 22.dp,
+                        bottom = 22.dp
+                    )
+                    .fillMaxWidth(0.80f)
+                    .align(Alignment.CenterVertically)
+            )
+        }
+    }
+}
+
+@Composable
+private fun NewWordItemRow(
     item: NewWordUI,
     onItemClicked: () -> Unit
 ) {
@@ -162,7 +177,7 @@ fun NewWordItemRow(
 }
 
 @Composable
-fun TitleItem(
+private fun TitleItem(
     item: WordListTitleUI
 ) {
     Text(
@@ -179,7 +194,7 @@ fun TitleItem(
 }
 
 @Composable
-fun WordItemRow(
+private fun WordItemRow(
     item: WordListItemUI
 ) {
     Card(
@@ -207,7 +222,7 @@ fun WordItemRow(
 }
 
 @Composable
-fun NewWordItem(
+private fun NewWordItem(
     item: NewWordUI,
     modifier: Modifier
 ) {
@@ -235,7 +250,7 @@ fun NewWordItem(
 }
 
 @Composable
-fun WordItem(
+private fun WordItem(
     item: WordListItemUI,
     modifier: Modifier
 ) {
@@ -288,6 +303,7 @@ fun LoadingBar() {
 fun DefaultPreview() {
     StupidEnglishTheme {
         MainListScreen(
+            LocalContext.current,
             MainListContract.State(),
             null,
             { },
