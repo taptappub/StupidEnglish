@@ -24,8 +24,16 @@
     <string name="stns_list_new_word_title">Add new sentences</string>
     <string name="stns_list_list_title">Stupid sentences</string>
     <string name="stns_list_add_word">Make your stupid sentence…</string>
+    <string name="stns_get_random_words_error">Can\'t find random words</string>
+    <string name="stns_get_sentences_error">Error at the time of getting sentences</string>
 
     <!-- Add Word -->
     <string name="addw_save_error">Error at the time of saving</string>
     <string name="addw_word_placeholder">Unknown word</string>
+
+    <!-- Add Sentence -->
+    <string name="adds_save_error">Error at the time of saving</string>
+    <string name="adds_get_words_error">Error at the time of getting words</string>
+    <string name="adds_onboarding_text">Make a sentence from selected words. As stupider, it will be, then better!</string>
+    <string name="adds_sentence_placeholder">Your sentence</string>
 </resources>

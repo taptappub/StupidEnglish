@@ -1,42 +1,33 @@
 package io.taptap.stupidenglish.features.addword.ui
 
 import android.content.Context
-import android.widget.EditText
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import com.google.accompanist.insets.ProvideWindowInsets
 import io.taptap.stupidenglish.R
-import io.taptap.stupidenglish.features.main.ui.*
+import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import io.taptap.stupidenglish.ui.theme.getContentTextColor
 import io.taptap.stupidenglish.ui.theme.getTitleTextColor
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
 
@@ -173,7 +164,11 @@ fun DefaultPreview() {
     StupidEnglishTheme {
         AddWordScreen(
             LocalContext.current,
-            AddWordContract.State(AddWordContract.AddWordState.None),
+            AddWordContract.State(
+                addWordState = AddWordContract.AddWordState.None,
+                word = "",
+                description = ""
+            ),
             null,
             { },
             { })

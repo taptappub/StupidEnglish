@@ -7,7 +7,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import kotlin.math.min
 
-
+//todo удалить
 @Composable
 fun StupidWordScreen(state: StupidWordContract.State) {
     val scrollState = rememberLazyListState()

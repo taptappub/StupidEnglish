@@ -19,8 +19,11 @@ class AddWordViewModel @Inject constructor(
     private var word: String = ""
     private var description: String = ""
 
-    override fun setInitialState() =
-        AddWordContract.State(addWordState = AddWordContract.AddWordState.None)
+    override fun setInitialState() = AddWordContract.State(
+        addWordState = AddWordContract.AddWordState.None,
+        word = "",
+        description = ""
+    )
 
     override fun handleEvents(event: AddWordContract.Event) {
         when (event) {

@@ -12,7 +12,9 @@ class AddWordContract {
     }
 
     data class State(
-        val addWordState: AddWordState
+        val addWordState: AddWordState,
+        val word: String,
+        val description: String
     ) : ViewState
 
     enum class AddWordState {

@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,7 +15,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -25,7 +25,11 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
+import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceScreen
+import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceViewModel
 import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.stupidenglish.features.addword.ui.AddWordScreen
 import io.taptap.stupidenglish.features.addword.ui.AddWordViewModel
@@ -34,16 +38,13 @@ import io.taptap.stupidenglish.features.details.ui.StupidWordViewModel
 import io.taptap.stupidenglish.features.main.ui.MainListContract
 import io.taptap.stupidenglish.features.main.ui.MainListScreen
 import io.taptap.stupidenglish.features.main.ui.MainListViewModel
+import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigationNavType
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListScreen
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
-import io.taptap.stupidenglish.ui.theme.Red100
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import io.taptap.stupidenglish.ui.theme.getIndicatorActiveColor
 import io.taptap.stupidenglish.ui.theme.getIndicatorInactiveColor
-import kotlinx.coroutines.launch
-
-typealias SheetContent = @Composable ColumnScope.() -> Unit
 
 @ExperimentalMaterialApi
 @AndroidEntryPoint
@@ -80,6 +81,16 @@ class MainActivity : ComponentActivity() {
                 bottomSheet(route = NavigationKeys.Route.SE_ADD_WORD) {
                     AddWordDialogDestination(navController)
                 }
+                bottomSheet(
+                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
+                    arguments = listOf(
+                        navArgument(NavigationKeys.Arg.SENTENCE_WORDS_ID) {
+                            type = SentenceNavigationNavType()
+                        }
+                    )
+                ) {
+                    AddSentenceDialogDestination(navController)
+                }
             }
         }
     }
@@ -98,6 +109,23 @@ private fun AddWordDialogDestination(navController: NavHostController) {
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddWordContract.Effect.Navigation.BackToWordList) {
                 navController.navigate(NavigationKeys.Route.SE_LIST)
+            }
+        })
+}
+
+@Composable
+private fun AddSentenceDialogDestination(navController: NavHostController) {
+    val addSentenceViewModel: AddSentenceViewModel = hiltViewModel()
+    val addSentenceState = addSentenceViewModel.viewState.value
+
+    AddSentenceScreen(
+        context = LocalContext.current,
+        state = addSentenceState,
+        effectFlow = addSentenceViewModel.effect,
+        onEventSent = { event -> addSentenceViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
+                navController.navigate(NavigationKeys.Route.SE_LIST) //todo надо будет переключить на верный таб
             }
         })
 }
@@ -153,12 +181,16 @@ private fun MainListDestination(navController: NavHostController) {
                         effectFlow = sentenceViewModel.effect,
                         onEventSent = { event -> sentenceViewModel.setEvent(event) },
                         onNavigationRequested = { navigationEffect ->
-                            if (navigationEffect is SentencesListContract.Effect.Navigation.ToCategoryDetails) {
-                                navController.navigate("${NavigationKeys.Route.SE_LIST}/${navigationEffect.categoryName}")
+                            if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
+                                val json =
+                                    Uri.encode(Gson().toJson(navigationEffect.sentenceNavigation))
+                                navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${json}")
+
+
+//                                navController.navigate("${NavigationKeys.Route.SE_ADD_SENTENCE}/$json")
                             }
                         })
                 }
-
             }
         }
     }

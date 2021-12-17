@@ -1,6 +1,7 @@
 package io.taptap.stupidenglish.features.sentences.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -51,7 +52,7 @@ fun SentencesListScreen(
                                 message = "Food categories are loaded.",
                                 duration = SnackbarDuration.Short
                             )
-                        is SentencesListContract.Effect.Navigation.ToCategoryDetails -> onNavigationRequested(
+                        is SentencesListContract.Effect.Navigation.ToAddSentence -> onNavigationRequested(
                             effect
                         )
                     }
@@ -63,7 +64,10 @@ fun SentencesListScreen(
                 backgroundColor = MaterialTheme.colors.background,
             ) {
                 Box {
-                    SentencesList(sentencesItems = state.mainList)
+                    SentencesList(
+                        sentencesItems = state.sentenceList,
+                        onEventSent = onEventSent
+                    )
                     if (state.isLoading) {
                         LoadingBar()
                     }
@@ -75,14 +79,17 @@ fun SentencesListScreen(
 
 @Composable
 fun SentencesList(
-    sentencesItems: List<SentencesListListModels>
+    sentencesItems: List<SentencesListListModels>,
+    onEventSent: (event: SentencesListContract.Event) -> Unit,
 ) {
     LazyColumn(
         contentPadding = PaddingValues(bottom = 12.dp)
     ) {
         items(sentencesItems) { item ->
             when (item) {
-                is SentencesListNewSentenceUI -> NewSentenceItemRow(item = item)
+                is SentencesListNewSentenceUI -> NewSentenceItemRow(item = item) {
+                    onEventSent(SentencesListContract.Event.OnAddSentenceClick)
+                }
                 is SentencesListItemUI -> SentenceItemRow(item = item)
                 is SentencesListTitleUI -> SentenceTitleItem(item = item)
             }
@@ -91,13 +98,17 @@ fun SentencesList(
 }
 
 @Composable
-fun NewSentenceItemRow(item: SentencesListNewSentenceUI) {
+fun NewSentenceItemRow(
+    item: SentencesListNewSentenceUI,
+    onItemClicked: () -> Unit
+) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp)
+            .clickable { onItemClicked() }
     ) {
         Row {
             NewSentenceItem(
@@ -239,7 +250,6 @@ fun SentenceItemPreview() {
     StupidEnglishTheme {
         SentenceItemRow(
             SentencesListItemUI(
-                id = "0",
                 sentence = "Some long long long long sentence for testing only",
             )
         )

@@ -4,46 +4,68 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
-import io.taptap.stupidenglish.features.main.data.MainListRepository
+import io.taptap.stupidenglish.features.sentences.data.SentencesListRepository
+import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigation
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import taptap.pub.takeOrNull
+import taptap.pub.takeOrReturn
 import javax.inject.Inject
 
 @HiltViewModel
 class SentencesListViewModel @Inject constructor(
-    private val repository: MainListRepository
+    private val repository: SentencesListRepository
 ) : BaseViewModel<SentencesListContract.Event, SentencesListContract.State, SentencesListContract.Effect>() {
 
     init {
-        viewModelScope.launch { getMainList() }
+        viewModelScope.launch { getSentenceList() }
     }
 
     override fun setInitialState() =
-        SentencesListContract.State(mainList = listOf(), isLoading = true)
+        SentencesListContract.State(sentenceList = listOf(), isLoading = true)
 
     override fun handleEvents(event: SentencesListContract.Event) {
         when (event) {
-            is SentencesListContract.Event.CategorySelection -> {
-                setEffect { SentencesListContract.Effect.Navigation.ToCategoryDetails(event.categoryName) }
+            is SentencesListContract.Event.OnAddSentenceClick -> {
+                viewModelScope.launch {
+                    val randomWords = getRandomWords()
+                    withContext(Dispatchers.Main) {
+                        if (randomWords == null) {
+                            setEffect { SentencesListContract.Effect.GetRandomWordsError(R.string.stns_get_random_words_error) }
+                        } else {
+                            val sentenceNavigation = SentenceNavigation(wordsIds = randomWords)
+                            setEffect {
+                                SentencesListContract.Effect.Navigation.ToAddSentence(
+                                    sentenceNavigation
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 
-    private suspend fun getMainList() {
-        val savedWordList = repository.getWordList()
+    private suspend fun getRandomWords(): List<Int>? {
+        return repository.getRandomWordsIds(3).takeOrNull()
+    }
+
+    private suspend fun getSentenceList() {
+        val savedWordList = repository.getSentenceList().takeOrReturn {
+            setEffect { SentencesListContract.Effect.GetSentencesError(R.string.stns_get_sentences_error) }
+        }
         val mainList = mutableListOf(
             SentencesListTitleUI(valueRes = R.string.stns_list_new_word_title),
             SentencesListNewSentenceUI(valueRes = R.string.stns_list_add_word),
             SentencesListTitleUI(valueRes = R.string.stns_list_list_title),
         ).apply {
             addAll(savedWordList.map {
-                SentencesListItemUI(
-                    id = it.id,
-                    sentence = it.value
-                )
+                SentencesListItemUI(sentence = it.sentence)
             })
         }
         setState {
-            copy(mainList = mainList, isLoading = false)
+            copy(sentenceList = mainList, isLoading = false)
         }
         setEffect { SentencesListContract.Effect.DataWasLoaded }
     }
