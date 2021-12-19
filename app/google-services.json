@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "912013363116",
+    "project_id": "stupid-english",
+    "storage_bucket": "stupid-english.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:912013363116:android:ec708030ee9bb74a3bdc09",
+        "android_client_info": {
+          "package_name": "io.taptap.stupidenglish"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "912013363116-19nng80i4iqg6t64ofht93rvm45j94sh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDW2z_TI12iyxoEnO_7rsBvHYTTZUp-eY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "912013363116-19nng80i4iqg6t64ofht93rvm45j94sh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
