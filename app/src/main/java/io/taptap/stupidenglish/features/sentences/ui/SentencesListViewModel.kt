@@ -4,9 +4,13 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
+import io.taptap.stupidenglish.base.model.Sentence
+import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.features.main.ui.MainListListModels
 import io.taptap.stupidenglish.features.sentences.data.SentencesListRepository
 import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigation
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import taptap.pub.map
@@ -48,7 +52,7 @@ class SentencesListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getRandomWords(): List<Int>? {
+    private suspend fun getRandomWords(): List<Long>? {
         return repository.getRandomWords(3)
             .map { list ->
                 list.map { it.id }
@@ -57,21 +61,29 @@ class SentencesListViewModel @Inject constructor(
     }
 
     private suspend fun getSentenceList() {
-        val savedWordList = repository.getSentenceList().takeOrReturn {
+        val savedSentenceList = repository.getSentenceList().takeOrReturn {
             setEffect { SentencesListContract.Effect.GetSentencesError(R.string.stns_get_sentences_error) }
         }
-        val mainList = mutableListOf(
+        savedSentenceList.collect {
+            val sentenceList = makeSentenceList(it)
+
+                setState {
+                copy(sentenceList = sentenceList, isLoading = false)
+            }
+            setEffect { SentencesListContract.Effect.DataWasLoaded }
+        }
+    }
+
+    private fun makeSentenceList(savedSentenceList: List<Sentence>): List<SentencesListListModels> {
+        val sentenceList = mutableListOf(
             SentencesListTitleUI(valueRes = R.string.stns_list_new_word_title),
             SentencesListNewSentenceUI(valueRes = R.string.stns_list_add_word),
             SentencesListTitleUI(valueRes = R.string.stns_list_list_title),
         ).apply {
-            addAll(savedWordList.map {
+            addAll(savedSentenceList.map {
                 SentencesListItemUI(sentence = it.sentence)
             })
         }
-        setState {
-            copy(sentenceList = mainList, isLoading = false)
-        }
-        setEffect { SentencesListContract.Effect.DataWasLoaded }
+        return sentenceList
     }
 }

@@ -16,11 +16,7 @@ class AddWordViewModel @Inject constructor(
     private val repository: AddWordRepository
 ) : BaseViewModel<AddWordContract.Event, AddWordContract.State, AddWordContract.Effect>() {
 
-    private var word: String = ""
-    private var description: String = ""
-
     override fun setInitialState() = AddWordContract.State(
-        addWordState = AddWordContract.AddWordState.None,
         word = "",
         description = ""
     )
@@ -34,20 +30,20 @@ class AddWordViewModel @Inject constructor(
     }
 
     private fun setWord(value: String) {
-        word = value
         setState {
-            copy(addWordState = AddWordContract.AddWordState.HasWord)
+            copy(word = value)
         }
     }
 
     private fun setDescription(value: String) {
-        description = value
         setState {
-            copy(addWordState = AddWordContract.AddWordState.HasDescription)
+            copy(description = value)
         }
     }
 
     private fun saveWord() {
+        val word = viewState.value.word
+        val description = viewState.value.description
         viewModelScope.launch {
             repository.saveWord(word, description)
                 .handle(

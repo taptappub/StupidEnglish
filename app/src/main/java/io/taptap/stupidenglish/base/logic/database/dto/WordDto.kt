@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
     tableName = "WordTable"
 )
 data class WordDto(
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Int,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Long = 0,
     @ColumnInfo(name = "word") val word: String,
     @ColumnInfo(name = "description") val description: String,
 )

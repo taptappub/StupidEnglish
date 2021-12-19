@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class SentenceNavigation(
-    val wordsIds: List<Int>
+    val wordsIds: List<Long>
 ): Parcelable
 
 class SentenceNavigationNavType : NavType<SentenceNavigation>(isNullableAllowed = false) {

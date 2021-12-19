@@ -1,23 +1,26 @@
 package io.taptap.stupidenglish.features.sentences.data
 
+import io.taptap.stupidenglish.base.logic.database.dao.WordDao
+import io.taptap.stupidenglish.base.logic.mapper.toSentences
 import io.taptap.stupidenglish.base.logic.randomwords.IRandomWordsDataSource
 import io.taptap.stupidenglish.base.logic.randomwords.RandomWordsDataSource
 import io.taptap.stupidenglish.base.model.Sentence
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import taptap.pub.Reaction
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SentencesListRepository @Inject constructor(
-    randomWordsDataSource: RandomWordsDataSource
+    randomWordsDataSource: RandomWordsDataSource,
+    private val wordDao: WordDao
 ) : IRandomWordsDataSource by randomWordsDataSource {
 
-    fun getSentenceList(): Reaction<List<Sentence>> {
-        return Reaction.on {
-            listOf(
-                Sentence(0, "The first awesome sentence"),
-                Sentence(1, "The second awesome sentence")
-            )
-        }
+    fun getSentenceList(): Reaction<Flow<List<Sentence>>> = Reaction.on {
+        wordDao.observeSentences()
+            .map { sentenceDtos ->
+                sentenceDtos.toSentences()
+            }
     }
 }

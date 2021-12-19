@@ -87,10 +87,10 @@ fun AddWordScreen(
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }) {
-                        when (state.addWordState) {
-                            AddWordContract.AddWordState.None -> NoneScreen()
-                            AddWordContract.AddWordState.HasWord -> HasWordScreen()
-                            AddWordContract.AddWordState.HasDescription -> HasDescriptionScreen()
+                        when {
+                            state.word.isEmpty() && state.description.isEmpty() -> NoneScreen()
+                            state.word.isNotEmpty() && state.description.isEmpty() -> HasWordScreen()
+                            state.word.isNotEmpty() && state.description.isNotEmpty() -> HasDescriptionScreen()
                         }
                     }
 
@@ -165,7 +165,6 @@ fun DefaultPreview() {
         AddWordScreen(
             LocalContext.current,
             AddWordContract.State(
-                addWordState = AddWordContract.AddWordState.None,
                 word = "",
                 description = ""
             ),

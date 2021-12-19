@@ -34,6 +34,14 @@ interface WordDao {
     )
     fun observeWords(): Flow<List<WordDto>>
 
+    @Query(
+        """
+        SELECT *
+        FROM WordTable
+        """
+    )
+    fun getWords(): List<WordDto>
+
     //-----------------Sentence-----------------
 
     @Insert

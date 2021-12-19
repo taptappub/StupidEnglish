@@ -9,6 +9,9 @@ import io.taptap.stupidenglish.features.main.data.MainListRepository
 import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigation
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import taptap.pub.map
@@ -53,7 +56,7 @@ class MainListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getRandomWords(): List<Int>? {
+    private suspend fun getRandomWords(): List<Long>? {
         return repository.getRandomWords(3)
             .map { list ->
                 list.map { it.id }
@@ -65,13 +68,14 @@ class MainListViewModel @Inject constructor(
         val savedWordList = repository.getWordList().takeOrReturn {
             setEffect { MainListContract.Effect.GetWordsError(R.string.main_get_list_error) }
         }
+        savedWordList.collect {
+            val mainList = makeMainList(it)
 
-        val mainList = makeMainList(savedWordList)
-
-        setState {
-            copy(mainList = mainList, isLoading = false)
+            setState {
+                copy(mainList = mainList, isLoading = false)
+            }
+            setEffect { MainListContract.Effect.DataWasLoaded }
         }
-        setEffect { MainListContract.Effect.DataWasLoaded }
     }
 
     private fun makeMainList(savedWordList: List<Word>): List<MainListListModels> {

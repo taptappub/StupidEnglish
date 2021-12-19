@@ -1,7 +1,7 @@
 package io.taptap.stupidenglish.base.model
 
 data class Word(
-    val id: Int,
+    val id: Long,
     val word: String,
     val description: String
 )
