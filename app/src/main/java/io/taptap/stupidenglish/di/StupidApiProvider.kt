@@ -12,6 +12,27 @@ import javax.inject.Singleton
 @Module
 class StupidApiProvider {
 
+//    @Provides
+//    @Singleton
+//    fun provideAppDatabase(@ApplicationContext appContext: Context): WordDatabase {
+//        return Room.databaseBuilder(
+//            appContext,
+//            WordDatabase::class.java,
+//            "StupidDatabase"
+//        ).build()
+//    }
+
+//    @Provides
+//    fun provideChannelDao(appDatabase: WordDatabase): WordDao {
+//        return appDatabase.wordDao()
+//    }
+
+//    @Provides
+//    @Singleton
+//    fun provideRandomWordsDataSource(wordDao : WordDao): IRandomWordsDataSource {
+//        return RandomWordsDataSource(wordDao)
+//    }
+
     @Provides
     @Singleton
     fun provideRandomWordsDataSource(): IRandomWordsDataSource {
