@@ -76,7 +76,6 @@ class SentencesListViewModel @Inject constructor(
                 setState {
                 copy(sentenceList = sentenceList, isLoading = false)
             }
-            setEffect { SentencesListContract.Effect.DataWasLoaded }
         }
     }
 

@@ -18,7 +18,6 @@ class MainListContract {
     ) : ViewState
 
     sealed class Effect : ViewSideEffect {
-        object DataWasLoaded : Effect()
         data class GetRandomWordsError(val errorRes: Int) : Effect()
         data class GetWordsError(val errorRes: Int) : Effect()
 

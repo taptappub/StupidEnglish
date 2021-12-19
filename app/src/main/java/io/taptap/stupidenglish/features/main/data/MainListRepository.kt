@@ -25,4 +25,13 @@ class MainListRepository @Inject constructor(
                 wordDtos.toWords()
             }
     }
+
+    suspend fun addNew() {
+        wordDao.insertWord(
+            WordDto(
+                word = "word",
+                description = "desc"
+            )
+        )
+    }
 }

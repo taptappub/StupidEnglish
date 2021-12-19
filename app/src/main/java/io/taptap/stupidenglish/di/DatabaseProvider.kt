@@ -33,7 +33,7 @@ class DatabaseProvider {
             WordDatabase::class.java,
             "StupidDatabase"
         ).build()
-        db.fillApp()
+//        db.fillApp()
         return db
     }
 

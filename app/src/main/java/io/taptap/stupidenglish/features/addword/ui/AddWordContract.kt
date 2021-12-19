@@ -8,6 +8,10 @@ class AddWordContract {
     sealed class Event : ViewEvent {
         data class OnWord(val value: String) : Event()
         data class OnDescription(val value: String) : Event()
+
+        data class OnWordChanging(val value: String) : Event()
+        data class OnDescriptionChanging(val value: String) : Event()
+
         object OnSaveWord : Event()
     }
 

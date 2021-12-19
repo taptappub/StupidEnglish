@@ -49,11 +49,6 @@ fun SentencesListScreen(
             LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
                 effectFlow?.onEach { effect ->
                     when (effect) {
-                        is SentencesListContract.Effect.DataWasLoaded ->
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = "Food categories are loaded.",
-                                duration = SnackbarDuration.Short
-                            )
                         is SentencesListContract.Effect.GetRandomWordsError ->
                             scaffoldState.snackbarHostState.showSnackbar(
                                 message = context.getString(effect.errorRes),
@@ -64,9 +59,8 @@ fun SentencesListScreen(
                                 message = context.getString(effect.errorRes),
                                 duration = SnackbarDuration.Short
                             )
-                        is SentencesListContract.Effect.Navigation.ToAddSentence -> onNavigationRequested(
-                            effect
-                        )
+                        is SentencesListContract.Effect.Navigation.ToAddSentence ->
+                            onNavigationRequested(effect)
                     }
                 }?.collect()
             }

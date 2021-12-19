@@ -25,6 +25,12 @@ class AddWordViewModel @Inject constructor(
         when (event) {
             is AddWordContract.Event.OnWord -> setWord(event.value)
             is AddWordContract.Event.OnDescription -> setDescription(event.value)
+
+            is AddWordContract.Event.OnDescriptionChanging ->
+                setState { copy(description = event.value) }
+            is AddWordContract.Event.OnWordChanging ->
+                setState { copy(word = event.value) }
+
             is AddWordContract.Event.OnSaveWord -> saveWord()
         }
     }

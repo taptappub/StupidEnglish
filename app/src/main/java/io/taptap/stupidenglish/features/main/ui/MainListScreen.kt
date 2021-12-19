@@ -50,14 +50,8 @@ fun MainListScreen(
             LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
                 effectFlow?.onEach { effect ->
                     when (effect) {
-                        is MainListContract.Effect.DataWasLoaded ->
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = "Food categories are loaded.",
-                                duration = SnackbarDuration.Short
-                            )
-                        is MainListContract.Effect.Navigation.ToAddWord -> onNavigationRequested(
-                            effect
-                        )
+                        is MainListContract.Effect.Navigation.ToAddWord ->
+                            onNavigationRequested(effect)
                         is MainListContract.Effect.GetRandomWordsError ->
                             scaffoldState.snackbarHostState.showSnackbar(
                                 message = context.getString(effect.errorRes),
@@ -68,10 +62,8 @@ fun MainListScreen(
                                 message = context.getString(effect.errorRes),
                                 duration = SnackbarDuration.Short
                             )
-                        is MainListContract.Effect.Navigation.ToAddSentence -> onNavigationRequested(
-                            effect
-                        )
-
+                        is MainListContract.Effect.Navigation.ToAddSentence ->
+                            onNavigationRequested(effect)
                     }
                 }?.collect()
             }

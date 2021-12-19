@@ -38,20 +38,23 @@ class MainListViewModel @Inject constructor(
             }
             MainListContract.Event.OnOnboardingClick -> {
                 viewModelScope.launch {
-                    val randomWords = getRandomWords()
-                    withContext(Dispatchers.Main) {
-                        if (randomWords == null) {
-                            setEffect { MainListContract.Effect.GetRandomWordsError(R.string.main_get_random_words_error) }
-                        } else {
-                            val sentenceNavigation = SentenceNavigation(wordsIds = randomWords)
-                            setEffect {
-                                MainListContract.Effect.Navigation.ToAddSentence(
-                                    sentenceNavigation
-                                )
-                            }
-                        }
-                    }
+                    repository.addNew()
                 }
+//                viewModelScope.launch {
+//                    val randomWords = getRandomWords()
+//                    withContext(Dispatchers.Main) {
+//                        if (randomWords == null) {
+//                            setEffect { MainListContract.Effect.GetRandomWordsError(R.string.main_get_random_words_error) }
+//                        } else {
+//                            val sentenceNavigation = SentenceNavigation(wordsIds = randomWords)
+//                            setEffect {
+//                                MainListContract.Effect.Navigation.ToAddSentence(
+//                                    sentenceNavigation
+//                                )
+//                            }
+//                        }
+//                    }
+//                }
             }
         }
     }
@@ -74,7 +77,6 @@ class MainListViewModel @Inject constructor(
             setState {
                 copy(mainList = mainList, isLoading = false)
             }
-            setEffect { MainListContract.Effect.DataWasLoaded }
         }
     }
 
