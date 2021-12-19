@@ -102,7 +102,9 @@ fun SentencesList(
                 is SentencesListNewSentenceUI -> NewSentenceItemRow(item = item) {
                     onEventSent(SentencesListContract.Event.OnAddSentenceClick)
                 }
-                is SentencesListItemUI -> SentenceItemRow(item = item)
+                is SentencesListItemUI -> SentenceItemRow(item = item) { sentence ->
+                    onEventSent(SentencesListContract.Event.OnShareClick(sentence))
+                }
                 is SentencesListTitleUI -> SentenceTitleItem(item = item)
             }
         }
@@ -158,7 +160,8 @@ fun SentenceTitleItem(
 
 @Composable
 fun SentenceItemRow(
-    item: SentencesListItemUI
+    item: SentencesListItemUI,
+    onShareClicked: (SentencesListItemUI) -> Unit
 ) {
     ConstraintLayout {
         val (button, card) = createRefs()
@@ -190,7 +193,7 @@ fun SentenceItemRow(
             }
         }
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { onShareClicked(item) },
             contentPadding = PaddingValues(0.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(backgroundColor = Blue100),
@@ -262,8 +265,10 @@ fun SentenceItemPreview() {
     StupidEnglishTheme {
         SentenceItemRow(
             SentencesListItemUI(
+                id = 0,
                 sentence = "Some long long long long sentence for testing only",
-            )
+            ),
+            {}
         )
     }
 }

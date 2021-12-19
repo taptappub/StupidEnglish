@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
     tableName = "SentenceTable"
 )
 data class SentenceDto(
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Long = 0,
     @ColumnInfo(name = "sentence") val sentence: String,
     @ColumnInfo(name = "words") val words: String
 )

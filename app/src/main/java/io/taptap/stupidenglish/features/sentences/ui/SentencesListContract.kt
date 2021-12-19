@@ -7,6 +7,7 @@ import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigation
 
 class SentencesListContract {
     sealed class Event : ViewEvent {
+        data class OnShareClick(val sentence: SentencesListItemUI) : Event()
         object OnAddSentenceClick : Event()
     }
 

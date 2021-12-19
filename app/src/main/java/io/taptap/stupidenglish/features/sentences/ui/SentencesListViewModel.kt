@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
+import io.taptap.stupidenglish.base.logic.share.ShareUtil
 import io.taptap.stupidenglish.base.model.Sentence
 import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.main.ui.MainListListModels
@@ -20,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SentencesListViewModel @Inject constructor(
-    private val repository: SentencesListRepository
+    private val repository: SentencesListRepository,
+    private val shareUtil: ShareUtil
 ) : BaseViewModel<SentencesListContract.Event, SentencesListContract.State, SentencesListContract.Effect>() {
 
     init {
@@ -48,6 +50,10 @@ class SentencesListViewModel @Inject constructor(
                         }
                     }
                 }
+            }
+            is SentencesListContract.Event.OnShareClick -> {
+                //todo добавь какой-то счетчик потом
+                shareUtil.share(event.sentence.sentence)
             }
         }
     }
@@ -81,7 +87,10 @@ class SentencesListViewModel @Inject constructor(
             SentencesListTitleUI(valueRes = R.string.stns_list_list_title),
         ).apply {
             addAll(savedSentenceList.map {
-                SentencesListItemUI(sentence = it.sentence)
+                SentencesListItemUI(
+                    id = it.id,
+                    sentence = it.sentence
+                )
             })
         }
         return sentenceList
