@@ -1,12 +1,15 @@
 package io.taptap.stupidenglish.base.logic.randomwords
 
+import io.taptap.stupidenglish.base.logic.database.dao.WordDao
 import io.taptap.stupidenglish.base.model.Word
 import taptap.pub.Reaction
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RandomWordsDataSource @Inject constructor() : IRandomWordsDataSource {
+class RandomWordsDataSource @Inject constructor(
+    private val wordDao: WordDao
+) : IRandomWordsDataSource {
 
     override suspend fun getRandomWords(count: Int): Reaction<List<Word>> {
         return Reaction.on {

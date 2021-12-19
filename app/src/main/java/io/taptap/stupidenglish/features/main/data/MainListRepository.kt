@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.main.data
 
+import io.taptap.stupidenglish.base.logic.database.dao.WordDao
 import io.taptap.stupidenglish.base.logic.randomwords.IRandomWordsDataSource
 import io.taptap.stupidenglish.base.logic.randomwords.RandomWordsDataSource
 import io.taptap.stupidenglish.base.model.Word
@@ -9,7 +10,8 @@ import javax.inject.Singleton
 
 @Singleton
 class MainListRepository @Inject constructor(
-    randomWordsDataSource: RandomWordsDataSource
+    randomWordsDataSource: RandomWordsDataSource,
+    private val wordDao : WordDao
 ) : IRandomWordsDataSource by randomWordsDataSource {
 
     suspend fun getWordList(): Reaction<List<Word>> {

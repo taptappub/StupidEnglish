@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish
+package io.taptap.stupidenglish.base
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -12,3 +12,7 @@ inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier
         onClick()
     }
 }
+
+/* val json = Uri.encode(Gson().toJson(navigationEffect.sentenceNavigation)) */
+
+/* Gson().fromJson(value, SentenceNavigation::class.java) */
