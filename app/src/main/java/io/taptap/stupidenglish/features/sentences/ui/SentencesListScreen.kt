@@ -42,41 +42,39 @@ fun SentencesListScreen(
     onNavigationRequested: (navigationEffect: SentencesListContract.Effect.Navigation) -> Unit
 ) {
     ProvideWindowInsets {
-        StupidEnglishTheme {
-            val scaffoldState: ScaffoldState = rememberScaffoldState()
+        val scaffoldState: ScaffoldState = rememberScaffoldState()
 
-            // Listen for side effects from the VM
-            LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-                effectFlow?.onEach { effect ->
-                    when (effect) {
-                        is SentencesListContract.Effect.GetRandomWordsError ->
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.getString(effect.errorRes),
-                                duration = SnackbarDuration.Short
-                            )
-                        is SentencesListContract.Effect.GetSentencesError ->
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.getString(effect.errorRes),
-                                duration = SnackbarDuration.Short
-                            )
-                        is SentencesListContract.Effect.Navigation.ToAddSentence ->
-                            onNavigationRequested(effect)
-                    }
-                }?.collect()
-            }
+        // Listen for side effects from the VM
+        LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+            effectFlow?.onEach { effect ->
+                when (effect) {
+                    is SentencesListContract.Effect.GetRandomWordsError ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(effect.errorRes),
+                            duration = SnackbarDuration.Short
+                        )
+                    is SentencesListContract.Effect.GetSentencesError ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(effect.errorRes),
+                            duration = SnackbarDuration.Short
+                        )
+                    is SentencesListContract.Effect.Navigation.ToAddSentence ->
+                        onNavigationRequested(effect)
+                }
+            }?.collect()
+        }
 
-            Scaffold(
-                scaffoldState = scaffoldState,
-                backgroundColor = MaterialTheme.colors.background,
-            ) {
-                Box {
-                    SentencesList(
-                        sentencesItems = state.sentenceList,
-                        onEventSent = onEventSent
-                    )
-                    if (state.isLoading) {
-                        LoadingBar()
-                    }
+        Scaffold(
+            scaffoldState = scaffoldState,
+            backgroundColor = MaterialTheme.colors.background,
+        ) {
+            Box {
+                SentencesList(
+                    sentencesItems = state.sentenceList,
+                    onEventSent = onEventSent
+                )
+                if (state.isLoading) {
+                    LoadingBar()
                 }
             }
         }
