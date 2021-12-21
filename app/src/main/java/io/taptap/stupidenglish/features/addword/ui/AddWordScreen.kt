@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -87,15 +87,94 @@ fun AddWordScreen(
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }) {
-                        when {
-                            state.word.isEmpty() && state.description.isEmpty() -> NoneScreen()
-                            state.word.isNotEmpty() && state.description.isEmpty() -> HasWordScreen()
-                            state.word.isNotEmpty() && state.description.isNotEmpty() -> HasDescriptionScreen()
-                        }
+                        RemoveMe(state, onEventSent)
+//                        when {
+//                            state.word.isEmpty() && state.description.isEmpty() -> NoneScreen()
+//                            state.word.isNotEmpty() && state.description.isEmpty() -> HasWordScreen()
+//                            state.word.isNotEmpty() && state.description.isNotEmpty() -> HasDescriptionScreen()
+//                        }
                     }
 
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun RemoveMe(
+    state: AddWordContract.State,
+    onEventSent: (event: AddWordContract.Event) -> Unit
+) {
+    Column {
+        val focusRequester = FocusRequester()
+
+        OutlinedTextField(
+            value = state.word,
+            onValueChange = { onEventSent(AddWordContract.Event.OnWordChanging(it)) },
+            textStyle = LocalTextStyle.current.copy(
+                color = MaterialTheme.colors.onSurface,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            ),
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.addw_word_placeholder),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                textColor = getTitleTextColor(),
+                backgroundColor = Color.Transparent,
+                cursorColor = getTitleTextColor(),
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+                placeholderColor = getContentTextColor()
+            ),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .widthIn(1.dp, Dp.Infinity)
+                .focusRequester(focusRequester)
+        )
+
+        OutlinedTextField(
+            value = state.description,
+            onValueChange = {
+                onEventSent(AddWordContract.Event.OnDescriptionChanging(it))
+            },
+            textStyle = LocalTextStyle.current.copy(
+                color = MaterialTheme.colors.onSurface,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            ),
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.addw_word_placeholder),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                textColor = getTitleTextColor(),
+                backgroundColor = Color.Transparent,
+                cursorColor = getTitleTextColor(),
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+                placeholderColor = getContentTextColor()
+            ),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .widthIn(1.dp, Dp.Infinity)
+        )
+
+        Button(onClick = { onEventSent(AddWordContract.Event.OnSaveWord) }) {
+            Text("Button")
+        }
+
+        DisposableEffect(Unit) {
+            focusRequester.requestFocus()
+            onDispose { }
         }
     }
 }

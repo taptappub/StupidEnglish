@@ -33,7 +33,7 @@ class DatabaseProvider {
             WordDatabase::class.java,
             "StupidDatabase"
         ).build()
-//        db.fillApp()
+        db.fillApp()
         return db
     }
 
@@ -47,11 +47,6 @@ class DatabaseProvider {
 private fun WordDatabase.fillApp() {
     val dao = this.wordDao()
     GlobalScope.launch(Dispatchers.IO) {
-        val wordId = dao.insertWord(WordDto(word = "Priv", description = "Hello"))
-        val wordId1 = dao.insertWord(WordDto(word = "Priv1", description = "Hello"))
-        val wordId2 = dao.insertWord(WordDto(word = "Priv2", description = "Hello"))
-        val wordId3 = dao.insertWord(WordDto(word = "Priv3", description = "Hello"))
-
         val sentenceId =
             dao.insertSentence(SentenceDto(sentence = "sentence Priv", words = "{1,2,3}}"))
         val sentenceId1 =

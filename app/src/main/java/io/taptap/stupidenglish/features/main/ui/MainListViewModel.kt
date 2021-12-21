@@ -71,6 +71,7 @@ class MainListViewModel @Inject constructor(
         val savedWordList = repository.getWordList().takeOrReturn {
             setEffect { MainListContract.Effect.GetWordsError(R.string.main_get_list_error) }
         }
+
         savedWordList.collect {
             val mainList = makeMainList(it)
 

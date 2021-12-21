@@ -43,6 +43,8 @@ import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import io.taptap.stupidenglish.ui.theme.getIndicatorActiveColor
 import io.taptap.stupidenglish.ui.theme.getIndicatorInactiveColor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @ExperimentalMaterialApi
 @AndroidEntryPoint
@@ -62,7 +64,10 @@ class MainActivity : ComponentActivity() {
     @ExperimentalPagerApi
     @Composable
     private fun StupidApp() {
-        val bottomSheetNavigator = rememberBottomSheetNavigator()
+//        val bottomSheetNavigator = rememberBottomSheetNavigator()
+        val scope = rememberCoroutineScope()
+        val sheetState = ModalBottomSheetState(ModalBottomSheetValue.Hidden)
+        val bottomSheetNavigator = BottomSheetNavigator(sheetState)
         val navController = rememberNavController()
         navController.navigatorProvider += bottomSheetNavigator
         ModalBottomSheetLayout(
@@ -77,7 +82,7 @@ class MainActivity : ComponentActivity() {
                     MainListDestination(navController)
                 }
                 bottomSheet(route = NavigationKeys.Route.SE_ADD_WORD) {
-                    AddWordDialogDestination(navController)
+                    AddWordDialogDestination(navController, sheetState, scope)
                 }
                 bottomSheet(
                     route = NavigationKeys.Route.SE_ADD_SENTENCE,
@@ -94,8 +99,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
-private fun AddWordDialogDestination(navController: NavHostController) {
+private fun AddWordDialogDestination(
+    navController: NavHostController,
+    sheetState: ModalBottomSheetState,
+    scope: CoroutineScope
+) {
     val addWordViewModel: AddWordViewModel = hiltViewModel()
     val addWordState = addWordViewModel.viewState.value
 
@@ -106,7 +116,10 @@ private fun AddWordDialogDestination(navController: NavHostController) {
         onEventSent = { event -> addWordViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddWordContract.Effect.Navigation.BackToWordList) {
-                navController.navigate(NavigationKeys.Route.SE_LIST)
+                scope.launch {
+                    sheetState.hide()
+                }
+                //navController.navigate(NavigationKeys.Route.SE_LIST)
             }
         })
 }
@@ -131,70 +144,68 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
 @ExperimentalPagerApi
 @Composable
 private fun MainListDestination(navController: NavHostController) {
+    val wordViewModel: MainListViewModel = hiltViewModel()
+    val wordState = wordViewModel.viewState.value
+
+    val sentenceViewModel: SentencesListViewModel = hiltViewModel()
+    val sentenceState = sentenceViewModel.viewState.value
+    val pagerState = rememberPagerState()
+
     Column {
-        val pagerState = rememberPagerState()
-        StupidEnglishTheme {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colors.background)
-                    .padding(top = 16.dp, bottom = 24.dp)
-            ) {
-                HorizontalPagerIndicator(
-                    indicatorWidth = 10.dp,
-                    indicatorHeight = 10.dp,
-                    inactiveColor = getIndicatorInactiveColor(),
-                    activeColor = getIndicatorActiveColor(),
-                    pagerState = pagerState,
-                    spacing = 12.dp,
-                    modifier = Modifier.align(Alignment.TopCenter)
-                )
-            }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colors.background)
+                .padding(top = 16.dp, bottom = 24.dp)
+        ) {
+            HorizontalPagerIndicator(
+                indicatorWidth = 10.dp,
+                indicatorHeight = 10.dp,
+                inactiveColor = getIndicatorInactiveColor(),
+                activeColor = getIndicatorActiveColor(),
+                pagerState = pagerState,
+                spacing = 12.dp,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
-        HorizontalPager(
-            count = 2,
-            state = pagerState
-        ) { page ->
-            when (page) {
-                0 -> {
-                    val wordViewModel: MainListViewModel = hiltViewModel()
-                    val wordState = wordViewModel.viewState.value
-
-                    MainListScreen(
-                        context = LocalContext.current,
-                        state = wordState,
-                        effectFlow = wordViewModel.effect,
-                        onEventSent = { event -> wordViewModel.setEvent(event) },
-                        onNavigationRequested = { navigationEffect ->
-                            when (navigationEffect) {
-                                is MainListContract.Effect.Navigation.ToAddWord -> {
-                                    navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
-                                }
-                                is MainListContract.Effect.Navigation.ToAddSentence -> {
-                                    val json =
-                                        Uri.encode(Gson().toJson(navigationEffect.sentenceNavigation))
-                                    navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${json}")
-                                }
+    }
+    HorizontalPager(
+        count = 2,
+        state = pagerState
+    ) { page ->
+        when (page) {
+            0 -> {
+                MainListScreen(
+                    context = LocalContext.current,
+                    state = wordState,
+                    effectFlow = wordViewModel.effect,
+                    onEventSent = { event -> wordViewModel.setEvent(event) },
+                    onNavigationRequested = { navigationEffect ->
+                        when (navigationEffect) {
+                            is MainListContract.Effect.Navigation.ToAddWord -> {
+                                navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
                             }
-                        })
-                }
-                1 -> {
-                    val sentenceViewModel: SentencesListViewModel = hiltViewModel()
-                    val sentenceState = sentenceViewModel.viewState.value
-
-                    SentencesListScreen(
-                        context = LocalContext.current,
-                        state = sentenceState,
-                        effectFlow = sentenceViewModel.effect,
-                        onEventSent = { event -> sentenceViewModel.setEvent(event) },
-                        onNavigationRequested = { navigationEffect ->
-                            if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
+                            is MainListContract.Effect.Navigation.ToAddSentence -> {
                                 val json =
                                     Uri.encode(Gson().toJson(navigationEffect.sentenceNavigation))
                                 navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${json}")
                             }
-                        })
-                }
+                        }
+                    })
+            }
+            1 -> {
+                SentencesListScreen(
+                    context = LocalContext.current,
+                    state = sentenceState,
+                    effectFlow = sentenceViewModel.effect,
+                    onEventSent = { event -> sentenceViewModel.setEvent(event) },
+                    onNavigationRequested = { navigationEffect ->
+                        if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
+                            val json =
+                                Uri.encode(Gson().toJson(navigationEffect.sentenceNavigation))
+                            navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${json}")
+                        }
+                    })
             }
         }
     }
