@@ -5,14 +5,22 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorPalette = darkColors(
+    surface = Grey600,
     primary = White100,
-    primaryVariant = Blue100,
-    secondary = Grey600,
-    background = Black200
+    background = Black200,
+    secondary = Blue100,
+    error = Red100,
+
+    onBackground = White100,
+    onPrimary = Black200,
+    onSecondary = White100,
+    onError = White100,
+    onSurface = Black200
 )
 
 private val LightColorPalette = lightColors(
@@ -35,10 +43,25 @@ fun StupidEnglishTheme(
     content: @Composable () -> Unit
 ) {
     val systemUiController = rememberSystemUiController()
-    systemUiController.setSystemBarsColor(
-        color = Color.Transparent,
-        darkIcons = darkTheme
-    )
+
+    SideEffect {
+        // Update all of the system bar colors to be transparent, and use
+        // dark icons if we're in light theme
+        systemUiController.setSystemBarsColor(
+            color = Color.Transparent,
+            darkIcons = !darkTheme
+        )
+
+        systemUiController.setNavigationBarColor(
+            color = Color.Transparent,
+            darkIcons = !darkTheme
+        )
+
+        systemUiController.setStatusBarColor(
+            color = Color.Transparent,
+            darkIcons = !darkTheme
+        )
+    }
 
     val colors = if (darkTheme) {
         DarkColorPalette
