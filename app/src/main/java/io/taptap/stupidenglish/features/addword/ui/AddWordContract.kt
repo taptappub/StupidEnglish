@@ -6,13 +6,16 @@ import io.taptap.stupidenglish.base.ViewState
 
 class AddWordContract {
     sealed class Event : ViewEvent {
-        data class OnWord(val value: String) : Event()
-        data class OnDescription(val value: String) : Event()
+        object OnWord : Event()
 
         data class OnWordChanging(val value: String) : Event()
         data class OnDescriptionChanging(val value: String) : Event()
 
+        object BackToNoneState : AddWordContract.Event()
+
         object OnSaveWord : Event()
+
+        object OnWaitingDescriptionError : Event()
     }
 
     data class State(
@@ -23,12 +26,12 @@ class AddWordContract {
 
     enum class AddWordState {
         None,
-        HasWord,
-        HasDescription
+        HasWord
     }
 
     sealed class Effect : ViewSideEffect {
         data class SaveError(val errorRes: Int) : Effect()
+        data class WaitingForDescriptionError(val errorRes: Int) : Effect()
 
         sealed class Navigation : Effect() {
             object BackToWordList : Navigation()

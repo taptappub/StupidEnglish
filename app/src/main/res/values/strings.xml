@@ -33,6 +33,8 @@
     <!-- Add Word -->
     <string name="addw_save_error">Error at the time of saving</string>
     <string name="addw_word_placeholder">Unknown word</string>
+    <string name="addw_description_placeholder">Your hint for word above</string>
+    <string name="addw_description_not_found_error">Add your hint, please =)</string>
 
     <!-- Add Sentence -->
     <string name="adds_save_error">Error at the time of saving</string>

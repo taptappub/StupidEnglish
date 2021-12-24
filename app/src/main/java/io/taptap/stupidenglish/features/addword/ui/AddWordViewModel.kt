@@ -24,27 +24,28 @@ class AddWordViewModel @Inject constructor(
 
     override fun handleEvents(event: AddWordContract.Event) {
         when (event) {
-            is AddWordContract.Event.OnWord -> setWord(event.value)
-            is AddWordContract.Event.OnDescription -> setDescription(event.value)
+            is AddWordContract.Event.OnWord ->
+                setState { copy(addWordState = AddWordContract.AddWordState.HasWord) }
 
             is AddWordContract.Event.OnDescriptionChanging ->
                 setState { copy(description = event.value) }
             is AddWordContract.Event.OnWordChanging ->
                 setState { copy(word = event.value) }
 
+            is AddWordContract.Event.BackToNoneState ->
+                setState {
+                    copy(
+                        addWordState = AddWordContract.AddWordState.None,
+                        description = ""
+                    )
+                }
+
             is AddWordContract.Event.OnSaveWord -> saveWord()
-        }
-    }
-
-    private fun setWord(value: String) {
-        setState {
-            copy(addWordState = AddWordContract.AddWordState.HasWord)
-        }
-    }
-
-    private fun setDescription(value: String) {
-        setState {
-            copy(addWordState = AddWordContract.AddWordState.HasDescription)
+            is AddWordContract.Event.OnWaitingDescriptionError -> setEffect {
+                AddWordContract.Effect.WaitingForDescriptionError(
+                    R.string.addw_description_not_found_error
+                )
+            }
         }
     }
 

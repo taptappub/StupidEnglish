@@ -38,23 +38,20 @@ class MainListViewModel @Inject constructor(
             }
             MainListContract.Event.OnOnboardingClick -> {
                 viewModelScope.launch {
-                    repository.addNew()
+                    val randomWords = getRandomWords()
+                    withContext(Dispatchers.Main) {
+                        if (randomWords == null) {
+                            setEffect { MainListContract.Effect.GetRandomWordsError(R.string.main_get_random_words_error) }
+                        } else {
+                            val sentenceNavigation = SentenceNavigation(wordsIds = randomWords)
+                            setEffect {
+                                MainListContract.Effect.Navigation.ToAddSentence(
+                                    sentenceNavigation
+                                )
+                            }
+                        }
+                    }
                 }
-//                viewModelScope.launch {
-//                    val randomWords = getRandomWords()
-//                    withContext(Dispatchers.Main) {
-//                        if (randomWords == null) {
-//                            setEffect { MainListContract.Effect.GetRandomWordsError(R.string.main_get_random_words_error) }
-//                        } else {
-//                            val sentenceNavigation = SentenceNavigation(wordsIds = randomWords)
-//                            setEffect {
-//                                MainListContract.Effect.Navigation.ToAddSentence(
-//                                    sentenceNavigation
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
             }
         }
     }
@@ -73,7 +70,7 @@ class MainListViewModel @Inject constructor(
         }
 
         savedWordList.collect {
-            val mainList = makeMainList(it)
+            val mainList = makeMainList(it.reversed())
 
             setState {
                 copy(mainList = mainList, isLoading = false)
