@@ -4,6 +4,9 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,10 +19,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.accompanist.navigation.animation.navigation
+import com.google.accompanist.navigation.animation.composable
 import androidx.navigation.plusAssign
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -46,6 +52,7 @@ import io.taptap.stupidenglish.ui.theme.getIndicatorInactiveColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -65,27 +72,30 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun StupidApp() {
         val bottomSheetNavigator = rememberBottomSheetNavigator()
-        val navController = rememberNavController()
+        val navController = rememberAnimatedNavController()
         navController.navigatorProvider += bottomSheetNavigator
         ModalBottomSheetLayout(
             bottomSheetNavigator = bottomSheetNavigator,
             sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-            sheetElevation = 10.dp,
             modifier = Modifier
                 .wrapContentHeight()
         ) {
-            NavHost(navController, startDestination = NavigationKeys.Route.SE_LIST) {
+            AnimatedNavHost(navController, startDestination = NavigationKeys.Route.SE_LIST) {
                 composable(route = NavigationKeys.Route.SE_LIST) {
                     MainListDestination(navController)
                 }
-                bottomSheet(route = NavigationKeys.Route.SE_ADD_WORD) {
+                composable(route = NavigationKeys.Route.SE_ADD_WORD,
+                    enterTransition = {
+                        slideInVertically(initialOffsetY = { 1000 }/*, animationSpec = tween(700)*/)
+                    },
+                    exitTransition = {
+                        slideOutVertically(targetOffsetY = { 1000 }/*, animationSpec = tween(700)*/)
+                    }) {
                     AddWordDialogDestination(navController)
                 }
-
-//                https://dev.to/davidibrahim/how-to-use-multiple-bottom-sheets-in-android-compose-382p
-//                https://stackoverflow.com/questions/66421440/multiple-bottomsheets-for-one-modalbottomsheetlayout-in-jetpack-compose
-//                https://betterprogramming.pub/how-to-display-multiple-android-bottom-sheets-in-jetpack-compose-6c46e3536ab
-//                https://devsday.ru/blog/details/38233
+//                bottomSheet(route = NavigationKeys.Route.SE_ADD_WORD) {
+//                    AddWordDialogDestination(navController)
+//                }
 
 //                bottomSheet(
 //                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
