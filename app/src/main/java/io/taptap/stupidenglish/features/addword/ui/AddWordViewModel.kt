@@ -18,7 +18,8 @@ class AddWordViewModel @Inject constructor(
 
     override fun setInitialState() = AddWordContract.State(
         word = "",
-        description = ""
+        description = "",
+        addWordState = AddWordContract.AddWordState.None
     )
 
     override fun handleEvents(event: AddWordContract.Event) {
@@ -37,13 +38,13 @@ class AddWordViewModel @Inject constructor(
 
     private fun setWord(value: String) {
         setState {
-            copy(word = value)
+            copy(addWordState = AddWordContract.AddWordState.HasWord)
         }
     }
 
     private fun setDescription(value: String) {
         setState {
-            copy(description = value)
+            copy(addWordState = AddWordContract.AddWordState.HasDescription)
         }
     }
 

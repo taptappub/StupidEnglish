@@ -17,8 +17,15 @@ class AddWordContract {
 
     data class State(
         val word: String,
-        val description: String
+        val description: String,
+        val addWordState: AddWordState
     ) : ViewState
+
+    enum class AddWordState {
+        None,
+        HasWord,
+        HasDescription
+    }
 
     sealed class Effect : ViewSideEffect {
         data class SaveError(val errorRes: Int) : Effect()

@@ -115,38 +115,17 @@ private fun NoneScreen(
         val (word, description, button) = createRefs()
         val focusRequester = FocusRequester()
 
-        OutlinedTextField(
-            value = state.word,
-            onValueChange = { onEventSent(AddWordContract.Event.OnWordChanging(it)) },
-            textStyle = LocalTextStyle.current.copy(
-                color = MaterialTheme.colors.onSurface,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            placeholder = {
-                Text(
-                    text = stringResource(id = R.string.addw_word_placeholder),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                textColor = getTitleTextColor(),
-                backgroundColor = Color.Transparent,
-                cursorColor = getTitleTextColor(),
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent,
-                placeholderColor = getContentTextColor()
-            ),
+        WordTextField(
+            state = state,
+            onEventSent = onEventSent,
             modifier = Modifier
+                .focusRequester(focusRequester)
                 .constrainAs(word) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-                .widthIn(1.dp, Dp.Infinity)
-                .focusRequester(focusRequester)
         )
 
         DisposableEffect(Unit) {
@@ -156,7 +135,7 @@ private fun NoneScreen(
 
         NextButton(
             visibility = state.word.isNotEmpty(),
-            onEventSent = onEventSent,
+            onClick = { onEventSent(AddWordContract.Event.OnSaveWord) },
             modifier = Modifier.constrainAs(button) {
                 bottom.linkTo(parent.bottom, 16.dp)
                 end.linkTo(parent.end, 16.dp)
@@ -165,9 +144,43 @@ private fun NoneScreen(
 }
 
 @Composable
+fun WordTextField(
+    state: AddWordContract.State,
+    onEventSent: (event: AddWordContract.Event) -> Unit,
+    modifier: Modifier
+) {
+    OutlinedTextField(
+        value = state.word,
+        onValueChange = { onEventSent(AddWordContract.Event.OnWordChanging(it)) },
+        textStyle = LocalTextStyle.current.copy(
+            color = MaterialTheme.colors.onSurface,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
+        ),
+        placeholder = {
+            Text(
+                text = stringResource(id = R.string.addw_word_placeholder),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            textColor = getTitleTextColor(),
+            backgroundColor = Color.Transparent,
+            cursorColor = getTitleTextColor(),
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
+            placeholderColor = getContentTextColor()
+        ),
+        modifier = modifier
+            .widthIn(1.dp, Dp.Infinity)
+    )
+}
+
+@Composable
 fun NextButton(
     visibility: Boolean,
-    onEventSent: (event: AddWordContract.Event) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier
 ) {
     Box(
@@ -184,7 +197,7 @@ fun NextButton(
             Button(
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(backgroundColor = getButtonBackgroundColor()),
-                onClick = { onEventSent(AddWordContract.Event.OnSaveWord) },
+                onClick = onClick,
                 modifier = Modifier
                     .size(52.dp)
             ) {
@@ -284,7 +297,8 @@ fun DefaultPreview() {
             LocalContext.current,
             AddWordContract.State(
                 word = "",
-                description = ""
+                description = "",
+                addWordState = AddWordContract.AddWordState.None
             ),
             null,
             { },
@@ -300,7 +314,8 @@ fun NoneScreenPreview() {
         NoneScreen(
             AddWordContract.State(
                 word = "",
-                description = ""
+                description = "",
+                addWordState = AddWordContract.AddWordState.None
             ),
             { }
         )
