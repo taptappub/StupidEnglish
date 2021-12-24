@@ -20,7 +20,7 @@ private val DarkColorPalette = darkColors(
     onPrimary = Black200,
     onSecondary = White100,
     onError = White100,
-    onSurface = Black200
+    onSurface = White100
 )
 
 private val LightColorPalette = lightColors(
@@ -95,6 +95,17 @@ fun getContentTextColor(
         White100
     } else {
         Grey600
+    }
+}
+
+@Composable
+fun getButtonBackgroundColor(
+    darkTheme: Boolean = isSystemInDarkTheme()
+): Color {
+    return if (darkTheme) {
+        Grey600
+    } else {
+        Black200
     }
 }
 
