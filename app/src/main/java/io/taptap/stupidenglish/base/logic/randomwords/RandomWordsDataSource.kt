@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.base.logic.randomwords
 
+import android.util.Log
 import io.taptap.stupidenglish.base.getRandom
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
 import io.taptap.stupidenglish.base.logic.database.dto.WordDto

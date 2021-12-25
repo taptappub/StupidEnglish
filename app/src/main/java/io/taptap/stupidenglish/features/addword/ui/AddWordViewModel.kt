@@ -40,7 +40,10 @@ class AddWordViewModel @Inject constructor(
                     )
                 }
 
-            is AddWordContract.Event.OnSaveWord -> saveWord()
+            is AddWordContract.Event.OnSaveWord -> {
+                saveWord()
+                setInitialState()
+            }
             is AddWordContract.Event.OnWaitingDescriptionError -> setEffect {
                 AddWordContract.Effect.WaitingForDescriptionError(
                     R.string.addw_description_not_found_error

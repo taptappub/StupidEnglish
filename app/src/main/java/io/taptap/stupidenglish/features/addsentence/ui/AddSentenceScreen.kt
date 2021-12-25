@@ -1,42 +1,17 @@
 package io.taptap.stupidenglish.features.addsentence.ui
 
 import android.content.Context
-import android.widget.EditText
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
-import com.google.accompanist.insets.ProvideWindowInsets
-import io.taptap.stupidenglish.R
-import io.taptap.stupidenglish.features.main.ui.*
-import io.taptap.stupidenglish.ui.theme.getContentTextColor
-import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.onEach
 
 
@@ -48,69 +23,99 @@ fun AddSentenceScreen(
     onEventSent: (event: AddSentenceContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: AddSentenceContract.Effect.Navigation) -> Unit
 ) {
-    ProvideWindowInsets {
-        StupidEnglishTheme {
-            val scaffoldState: ScaffoldState = rememberScaffoldState()
+    Card(
+        shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+    ) {
+        val scaffoldState: ScaffoldState = rememberScaffoldState()
 
-            // Listen for side effects from the VM
-            LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-                effectFlow?.onEach { effect ->
-                    when (effect) {
-                        is AddSentenceContract.Effect.Navigation.BackToSentenceList -> onNavigationRequested(
-                            effect
-                        )
-                        is AddSentenceContract.Effect.SaveError ->
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.getString(effect.errorRes),
-                                duration = SnackbarDuration.Short
-                            )
-                    }
-                }?.collect()
-            }
-
-            Scaffold(
-                scaffoldState = scaffoldState,
-            ) {
-                ConstraintLayout(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                ) {
-                    val (stick, content) = createRefs()
-
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_rectangle),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                            .constrainAs(stick) {
-                                top.linkTo(parent.top)
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-                            }
+        // Listen for side effects from the VM
+        LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+            effectFlow?.onEach { effect ->
+                when (effect) {
+                    is AddSentenceContract.Effect.Navigation.BackToSentenceList -> onNavigationRequested(
+                        effect
                     )
-                    Box(modifier = Modifier
-                        .constrainAs(content) {
-                            top.linkTo(stick.bottom)
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }) {
-                        AddSentenceContent()
-                    }
-
+                    is AddSentenceContract.Effect.SaveError ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(effect.errorRes),
+                            duration = SnackbarDuration.Short
+                        )
+                    is AddSentenceContract.Effect.WaitingForSentenceError ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(effect.errorRes),
+                            duration = SnackbarDuration.Short
+                        )
+                    is AddSentenceContract.Effect.GetWordsError ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(effect.errorRes),
+                            duration = SnackbarDuration.Short
+                        )
                 }
+            }?.collect()
+        }
+
+        Scaffold(
+            scaffoldState = scaffoldState,
+        ) {
+            BottomSheetScreen {
+                ContentScreen(
+                    state,
+                    onEventSent
+                )
             }
         }
     }
 }
 
 @Composable
-private fun AddSentenceContent() {
+private fun ContentScreen(
+    state: AddSentenceContract.State,
+    onEventSent: (event: AddSentenceContract.Event) -> Unit
+) {
+    /*ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        val (content, button) = createRefs()
 
+        AddWordContextBox(
+            state = state,
+            onEventSent = onEventSent,
+            modifier = Modifier
+                .fillMaxSize()
+                .constrainAs(content) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        )
+
+        NextButton(
+            visibility = state.word.isNotEmpty(),
+            onClick = {
+                when {
+                    state.addWordState == AddWordContract.AddWordState.None -> {
+                        onEventSent(AddWordContract.Event.OnWord)
+                    }
+                    state.addWordState == AddWordContract.AddWordState.HasWord
+                            && state.description.isNotEmpty()
+                            && state.word.isNotEmpty() -> {
+                        onEventSent(AddWordContract.Event.OnSaveWord)
+                    }
+                    else -> {
+                        onEventSent(AddWordContract.Event.OnWaitingDescriptionError)
+                    }
+                }
+            },
+            modifier = Modifier.constrainAs(button) {
+                bottom.linkTo(parent.bottom, 16.dp)
+                end.linkTo(parent.end, 16.dp)
+            })
+    }*/
 }
 
-@Preview(showBackground = true)
+
 @Composable
 fun DefaultPreview() {
     StupidEnglishTheme {

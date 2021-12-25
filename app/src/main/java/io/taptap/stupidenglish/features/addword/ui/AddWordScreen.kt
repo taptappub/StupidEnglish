@@ -9,6 +9,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -29,6 +32,9 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.ui.AddTextField
+import io.taptap.stupidenglish.ui.BottomSheetScreen
+import io.taptap.stupidenglish.ui.NextButton
 import io.taptap.stupidenglish.ui.theme.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -73,36 +79,11 @@ fun AddWordScreen(
         Scaffold(
             scaffoldState = scaffoldState,
         ) {
-            ConstraintLayout(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                val (stick, content) = createRefs()
-
-                Image(
-                    painter = painterResource(id = R.drawable.ic_rectangle),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .constrainAs(stick) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
+            BottomSheetScreen {
+                ContentScreen(
+                    state,
+                    onEventSent
                 )
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .constrainAs(content) {
-                        top.linkTo(stick.bottom)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }) {
-                    ContentScreen(
-                        state,
-                        onEventSent
-                    )
-                }
             }
         }
     }
@@ -148,7 +129,6 @@ private fun ContentScreen(
                         onEventSent(AddWordContract.Event.OnWaitingDescriptionError)
                     }
                 }
-
             },
             modifier = Modifier.constrainAs(button) {
                 bottom.linkTo(parent.bottom, 16.dp)
@@ -187,6 +167,14 @@ private fun NoneScreen(
             value = state.word,
             onValueChange = { onEventSent(AddWordContract.Event.OnWordChanging(it)) },
             placeholder = stringResource(id = R.string.addw_word_placeholder),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    if (state.word.isNotEmpty()) {
+                        onEventSent(AddWordContract.Event.OnWord)
+                    }
+                }
+            ),
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .align(Alignment.Center)
@@ -212,6 +200,8 @@ private fun HasWordScreen(
             onValueChange = {},
             enabled = false,
             placeholder = stringResource(id = R.string.addw_word_placeholder),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
+            keyboardActions = KeyboardActions.Default,
             modifier = Modifier
                 .clickable {
                     onEventSent(AddWordContract.Event.BackToNoneState)
@@ -230,6 +220,16 @@ private fun HasWordScreen(
             value = state.description,
             onValueChange = { onEventSent(AddWordContract.Event.OnDescriptionChanging(it)) },
             placeholder = stringResource(id = R.string.addw_description_placeholder),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    if (state.word.isNotEmpty() && state.description.isNotEmpty()) {
+                        onEventSent(AddWordContract.Event.OnSaveWord)
+                    } else {
+                        onEventSent(AddWordContract.Event.OnWaitingDescriptionError)
+                    }
+                }
+            ),
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .constrainAs(description) {
@@ -239,161 +239,6 @@ private fun HasWordScreen(
                     end.linkTo(parent.end)
                 }
         )
-
-        DisposableEffect(Unit) {
-            focusRequester.requestFocus()
-            onDispose { }
-        }
-    }
-}
-
-@Composable
-fun AddTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    enabled: Boolean = true,
-    placeholder: String,
-    modifier: Modifier
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        textStyle = LocalTextStyle.current.copy(
-            color = MaterialTheme.colors.onSurface,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = if (value.isEmpty()) {
-                TextAlign.Start
-            } else {
-                TextAlign.Center
-            }
-        ),
-        enabled = enabled,
-        placeholder = {
-            Text(
-                text = placeholder,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
-        },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = getTitleTextColor(),
-            backgroundColor = Color.Transparent,
-            cursorColor = getTitleTextColor(),
-            disabledBorderColor = Color.Transparent,
-            focusedBorderColor = Color.Transparent,
-            unfocusedBorderColor = Color.Transparent,
-            placeholderColor = getContentTextColor()
-        ),
-        modifier = modifier
-            .widthIn(1.dp, Dp.Infinity)
-    )
-}
-
-@Composable
-fun NextButton(
-    visibility: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier
-) {
-    Box(
-        modifier = modifier
-            .size(52.dp)
-    ) {
-        AnimatedVisibility(
-            visible = visibility,
-            enter = fadeIn(
-                initialAlpha = 0.3f
-            ),
-            exit = fadeOut()
-        ) {
-            Button(
-                shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(backgroundColor = getButtonBackgroundColor()),
-                onClick = onClick,
-                modifier = Modifier
-                    .size(52.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_arrow_right),
-                    contentDescription = "next",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun NoneScreen111(
-    state: AddWordContract.State,
-    onEventSent: (event: AddWordContract.Event) -> Unit
-) {
-    Column {
-        val focusRequester = FocusRequester()
-
-        OutlinedTextField(
-            value = state.word,
-            onValueChange = { onEventSent(AddWordContract.Event.OnWordChanging(it)) },
-            textStyle = LocalTextStyle.current.copy(
-                color = MaterialTheme.colors.onSurface,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            placeholder = {
-                Text(
-                    text = stringResource(id = R.string.addw_word_placeholder),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                textColor = getTitleTextColor(),
-                backgroundColor = Color.Transparent,
-                cursorColor = getTitleTextColor(),
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent,
-                placeholderColor = getContentTextColor()
-            ),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .widthIn(1.dp, Dp.Infinity)
-                .focusRequester(focusRequester)
-        )
-
-        OutlinedTextField(
-            value = state.description,
-            onValueChange = {
-                onEventSent(AddWordContract.Event.OnDescriptionChanging(it))
-            },
-            textStyle = LocalTextStyle.current.copy(
-                color = MaterialTheme.colors.onSurface,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            placeholder = {
-                Text(
-                    text = stringResource(id = R.string.addw_word_placeholder),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                textColor = getTitleTextColor(),
-                backgroundColor = Color.Transparent,
-                cursorColor = getTitleTextColor(),
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent,
-                placeholderColor = getContentTextColor()
-            ),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .widthIn(1.dp, Dp.Infinity)
-        )
-
-        Button(onClick = { onEventSent(AddWordContract.Event.OnSaveWord) }) {
-            Text("Button")
-        }
 
         DisposableEffect(Unit) {
             focusRequester.requestFocus()

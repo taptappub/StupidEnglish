@@ -93,6 +93,17 @@ class MainActivity : ComponentActivity() {
                     }) {
                     AddWordDialogDestination(navController)
                 }
+                composable(
+                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
+                    arguments = listOf(
+                        navArgument(NavigationKeys.Arg.SENTENCE_WORDS_ID) {
+                            type = SentenceNavigationNavType()
+                        }
+                    )
+                ) {
+                    AddSentenceDialogDestination(navController)
+                }
+
 //                bottomSheet(route = NavigationKeys.Route.SE_ADD_WORD) {
 //                    AddWordDialogDestination(navController)
 //                }

@@ -37,11 +37,13 @@ class MainListViewModel @Inject constructor(
                 setEffect { MainListContract.Effect.Navigation.ToAddWord }
             }
             MainListContract.Event.OnOnboardingClick -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     val randomWords = getRandomWords()
                     withContext(Dispatchers.Main) {
                         if (randomWords == null) {
-                            setEffect { MainListContract.Effect.GetRandomWordsError(R.string.main_get_random_words_error) }
+                            setEffect { MainListContract.Effect.GetRandomWordsError(
+                                R.string.main_get_random_words_error
+                            ) }
                         } else {
                             val sentenceNavigation = SentenceNavigation(wordsIds = randomWords)
                             setEffect {

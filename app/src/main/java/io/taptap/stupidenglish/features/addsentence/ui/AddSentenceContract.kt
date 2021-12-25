@@ -18,6 +18,7 @@ class AddSentenceContract {
     sealed class Effect : ViewSideEffect {
         data class SaveError(val errorRes: Int) : Effect()
         data class GetWordsError(val errorRes: Int) : Effect()
+        data class WaitingForSentenceError(val errorRes: Int) : Effect()
 
         sealed class Navigation : Effect() {
             object BackToSentenceList : Navigation()
