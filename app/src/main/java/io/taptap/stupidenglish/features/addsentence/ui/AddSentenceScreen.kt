@@ -1,9 +1,7 @@
 package io.taptap.stupidenglish.features.addsentence.ui
 
 import android.content.Context
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,17 +18,22 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.google.accompanist.flowlayout.FlowRow
+import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.ui.AddTextField
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.NextButton
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
+import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.Flow
-import io.taptap.stupidenglish.R
-import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
@@ -149,44 +152,78 @@ private fun ContentScreen(
             onDispose { }
         }
 
-        /*AddSentenceWordList(
+        AddSentenceWordList(
             state = state,
             modifier = Modifier
-                .fillMaxSize()
+                .padding(bottom = 24.dp, start = 16.dp, end = 88.dp, top = 16.dp)
+                .fillMaxWidth()
                 .constrainAs(words) {
-                    top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-        )*/
+        )
 
-        NextButton(
-            visibility = state.sentence.isNotEmpty(),
-            onClick = {
-                if (state.sentence.isNotEmpty()) {
-                    onEventSent(AddSentenceContract.Event.OnSaveSentence) //TODO надо показывать диалог с подтверждением
-                } else {
-                    onEventSent(AddSentenceContract.Event.OnWaitingSentenceError)
-                }
-            },
-            modifier = Modifier.constrainAs(button) {
+        Box(
+            modifier = Modifier
+                .wrapContentSize()
+                .constrainAs(button) {
                 bottom.linkTo(parent.bottom, 16.dp)
                 end.linkTo(parent.end, 16.dp)
-            })
+            }) {
+            NextButton(
+                visibility = state.sentence.isNotEmpty(),
+                onClick = {
+                    if (state.sentence.isNotEmpty()) {
+                        onEventSent(AddSentenceContract.Event.OnSaveSentence) //TODO надо показывать диалог с подтверждением
+                    } else {
+                        onEventSent(AddSentenceContract.Event.OnWaitingSentenceError)
+                    }
+                },
+                modifier = Modifier
+            )
+        }
     }
 }
 
 @Composable
-private fun AddSentenceContextBox(
+private fun AddSentenceWordList(
     state: AddSentenceContract.State,
-    onEventSent: (event: AddSentenceContract.Event) -> Unit,
     modifier: Modifier
 ) {
-
+    FlowRow(
+        modifier = modifier,
+        mainAxisSpacing = 16.dp,
+        crossAxisSpacing = 16.dp
+    ) {
+        state.words.forEach {
+            CustomChip(item = it)
+        }
+    }
 }
 
+@Composable
+private fun CustomChip(item: Word) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        backgroundColor = MaterialTheme.colors.secondary,
+        elevation = 16.dp
+    ) {
+        Text(
+            text = item.word,
+            textAlign = TextAlign.Left,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.subtitle1,
+            color = getTitleTextColor(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(top = 4.dp, bottom = 4.dp, start = 8.dp, end = 8.dp)
+        )
+    }
+}
 
+@Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     StupidEnglishTheme {

@@ -71,7 +71,7 @@ class SentencesListViewModel @Inject constructor(
             setEffect { SentencesListContract.Effect.GetSentencesError(R.string.stns_get_sentences_error) }
         }
         savedSentenceList.collect {
-            val sentenceList = makeSentenceList(it)
+            val sentenceList = makeSentenceList(it.reversed())
 
                 setState {
                 copy(sentenceList = sentenceList, isLoading = false)

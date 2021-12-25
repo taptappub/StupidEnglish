@@ -282,16 +282,6 @@ private fun WordItem(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-//        if (item.description?.trim()?.isNotEmpty() == true)
-//            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-//                Text(
-//                    text = item.description.trim(),
-//                    textAlign = TextAlign.Start,
-//                    overflow = TextOverflow.Ellipsis,
-//                    style = MaterialTheme.typography.caption,
-//                    maxLines = expandedLines
-//                )
-//            }
     }
 }
 
