@@ -168,9 +168,9 @@ private fun ContentScreen(
             modifier = Modifier
                 .wrapContentSize()
                 .constrainAs(button) {
-                bottom.linkTo(parent.bottom, 16.dp)
-                end.linkTo(parent.end, 16.dp)
-            }) {
+                    bottom.linkTo(parent.bottom, 16.dp)
+                    end.linkTo(parent.end, 16.dp)
+                }) {
             NextButton(
                 visibility = state.sentence.isNotEmpty(),
                 onClick = {
@@ -183,6 +183,36 @@ private fun ContentScreen(
                 modifier = Modifier
             )
         }
+    }
+
+    if (state.showConfirmSaveDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                onEventSent(AddSentenceContract.Event.OnSaveSentenceDeclined)
+            },
+            title = {
+                Text(text = "Dialog Title")
+            },
+            text = {
+                Text("Here is a text ")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onEventSent(AddSentenceContract.Event.OnSaveSentenceConfirmed)
+                    }) {
+                    Text("This is the Confirm Button")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        onEventSent(AddSentenceContract.Event.OnSaveSentenceDeclined)
+                    }) {
+                    Text("This is the dismiss Button")
+                }
+            }
+        )
     }
 }
 
@@ -223,6 +253,7 @@ private fun CustomChip(item: Word) {
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
@@ -237,4 +268,4 @@ fun DefaultPreview() {
             { },
             { })
     }
-}
+}*/

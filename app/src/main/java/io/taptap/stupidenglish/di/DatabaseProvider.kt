@@ -23,37 +23,16 @@ class DatabaseProvider {
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext appContext: Context): WordDatabase {
-//        return Room.databaseBuilder(
-//            appContext,
-//            WordDatabase::class.java,
-//            "StupidDatabase"
-//        ).build()
-        val db = Room.databaseBuilder(
+        return Room.databaseBuilder(
             appContext,
             WordDatabase::class.java,
             "StupidDatabase"
         ).build()
-        db.fillApp()
-        return db
     }
 
     @Provides
     @Singleton
     fun provideChannelDao(appDatabase: WordDatabase): WordDao {
         return appDatabase.wordDao()
-    }
-}
-
-private fun WordDatabase.fillApp() {
-    val dao = this.wordDao()
-    GlobalScope.launch(Dispatchers.IO) {
-        val sentenceId =
-            dao.insertSentence(SentenceDto(sentence = "sentence Priv", words = "{1,2,3}}"))
-        val sentenceId1 =
-            dao.insertSentence(SentenceDto(sentence = "sentence Priv1", words = "{1,2,3}}"))
-        val sentenceId2 =
-            dao.insertSentence(SentenceDto(sentence = "sentence Priv2", words = "{1,2,3}}"))
-        val sentenceId3 =
-            dao.insertSentence(SentenceDto(sentence = "sentence Priv3", words = "{1,2,3}}"))
     }
 }

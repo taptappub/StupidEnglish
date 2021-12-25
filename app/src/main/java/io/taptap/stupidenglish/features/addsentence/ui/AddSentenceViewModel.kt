@@ -36,7 +36,8 @@ class AddSentenceViewModel @Inject constructor(
         }
     }
 
-    override fun setInitialState() = AddSentenceContract.State(sentence = "", words = emptyList())
+    override fun setInitialState() =
+        AddSentenceContract.State(showConfirmSaveDialog = false, sentence = "", words = emptyList())
 
     override fun handleEvents(event: AddSentenceContract.Event) {
         when (event) {
@@ -48,8 +49,14 @@ class AddSentenceViewModel @Inject constructor(
                 )
             }
             is AddSentenceContract.Event.OnSaveSentence -> {
+                setState { copy(showConfirmSaveDialog = true) }
+            }
+            is AddSentenceContract.Event.OnSaveSentenceConfirmed -> {
                 saveSentence()
                 setInitialState()
+            }
+            AddSentenceContract.Event.OnSaveSentenceDeclined -> {
+                setState { copy(showConfirmSaveDialog = false) }
             }
         }
     }
