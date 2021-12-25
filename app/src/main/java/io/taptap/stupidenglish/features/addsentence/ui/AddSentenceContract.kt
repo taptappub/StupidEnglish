@@ -4,10 +4,13 @@ import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewState
 import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 
 class AddSentenceContract {
     sealed class Event : ViewEvent {
-        data class OnSaveSentence(val sentence: String) : Event()
+        object OnWaitingSentenceError : Event()
+        data class OnSentenceChanging(val value: String) : AddSentenceContract.Event()
+        object OnSaveSentence : Event()
     }
 
     data class State(

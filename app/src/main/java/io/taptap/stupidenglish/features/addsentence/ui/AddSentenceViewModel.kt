@@ -2,7 +2,6 @@ package io.taptap.stupidenglish.features.addsentence.ui
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
@@ -41,14 +40,24 @@ class AddSentenceViewModel @Inject constructor(
 
     override fun handleEvents(event: AddSentenceContract.Event) {
         when (event) {
-            is AddSentenceContract.Event.OnSaveSentence -> saveSentence(event.sentence)
+            is AddSentenceContract.Event.OnSentenceChanging ->
+                setState { copy(sentence = event.value) }
+            is AddSentenceContract.Event.OnWaitingSentenceError -> setEffect {
+                AddSentenceContract.Effect.WaitingForSentenceError(
+                    R.string.adds_sentence_not_found_error
+                )
+            }
+            is AddSentenceContract.Event.OnSaveSentence -> {
+                saveSentence()
+                setInitialState()
+            }
         }
     }
 
-    private fun saveSentence(sentence: String) {
+    private fun saveSentence() {
+        val sentence = viewState.value.sentence
         viewModelScope.launch {
             val wordsIds = viewState.value.words.map { it.id }
-
             repository.saveSentence(sentence, wordsIds)
                 .handle(
                     success = {

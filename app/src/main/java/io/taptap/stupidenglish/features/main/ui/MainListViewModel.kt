@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.main.ui
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
@@ -45,6 +46,7 @@ class MainListViewModel @Inject constructor(
                                 R.string.main_get_random_words_error
                             ) }
                         } else {
+                            Log.d("TAGGGG", "navigation")
                             val sentenceNavigation = SentenceNavigation(wordsIds = randomWords)
                             setEffect {
                                 MainListContract.Effect.Navigation.ToAddSentence(
@@ -61,6 +63,7 @@ class MainListViewModel @Inject constructor(
     private suspend fun getRandomWords(): List<Long>? {
         return repository.getRandomWords(3)
             .map { list ->
+                Log.d("TAGGGG", "list = $list")
                 list.map { it.id }
             }
             .takeOrNull()

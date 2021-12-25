@@ -39,6 +39,8 @@
     <!-- Add Sentence -->
     <string name="adds_save_error">Error at the time of saving</string>
     <string name="adds_get_words_error">Error at the time of getting words</string>
+    <string name="adds_main_hint">Create the stupidest sentence from selected words!</string>
     <string name="adds_onboarding_text">Make a sentence from selected words. As stupider, it will be, then better!</string>
+    <string name="adds_sentence_not_found_error">Add your sentence, please =)</string>
     <string name="adds_sentence_placeholder">Your sentence</string>
 </resources>
