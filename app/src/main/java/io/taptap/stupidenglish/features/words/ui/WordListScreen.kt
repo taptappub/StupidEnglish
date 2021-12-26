@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.features.main.ui
+package io.taptap.stupidenglish.features.words.ui
 
 import android.content.Context
 import androidx.compose.foundation.Image
@@ -36,12 +36,12 @@ import kotlinx.coroutines.flow.onEach
 
 
 @Composable
-fun MainListScreen(
+fun WordListScreen(
     context: Context,
-    state: MainListContract.State,
-    effectFlow: Flow<MainListContract.Effect>?,
-    onEventSent: (event: MainListContract.Event) -> Unit,
-    onNavigationRequested: (navigationEffect: MainListContract.Effect.Navigation) -> Unit
+    state: WordListContract.State,
+    effectFlow: Flow<WordListContract.Effect>?,
+    onEventSent: (event: WordListContract.Event) -> Unit,
+    onNavigationRequested: (navigationEffect: WordListContract.Effect.Navigation) -> Unit
 ) {
     ProvideWindowInsets {
         StupidEnglishTheme {
@@ -51,19 +51,19 @@ fun MainListScreen(
             LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
                 effectFlow?.onEach { effect ->
                     when (effect) {
-                        is MainListContract.Effect.Navigation.ToAddWord ->
+                        is WordListContract.Effect.Navigation.ToAddWord ->
                             onNavigationRequested(effect)
-                        is MainListContract.Effect.GetRandomWordsError ->
+                        is WordListContract.Effect.GetRandomWordsError ->
                             scaffoldState.snackbarHostState.showSnackbar(
                                 message = context.getString(effect.errorRes),
                                 duration = SnackbarDuration.Short
                             )
-                        is MainListContract.Effect.GetWordsError ->
+                        is WordListContract.Effect.GetWordsError ->
                             scaffoldState.snackbarHostState.showSnackbar(
                                 message = context.getString(effect.errorRes),
                                 duration = SnackbarDuration.Short
                             )
-                        is MainListContract.Effect.Navigation.ToAddSentence ->
+                        is WordListContract.Effect.Navigation.ToAddSentence ->
                             onNavigationRequested(effect)
                     }
                 }?.collect()
@@ -75,7 +75,7 @@ fun MainListScreen(
             ) {
                 Box {
                     MainList(
-                        wordItems = state.mainList,
+                        wordItems = state.wordList,
                         onEventSent = onEventSent
                     )
                     if (state.isLoading) {
@@ -89,8 +89,8 @@ fun MainListScreen(
 
 @Composable
 private fun MainList(
-    wordItems: List<MainListListModels>,
-    onEventSent: (event: MainListContract.Event) -> Unit,
+    wordItems: List<WordListListModels>,
+    onEventSent: (event: WordListContract.Event) -> Unit,
 ) {
     LazyColumn(
         contentPadding = PaddingValues(bottom = 16.dp)
@@ -98,12 +98,12 @@ private fun MainList(
         items(wordItems) { item ->
             when (item) {
                 is NewWordUI -> NewWordItemRow(item = item) {
-                    onEventSent(MainListContract.Event.OnAddWordClick)
+                    onEventSent(WordListContract.Event.OnAddWordClick)
                 }
                 is WordListItemUI -> WordItemRow(item = item)
                 is WordListTitleUI -> TitleItem(item = item)
                 is OnboardingWordUI -> OnboardingItemRow {
-                    onEventSent(MainListContract.Event.OnOnboardingClick)
+                    onEventSent(WordListContract.Event.OnOnboardingClick)
                 }
             }
         }

@@ -41,8 +41,10 @@ class AddWordViewModel @Inject constructor(
                 }
 
             is AddWordContract.Event.OnSaveWord -> {
-                saveWord()
                 setInitialState()
+                val word = viewState.value.word
+                val description = viewState.value.description
+                saveWord(word, description)
             }
             is AddWordContract.Event.OnWaitingDescriptionError -> setEffect {
                 AddWordContract.Effect.WaitingForDescriptionError(
@@ -52,9 +54,7 @@ class AddWordViewModel @Inject constructor(
         }
     }
 
-    private fun saveWord() {
-        val word = viewState.value.word
-        val description = viewState.value.description
+    private fun saveWord(word: String, description: String) {
         viewModelScope.launch {
             repository.saveWord(word, description)
                 .handle(

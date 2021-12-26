@@ -6,8 +6,6 @@ import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.logic.share.ShareUtil
 import io.taptap.stupidenglish.base.model.Sentence
-import io.taptap.stupidenglish.base.model.Word
-import io.taptap.stupidenglish.features.main.ui.MainListListModels
 import io.taptap.stupidenglish.features.sentences.data.SentencesListRepository
 import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigation
 import kotlinx.coroutines.Dispatchers

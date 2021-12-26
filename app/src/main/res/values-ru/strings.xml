@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Stupid English</string>
+    <string name="main_list_new_word_title">Новое слово</string>
+    <string name="main_list_list_title">Мои слова</string>
+    <string name="main_list_add_word">Добавь незнакомое слово</string>
+    <string name="main_get_random_words_error">Не хватает слов для создание предложения</string>
+    <string name="main_get_list_error">Возникла ошибка в момент получения слов</string>
+    <string name="main_onboarding_text">Пора написать очень глупое предложение!</string>
+    <string name="stns_list_new_word_title">Составь свое</string>
+    <string name="stns_list_list_title">Глупые предложения</string>
+    <string name="stns_list_add_word">Составь свое глупое предложение…</string>
+    <string name="stns_get_random_words_error">Не хватает слов для создание предложения</string>
+    <string name="stns_get_sentences_error">Возникла ошибка в момент получения предложений</string>
+    <string name="addw_save_error">Возникла ошибка в момент добавления слова</string>
+    <string name="addw_word_placeholder">Незнакомое слово</string>
+    <string name="addw_description_placeholder">Ваша подсказка к слову выше</string>
+    <string name="addw_description_not_found_error">Ты забыл добавить подсказку =)</string>
+    <string name="adds_save_error">Возникла ошибка в момент добавления предложения</string>
+    <string name="adds_get_words_error">Возникла ошибка в момент получения слов</string>
+    <string name="adds_main_hint">Make a sentence from selected words. As stupider, it will be, then better!</string>
+    <string name="adds_sentence_not_found_error">Сначала напиши предложение =)</string>
+    <string name="adds_sentence_placeholder">Твое предложение</string>
+    <string name="adds_confirm_dialog_text">Ты точно хочешь сохранить это приложение? Оно супер тупое! Мне нравится!</string>
+    <string name="adds_confirm_dialog_ok">Сохранить</string>
+    <string name="adds_confirm_dialog_cancel">Отмена</string>
+</resources>

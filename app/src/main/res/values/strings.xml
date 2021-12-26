@@ -21,7 +21,7 @@
     <string name="main_list_add_word">Add new word</string>
     <string name="main_get_random_words_error">Can\'t find random words</string>
     <string name="main_get_list_error">Error at the time of getting words</string>
-    <string name="main_onboarding_text">Make the most stupidest sentence from your words</string>
+    <string name="main_onboarding_text">Make the stupidest sentence from your words</string>
 
     <!-- Sentences List -->
     <string name="stns_list_new_word_title">Add new sentences</string>
@@ -39,8 +39,10 @@
     <!-- Add Sentence -->
     <string name="adds_save_error">Error at the time of saving</string>
     <string name="adds_get_words_error">Error at the time of getting words</string>
-    <string name="adds_main_hint">Create the stupidest sentence from selected words!</string>
-    <string name="adds_onboarding_text">Make a sentence from selected words. As stupider, it will be, then better!</string>
+    <string name="adds_main_hint">Make a sentence from selected words. As stupider, it will be, then better!</string>
     <string name="adds_sentence_not_found_error">Add your sentence, please =)</string>
     <string name="adds_sentence_placeholder">Your sentence</string>
+    <string name="adds_confirm_dialog_text">Do you want to save this sentence? It\'s very stupid! I so like it!</string>
+    <string name="adds_confirm_dialog_ok">Save</string>
+    <string name="adds_confirm_dialog_cancel">Cancel</string>
 </resources>

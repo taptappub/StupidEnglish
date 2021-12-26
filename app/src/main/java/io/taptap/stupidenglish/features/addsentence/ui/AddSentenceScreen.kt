@@ -175,7 +175,7 @@ private fun ContentScreen(
                 visibility = state.sentence.isNotEmpty(),
                 onClick = {
                     if (state.sentence.isNotEmpty()) {
-                        onEventSent(AddSentenceContract.Event.OnSaveSentence) //TODO надо показывать диалог с подтверждением
+                        onEventSent(AddSentenceContract.Event.OnSaveSentence)
                     } else {
                         onEventSent(AddSentenceContract.Event.OnWaitingSentenceError)
                     }
@@ -190,18 +190,15 @@ private fun ContentScreen(
             onDismissRequest = {
                 onEventSent(AddSentenceContract.Event.OnSaveSentenceDeclined)
             },
-            title = {
-                Text(text = "Dialog Title")
-            },
             text = {
-                Text("Here is a text ")
+                Text(text = stringResource(id = R.string.adds_confirm_dialog_text))
             },
             confirmButton = {
                 Button(
                     onClick = {
                         onEventSent(AddSentenceContract.Event.OnSaveSentenceConfirmed)
                     }) {
-                    Text("This is the Confirm Button")
+                    Text(text = stringResource(id = R.string.adds_confirm_dialog_ok))
                 }
             },
             dismissButton = {
@@ -209,11 +206,17 @@ private fun ContentScreen(
                     onClick = {
                         onEventSent(AddSentenceContract.Event.OnSaveSentenceDeclined)
                     }) {
-                    Text("This is the dismiss Button")
+                    Text(text = stringResource(id = R.string.adds_confirm_dialog_cancel))
                 }
             }
         )
     }
+        //todo
+//    показ бэйджа, когда слов хватает
+//    Баг, что можно добавить только 1 слово сначала
+//    Не показывать предложения, пока нет 3 слов
+//    надо будет переключить на верный таб при возврате при добавлении предложения
+
 }
 
 @Composable

@@ -1,19 +1,18 @@
-package io.taptap.stupidenglish.features.main.ui
+package io.taptap.stupidenglish.features.words.ui
 
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewState
 import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigation
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
 
-class MainListContract {
+class WordListContract {
     sealed class Event : ViewEvent {
-        object OnAddWordClick : MainListContract.Event()
+        object OnAddWordClick : WordListContract.Event()
         object OnOnboardingClick : Event()
     }
 
     data class State(
-        val mainList: List<MainListListModels> = listOf(),
+        val wordList: List<WordListListModels> = listOf(),
         val isLoading: Boolean = false
     ) : ViewState
 

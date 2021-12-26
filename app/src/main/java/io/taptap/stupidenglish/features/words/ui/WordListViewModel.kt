@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.features.main.ui
+package io.taptap.stupidenglish.features.words.ui
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
@@ -6,13 +6,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.model.Word
-import io.taptap.stupidenglish.features.main.data.MainListRepository
+import io.taptap.stupidenglish.features.words.data.WordListRepository
 import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigation
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import taptap.pub.map
@@ -21,35 +18,35 @@ import taptap.pub.takeOrReturn
 import javax.inject.Inject
 
 @HiltViewModel
-class MainListViewModel @Inject constructor(
-    private val repository: MainListRepository
-) : BaseViewModel<MainListContract.Event, MainListContract.State, MainListContract.Effect>() {
+class WordListViewModel @Inject constructor(
+    private val repository: WordListRepository
+) : BaseViewModel<WordListContract.Event, WordListContract.State, WordListContract.Effect>() {
 
     init {
         viewModelScope.launch { getMainList() }
     }
 
     override fun setInitialState() =
-        MainListContract.State(mainList = listOf(), isLoading = true)
+        WordListContract.State(wordList = listOf(), isLoading = true)
 
-    override fun handleEvents(event: MainListContract.Event) {
+    override fun handleEvents(event: WordListContract.Event) {
         when (event) {
-            MainListContract.Event.OnAddWordClick -> {
-                setEffect { MainListContract.Effect.Navigation.ToAddWord }
+            WordListContract.Event.OnAddWordClick -> {
+                setEffect { WordListContract.Effect.Navigation.ToAddWord }
             }
-            MainListContract.Event.OnOnboardingClick -> {
+            WordListContract.Event.OnOnboardingClick -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     val randomWords = getRandomWords()
                     withContext(Dispatchers.Main) {
                         if (randomWords == null) {
-                            setEffect { MainListContract.Effect.GetRandomWordsError(
+                            setEffect { WordListContract.Effect.GetRandomWordsError(
                                 R.string.main_get_random_words_error
                             ) }
                         } else {
                             Log.d("TAGGGG", "navigation")
                             val sentenceNavigation = SentenceNavigation(wordsIds = randomWords)
                             setEffect {
-                                MainListContract.Effect.Navigation.ToAddSentence(
+                                WordListContract.Effect.Navigation.ToAddSentence(
                                     sentenceNavigation
                                 )
                             }
@@ -71,19 +68,19 @@ class MainListViewModel @Inject constructor(
 
     private suspend fun getMainList() {
         val savedWordList = repository.getWordList().takeOrReturn {
-            setEffect { MainListContract.Effect.GetWordsError(R.string.main_get_list_error) }
+            setEffect { WordListContract.Effect.GetWordsError(R.string.main_get_list_error) }
         }
 
         savedWordList.collect {
             val mainList = makeMainList(it.reversed())
 
             setState {
-                copy(mainList = mainList, isLoading = false)
+                copy(wordList = mainList, isLoading = false)
             }
         }
     }
 
-    private fun makeMainList(savedWordList: List<Word>): List<MainListListModels> {
+    private fun makeMainList(savedWordList: List<Word>): List<WordListListModels> {
         val mainList = mutableListOf(
             WordListTitleUI(valueRes = R.string.main_list_new_word_title),
             NewWordUI(valueRes = R.string.main_list_add_word),

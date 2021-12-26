@@ -52,8 +52,9 @@ class AddSentenceViewModel @Inject constructor(
                 setState { copy(showConfirmSaveDialog = true) }
             }
             is AddSentenceContract.Event.OnSaveSentenceConfirmed -> {
-                saveSentence()
                 setInitialState()
+                val sentence = viewState.value.sentence
+                saveSentence(sentence)
             }
             AddSentenceContract.Event.OnSaveSentenceDeclined -> {
                 setState { copy(showConfirmSaveDialog = false) }
@@ -61,8 +62,7 @@ class AddSentenceViewModel @Inject constructor(
         }
     }
 
-    private fun saveSentence() {
-        val sentence = viewState.value.sentence
+    private fun saveSentence(sentence: String) {
         viewModelScope.launch {
             val wordsIds = viewState.value.words.map { it.id }
             repository.saveSentence(sentence, wordsIds)
