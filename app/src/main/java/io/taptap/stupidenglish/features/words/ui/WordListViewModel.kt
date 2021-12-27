@@ -87,7 +87,7 @@ class WordListViewModel @Inject constructor(
             WordListTitleUI(valueRes = R.string.main_list_list_title),
         )
 
-        if (showOnboardingLabel()) {
+        if (showOnboardingLabel(savedWordList.size)) {
             mainList.add(OnboardingWordUI)
         }
 
@@ -101,7 +101,7 @@ class WordListViewModel @Inject constructor(
         return mainList
     }
 
-    private fun showOnboardingLabel(): Boolean {
-        return true //todo доделать
+    private fun showOnboardingLabel(size: Int): Boolean {
+        return size >= 3
     }
 }
