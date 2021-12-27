@@ -1,37 +1,23 @@
 package io.taptap.stupidenglish
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.google.accompanist.navigation.animation.navigation
-import com.google.accompanist.navigation.animation.composable
-import androidx.navigation.plusAssign
+import androidx.navigation.*
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.*
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceScreen
@@ -39,19 +25,13 @@ import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceViewModel
 import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.stupidenglish.features.addword.ui.AddWordScreen
 import io.taptap.stupidenglish.features.addword.ui.AddWordViewModel
-import io.taptap.stupidenglish.features.main.ui.MainListContract
-import io.taptap.stupidenglish.features.main.ui.MainListScreen
-import io.taptap.stupidenglish.features.main.ui.MainListViewModel
+import io.taptap.stupidenglish.features.main.ui.MainScreen
+import io.taptap.stupidenglish.features.main.ui.MainViewModel
 import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigationNavType
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListScreen
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
-import io.taptap.stupidenglish.ui.theme.getIndicatorActiveColor
-import io.taptap.stupidenglish.ui.theme.getIndicatorInactiveColor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.InternalCoroutinesApi
 
+@InternalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @AndroidEntryPoint
@@ -80,16 +60,23 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier
                 .wrapContentHeight()
         ) {
+            //AnimatedNavHost(navController, startDestination = "${NavigationKeys.Route.SE_LIST}/0") {
             AnimatedNavHost(navController, startDestination = NavigationKeys.Route.SE_LIST) {
-                composable(route = NavigationKeys.Route.SE_LIST) {
-                    MainListDestination(navController)
+                composable(
+                    route = NavigationKeys.Route.SE_LIST
+                    /*route = NavigationKeys.Route.SE_LIST_ARG,
+                    arguments = listOf(navArgument(NavigationKeys.Arg.PAGE_ID) {
+                        type = NavType.StringType
+                    })*/
+                ) {
+                    MainDestination(navController)
                 }
                 composable(route = NavigationKeys.Route.SE_ADD_WORD,
                     enterTransition = {
-                        slideInVertically(initialOffsetY = { 1000 }/*, animationSpec = tween(700)*/)
+                        slideInVertically(initialOffsetY = { 1000 })
                     },
                     exitTransition = {
-                        slideOutVertically(targetOffsetY = { 1000 }/*, animationSpec = tween(700)*/)
+                        slideOutVertically(targetOffsetY = { 1000 })
                     }) {
                     AddWordDialogDestination(navController)
                 }
@@ -155,77 +142,28 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
         onEventSent = { event -> addSentenceViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
-                navController.navigate(NavigationKeys.Route.SE_LIST) //todo надо будет переключить на верный таб
+                navController.navigate(
+                    //route = "${NavigationKeys.Route.SE_SENTENCES_LIST}/1",//todo
+                    route = "${NavigationKeys.Route.SE_LIST}/1",
+                    navOptions = NavOptions.Builder().setLaunchSingleTop(singleTop = true).build()
+                )
             }
         })
 }
 
+@InternalCoroutinesApi
 @ExperimentalPagerApi
 @Composable
-private fun MainListDestination(navController: NavHostController) {
-    val wordViewModel: MainListViewModel = hiltViewModel()
-    val wordState = wordViewModel.viewState.value
+private fun MainDestination(navController: NavHostController) {
+    val mainViewModel: MainViewModel = hiltViewModel()
+    val mainState = mainViewModel.viewState.value
 
-    val sentenceViewModel: SentencesListViewModel = hiltViewModel()
-    val sentenceState = sentenceViewModel.viewState.value
-    val pagerState = rememberPagerState()
+    MainScreen(
+        navController = navController,
+        state = mainState,
+        effectFlow = mainViewModel.effect,
+        onEventSent = { event -> mainViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
 
-    Column {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colors.background)
-                .padding(top = 16.dp, bottom = 24.dp)
-        ) {
-            HorizontalPagerIndicator(
-                indicatorWidth = 10.dp,
-                indicatorHeight = 10.dp,
-                inactiveColor = getIndicatorInactiveColor(),
-                activeColor = getIndicatorActiveColor(),
-                pagerState = pagerState,
-                spacing = 12.dp,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
-        }
-        HorizontalPager(
-            count = 2,
-            state = pagerState
-        ) { page ->
-            when (page) {
-                0 -> {
-                    MainListScreen(
-                        context = LocalContext.current,
-                        state = wordState,
-                        effectFlow = wordViewModel.effect,
-                        onEventSent = { event -> wordViewModel.setEvent(event) },
-                        onNavigationRequested = { navigationEffect ->
-                            when (navigationEffect) {
-                                is MainListContract.Effect.Navigation.ToAddWord -> {
-                                    navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
-                                }
-                                is MainListContract.Effect.Navigation.ToAddSentence -> {
-                                    val json =
-                                        Uri.encode(Gson().toJson(navigationEffect.sentenceNavigation))
-                                    navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${json}")
-                                }
-                            }
-                        })
-                }
-                1 -> {
-                    SentencesListScreen(
-                        context = LocalContext.current,
-                        state = sentenceState,
-                        effectFlow = sentenceViewModel.effect,
-                        onEventSent = { event -> sentenceViewModel.setEvent(event) },
-                        onNavigationRequested = { navigationEffect ->
-                            if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
-                                val json =
-                                    Uri.encode(Gson().toJson(navigationEffect.sentenceNavigation))
-                                navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${json}")
-                            }
-                        })
-                }
-            }
-        }
-    }
+        })
 }
