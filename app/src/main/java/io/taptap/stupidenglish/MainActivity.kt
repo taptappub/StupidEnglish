@@ -142,7 +142,7 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
         onEventSent = { event -> addSentenceViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
-                navController.navigate(NavigationKeys.Route.SE_LIST)
+                navController.navigateUp()
             }
         })
 }
