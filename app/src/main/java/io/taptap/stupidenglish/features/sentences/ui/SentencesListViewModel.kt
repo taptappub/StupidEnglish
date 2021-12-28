@@ -24,7 +24,7 @@ class SentencesListViewModel @Inject constructor(
 ) : BaseViewModel<SentencesListContract.Event, SentencesListContract.State, SentencesListContract.Effect>() {
 
     init {
-        viewModelScope.launch { getSentenceList() }
+        viewModelScope.launch(Dispatchers.IO) { getSentenceList() }
     }
 
     override fun setInitialState() =
@@ -33,7 +33,7 @@ class SentencesListViewModel @Inject constructor(
     override fun handleEvents(event: SentencesListContract.Event) {
         when (event) {
             is SentencesListContract.Event.OnAddSentenceClick -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     val randomWords = getRandomWords()
                     withContext(Dispatchers.Main) {
                         if (randomWords == null) {

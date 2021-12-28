@@ -23,7 +23,7 @@ class WordListViewModel @Inject constructor(
 ) : BaseViewModel<WordListContract.Event, WordListContract.State, WordListContract.Effect>() {
 
     init {
-        viewModelScope.launch { getMainList() }
+        viewModelScope.launch(Dispatchers.IO) { getMainList() }
     }
 
     override fun setInitialState() =
@@ -43,7 +43,6 @@ class WordListViewModel @Inject constructor(
                                 R.string.main_get_random_words_error
                             ) }
                         } else {
-                            Log.d("TAGGGG", "navigation")
                             val sentenceNavigation = SentenceNavigation(wordsIds = randomWords)
                             setEffect {
                                 WordListContract.Effect.Navigation.ToAddSentence(

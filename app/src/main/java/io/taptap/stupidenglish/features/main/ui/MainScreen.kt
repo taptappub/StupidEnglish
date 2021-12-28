@@ -45,12 +45,12 @@ fun MainScreen(
     navController: NavHostController
 ) {
     if (state.pagerIsVisible) {
-        WordListDestination(navController = navController)
-    } else {
-        MainScreenWithoutPager(
+        MainScreenWithPager(
             state = state,
             navController = navController
         )
+    } else {
+        WordListDestination(navController = navController)
     }
 }
 
@@ -58,7 +58,7 @@ fun MainScreen(
 @SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalPagerApi
 @Composable
-private fun MainScreenWithoutPager(
+private fun MainScreenWithPager(
     state: MainContract.State,
     navController: NavHostController
 ) {

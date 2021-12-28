@@ -7,7 +7,7 @@ import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigation
 
 class WordListContract {
     sealed class Event : ViewEvent {
-        object OnAddWordClick : WordListContract.Event()
+        object OnAddWordClick : Event()
         object OnOnboardingClick : Event()
     }
 

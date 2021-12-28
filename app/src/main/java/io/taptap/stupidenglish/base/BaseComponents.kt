@@ -5,11 +5,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 const val LAUNCH_LISTEN_FOR_EFFECTS = "launch-listen-to-effects"
 
@@ -42,8 +44,10 @@ abstract class BaseViewModel<Event : ViewEvent, UiState : ViewState, Effect : Vi
     }
 
     protected fun setState(reducer: UiState.() -> UiState) {
-        val newState = viewState.value.reducer()
-        _viewState.value = newState
+        viewModelScope.launch {
+            val newState = viewState.value.reducer()
+            _viewState.value = newState
+        }
     }
 
     private fun subscribeToEvents() {

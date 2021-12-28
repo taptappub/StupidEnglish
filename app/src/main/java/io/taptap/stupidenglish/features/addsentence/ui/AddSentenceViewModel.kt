@@ -22,7 +22,7 @@ class AddSentenceViewModel @Inject constructor(
 ) : BaseViewModel<AddSentenceContract.Event, AddSentenceContract.State, AddSentenceContract.Effect>() {
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val wordsIds = stateHandle.get<SentenceNavigation>(NavigationKeys.Arg.SENTENCE_WORDS_ID)
                 ?.wordsIds
                 ?: throw IllegalStateException("No wordsIds was passed to AddSentenceViewModel.")
@@ -63,7 +63,7 @@ class AddSentenceViewModel @Inject constructor(
     }
 
     private fun saveSentence(sentence: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val wordsIds = viewState.value.words.map { it.id }
             repository.saveSentence(sentence, wordsIds)
                 .handle(

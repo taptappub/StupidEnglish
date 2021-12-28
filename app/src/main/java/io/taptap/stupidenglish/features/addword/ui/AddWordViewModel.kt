@@ -55,7 +55,7 @@ class AddWordViewModel @Inject constructor(
     }
 
     private fun saveWord(word: String, description: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.saveWord(word, description)
                 .handle(
                     success = {
