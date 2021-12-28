@@ -3,20 +3,19 @@ package io.taptap.stupidenglish
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.*
+import androidx.navigation.NavHostController
+import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.accompanist.navigation.material.*
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
@@ -51,55 +50,47 @@ class MainActivity : ComponentActivity() {
     @ExperimentalPagerApi
     @Composable
     private fun StupidApp() {
-        val bottomSheetNavigator = rememberBottomSheetNavigator()
         val navController = rememberAnimatedNavController()
-        navController.navigatorProvider += bottomSheetNavigator
-        ModalBottomSheetLayout(
-            bottomSheetNavigator = bottomSheetNavigator,
-            sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-            modifier = Modifier
-                .wrapContentHeight()
-        ) {
-            //AnimatedNavHost(navController, startDestination = "${NavigationKeys.Route.SE_LIST}/0") {
-            AnimatedNavHost(navController, startDestination = NavigationKeys.Route.SE_LIST) {
-                composable(
-                    route = NavigationKeys.Route.SE_LIST
-                    /*route = NavigationKeys.Route.SE_LIST_ARG,
-                    arguments = listOf(navArgument(NavigationKeys.Arg.PAGE_ID) {
-                        type = NavType.StringType
-                    })*/
-                ) {
-                    MainDestination(navController)
-                }
-                composable(route = NavigationKeys.Route.SE_ADD_WORD,
-                    enterTransition = {
-                        slideInVertically(initialOffsetY = { 1000 })
-                    },
-                    exitTransition = {
-                        slideOutVertically(targetOffsetY = { 1000 })
-                    }) {
-                    AddWordDialogDestination(navController)
-                }
-                composable(
-                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
-                    arguments = listOf(
-                        navArgument(NavigationKeys.Arg.SENTENCE_WORDS_ID) {
-                            type = SentenceNavigationNavType()
-                        }
-                    ),
-                    enterTransition = {
-                        slideInVertically(initialOffsetY = { 1000 })
-                    },
-                    exitTransition = {
-                        slideOutVertically(targetOffsetY = { 1000 })
+        //AnimatedNavHost(navController, startDestination = "${NavigationKeys.Route.SE_LIST}/0") {
+        AnimatedNavHost(navController, startDestination = NavigationKeys.Route.SE_LIST) {
+            composable(
+                route = NavigationKeys.Route.SE_LIST
+                /*route = NavigationKeys.Route.SE_LIST_ARG,
+                arguments = listOf(navArgument(NavigationKeys.Arg.PAGE_ID) {
+                    type = NavType.StringType
+                })*/
+            ) {
+                MainDestination(navController)
+            }
+            composable(route = NavigationKeys.Route.SE_ADD_WORD,
+                enterTransition = {
+                    slideInVertically(initialOffsetY = { 1000 })
+                },
+                exitTransition = {
+                    slideOutVertically(targetOffsetY = { 1000 })
+                }) {
+                AddWordDialogDestination(navController)
+            }
+            composable(
+                route = NavigationKeys.Route.SE_ADD_SENTENCE,
+                arguments = listOf(
+                    navArgument(NavigationKeys.Arg.SENTENCE_WORDS_ID) {
+                        type = SentenceNavigationNavType()
                     }
-                ) {
-                    AddSentenceDialogDestination(navController)
+                ),
+                enterTransition = {
+                    slideInVertically(initialOffsetY = { 1000 })
+                },
+                exitTransition = {
+                    slideOutVertically(targetOffsetY = { 1000 })
                 }
+            ) {
+                AddSentenceDialogDestination(navController)
+            }
 
-//                bottomSheet(route = NavigationKeys.Route.SE_ADD_WORD) {
-//                    AddWordDialogDestination(navController)
-//                }
+//            bottomSheet(route = NavigationKeys.Route.SE_ADD_WORD) {
+//                AddWordDialogDestination(navController)
+//            }
 
 //                bottomSheet(
 //                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
@@ -111,7 +102,6 @@ class MainActivity : ComponentActivity() {
 //                ) {
 //                    AddSentenceDialogDestination(navController)
 //                }
-            }
         }
     }
 }
