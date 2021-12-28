@@ -1,6 +1,7 @@
 package io.taptap.stupidenglish.features.addword.ui
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -54,7 +55,7 @@ fun AddWordScreen(
         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
     ) {
         val scaffoldState: ScaffoldState = rememberScaffoldState()
-
+        Log.d("StupidEnglishState", "screen = AddWordScreen")
         // Listen for side effects from the VM
         LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
             effectFlow?.onEach { effect ->

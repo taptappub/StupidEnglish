@@ -86,7 +86,13 @@ class MainActivity : ComponentActivity() {
                         navArgument(NavigationKeys.Arg.SENTENCE_WORDS_ID) {
                             type = SentenceNavigationNavType()
                         }
-                    )
+                    ),
+                    enterTransition = {
+                        slideInVertically(initialOffsetY = { 1000 })
+                    },
+                    exitTransition = {
+                        slideOutVertically(targetOffsetY = { 1000 })
+                    }
                 ) {
                     AddSentenceDialogDestination(navController)
                 }
@@ -125,7 +131,7 @@ private fun AddWordDialogDestination(
         onEventSent = { event -> addWordViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddWordContract.Effect.Navigation.BackToWordList) {
-                navController.navigateUp()
+                navController.popBackStack()
             }
         })
 }
@@ -142,7 +148,7 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
         onEventSent = { event -> addSentenceViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
-                navController.navigateUp()
+                navController.popBackStack()
             }
         })
 }

@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.addword.ui
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
@@ -15,6 +16,10 @@ import javax.inject.Inject
 class AddWordViewModel @Inject constructor(
     private val repository: AddWordRepository
 ) : BaseViewModel<AddWordContract.Event, AddWordContract.State, AddWordContract.Effect>() {
+
+    init {
+        Log.d("StupidEnglishState", "viewModel = AddWordViewModel")
+    }
 
     override fun setInitialState() = AddWordContract.State(
         word = "",

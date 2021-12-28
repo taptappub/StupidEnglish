@@ -213,12 +213,9 @@ fun NewSentenceItem(
     Column(modifier = modifier) {
         Text(
             text = stringResource(id = item.valueRes),
-            textAlign = TextAlign.Center,
             fontSize = 16.sp,
             color = getContentTextColor(),
-            style = MaterialTheme.typography.subtitle1,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            style = MaterialTheme.typography.subtitle1
         )
     }
 }

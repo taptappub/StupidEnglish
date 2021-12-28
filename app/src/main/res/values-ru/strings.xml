@@ -7,9 +7,9 @@
     <string name="main_get_random_words_error">Не хватает слов для создание предложения</string>
     <string name="main_get_list_error">Возникла ошибка в момент получения слов</string>
     <string name="main_onboarding_text">Пора написать очень глупое предложение!</string>
-    <string name="stns_list_new_word_title">Составь свое</string>
+    <string name="stns_list_new_word_title">Составь свое предложение</string>
     <string name="stns_list_list_title">Глупые предложения</string>
-    <string name="stns_list_add_word">Составь свое глупое предложение…</string>
+    <string name="stns_list_add_word">Составь самое глупое предложение…</string>
     <string name="stns_get_random_words_error">Не хватает слов для создание предложения</string>
     <string name="stns_get_sentences_error">Возникла ошибка в момент получения предложений</string>
     <string name="addw_save_error">Возникла ошибка в момент добавления слова</string>

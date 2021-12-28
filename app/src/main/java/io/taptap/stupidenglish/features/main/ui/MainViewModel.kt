@@ -24,12 +24,11 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("TAGGG", "MainViewModel init")
             val pageId = stateHandle.get<String>(NavigationKeys.Arg.PAGE_ID)?.toInt() ?: 0
-            setState { copy(pageId = pageId) }
 
             val wordsCountFlow = repository.observeWordsCount().takeOrNull()
             wordsCountFlow?.collect { words ->
                 val pagerIsVisible = words.size >= 3
-                setState { copy(pagerIsVisible = pagerIsVisible) }
+                setState { copy(pageId = pageId, pagerIsVisible = pagerIsVisible) }
             }
         }
     }
