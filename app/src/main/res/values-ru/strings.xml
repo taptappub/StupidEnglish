@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Stupid English</string>
-    <string name="main_list_new_word_title">Новое слово</string>
-    <string name="main_list_list_title">Мои слова</string>
-    <string name="main_list_add_word">Добавь незнакомое слово</string>
-    <string name="main_get_random_words_error">Не хватает слов для создание предложения</string>
-    <string name="main_get_list_error">Возникла ошибка в момент получения слов</string>
-    <string name="main_onboarding_text">Пора написать очень глупое предложение!</string>
+    <string name="word_list_new_word_title">Новое слово</string>
+    <string name="word_list_list_title">Мои слова</string>
+    <string name="word_list_add_word">Добавь незнакомое слово</string>
+    <string name="word_get_random_words_error">Не хватает слов для создание предложения</string>
+    <string name="word_get_list_error">Возникла ошибка в момент получения слов</string>
+    <string name="word_onboarding_text">Пора написать очень глупое предложение!</string>
     <string name="stns_list_new_word_title">Составь свое предложение</string>
     <string name="stns_list_list_title">Глупые предложения</string>
     <string name="stns_list_add_word">Составь самое глупое предложение…</string>
@@ -24,4 +24,6 @@
     <string name="adds_confirm_dialog_text">Ты точно хочешь сохранить это приложение? Оно супер тупое! Мне нравится!</string>
     <string name="adds_confirm_dialog_ok">Сохранить</string>
     <string name="adds_confirm_dialog_cancel">Отмена</string>
+    <string name="main_dialog_ok">Все понятно</string>
+    <string name="main_dialog_message">Привет! Это <b>Beta версия</b> большого приложения… в будущем.\n\nЯ пытаюсь учить этот дурацкий английский уже несколько лет, а запоминание слов, это один из столпов моего обучения.\n\nПодход с созданием приложений из слов, дал больше всего эффекта, поэтому я решил сделать приложение, которым бы хотел пользоваться сам. Если оно поможет вам также, как и мне, я буду очень рад. Приложение я делаю один, но я постараюсь выслушать все пожелания!\n\nПора учить слова!</string>
 </resources>

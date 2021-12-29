@@ -131,7 +131,7 @@ private fun OnboardingItemRow(onClicked: () -> Unit) {
                 }
         ) {
             Text(
-                text = stringResource(id = R.string.main_onboarding_text),
+                text = stringResource(id = R.string.word_onboarding_text),
                 textAlign = TextAlign.Left,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,

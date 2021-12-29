@@ -9,7 +9,6 @@ import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.words.data.WordListRepository
 import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigation
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import taptap.pub.map
@@ -40,7 +39,7 @@ class WordListViewModel @Inject constructor(
                     withContext(Dispatchers.Main) {
                         if (randomWords == null) {
                             setEffect { WordListContract.Effect.GetRandomWordsError(
-                                R.string.main_get_random_words_error
+                                R.string.word_get_random_words_error
                             ) }
                         } else {
                             val sentenceNavigation = SentenceNavigation(wordsIds = randomWords)
@@ -67,7 +66,7 @@ class WordListViewModel @Inject constructor(
 
     private suspend fun getMainList() {
         val savedWordList = repository.getWordList().takeOrReturn {
-            setEffect { WordListContract.Effect.GetWordsError(R.string.main_get_list_error) }
+            setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
         }
 
         savedWordList.collect {
@@ -81,9 +80,9 @@ class WordListViewModel @Inject constructor(
 
     private fun makeMainList(savedWordList: List<Word>): List<WordListListModels> {
         val mainList = mutableListOf(
-            WordListTitleUI(valueRes = R.string.main_list_new_word_title),
-            NewWordUI(valueRes = R.string.main_list_add_word),
-            WordListTitleUI(valueRes = R.string.main_list_list_title),
+            WordListTitleUI(valueRes = R.string.word_list_new_word_title),
+            NewWordUI(valueRes = R.string.word_list_add_word),
+            WordListTitleUI(valueRes = R.string.word_list_list_title),
         )
 
         if (showOnboardingLabel(savedWordList.size)) {

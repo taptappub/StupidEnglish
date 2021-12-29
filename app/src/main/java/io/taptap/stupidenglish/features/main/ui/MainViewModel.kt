@@ -8,9 +8,7 @@ import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.features.main.data.MainRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import taptap.pub.takeOrNull
 import javax.inject.Inject
 
@@ -24,19 +22,31 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("TAGGG", "MainViewModel init")
             val pageId = stateHandle.get<String>(NavigationKeys.Arg.PAGE_ID)?.toInt() ?: 0
-
+            val isFirstStart = repository.isFirstStart
             val wordsCountFlow = repository.observeWordsCount().takeOrNull()
             wordsCountFlow?.collect { words ->
                 val pagerIsVisible = words.size >= 3
-                setState { copy(pageId = pageId, pagerIsVisible = pagerIsVisible) }
+                setState {
+                    copy(
+                        pageId = pageId,
+                        pagerIsVisible = pagerIsVisible,
+                        isShownGreetings = isFirstStart
+                    )
+                }
             }
         }
     }
 
     override fun setInitialState() =
-        MainContract.State(pagerIsVisible = false, pageId = 0)
+        MainContract.State(pagerIsVisible = false, pageId = 0, isShownGreetings = false)
 
     override fun handleEvents(event: MainContract.Event) {
+        when (event) {
+            MainContract.Event.OnGreetingsClose -> {
+                repository.isFirstStart = false
+                setState { copy(isShownGreetings = false) }
+            }
+        }
     }
 
 }

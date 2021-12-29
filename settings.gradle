@@ -8,3 +8,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "StupidEnglish"
 include ':app'
+include ':core:prefs'

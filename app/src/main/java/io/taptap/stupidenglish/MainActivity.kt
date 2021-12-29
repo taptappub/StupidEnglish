@@ -16,6 +16,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
@@ -30,13 +31,14 @@ import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigationN
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import kotlinx.coroutines.InternalCoroutinesApi
 
+@ExperimentalPagerApi
+@ExperimentalMaterialNavigationApi
 @InternalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @ExperimentalMaterialNavigationApi
-    @ExperimentalPagerApi
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

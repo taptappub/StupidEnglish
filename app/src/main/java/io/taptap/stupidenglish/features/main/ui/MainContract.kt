@@ -6,11 +6,13 @@ import io.taptap.stupidenglish.base.ViewState
 
 class MainContract {
     sealed class Event : ViewEvent {
+        object OnGreetingsClose : Event()
     }
 
     data class State(
         val pagerIsVisible: Boolean,
-        val pageId: Int
+        val pageId: Int,
+        val isShownGreetings: Boolean
     ) : ViewState
 
     sealed class Effect : ViewSideEffect {

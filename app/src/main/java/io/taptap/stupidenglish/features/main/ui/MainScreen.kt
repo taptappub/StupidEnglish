@@ -7,12 +7,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -22,6 +26,7 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.google.gson.Gson
 import io.taptap.stupidenglish.NavigationKeys
+import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListScreen
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
@@ -47,10 +52,15 @@ fun MainScreen(
     if (state.pagerIsVisible) {
         MainScreenWithPager(
             state = state,
+            onEventSent = onEventSent,
             navController = navController
         )
     } else {
-        WordListDestination(navController = navController)
+        WordListDestination(
+            navController = navController,
+            isShownGreetings = state.isShownGreetings,
+            onEventSent = onEventSent
+        )
     }
 }
 
@@ -60,7 +70,8 @@ fun MainScreen(
 @Composable
 private fun MainScreenWithPager(
     state: MainContract.State,
-    navController: NavHostController
+    navController: NavHostController,
+    onEventSent: (event: MainContract.Event) -> Unit
 ) {
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
@@ -91,7 +102,7 @@ private fun MainScreenWithPager(
             state = pagerState
         ) { page ->
             when (page) {
-                0 -> WordListDestination(navController = navController)
+                0 -> WordListDestination(navController = navController, onEventSent = onEventSent)
                 1 -> SentenceListDestination(navController = navController)
             }
         }
@@ -100,7 +111,9 @@ private fun MainScreenWithPager(
 
 @Composable
 private fun WordListDestination(
-    navController: NavHostController
+    isShownGreetings: Boolean = false,
+    navController: NavHostController,
+    onEventSent: (event: MainContract.Event) -> Unit
 ) {
     val wordViewModel: WordListViewModel = hiltViewModel()
     val wordState = wordViewModel.viewState.value
@@ -122,6 +135,25 @@ private fun WordListDestination(
                 }
             }
         })
+
+    if (isShownGreetings) {
+        AlertDialog(
+            onDismissRequest = {
+                onEventSent(MainContract.Event.OnGreetingsClose)
+            },
+            text = {
+                Text(text = stringResource(id = R.string.main_dialog_message))
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onEventSent(MainContract.Event.OnGreetingsClose)
+                    }) {
+                    Text(text = stringResource(id = R.string.main_dialog_ok))
+                }
+            }
+        )
+    }
 }
 
 @Composable

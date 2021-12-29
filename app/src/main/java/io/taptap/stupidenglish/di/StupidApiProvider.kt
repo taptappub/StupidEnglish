@@ -7,6 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
+import io.taptap.stupidenglish.base.logic.prefs.Settings
 import io.taptap.stupidenglish.base.logic.randomwords.IRandomWordsDataSource
 import io.taptap.stupidenglish.base.logic.randomwords.RandomWordsDataSource
 import io.taptap.stupidenglish.base.logic.share.ShareUtil
@@ -26,5 +27,11 @@ class StupidApiProvider {
     @Singleton
     fun provideShareUtil(@ApplicationContext appContext: Context): ShareUtil {
         return ShareUtil(appContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettings(@ApplicationContext appContext: Context): Settings {
+        return Settings(appContext)
     }
 }
