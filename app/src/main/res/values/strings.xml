@@ -16,7 +16,7 @@
     <string name="app_name">Stupid English</string>
 
     <!-- Main -->
-    <string name="main_dialog_message">Hey! This is a <b>Beta version</b> of a large app… in future.\n\nI have been trying to learn this stupid English for several years now, and memorizing words is one of the pillars of my learning.\n\nThe approach of creating apps from words gave the most effect, so I decided to make an app which I would like to use myself. If it helps you as well as it does me, I will be very happy. I am making the application alone, but I will try to listen to all wishes!\n\nIt\'s time to learn words!</string>
+    <string name="main_dialog_message">Hey! This is a <b>Beta version</b> of a large app… in future.\n\nI have been trying to learn this stupid English for several years now, and memorizing words is one of the pillars of my learning.\n\nThe approach of creating apps from words gave the most effect, so I decided to make an app which I would like to use myself. If it helps you as well as it does me, I will be very happy. I will try to listen to all wishes!\n\nIt\'s time to learn words!</string>
     <string name="main_dialog_ok">I agree</string>
 
     <!-- Word List -->
