@@ -15,6 +15,5 @@ object NavigationKeys {
         const val SE_LIST_ARG = "{$SE_LIST}/{$PAGE_ID}"
         const val SE_ADD_WORD = "stupid_english_add_word"
         const val SE_SENTENCES_LIST = "stupid_english_sentences_list"
-        const val SE_ADD_SENTENCE = "{$SE_SENTENCES_LIST}/{$SENTENCE_WORDS_ID}"
     }
 }

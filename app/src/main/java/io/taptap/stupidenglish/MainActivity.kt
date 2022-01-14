@@ -11,12 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
@@ -25,22 +24,30 @@ import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceViewModel
 import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.stupidenglish.features.addword.ui.AddWordScreen
 import io.taptap.stupidenglish.features.addword.ui.AddWordViewModel
+import io.taptap.stupidenglish.features.alarm.ui.AlarmScheduler
 import io.taptap.stupidenglish.features.main.ui.MainScreen
 import io.taptap.stupidenglish.features.main.ui.MainViewModel
-import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigationNavType
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import kotlinx.coroutines.InternalCoroutinesApi
+import javax.inject.Inject
 
-@ExperimentalPagerApi
-@ExperimentalMaterialNavigationApi
-@InternalCoroutinesApi
-@ExperimentalAnimationApi
-@ExperimentalMaterialApi
+const val URI = "https://stupidenglish.app"
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    @Inject
+    lateinit var alarmScheduler: AlarmScheduler
+
+    @ExperimentalMaterialApi
+    @ExperimentalAnimationApi
+    @ExperimentalPagerApi
+    @ExperimentalMaterialNavigationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        alarmScheduler.enableNotifications()
+        alarmScheduler.schedulePushNotifications()
+
         setContent {
             StupidEnglishTheme {
                 StupidApp()
@@ -48,6 +55,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @ExperimentalMaterialApi
+    @OptIn(InternalCoroutinesApi::class)
+    @ExperimentalAnimationApi
     @ExperimentalMaterialNavigationApi
     @ExperimentalPagerApi
     @Composable
@@ -74,12 +84,13 @@ class MainActivity : ComponentActivity() {
                 AddWordDialogDestination(navController)
             }
             composable(
-                route = NavigationKeys.Route.SE_ADD_SENTENCE,
-                arguments = listOf(
-                    navArgument(NavigationKeys.Arg.SENTENCE_WORDS_ID) {
-                        type = SentenceNavigationNavType()
-                    }
-                ),
+                route = "{${NavigationKeys.Route.SE_SENTENCES_LIST}}/{${NavigationKeys.Arg.SENTENCE_WORDS_ID}}",
+//                deepLinks = listOf(navDeepLink {
+//                    uriPattern = "$URI/{${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
+//                }),
+                deepLinks = listOf(navDeepLink {
+                    uriPattern = "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}={${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
+                }),
                 enterTransition = {
                     slideInVertically(initialOffsetY = { 1000 })
                 },

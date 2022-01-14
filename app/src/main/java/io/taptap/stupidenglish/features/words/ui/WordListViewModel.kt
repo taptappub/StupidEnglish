@@ -7,7 +7,6 @@ import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.words.data.WordListRepository
-import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -42,11 +41,8 @@ class WordListViewModel @Inject constructor(
                                 R.string.word_get_random_words_error
                             ) }
                         } else {
-                            val sentenceNavigation = SentenceNavigation(wordsIds = randomWords)
                             setEffect {
-                                WordListContract.Effect.Navigation.ToAddSentence(
-                                    sentenceNavigation
-                                )
+                                WordListContract.Effect.Navigation.ToAddSentence(randomWords)
                             }
                         }
                     }

@@ -27,6 +27,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.gson.Gson
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
+import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListScreen
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
@@ -129,9 +130,8 @@ private fun WordListDestination(
                     navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
                 }
                 is WordListContract.Effect.Navigation.ToAddSentence -> {
-                    val json =
-                        Uri.encode(Gson().toJson(navigationEffect.sentenceNavigation))
-                    navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${json}")
+                    val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
+                    navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${ids}")
                 }
             }
         })
@@ -170,9 +170,8 @@ private fun SentenceListDestination(
         onEventSent = { event -> sentenceViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
-                val json =
-                    Uri.encode(Gson().toJson(navigationEffect.sentenceNavigation))
-                navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${json}")
+                val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
+                navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${ids}")
             }
         })
 }

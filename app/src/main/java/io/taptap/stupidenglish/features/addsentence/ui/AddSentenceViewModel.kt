@@ -7,7 +7,7 @@ import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.features.addsentence.data.AddSentenceRepository
-import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigation
+import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,14 +18,15 @@ import javax.inject.Inject
 @HiltViewModel
 class AddSentenceViewModel @Inject constructor(
     private val stateHandle: SavedStateHandle,
-    private val repository: AddSentenceRepository
+    private val repository: AddSentenceRepository,
+    private val addSentenceArgumentsMapper: AddSentenceArgumentsMapper
 ) : BaseViewModel<AddSentenceContract.Event, AddSentenceContract.State, AddSentenceContract.Effect>() {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val wordsIds = stateHandle.get<SentenceNavigation>(NavigationKeys.Arg.SENTENCE_WORDS_ID)
-                ?.wordsIds
+            val wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.SENTENCE_WORDS_ID)
                 ?: throw IllegalStateException("No wordsIds was passed to AddSentenceViewModel.")
+            val wordsIds = addSentenceArgumentsMapper.mapFrom(wordsIdsString)
             val words = repository.getWordsById(wordsIds).takeOrReturn {
                 withContext(Dispatchers.Main) {
                     setEffect { AddSentenceContract.Effect.GetWordsError(R.string.adds_get_words_error) }

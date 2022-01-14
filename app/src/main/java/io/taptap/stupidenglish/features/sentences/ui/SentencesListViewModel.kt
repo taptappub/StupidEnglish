@@ -7,9 +7,7 @@ import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.logic.share.ShareUtil
 import io.taptap.stupidenglish.base.model.Sentence
 import io.taptap.stupidenglish.features.sentences.data.SentencesListRepository
-import io.taptap.stupidenglish.features.sentences.navigation.SentenceNavigation
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import taptap.pub.map
@@ -39,11 +37,8 @@ class SentencesListViewModel @Inject constructor(
                         if (randomWords == null) {
                             setEffect { SentencesListContract.Effect.GetRandomWordsError(R.string.stns_get_random_words_error) }
                         } else {
-                            val sentenceNavigation = SentenceNavigation(wordsIds = randomWords)
                             setEffect {
-                                SentencesListContract.Effect.Navigation.ToAddSentence(
-                                    sentenceNavigation
-                                )
+                                SentencesListContract.Effect.Navigation.ToAddSentence(randomWords)
                             }
                         }
                     }

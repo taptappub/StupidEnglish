@@ -9,3 +9,4 @@ dependencyResolutionManagement {
 rootProject.name = "StupidEnglish"
 include ':app'
 include ':core:prefs'
+include ':core:notify'
