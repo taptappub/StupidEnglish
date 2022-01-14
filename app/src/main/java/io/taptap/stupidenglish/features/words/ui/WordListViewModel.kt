@@ -96,6 +96,6 @@ class WordListViewModel @Inject constructor(
     }
 
     private fun showOnboardingLabel(size: Int): Boolean {
-        return size >= 3
+        return size > 0
     }
 }

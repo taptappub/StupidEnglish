@@ -32,7 +32,7 @@ class MainViewModel @Inject constructor(
 
             val wordsCountFlow = repository.observeWordsCount().takeOrNull()
             wordsCountFlow?.collect { words ->
-                val pagerIsVisible = words.size >= 3
+                val pagerIsVisible = words.isNotEmpty()
                 setState {
                     copy(
                         pageId = pageId,
