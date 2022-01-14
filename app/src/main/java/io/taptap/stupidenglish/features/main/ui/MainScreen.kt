@@ -2,6 +2,7 @@ package io.taptap.stupidenglish.features.main.ui
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -135,7 +136,7 @@ private fun WordListDestination(
                 }
             }
         })
-
+    Log.d("StupidEnglish", "isShownGreetings = $isShownGreetings")
     if (isShownGreetings) {
         AlertDialog(
             onDismissRequest = {

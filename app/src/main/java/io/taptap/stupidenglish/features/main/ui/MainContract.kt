@@ -12,7 +12,7 @@ class MainContract {
     data class State(
         val pagerIsVisible: Boolean,
         val pageId: Int,
-        val isShownGreetings: Boolean
+        val isShownGreetings: Boolean = false
     ) : ViewState
 
     sealed class Effect : ViewSideEffect {

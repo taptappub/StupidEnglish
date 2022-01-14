@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.main.data
 
+import android.util.Log
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
 import io.taptap.stupidenglish.base.logic.mapper.toWords
 import io.taptap.stupidenglish.base.logic.prefs.Settings
@@ -19,8 +20,14 @@ class MainRepository @Inject constructor(
 ) {
 
     var isFirstStart: Boolean
-        get() = settings.isFirstStart
-        set(value) {settings.isFirstStart = value}
+        get() {
+            Log.d("MainRepository", "get isFirstStart = ${settings.isFirstStart}")
+            return settings.isFirstStart
+        }
+        set(value) {
+            Log.d("MainRepository", "set isFirstStart = $value")
+            settings.isFirstStart = value
+        }
 
     suspend fun observeWordsCount(): Reaction<Flow<List<Word>>> = Reaction.on {
         wordDao.observeWords().map { it.toWords() }

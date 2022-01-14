@@ -51,8 +51,7 @@ class AlarmScheduler @Inject constructor(
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            //AlarmManager.INTERVAL_DAY,
-            5000,
+            AlarmManager.INTERVAL_DAY,
             alarmPendingIntent
         )
     }
