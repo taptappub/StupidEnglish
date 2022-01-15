@@ -9,7 +9,8 @@ fun WordDto.toWord(): Word {
     return Word(
         id = id,
         word = word,
-        description = description
+        description = description,
+        points = points
     )
 }
 

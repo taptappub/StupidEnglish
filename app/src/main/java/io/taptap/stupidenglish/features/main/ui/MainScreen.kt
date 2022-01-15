@@ -132,7 +132,7 @@ private fun WordListDestination(
                 }
                 is WordListContract.Effect.Navigation.ToAddSentence -> {
                     val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                    navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${ids}")
+                    navController.navigate("${NavigationKeys.Route.SE_REMEMBER}/${ids}")
                 }
             }
         })
@@ -172,7 +172,7 @@ private fun SentenceListDestination(
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
                 val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${ids}")
+                navController.navigate("${NavigationKeys.Route.SE_REMEMBER}/${ids}")
             }
         })
 }

@@ -11,4 +11,5 @@ data class WordDto(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Long = 0,
     @ColumnInfo(name = "word") val word: String,
     @ColumnInfo(name = "description") val description: String,
+    @ColumnInfo(name = "points") val points: Int
 )

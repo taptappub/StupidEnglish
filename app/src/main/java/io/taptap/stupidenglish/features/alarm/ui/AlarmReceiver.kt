@@ -80,7 +80,8 @@ class AlarmReceiver : BroadcastReceiver() {
         val string = words.joinToString(",") { it.id.toString() }
         val taskDetailIntent = Intent(
             Intent.ACTION_VIEW,
-            "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}=$string".toUri(),
+            //"$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}=$string".toUri(),
+            "$URI/${NavigationKeys.Arg.WORDS_ID}=$string".toUri(),
             context,
             MainActivity::class.java
         )

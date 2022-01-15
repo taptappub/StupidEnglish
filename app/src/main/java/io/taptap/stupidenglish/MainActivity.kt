@@ -3,11 +3,11 @@ package io.taptap.stupidenglish
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.*
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -27,6 +27,9 @@ import io.taptap.stupidenglish.features.addword.ui.AddWordViewModel
 import io.taptap.stupidenglish.features.alarm.ui.AlarmScheduler
 import io.taptap.stupidenglish.features.main.ui.MainScreen
 import io.taptap.stupidenglish.features.main.ui.MainViewModel
+import io.taptap.stupidenglish.features.stack.ui.StackContract
+import io.taptap.stupidenglish.features.stack.ui.StackScreen
+import io.taptap.stupidenglish.features.stack.ui.StackViewModel
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Inject
@@ -74,7 +77,8 @@ class MainActivity : ComponentActivity() {
             ) {
                 MainDestination(navController)
             }
-            composable(route = NavigationKeys.Route.SE_ADD_WORD,
+            composable(
+                route = NavigationKeys.Route.SE_ADD_WORD,
                 enterTransition = {
                     slideInVertically(initialOffsetY = { 1000 })
                 },
@@ -84,10 +88,21 @@ class MainActivity : ComponentActivity() {
                 AddWordDialogDestination(navController)
             }
             composable(
-                route = "{${NavigationKeys.Route.SE_SENTENCES_LIST}}/{${NavigationKeys.Arg.SENTENCE_WORDS_ID}}",
-//                deepLinks = listOf(navDeepLink {
-//                    uriPattern = "$URI/{${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
-//                }),
+                route = "${NavigationKeys.Route.SE_REMEMBER}/{${NavigationKeys.Arg.WORDS_ID}}",
+                deepLinks = listOf(navDeepLink {
+                    uriPattern = "$URI/${NavigationKeys.Arg.WORDS_ID}={${NavigationKeys.Arg.WORDS_ID}}"
+                }),
+                enterTransition = {
+                    fadeIn()
+                },
+                exitTransition = {
+                    fadeOut()
+                }
+            ) {
+                StackDestination(navController)
+            }
+            composable(
+                route = "${NavigationKeys.Route.SE_SENTENCES_LIST}/{${NavigationKeys.Arg.SENTENCE_WORDS_ID}}",
                 deepLinks = listOf(navDeepLink {
                     uriPattern = "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}={${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
                 }),
@@ -100,21 +115,6 @@ class MainActivity : ComponentActivity() {
             ) {
                 AddSentenceDialogDestination(navController)
             }
-
-//            bottomSheet(route = NavigationKeys.Route.SE_ADD_WORD) {
-//                AddWordDialogDestination(navController)
-//            }
-
-//                bottomSheet(
-//                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
-//                    arguments = listOf(
-//                        navArgument(NavigationKeys.Arg.SENTENCE_WORDS_ID) {
-//                            type = SentenceNavigationNavType()
-//                        }
-//                    )
-//                ) {
-//                    AddSentenceDialogDestination(navController)
-//                }
         }
     }
 }
@@ -134,6 +134,23 @@ private fun AddWordDialogDestination(
         onEventSent = { event -> addWordViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddWordContract.Effect.Navigation.BackToWordList) {
+                navController.popBackStack()
+            }
+        })
+}
+
+@Composable
+private fun StackDestination(navController: NavHostController) {
+    val stackViewModel: StackViewModel = hiltViewModel()
+    val stackState = stackViewModel.viewState.value
+
+    StackScreen(
+        context = LocalContext.current,
+        state = stackState,
+        effectFlow = stackViewModel.effect,
+        onEventSent = { event -> stackViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            if (navigationEffect is StackContract.Effect.Navigation.BackToSentenceList) {
                 navController.popBackStack()
             }
         })
