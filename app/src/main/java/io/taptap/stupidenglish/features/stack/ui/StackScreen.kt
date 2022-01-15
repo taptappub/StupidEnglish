@@ -1,6 +1,7 @@
 package io.taptap.stupidenglish.features.stack.ui
 
 import android.content.Context
+import android.widget.TextView
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,6 +9,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -15,7 +18,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import com.yuyakaido.android.cardstackview.CardStackLayoutManager
+import com.yuyakaido.android.cardstackview.CardStackView
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackAdapter
 import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -64,17 +71,29 @@ private fun ContentScreen(
     state: StackContract.State,
     onEventSent: (event: StackContract.Event) -> Unit
 ) {
-    LazyColumn(
-        contentPadding = PaddingValues(bottom = 16.dp),
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        items(state.words) { item ->
-            when (item) {
-                is StackItemUI -> WordItemRow(item = item)
+    // Adds view to Compose
+    AndroidView(
+        modifier = Modifier.fillMaxSize(), // Occupy the max size in the Compose UI tree
+        factory = { context ->
+            CardStackView(context).apply {
+                layoutManager = CardStackLayoutManager(context)
             }
+        },
+        update = { view ->
+            view.adapter = CardStackAdapter(state.words)
         }
-    }
+    )
+//    LazyColumn(
+//        contentPadding = PaddingValues(bottom = 16.dp),
+//        modifier = Modifier
+//            .fillMaxSize()
+//    ) {
+//        items(state.words) { item ->
+//            when (item) {
+//                is StackItemUI -> WordItemRow(item = item)
+//            }
+//        }
+//    }
 }
 
 @Composable

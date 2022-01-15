@@ -7,7 +7,6 @@ import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
-import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
 import io.taptap.stupidenglish.features.stack.data.StackRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

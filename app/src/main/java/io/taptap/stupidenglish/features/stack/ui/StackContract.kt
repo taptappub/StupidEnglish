@@ -12,7 +12,7 @@ class StackContract {
     }
 
     data class State(
-        val words: List<StackModels>
+        val words: List<StackItemUI>
     ) : ViewState
 
     sealed class Effect : ViewSideEffect {
