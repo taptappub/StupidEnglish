@@ -88,6 +88,17 @@ fun getTitleTextColor(
 }
 
 @Composable
+fun getSuccessTextColor(
+    darkTheme: Boolean = isSystemInDarkTheme()
+): Color {
+    return if (darkTheme) {
+        Green100
+    } else {
+        Green100
+    }
+}
+
+@Composable
 fun getContentTextColor(
     darkTheme: Boolean = isSystemInDarkTheme()
 ): Color {

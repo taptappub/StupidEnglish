@@ -8,7 +8,7 @@
     android:foreground="?attr/selectableItemBackground"
     app:cardUseCompatPadding="true"
     app:cardPreventCornerOverlap="false"
-    app:cardCornerRadius="8dp"
+    app:cardCornerRadius="16dp"
     app:cardBackgroundColor="@android:color/white">
 
     <LinearLayout
