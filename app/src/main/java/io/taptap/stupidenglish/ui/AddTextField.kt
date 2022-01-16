@@ -61,7 +61,3 @@ fun AddTextField(
             .widthIn(1.dp, Dp.Infinity)
     )
 }
-//keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-//keyboardActions = KeyboardActions(
-//onNext = { focusRequester.requestFocus() }
-//)

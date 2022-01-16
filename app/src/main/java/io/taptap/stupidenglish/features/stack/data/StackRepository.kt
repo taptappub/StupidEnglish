@@ -18,7 +18,11 @@ class StackRepository @Inject constructor(
         }
     }
 
-    suspend fun rememberWord(wordId: Long): Reaction<List<Word>> = Reaction.on {
-        emptyList()
+    suspend fun rememberWord(wordId: Long): Reaction<Unit> = Reaction.on {
+        val wordDto = wordDao.getWordDto(wordId)
+        val newWordDto = wordDto?.copy(points = wordDto.points + 1)
+        newWordDto?.let {
+            wordDao.updateWord(it)
+        }
     }
 }

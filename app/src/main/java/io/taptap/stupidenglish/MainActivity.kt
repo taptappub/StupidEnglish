@@ -18,6 +18,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
+import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceScreen
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceViewModel
@@ -150,8 +151,14 @@ private fun StackDestination(navController: NavHostController) {
         effectFlow = stackViewModel.effect,
         onEventSent = { event -> stackViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
-            if (navigationEffect is StackContract.Effect.Navigation.BackToSentenceList) {
-                navController.popBackStack()
+            when (navigationEffect) {
+                is StackContract.Effect.Navigation.BackToSentenceList -> {
+                    navController.popBackStack()
+                }
+                is StackContract.Effect.Navigation.ToAddSentence -> {
+                    val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
+                    navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${ids}")
+                }
             }
         })
 }
@@ -168,7 +175,7 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
         onEventSent = { event -> addSentenceViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
-                navController.popBackStack()
+                navController.popBackStack(NavigationKeys.Route.SE_LIST, false)
             }
         })
 }

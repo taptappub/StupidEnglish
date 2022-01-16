@@ -1,31 +1,24 @@
 package io.taptap.stupidenglish.features.stack.ui
 
 import android.content.Context
-import android.widget.TextView
-import androidx.compose.foundation.background
+import android.view.View
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.LinearInterpolator
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.constraintlayout.compose.ConstraintLayout
-import com.yuyakaido.android.cardstackview.CardStackLayoutManager
-import com.yuyakaido.android.cardstackview.CardStackView
+import androidx.recyclerview.widget.RecyclerView
+import com.yuyakaido.android.cardstackview.*
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackAdapter
@@ -34,6 +27,7 @@ import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
+import com.yuyakaido.android.cardstackview.Direction
 
 @Composable
 fun StackScreen(
@@ -46,6 +40,9 @@ fun StackScreen(
     Box {
         val scaffoldState: ScaffoldState = rememberScaffoldState()
 
+        val manager: CardStackLayoutManager =
+            initCardStackLayoutManager(context, state, onEventSent)
+
         // Listen for side effects from the VM
         LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
             effectFlow?.onEach { effect ->
@@ -55,7 +52,15 @@ fun StackScreen(
                             message = context.getString(effect.errorRes),
                             duration = SnackbarDuration.Short
                         )
+                    is StackContract.Effect.SaveError ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(effect.errorRes),
+                            duration = SnackbarDuration.Short
+                        )
                     is StackContract.Effect.Navigation.BackToSentenceList -> onNavigationRequested(
+                        effect
+                    )
+                    is StackContract.Effect.Navigation.ToAddSentence -> onNavigationRequested(
                         effect
                     )
                 }
@@ -66,8 +71,9 @@ fun StackScreen(
             scaffoldState = scaffoldState,
         ) {
             ContentScreen(
-                state,
-                onEventSent
+                state = state,
+                manager = manager,
+                onEventSent = onEventSent
             )
         }
     }
@@ -76,18 +82,28 @@ fun StackScreen(
 @Composable
 private fun ContentScreen(
     state: StackContract.State,
+    manager: CardStackLayoutManager,
     onEventSent: (event: StackContract.Event) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
 
         AndroidView(
             factory = { context ->
-                CardStackView(context).apply {
-                    layoutManager = CardStackLayoutManager(context)
-                }
+                CardStackView(context)
+                    .apply { layoutManager = manager.init() }
             },
             update = { view ->
                 view.adapter = CardStackAdapter(state.words)
+                if (state.swipeState is StackContract.SwipeState.WasSwiped) {
+                    val setting = SwipeAnimationSetting.Builder()
+                        .setDirection(state.swipeState.direction)
+                        .setDuration(Duration.Normal.duration)
+                        .setInterpolator(AccelerateInterpolator())
+                        .build()
+                    manager.setSwipeAnimationSetting(setting)
+                    view.swipe()
+                    onEventSent(StackContract.Event.EndSwipe)
+                }
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -106,7 +122,7 @@ private fun ContentScreen(
                 shape = RoundedCornerShape(16.dp),
                 elevation = 100.dp,
                 modifier = Modifier.clickable {
-
+                    onEventSent(StackContract.Event.Swipe(Direction.Left))
                 }
             ) {
                 Text(
@@ -115,14 +131,19 @@ private fun ContentScreen(
                     color = getTitleTextColor(),
                     style = MaterialTheme.typography.subtitle1,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, start = 48.dp, end = 48.dp)
+                    modifier = Modifier.padding(
+                        top = 16.dp,
+                        bottom = 16.dp,
+                        start = 48.dp,
+                        end = 48.dp
+                    )
                 )
             }
             Card(
                 shape = RoundedCornerShape(16.dp),
                 elevation = 100.dp,
                 modifier = Modifier.clickable {
-
+                    onEventSent(StackContract.Event.Swipe(Direction.Right))
                 }
             ) {
                 Text(
@@ -131,9 +152,75 @@ private fun ContentScreen(
                     color = getSuccessTextColor(),
                     style = MaterialTheme.typography.subtitle1,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, start = 48.dp, end = 48.dp)
+                    modifier = Modifier.padding(
+                        top = 16.dp,
+                        bottom = 16.dp,
+                        start = 48.dp,
+                        end = 48.dp
+                    )
                 )
             }
         }
+    }
+}
+
+fun initCardStackLayoutManager(
+    context: Context,
+    state: StackContract.State,
+    onEventSent: (event: StackContract.Event) -> Unit
+): CardStackLayoutManager {
+    return CardStackLayoutManager(context, object : CardStackListener {
+        override fun onCardDragging(direction: Direction, ratio: Float) {
+            when (direction) {
+                Direction.Left -> onEventSent(StackContract.Event.OnNo)
+                Direction.Right -> onEventSent(StackContract.Event.OnYes)
+                Direction.Top -> { /*do nothing*/
+                }
+                Direction.Bottom -> { /*do nothing*/
+                }
+            }
+        }
+
+        override fun onCardSwiped(direction: Direction) {
+            when (direction) {
+                Direction.Left -> onEventSent(StackContract.Event.OnNo)
+                Direction.Right -> onEventSent(StackContract.Event.OnYes)
+                Direction.Top -> { /*do nothing*/
+                }
+                Direction.Bottom -> { /*do nothing*/
+                }
+            }
+        }
+
+        override fun onCardRewound() {
+        }
+
+        override fun onCardCanceled() {
+        }
+
+        override fun onCardAppeared(view: View?, position: Int) {
+            onEventSent(StackContract.Event.OnCardAppeared(position))
+        }
+
+        override fun onCardDisappeared(view: View?, position: Int) {
+            onEventSent(StackContract.Event.OnCardDisappeared(position))
+        }
+
+    })
+}
+
+private fun CardStackLayoutManager.init(): RecyclerView.LayoutManager {
+    return apply {
+        setStackFrom(StackFrom.None)
+        setTranslationInterval(8.0f)
+        setScaleInterval(0.95f)
+        setSwipeThreshold(0.3f)
+        setVisibleCount(3)
+        setMaxDegree(20.0f)
+        setDirections(Direction.HORIZONTAL)
+        setCanScrollHorizontal(true)
+        setCanScrollVertical(true)
+        setSwipeableMethod(SwipeableMethod.AutomaticAndManual)
+        setOverlayInterpolator(LinearInterpolator())
     }
 }
