@@ -211,7 +211,7 @@ fun initCardStackLayoutManager(
 
 private fun CardStackLayoutManager.init(): CardStackLayoutManager {
     return apply {
-        setStackFrom(StackFrom.None)
+        setStackFrom(StackFrom.Bottom)
         setTranslationInterval(8.0f)
         setScaleInterval(0.95f)
         setSwipeThreshold(0.3f)
