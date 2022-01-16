@@ -37,9 +37,6 @@ class StackViewModel @Inject constructor(
                 }
             }
 
-            Log.d("StackContract", "init words = $words")
-            Log.d("StackContract", "init topWordId = ${words.first().id}")
-
             setState { copy(words = words, topWordId = words.first().id) }
         }
     }
@@ -54,30 +51,23 @@ class StackViewModel @Inject constructor(
     override fun handleEvents(event: StackContract.Event) {
         when (event) {
             is StackContract.Event.Swipe -> {
-                Log.d("StackContract", "Swipe direction = ${event.direction}")
                 setState { copy(swipeState = StackContract.SwipeState.WasSwiped(event.direction)) }
             }
             is StackContract.Event.EndSwipe -> {
-                Log.d("StackContract", "EndSwipe")
                 setState { copy(swipeState = StackContract.SwipeState.WasNotSwiped) }
             }
             is StackContract.Event.OnYes -> {
-                Log.d("StackContract", "OnYes wordId = ${viewState.value.topWordId}")
                 rememberWord(viewState.value.topWordId)
             }
             is StackContract.Event.OnNo -> {
-                Log.d("StackContract", "OnNo wordId = ${viewState.value.topWordId}")
-                rememberWord(viewState.value.topWordId)
+                noRememberWord(viewState.value.topWordId)
             }
             is StackContract.Event.OnCardAppeared -> {
                 val topWordId = viewState.value.words[event.position].id
-                Log.d("StackContract", "OnCardAppeared pos = ${event.position} topWordId = $topWordId")
                 setState { copy(topWordId = topWordId) }
             }
             is StackContract.Event.OnCardDisappeared -> {
-                Log.d("StackContract", "OnCardDisappeared pos = ${event.position}")
                 if (event.position == viewState.value.words.size - 1) {
-                    Log.d("StackContract", "OnCardDisappeared pos = ${event.position}")
                     val wordsIds = viewState.value.words.map { it.id }
                     setEffect { StackContract.Effect.Navigation.ToAddSentence(wordsIds) }
                 }

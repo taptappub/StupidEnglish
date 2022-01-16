@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -40,8 +41,7 @@ fun StackScreen(
     Box {
         val scaffoldState: ScaffoldState = rememberScaffoldState()
 
-        val manager: CardStackLayoutManager =
-            initCardStackLayoutManager(context, state, onEventSent)
+        val manager: CardStackLayoutManager = remember { initCardStackLayoutManager(context, state, onEventSent).init() }
 
         // Listen for side effects from the VM
         LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
@@ -90,7 +90,7 @@ private fun ContentScreen(
         AndroidView(
             factory = { context ->
                 CardStackView(context)
-                    .apply { layoutManager = manager.init() }
+                    .apply { layoutManager = manager }
             },
             update = { view ->
                 view.adapter = CardStackAdapter(state.words)
@@ -209,7 +209,7 @@ fun initCardStackLayoutManager(
     })
 }
 
-private fun CardStackLayoutManager.init(): RecyclerView.LayoutManager {
+private fun CardStackLayoutManager.init(): CardStackLayoutManager {
     return apply {
         setStackFrom(StackFrom.None)
         setTranslationInterval(8.0f)
