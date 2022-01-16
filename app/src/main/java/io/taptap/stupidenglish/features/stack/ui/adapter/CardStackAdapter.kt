@@ -15,14 +15,12 @@ class CardStackAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return ViewHolder(inflater.inflate(R.layout.item_spot, parent, false))
+        return ViewHolder(inflater.inflate(R.layout.stack_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val word = words[position]
-        holder.name.text = "${word.word}. ${word.word}"
-        holder.city.text = word.word
-//        holder.image.load(word.url)
+        holder.word.text = word.word
         holder.itemView.setOnClickListener { v ->
             Toast.makeText(v.context, word.word, Toast.LENGTH_SHORT).show()
         }
@@ -33,9 +31,7 @@ class CardStackAdapter(
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val name: TextView = view.findViewById(R.id.item_name)
-        var city: TextView = view.findViewById(R.id.item_city)
-//        var image: ImageView = view.findViewById(R.id.item_image)
+        var word: TextView = view.findViewById(R.id.tv_word)
     }
 
 }

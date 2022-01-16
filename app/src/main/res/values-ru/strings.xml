@@ -31,4 +31,5 @@
     <string name="stck_button_no">Нет</string>
     <string name="stck_button_yes">Да</string>
     <string name="stck_save_error">Возникла ошибка в момент сохрания слова</string>
+    <string name="stck_hint">Помнишь это слово?</string>
 </resources>

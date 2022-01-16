@@ -56,4 +56,5 @@
     <string name="stck_button_no">No</string>
     <string name="stck_button_yes">Yes</string>
     <string name="stck_save_error">Error at the time of saving</string>
+    <string name="stck_hint">Do you remember whis word?</string>
 </resources>
