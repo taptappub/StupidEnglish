@@ -196,3 +196,7 @@ private fun MainDestination(navController: NavHostController) {
 
         })
 }
+//todo
+//1) Нет подсказки на экране Стэка
+//2) Нет диалога с конкурсом
+//3)

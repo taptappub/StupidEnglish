@@ -6,6 +6,7 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable

@@ -5,6 +5,7 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -132,8 +133,9 @@ dependencies {
     implementation "com.yuyakaido.android:card-stack-view:2.3.4"
 
     // Firebase
-    implementation platform('com.google.firebase:firebase-bom:29.0.2')
+    implementation platform('com.google.firebase:firebase-bom:29.0.4')
     implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
