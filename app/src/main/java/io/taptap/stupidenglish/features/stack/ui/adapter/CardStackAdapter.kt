@@ -8,10 +8,31 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.base.ui.flipCard
 
 class CardStackAdapter(
     var words: List<Word> = emptyList()
 ) : RecyclerView.Adapter<CardStackAdapter.ViewHolder>() {
+
+    private val clickListener = View.OnClickListener { v: View ->
+        val frontView = v.findViewById<View>(R.id.view_front)
+        val backView = v.findViewById<View>(R.id.view_back)
+        if (v.tag?.toString().isNullOrEmpty() || v.tag == "back") {
+            v.tag = "front"
+            flipCard(
+                v.context, backView, frontView,
+                doOnStart = { v.isEnabled = false },
+                doOnEnd = { v.isEnabled = true }
+            )
+        } else {
+            v.tag = "back"
+            flipCard(
+                v.context, frontView, backView,
+                doOnStart = { v.isEnabled = false },
+                doOnEnd = { v.isEnabled = true }
+            )
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -21,9 +42,8 @@ class CardStackAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val word = words[position]
         holder.word.text = word.word
-        holder.itemView.setOnClickListener { v ->
-            Toast.makeText(v.context, word.word, Toast.LENGTH_SHORT).show()
-        }
+        holder.hint.text = word.description
+        holder.itemView.setOnClickListener(clickListener)
     }
 
     override fun getItemCount(): Int {
@@ -31,7 +51,7 @@ class CardStackAdapter(
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var word: TextView = view.findViewById(R.id.tv_word)
+        val word: TextView = view.findViewById(R.id.tv_word)
+        val hint: TextView = view.findViewById(R.id.tv_hint)
     }
-
 }

@@ -1,85 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/water_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?attr/selectableItemBackground"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardBackgroundColor="#ffffffff"
-    app:strokeColor="#FFE5ECF1"
-    app:strokeWidth="4dp"
-    app:cardCornerRadius="16dp"
-    app:cardPreventCornerOverlap="false"
-    app:cardUseCompatPadding="true">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv_hint"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:fontFamily="@font/rubik_medium"
-        android:paddingStart="16dp"
-        android:paddingTop="32dp"
-        android:paddingEnd="16dp"
-        android:text="@string/stck_hint"
-        android:textColor="#ACACAC"
-        android:textSize="28sp" />
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/tv_word"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:paddingStart="16dp"
-            android:paddingTop="32dp"
-            android:paddingEnd="16dp"
-            android:textColor="#333333"
-            android:textSize="18sp"
-            tools:text="Ass" />
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/left_overlay"
+    <include
+        android:id="@+id/view_front"
+        layout="@layout/front_card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/overlay_black">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/skip_white_120dp" />
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/right_overlay"
+    <include
+        android:id="@+id/view_back"
+        layout="@layout/back_card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/overlay_black">
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/like_white_120dp" />
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/top_overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"></FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/bottom_overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"></FrameLayout>
-
-</com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

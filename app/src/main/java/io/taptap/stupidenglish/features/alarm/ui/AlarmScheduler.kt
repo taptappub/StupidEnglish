@@ -41,8 +41,7 @@ class AlarmScheduler @Inject constructor(
         Log.d("StupidEnglishState", "AlarmScheduler schedulePushNotifications")
         enableNotifications()
         val calendar = Calendar.getInstance().apply {
-            //set(Calendar.HOUR_OF_DAY, 12)
-            set(Calendar.HOUR_OF_DAY, 1)
+            set(Calendar.HOUR_OF_DAY, 12)
             set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
