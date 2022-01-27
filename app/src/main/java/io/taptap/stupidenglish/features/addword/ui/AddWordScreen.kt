@@ -80,7 +80,7 @@ fun AddWordScreen(
         Scaffold(
             scaffoldState = scaffoldState,
         ) {
-            BottomSheetScreen {
+            BottomSheetScreen(modifier = Modifier.fillMaxSize()) {
                 ContentScreen(
                     state,
                     onEventSent

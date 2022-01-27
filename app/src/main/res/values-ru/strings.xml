@@ -32,4 +32,9 @@
     <string name="stck_button_yes">Да</string>
     <string name="stck_save_error">Возникла ошибка в момент сохрания слова</string>
     <string name="stck_front_label">Помнишь это слово?</string>
+    <string name="addw_motivation_title">Составим предложение?</string>
+    <string name="stck_back_label">Подсказка</string>
+    <string name="addw_motivation_message">Настало время составить предложение с добавленными словами. Раз в месяц, мы выбираем самое веселое и глупое предложение, и на его основе нарисуем иллюстрацию!</string>
+    <string name="addw_motivation_confirm">Составить</string>
+    <string name="addw_motivation_decline">Позже</string>
 </resources>

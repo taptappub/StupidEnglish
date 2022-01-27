@@ -110,7 +110,18 @@ fun getContentTextColor(
 }
 
 @Composable
-fun getButtonBackgroundColor(
+fun getSecondaryButtonBackgroundColor(
+    darkTheme: Boolean = isSystemInDarkTheme()
+): Color {
+    return if (darkTheme) {
+        Grey200
+    } else {
+        Grey200
+    }
+}
+
+@Composable
+fun getPrimaryButtonBackgroundColor(
     darkTheme: Boolean = isSystemInDarkTheme()
 ): Color {
     return if (darkTheme) {

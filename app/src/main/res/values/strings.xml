@@ -39,6 +39,10 @@
     <string name="addw_word_placeholder">Unknown word</string>
     <string name="addw_description_placeholder">Your hint for word above</string>
     <string name="addw_description_not_found_error">Add your hint, please =)</string>
+    <string name="addw_motivation_title">Is it time to make a sentence?</string>
+    <string name="addw_motivation_message">Let\'s make some sentences with your words. Once per month we choose the funniest and stupidest sentence and make a picture with it!</string>
+    <string name="addw_motivation_confirm">Let\'s do it!</string>
+    <string name="addw_motivation_decline">Nope</string>
 
     <!-- Add Sentence -->
     <string name="adds_save_error">Error at the time of saving</string>

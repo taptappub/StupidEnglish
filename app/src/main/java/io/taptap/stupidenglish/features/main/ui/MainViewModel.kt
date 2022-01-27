@@ -5,18 +5,27 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.NavigationKeys
+import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.features.main.data.MainRepository
+import io.taptap.stupidenglish.features.words.ui.WordListContract
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import taptap.pub.map
 import taptap.pub.takeOrNull
 import javax.inject.Inject
+
+private const val WORDS_FOR_MOTIVATION = 3
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val stateHandle: SavedStateHandle,
     private val repository: MainRepository
 ) : BaseViewModel<MainContract.Event, MainContract.State, MainContract.Effect>() {
+
+    private var lastWordsCount = -1
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -30,21 +39,34 @@ class MainViewModel @Inject constructor(
                 )
             }
 
-            val wordsCountFlow = repository.observeWordsCount().takeOrNull()
+            val wordsCountFlow = repository.observeWords().takeOrNull()
             wordsCountFlow?.collect { words ->
+                val size = words.size
                 val pagerIsVisible = words.isNotEmpty()
+
                 setState {
                     copy(
                         pageId = pageId,
                         pagerIsVisible = pagerIsVisible
                     )
                 }
+
+                if (lastWordsCount < size) { //todo придумать время мотивации
+                    delay(2000)
+                    setState { copy(timeToShowMotivationToSentence = size % WORDS_FOR_MOTIVATION == 0) }
+                    lastWordsCount = size
+                }
             }
         }
     }
 
     override fun setInitialState() =
-        MainContract.State(pagerIsVisible = false, pageId = 0, isShownGreetings = false)
+        MainContract.State(
+            pagerIsVisible = false,
+            pageId = 0,
+            isShownGreetings = false,
+            timeToShowMotivationToSentence = false
+        )
 
     override fun handleEvents(event: MainContract.Event) {
         when (event) {
@@ -52,7 +74,29 @@ class MainViewModel @Inject constructor(
                 repository.isFirstStart = false
                 setState { copy(isShownGreetings = false) }
             }
+            MainContract.Event.OnMotivationConfirmClick -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val randomWords = getRandomWords()
+                    withContext(Dispatchers.Main) {
+                        if (randomWords != null) {
+                            setEffect {
+                                MainContract.Effect.Navigation.ToAddSentence(randomWords)
+                            }
+                        }
+                    }
+                }
+            }
+            MainContract.Event.OnMotivationDeclineClick -> {
+                setEffect { MainContract.Effect.CloseMotivation }
+            }
         }
     }
 
+    private suspend fun getRandomWords(): List<Long>? {
+        return repository.getRandomWords(3)
+            .map { list ->
+                list.map { it.id }
+            }
+            .takeOrNull()
+    }
 }

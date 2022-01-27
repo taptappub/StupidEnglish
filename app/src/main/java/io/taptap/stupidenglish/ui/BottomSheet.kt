@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -13,12 +14,10 @@ import io.taptap.stupidenglish.R
 
 @Composable
 fun BottomSheetScreen(
+    modifier: Modifier,
     content: @Composable () -> Unit
 ) {
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    ConstraintLayout(modifier = modifier) {
         val (stick, content) = createRefs()
 
         Image(
@@ -33,7 +32,7 @@ fun BottomSheetScreen(
                 }
         )
         Box(modifier = Modifier
-            .fillMaxSize()
+            .wrapContentSize()
             .constrainAs(content) {
                 top.linkTo(stick.bottom)
                 bottom.linkTo(parent.bottom)

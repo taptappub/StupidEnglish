@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.taptap.stupidenglish.R
-import io.taptap.stupidenglish.ui.theme.getButtonBackgroundColor
+import io.taptap.stupidenglish.ui.theme.getPrimaryButtonBackgroundColor
 
 @Composable
 fun NextButton(
@@ -37,7 +37,7 @@ fun NextButton(
         ) {
             Button(
                 shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(backgroundColor = getButtonBackgroundColor()),
+                colors = ButtonDefaults.buttonColors(backgroundColor = getPrimaryButtonBackgroundColor()),
                 onClick = onClick,
                 modifier = Modifier
                     .size(52.dp)

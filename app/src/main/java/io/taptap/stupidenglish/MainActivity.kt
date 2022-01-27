@@ -26,6 +26,7 @@ import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.stupidenglish.features.addword.ui.AddWordScreen
 import io.taptap.stupidenglish.features.addword.ui.AddWordViewModel
 import io.taptap.stupidenglish.features.alarm.ui.AlarmScheduler
+import io.taptap.stupidenglish.features.main.ui.MainContract
 import io.taptap.stupidenglish.features.main.ui.MainScreen
 import io.taptap.stupidenglish.features.main.ui.MainViewModel
 import io.taptap.stupidenglish.features.stack.ui.StackContract
@@ -91,7 +92,8 @@ class MainActivity : ComponentActivity() {
             composable(
                 route = "${NavigationKeys.Route.SE_REMEMBER}/{${NavigationKeys.Arg.WORDS_ID}}",
                 deepLinks = listOf(navDeepLink {
-                    uriPattern = "$URI/${NavigationKeys.Arg.WORDS_ID}={${NavigationKeys.Arg.WORDS_ID}}"
+                    uriPattern =
+                        "$URI/${NavigationKeys.Arg.WORDS_ID}={${NavigationKeys.Arg.WORDS_ID}}"
                 }),
                 enterTransition = {
                     fadeIn()
@@ -105,7 +107,8 @@ class MainActivity : ComponentActivity() {
             composable(
                 route = "${NavigationKeys.Route.SE_SENTENCES_LIST}/{${NavigationKeys.Arg.SENTENCE_WORDS_ID}}",
                 deepLinks = listOf(navDeepLink {
-                    uriPattern = "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}={${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
+                    uriPattern =
+                        "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}={${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
                 }),
                 enterTransition = {
                     slideInVertically(initialOffsetY = { 1000 })
@@ -180,6 +183,7 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
         })
 }
 
+@ExperimentalMaterialApi
 @InternalCoroutinesApi
 @ExperimentalPagerApi
 @Composable
@@ -193,11 +197,16 @@ private fun MainDestination(navController: NavHostController) {
         effectFlow = mainViewModel.effect,
         onEventSent = { event -> mainViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
-
-        })
+            when (navigationEffect) {
+                is MainContract.Effect.Navigation.ToAddSentence -> {
+                    val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
+                    navController.navigate("${NavigationKeys.Route.SE_REMEMBER}/${ids}")
+                }
+            }
+        }
+    )
 }
 //todo
-//1) Нет подсказки на экране Стэка
 //2) Нет диалога с конкурсом
 //3) Добавление одинаковых слов
 //4) Падение при добавлении предложения

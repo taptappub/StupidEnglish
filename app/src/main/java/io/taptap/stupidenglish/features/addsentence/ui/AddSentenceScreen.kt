@@ -44,7 +44,7 @@ fun AddSentenceScreen(
     onNavigationRequested: (navigationEffect: AddSentenceContract.Effect.Navigation) -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
     ) {
         val scaffoldState: ScaffoldState = rememberScaffoldState()
 
@@ -77,7 +77,7 @@ fun AddSentenceScreen(
         Scaffold(
             scaffoldState = scaffoldState,
         ) {
-            BottomSheetScreen {
+            BottomSheetScreen(modifier = Modifier.fillMaxSize()) {
                 ContentScreen(
                     state,
                     onEventSent
