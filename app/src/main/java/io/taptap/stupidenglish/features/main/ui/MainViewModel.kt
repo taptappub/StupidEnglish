@@ -50,8 +50,9 @@ class MainViewModel @Inject constructor(
                         pagerIsVisible = pagerIsVisible
                     )
                 }
-
-                if (lastWordsCount < size) { //todo придумать время мотивации
+                repository.isSentenceMotivationShown = false
+                Log.d("TAGGG", "MainViewModel repository.isSentenceMotivationShown = ${repository.isSentenceMotivationShown}")
+                if (lastWordsCount < size && !repository.isSentenceMotivationShown) { //todo придумать время мотивации
                     delay(2000)
                     setState { copy(timeToShowMotivationToSentence = size % WORDS_FOR_MOTIVATION == 0) }
                     lastWordsCount = size
@@ -75,7 +76,10 @@ class MainViewModel @Inject constructor(
                 setState { copy(isShownGreetings = false) }
             }
             MainContract.Event.OnMotivationConfirmClick -> {
+                setState { copy(timeToShowMotivationToSentence = false) }
                 viewModelScope.launch(Dispatchers.IO) {
+                    repository.isSentenceMotivationShown = true
+
                     val randomWords = getRandomWords()
                     withContext(Dispatchers.Main) {
                         if (randomWords != null) {
@@ -87,7 +91,20 @@ class MainViewModel @Inject constructor(
                 }
             }
             MainContract.Event.OnMotivationDeclineClick -> {
+                setState { copy(timeToShowMotivationToSentence = false) }
+
+                viewModelScope.launch(Dispatchers.IO) {
+                    repository.isSentenceMotivationShown = true
+                }
+
                 setEffect { MainContract.Effect.CloseMotivation }
+            }
+            MainContract.Event.OnMotivationCancel -> {
+                setState { copy(timeToShowMotivationToSentence = false) }
+
+                viewModelScope.launch(Dispatchers.IO) {
+                    repository.isSentenceMotivationShown = true
+                }
             }
         }
     }

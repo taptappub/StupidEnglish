@@ -11,6 +11,7 @@ class MainContract {
         object OnGreetingsClose : Event()
         object OnMotivationConfirmClick : Event()
         object OnMotivationDeclineClick : Event()
+        object OnMotivationCancel : Event()
     }
 
     data class State(

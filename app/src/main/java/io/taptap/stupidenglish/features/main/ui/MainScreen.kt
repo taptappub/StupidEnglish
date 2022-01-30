@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -58,7 +59,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     state: MainContract.State,
-    effectFlow: Flow<MainContract.Effect>,
+    effectFlow: Flow<MainContract.Effect>?,
     onEventSent: (event: MainContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: MainContract.Effect.Navigation) -> Unit,
     navController: NavHostController
@@ -74,15 +75,28 @@ fun MainScreen(
         effectFlow?.onEach { effect ->
             when (effect) {
                 is MainContract.Effect.CloseMotivation ->
-                    scope.launch {
-                        if (!modalBottomSheetState.isAnimationRunning) {
-                            modalBottomSheetState.hide()
-                        }
-                    }
+                    modalBottomSheetState.hideSheet(scope)
                 is MainContract.Effect.Navigation.ToAddSentence ->
                     onNavigationRequested(effect)
             }
         }?.collect()
+    }
+
+    //https://stackoverflow.com/questions/69052660/listen-modalbottomsheetlayout-state-change-in-jetpack-compose
+//    LaunchedEffect(modalBottomSheetState.currentValue) {
+//        when (modalBottomSheetState.currentValue) {
+//            ModalBottomSheetValue.Hidden -> TODO()
+//            ModalBottomSheetValue.Expanded -> TODO()
+//            ModalBottomSheetValue.HalfExpanded -> TODO()
+//        }
+//    }
+    if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
+        DisposableEffect(Unit) {
+            onDispose {
+                onEventSent(MainContract.Event.OnMotivationCancel)
+                //modalBottomSheetState.hideSheet(scope)
+            }
+        }
     }
 
     ModalBottomSheetLayout(
@@ -310,6 +324,7 @@ private fun WordListDestination(
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 private fun SentenceListDestination(
     navController: NavHostController
@@ -328,4 +343,22 @@ private fun SentenceListDestination(
                 navController.navigate("${NavigationKeys.Route.SE_REMEMBER}/${ids}")
             }
         })
+}
+
+@ExperimentalMaterialApi
+private fun ModalBottomSheetState.hideSheet(scope: CoroutineScope) {
+    scope.launch {
+        if (!isAnimationRunning) {
+            hide()
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+private fun ModalBottomSheetState.showSheet(scope: CoroutineScope) {
+    scope.launch {
+        if (!isAnimationRunning) {
+            show()
+        }
+    }
 }
