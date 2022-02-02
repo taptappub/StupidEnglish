@@ -1,14 +1,14 @@
 package io.taptap.stupidenglish.features.main.ui
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.NavigationKeys
-import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.features.main.data.MainRepository
-import io.taptap.stupidenglish.features.words.ui.WordListContract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -30,9 +30,9 @@ class MainViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("TAGGG", "MainViewModel init")
+
             val pageId = stateHandle.get<String>(NavigationKeys.Arg.PAGE_ID)?.toInt() ?: 0
             val isFirstStart = repository.isFirstStart
-
             setState {
                 copy(
                     isShownGreetings = isFirstStart
@@ -51,7 +51,6 @@ class MainViewModel @Inject constructor(
                     )
                 }
                 repository.isSentenceMotivationShown = false
-                Log.d("TAGGG", "MainViewModel repository.isSentenceMotivationShown = ${repository.isSentenceMotivationShown}")
                 if (lastWordsCount < size && !repository.isSentenceMotivationShown) { //todo придумать время мотивации
                     delay(2000)
                     setState { copy(timeToShowMotivationToSentence = size % WORDS_FOR_MOTIVATION == 0) }

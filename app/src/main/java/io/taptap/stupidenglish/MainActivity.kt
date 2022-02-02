@@ -4,10 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -68,14 +66,14 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun StupidApp() {
         val navController = rememberAnimatedNavController()
-        //AnimatedNavHost(navController, startDestination = "${NavigationKeys.Route.SE_LIST}/0") {
-        AnimatedNavHost(navController, startDestination = NavigationKeys.Route.SE_LIST) {
+        AnimatedNavHost(navController, startDestination = NavigationKeys.Route.SE_MAIN) {
             composable(
-                route = NavigationKeys.Route.SE_LIST
-                /*route = NavigationKeys.Route.SE_LIST_ARG,
-                arguments = listOf(navArgument(NavigationKeys.Arg.PAGE_ID) {
-                    type = NavType.StringType
-                })*/
+                route = NavigationKeys.Route.SE_MAIN,
+            ) {
+                MainDestination(navController)
+            }
+            composable(
+                route = "${NavigationKeys.Route.SE_MAIN}/{${NavigationKeys.Arg.PAGE_ID}}",
             ) {
                 MainDestination(navController)
             }
@@ -105,7 +103,7 @@ class MainActivity : ComponentActivity() {
                 StackDestination(navController)
             }
             composable(
-                route = "${NavigationKeys.Route.SE_SENTENCES_LIST}/{${NavigationKeys.Arg.SENTENCE_WORDS_ID}}",
+                route = "${NavigationKeys.Route.SE_ADD_SENTENCE}/{${NavigationKeys.Arg.SENTENCE_WORDS_ID}}",
                 deepLinks = listOf(navDeepLink {
                     uriPattern =
                         "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}={${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
@@ -160,7 +158,9 @@ private fun StackDestination(navController: NavHostController) {
                 }
                 is StackContract.Effect.Navigation.ToAddSentence -> {
                     val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                    navController.navigate("${NavigationKeys.Route.SE_SENTENCES_LIST}/${ids}")
+                    navController.navigate("${NavigationKeys.Route.SE_ADD_SENTENCE}/${ids}") {
+                        popUpTo(NavigationKeys.Route.SE_MAIN)
+                    }
                 }
             }
         })
@@ -178,7 +178,19 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
         onEventSent = { event -> addSentenceViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
-                navController.popBackStack(NavigationKeys.Route.SE_LIST, false)
+                val navEntry = navController.backQueue
+                    .find {
+                        it.destination.route?.let { route ->
+                            route == NavigationKeys.Route.SE_MAIN
+                        } ?: false
+                    }
+//                val navEntry = navController.previousBackStackEntry
+                val navEntrySavedStateHandle = navEntry?.savedStateHandle
+                navEntrySavedStateHandle?.set(
+                    NavigationKeys.Arg.PAGE_ID,
+                    "1"
+                )
+                navController.popBackStack(NavigationKeys.Route.SE_MAIN, false)
             }
         })
 }
@@ -215,9 +227,12 @@ private fun MainDestination(navController: NavHostController) {
 //8) импорт
 
 
+//1. Возвращение на страницу с предложениями - БАГ!!!
+//2. Нотификация часто показывается. (Может несколько раз ставится таймер) - БАГ
+//3. Напоминалка постоянно показывается - БАГ
+//4. Иконка в нотификации - БАГ
+
+
 //1. A/b тестирование
-//1. Возвращение на страницу с предложениями
-//2. Нотификация часто показывается. (Может несколько раз ставится таймер)
-//2. Нет диалога с конкурсом
 //4. Поменять иконку
 //5. А потом релизнуть
