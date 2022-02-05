@@ -67,6 +67,9 @@ class AlarmReceiver : BroadcastReceiver() {
                         .putExtra("action", "clear_badges"),
                     0)*/
             }
+            .header {
+                icon = R.drawable.ic_launcher
+            }
             .content {
                 largeIcon =
                     AppCompatResources.getDrawable(context, R.drawable.ic_launcher)?.toBitmap()
