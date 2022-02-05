@@ -5,10 +5,14 @@ import android.animation.AnimatorSet
 import android.content.Context
 import android.util.Log
 import android.view.View
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.view.isVisible
 import io.taptap.stupidenglish.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 fun flipCard(
     context: Context,
@@ -46,5 +50,23 @@ fun flipCard(
         }
     } catch (e: Exception) {
         Log.d("StupidEnglish", "flipCard + ${e.printStackTrace()}")
+    }
+}
+
+@ExperimentalMaterialApi
+fun ModalBottomSheetState.hideSheet(scope: CoroutineScope) {
+    scope.launch {
+        if (!isAnimationRunning) {
+            hide()
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+fun ModalBottomSheetState.showSheet(scope: CoroutineScope) {
+    scope.launch {
+        if (!isAnimationRunning) {
+            show()
+        }
     }
 }

@@ -6,7 +6,6 @@ import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.logic.share.ShareUtil
 import io.taptap.stupidenglish.base.model.Sentence
-import io.taptap.stupidenglish.features.main.ui.MainContract
 import io.taptap.stupidenglish.features.sentences.data.SentencesListRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,7 +15,7 @@ import taptap.pub.takeOrNull
 import taptap.pub.takeOrReturn
 import javax.inject.Inject
 
-private const val SENTENCES_FOR_MOTIVATION = 3
+private const val SENTENCES_FOR_MOTIVATION = 2
 
 @HiltViewModel
 class SentencesListViewModel @Inject constructor(
@@ -32,8 +31,7 @@ class SentencesListViewModel @Inject constructor(
     override fun setInitialState() =
         SentencesListContract.State(
             sentenceList = listOf(),
-            isLoading = true,
-            timeToShowMotivationToSharing = false
+            isLoading = true
         )
 
     override fun handleEvents(event: SentencesListContract.Event) {
@@ -57,9 +55,11 @@ class SentencesListViewModel @Inject constructor(
                 shareUtil.share(event.sentence.sentence)
             }
             is SentencesListContract.Event.OnMotivationConfirmClick -> {
+                setEffect { SentencesListContract.Effect.HideMotivation }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isShareMotivationShown = true
                 }
+
                 val first = viewState.value.sentenceList
                     .filterIsInstance<SentencesListItemUI>()
                     .first()
@@ -69,7 +69,13 @@ class SentencesListViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isShareMotivationShown = true
                 }
-                setEffect { SentencesListContract.Effect.CloseMotivation }
+                setEffect { SentencesListContract.Effect.HideMotivation }
+            }
+            SentencesListContract.Event.OnMotivationCancel ->  {
+                viewModelScope.launch(Dispatchers.IO) {
+                    repository.isShareMotivationShown = true
+                }
+                setEffect { SentencesListContract.Effect.HideMotivation }
             }
         }
     }
@@ -96,7 +102,7 @@ class SentencesListViewModel @Inject constructor(
     }
 
     private fun makeSentenceList(savedSentenceList: List<Sentence>): List<SentencesListListModels> {
-        val sentenceList = mutableListOf(
+        return mutableListOf(
             SentencesListTitleUI(valueRes = R.string.stns_list_new_word_title),
             SentencesListNewSentenceUI(valueRes = R.string.stns_list_add_word),
             SentencesListTitleUI(valueRes = R.string.stns_list_list_title),
@@ -108,7 +114,6 @@ class SentencesListViewModel @Inject constructor(
                 )
             })
         }
-        return sentenceList
     }
 
     private suspend fun motivationShare() {
@@ -117,11 +122,8 @@ class SentencesListViewModel @Inject constructor(
                 setEffect { SentencesListContract.Effect.GetSentencesError(R.string.stns_get_sentences_error) }
             }
             savedSentenceList.collect {
-                val isTime = it.size % SENTENCES_FOR_MOTIVATION == 0
-                if (isTime) {
-                    setState {
-                        copy(timeToShowMotivationToSharing = true)
-                    }
+                if (it.size == SENTENCES_FOR_MOTIVATION) {
+                    setEffect { SentencesListContract.Effect.ShowMotivation }
                 }
             }
         }

@@ -14,7 +14,7 @@
     <string name="stns_get_sentences_error">Возникла ошибка в момент получения предложений</string>
     <string name="addw_save_error">Возникла ошибка в момент добавления слова</string>
     <string name="addw_word_placeholder">Незнакомое слово</string>
-    <string name="addw_description_placeholder">Ваша подсказка к слову выше</string>
+    <string name="addw_description_placeholder">Подсказка к слову выше</string>
     <string name="addw_description_not_found_error">Ты забыл добавить подсказку =)</string>
     <string name="adds_save_error">Возникла ошибка в момент добавления предложения</string>
     <string name="adds_get_words_error">Возникла ошибка в момент получения слов</string>
@@ -32,9 +32,13 @@
     <string name="stck_button_yes">Да</string>
     <string name="stck_save_error">Возникла ошибка в момент сохрания слова</string>
     <string name="stck_front_label">Помнишь это слово?</string>
-    <string name="addw_motivation_title">Составим предложение?</string>
+    <string name="word_motivation_title">Составим предложение?</string>
     <string name="stck_back_label">Подсказка</string>
-    <string name="addw_motivation_message">Настало время составить предложение с добавленными словами. Раз в месяц, мы выбираем самое веселое и глупое предложение, и на его основе нарисуем иллюстрацию!</string>
-    <string name="addw_motivation_confirm">Составить</string>
-    <string name="addw_motivation_decline">Позже</string>
+    <string name="word_motivation_message">Настало время составить предложение с добавленными словами. Раз в месяц, мы выбираем самое веселое и глупое предложение, и на его основе нарисуем иллюстрацию!</string>
+    <string name="word_motivation_confirm">Составить</string>
+    <string name="word_motivation_decline">Позже</string>
+    <string name="adds_motivation_title">Хочешь поделиться своим предложением?</string>
+    <string name="adds_motivation_message">Делитесь своими предложениями. Это даёт большую мотивацию вам учиться, а мне разрабатывать это приложение!</string>
+    <string name="adds_motivation_confirm">Поделиться</string>
+    <string name="adds_motivation_decline">Позже</string>
 </resources>

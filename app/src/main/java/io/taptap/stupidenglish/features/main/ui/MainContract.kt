@@ -17,12 +17,12 @@ class MainContract {
     data class State(
         val pagerIsVisible: Boolean,
         val pageId: Int,
-        val isShownGreetings: Boolean = false,
-        val timeToShowMotivationToSentence: Boolean
+        val isShownGreetings: Boolean = false
     ) : ViewState
 
     sealed class Effect : ViewSideEffect {
-        object CloseMotivation : Effect()
+        object HideMotivation : Effect()
+        object ShowMotivation : Effect()
 
         sealed class Navigation : Effect() {
             data class ToAddSentence(val wordIds: List<Long>) : Navigation()

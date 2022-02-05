@@ -35,6 +35,8 @@ import com.google.accompanist.pager.rememberPagerState
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.base.ui.hideSheet
+import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListScreen
@@ -72,27 +74,21 @@ fun MainScreen(
     LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
         effectFlow?.onEach { effect ->
             when (effect) {
-                is MainContract.Effect.CloseMotivation ->
+                is MainContract.Effect.HideMotivation ->
                     modalBottomSheetState.hideSheet(scope)
+                is MainContract.Effect.ShowMotivation ->
+                    modalBottomSheetState.showSheet(scope)
                 is MainContract.Effect.Navigation.ToAddSentence ->
                     onNavigationRequested(effect)
             }
         }?.collect()
     }
 
-    //https://stackoverflow.com/questions/69052660/listen-modalbottomsheetlayout-state-change-in-jetpack-compose
-//    LaunchedEffect(modalBottomSheetState.currentValue) {
-//        when (modalBottomSheetState.currentValue) {
-//            ModalBottomSheetValue.Hidden -> TODO()
-//            ModalBottomSheetValue.Expanded -> TODO()
-//            ModalBottomSheetValue.HalfExpanded -> TODO()
-//        }
-//    }
     if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
         DisposableEffect(Unit) {
             onDispose {
+                Log.d("ModalBottomSheetValue", "DisposableEffect onDispose")
                 onEventSent(MainContract.Event.OnMotivationCancel)
-                //modalBottomSheetState.hideSheet(scope)
             }
         }
     }
@@ -159,7 +155,7 @@ private fun MotivationBottomSheetScreen(
             }
 
             Text(
-                text = stringResource(id = R.string.addw_motivation_title),
+                text = stringResource(id = R.string.word_motivation_title),
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
@@ -176,7 +172,7 @@ private fun MotivationBottomSheetScreen(
             )
 
             Text(
-                text = stringResource(id = R.string.addw_motivation_message),
+                text = stringResource(id = R.string.word_motivation_message),
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp,
                 color = getContentTextColor(),
@@ -195,7 +191,7 @@ private fun MotivationBottomSheetScreen(
                         onEventSent(MainContract.Event.OnMotivationDeclineClick)
                     }) {
                     Text(
-                        text = stringResource(id = R.string.addw_motivation_decline),
+                        text = stringResource(id = R.string.word_motivation_decline),
                         color = Black200,
                     )
                 }
@@ -207,7 +203,7 @@ private fun MotivationBottomSheetScreen(
                         onEventSent(MainContract.Event.OnMotivationConfirmClick)
                     }) {
                     Text(
-                        text = stringResource(id = R.string.addw_motivation_confirm),
+                        text = stringResource(id = R.string.word_motivation_confirm),
                         color = White100
                     )
                 }
@@ -232,16 +228,6 @@ private fun MainScreenWithPager(
 
     scope.launch {
         pagerState.scrollToPage(state.pageId)
-    }
-
-    if (state.timeToShowMotivationToSentence) {
-        scope.launch {
-            if (!modalBottomSheetState.isAnimationRunning) {
-                if (!modalBottomSheetState.isVisible) {
-                    modalBottomSheetState.show()
-                }
-            }
-        }
     }
 
     Column {
@@ -301,7 +287,6 @@ private fun WordListDestination(
                 }
             }
         })
-    Log.d("StupidEnglish", "isShownGreetings = $isShownGreetings")
     if (isShownGreetings) {
         AlertDialog(
             onDismissRequest = {
@@ -341,22 +326,4 @@ private fun SentenceListDestination(
                 navController.navigate("${NavigationKeys.Route.SE_REMEMBER}/${ids}")
             }
         })
-}
-
-@ExperimentalMaterialApi
-private fun ModalBottomSheetState.hideSheet(scope: CoroutineScope) {
-    scope.launch {
-        if (!isAnimationRunning) {
-            hide()
-        }
-    }
-}
-
-@ExperimentalMaterialApi
-private fun ModalBottomSheetState.showSheet(scope: CoroutineScope) {
-    scope.launch {
-        if (!isAnimationRunning) {
-            show()
-        }
-    }
 }

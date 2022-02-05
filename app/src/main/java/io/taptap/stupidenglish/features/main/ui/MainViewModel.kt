@@ -1,8 +1,5 @@
 package io.taptap.stupidenglish.features.main.ui
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +14,7 @@ import taptap.pub.map
 import taptap.pub.takeOrNull
 import javax.inject.Inject
 
-private const val WORDS_FOR_MOTIVATION = 3
+private const val WORDS_FOR_MOTIVATION = 1
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -25,12 +22,8 @@ class MainViewModel @Inject constructor(
     private val repository: MainRepository
 ) : BaseViewModel<MainContract.Event, MainContract.State, MainContract.Effect>() {
 
-    private var lastWordsCount = -1
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d("TAGGG", "MainViewModel init")
-
             val pageId = stateHandle.get<String>(NavigationKeys.Arg.PAGE_ID)?.toInt() ?: 0
             val isFirstStart = repository.isFirstStart
             setState {
@@ -50,11 +43,11 @@ class MainViewModel @Inject constructor(
                         pagerIsVisible = pagerIsVisible
                     )
                 }
-                repository.isSentenceMotivationShown = false
-                if (lastWordsCount < size && !repository.isSentenceMotivationShown) { //todo придумать время мотивации
+                if (size == WORDS_FOR_MOTIVATION && !repository.isSentenceMotivationShown) { //todo придумать время мотивации
                     delay(2000)
-                    setState { copy(timeToShowMotivationToSentence = size % WORDS_FOR_MOTIVATION == 0) }
-                    lastWordsCount = size
+                    if (size % WORDS_FOR_MOTIVATION == 0) {
+                        setEffect { MainContract.Effect.ShowMotivation }
+                    }
                 }
             }
         }
@@ -64,8 +57,7 @@ class MainViewModel @Inject constructor(
         MainContract.State(
             pagerIsVisible = false,
             pageId = 0,
-            isShownGreetings = false,
-            timeToShowMotivationToSentence = false
+            isShownGreetings = false
         )
 
     override fun handleEvents(event: MainContract.Event) {
@@ -75,7 +67,7 @@ class MainViewModel @Inject constructor(
                 setState { copy(isShownGreetings = false) }
             }
             MainContract.Event.OnMotivationConfirmClick -> {
-                setState { copy(timeToShowMotivationToSentence = false) }
+                setEffect { MainContract.Effect.HideMotivation }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
 
@@ -90,20 +82,18 @@ class MainViewModel @Inject constructor(
                 }
             }
             MainContract.Event.OnMotivationDeclineClick -> {
-                setState { copy(timeToShowMotivationToSentence = false) }
-
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
                 }
 
-                setEffect { MainContract.Effect.CloseMotivation }
+                setEffect { MainContract.Effect.HideMotivation }
             }
             MainContract.Event.OnMotivationCancel -> {
-                setState { copy(timeToShowMotivationToSentence = false) }
-
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
                 }
+
+                setEffect { MainContract.Effect.HideMotivation }
             }
         }
     }

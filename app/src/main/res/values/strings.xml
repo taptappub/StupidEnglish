@@ -26,6 +26,10 @@
     <string name="word_get_random_words_error">Can\'t find random words</string>
     <string name="word_get_list_error">Error at the time of getting words</string>
     <string name="word_onboarding_text">Make the stupidest sentence from your words</string>
+    <string name="word_motivation_title">Is it time to make a sentence?</string>
+    <string name="word_motivation_message">Let\'s make some sentences with your words. Once per month we choose the funniest and stupidest sentence and make a picture with it!</string>
+    <string name="word_motivation_confirm">Let\'s do it!</string>
+    <string name="word_motivation_decline">Nope</string>
 
     <!-- Sentences List -->
     <string name="stns_list_new_word_title">Add new sentences</string>
@@ -39,10 +43,6 @@
     <string name="addw_word_placeholder">Unknown word</string>
     <string name="addw_description_placeholder">Your hint for word above</string>
     <string name="addw_description_not_found_error">Add your hint, please =)</string>
-    <string name="addw_motivation_title">Is it time to make a sentence?</string>
-    <string name="addw_motivation_message">Let\'s make some sentences with your words. Once per month we choose the funniest and stupidest sentence and make a picture with it!</string>
-    <string name="addw_motivation_confirm">Let\'s do it!</string>
-    <string name="addw_motivation_decline">Nope</string>
 
     <!-- Add Sentence -->
     <string name="adds_save_error">Error at the time of saving</string>
@@ -53,6 +53,12 @@
     <string name="adds_confirm_dialog_text">Do you want to save this sentence? It\'s very stupid! I so like it!</string>
     <string name="adds_confirm_dialog_ok">Save</string>
     <string name="adds_confirm_dialog_cancel">Cancel</string>
+    <string name="adds_motivation_title">Let\'s share last sentence!</string>
+    <string name="adds_motivation_message">Try to share your last sentence with friends. It is a huge motivation for your education, and so do my…</string>
+    <string name="adds_motivation_confirm">Share</string>
+    <string name="adds_motivation_decline">Later</string>
+
+    <!-- Alarm notification -->
     <string name="alrm_sentence_title">Time to make a sentence!</string>
     <string name="alrm_sentence_message">Challenge yourself with words %1$s</string>
 

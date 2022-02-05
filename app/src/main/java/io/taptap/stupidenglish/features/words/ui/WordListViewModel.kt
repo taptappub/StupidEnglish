@@ -1,6 +1,5 @@
 package io.taptap.stupidenglish.features.words.ui
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
@@ -54,7 +53,6 @@ class WordListViewModel @Inject constructor(
     private suspend fun getRandomWords(): List<Long>? {
         return repository.getRandomWords(3)
             .map { list ->
-                Log.d("TAGGGG", "list = $list")
                 list.map { it.id }
             }
             .takeOrNull()

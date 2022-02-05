@@ -30,12 +30,13 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.google.accompanist.insets.ProvideWindowInsets
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.base.ui.hideSheet
+import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.theme.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 
 @ExperimentalMaterialApi
@@ -60,12 +61,10 @@ fun SentencesListScreen(
         LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
             effectFlow?.onEach { effect ->
                 when (effect) {
-                    is SentencesListContract.Effect.CloseMotivation ->
-                        scope.launch {
-                            if (!modalBottomSheetState.isAnimationRunning) {
-                                modalBottomSheetState.hide()
-                            }
-                        }
+                    is SentencesListContract.Effect.HideMotivation ->
+                        modalBottomSheetState.hideSheet(scope)
+                    is SentencesListContract.Effect.ShowMotivation ->
+                        modalBottomSheetState.showSheet(scope)
                     is SentencesListContract.Effect.GetRandomWordsError ->
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(effect.errorRes),
@@ -82,14 +81,10 @@ fun SentencesListScreen(
             }?.collect()
         }
 
-        //https://stackoverflow.com/questions/69052660/listen-modalbottomsheetlayout-state-change-in-jetpack-compose
-        LaunchedEffect(modalBottomSheetState.currentValue) {
-            println(modalBottomSheetState.currentValue)
-        }
         if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
             DisposableEffect(Unit) {
                 onDispose {
-                    println("hidden12")
+                    onEventSent(SentencesListContract.Event.OnMotivationCancel)
                 }
             }
         }
@@ -156,7 +151,7 @@ private fun MotivationBottomSheetScreen(
             }
 
             Text(
-                text = stringResource(id = R.string.addw_motivation_title),
+                text = stringResource(id = R.string.adds_motivation_title),
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
@@ -173,7 +168,7 @@ private fun MotivationBottomSheetScreen(
             )
 
             Text(
-                text = stringResource(id = R.string.addw_motivation_message),
+                text = stringResource(id = R.string.adds_motivation_message),
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp,
                 color = getContentTextColor(),
@@ -192,7 +187,7 @@ private fun MotivationBottomSheetScreen(
                         onEventSent(SentencesListContract.Event.OnMotivationDeclineClick)
                     }) {
                     Text(
-                        text = stringResource(id = R.string.addw_motivation_decline),
+                        text = stringResource(id = R.string.adds_motivation_decline),
                         color = Black200,
                     )
                 }
@@ -204,7 +199,7 @@ private fun MotivationBottomSheetScreen(
                         onEventSent(SentencesListContract.Event.OnMotivationConfirmClick)
                     }) {
                     Text(
-                        text = stringResource(id = R.string.addw_motivation_confirm),
+                        text = stringResource(id = R.string.adds_motivation_confirm),
                         color = White100
                     )
                 }
