@@ -9,20 +9,13 @@ import io.taptap.stupidenglish.features.words.ui.WordListContract
 class MainContract {
     sealed class Event : ViewEvent {
         object OnGreetingsClose : Event()
-        object OnMotivationConfirmClick : Event()
-        object OnMotivationDeclineClick : Event()
-        object OnMotivationCancel : Event()
     }
 
     data class State(
-        val pagerIsVisible: Boolean,
-        val pageId: Int,
-        val isShownGreetings: Boolean = false
+        val isShownGreetings: Boolean
     ) : ViewState
 
     sealed class Effect : ViewSideEffect {
-        object HideMotivation : Effect()
-        object ShowMotivation : Effect()
 
         sealed class Navigation : Effect() {
             data class ToAddSentence(val wordIds: List<Long>) : Navigation()

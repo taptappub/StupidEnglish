@@ -7,12 +7,15 @@ import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.words.data.WordListRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import taptap.pub.map
 import taptap.pub.takeOrNull
 import taptap.pub.takeOrReturn
 import javax.inject.Inject
+
+private const val WORDS_FOR_MOTIVATION = 1
 
 @HiltViewModel
 class WordListViewModel @Inject constructor(
@@ -21,6 +24,7 @@ class WordListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) { getMainList() }
+        viewModelScope.launch(Dispatchers.IO) { showMotivation() }
     }
 
     override fun setInitialState() =
@@ -47,6 +51,35 @@ class WordListViewModel @Inject constructor(
                     }
                 }
             }
+            WordListContract.Event.OnMotivationConfirmClick -> {
+                setEffect { WordListContract.Effect.HideMotivation }
+                viewModelScope.launch(Dispatchers.IO) {
+                    repository.isSentenceMotivationShown = true
+
+                    val randomWords = getRandomWords()
+                    withContext(Dispatchers.Main) {
+                        if (randomWords != null) {
+                            setEffect {
+                                WordListContract.Effect.Navigation.ToAddSentence(randomWords)
+                            }
+                        }
+                    }
+                }
+            }
+            WordListContract.Event.OnMotivationDeclineClick -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    repository.isSentenceMotivationShown = true
+                }
+
+                setEffect { WordListContract.Effect.HideMotivation }
+            }
+            WordListContract.Event.OnMotivationCancel -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    repository.isSentenceMotivationShown = true
+                }
+
+                setEffect { WordListContract.Effect.HideMotivation }
+            }
         }
     }
 
@@ -56,6 +89,20 @@ class WordListViewModel @Inject constructor(
                 list.map { it.id }
             }
             .takeOrNull()
+    }
+
+    private suspend fun showMotivation() {
+        val wordsCountFlow = repository.getWordList().takeOrNull()
+        wordsCountFlow?.collect { words ->
+            val size = words.size
+
+            if (size == WORDS_FOR_MOTIVATION && !repository.isSentenceMotivationShown) { //todo придумать время мотивации
+                delay(2000)
+                if (size % WORDS_FOR_MOTIVATION == 0) {
+                    setEffect { WordListContract.Effect.ShowMotivation }
+                }
+            }
+        }
     }
 
     private suspend fun getMainList() {

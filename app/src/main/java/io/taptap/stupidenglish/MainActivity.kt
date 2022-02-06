@@ -14,7 +14,6 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
@@ -44,7 +43,6 @@ class MainActivity : ComponentActivity() {
 
     @ExperimentalMaterialApi
     @ExperimentalAnimationApi
-    @ExperimentalPagerApi
     @ExperimentalMaterialNavigationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,18 +60,12 @@ class MainActivity : ComponentActivity() {
     @OptIn(InternalCoroutinesApi::class)
     @ExperimentalAnimationApi
     @ExperimentalMaterialNavigationApi
-    @ExperimentalPagerApi
     @Composable
     private fun StupidApp() {
         val navController = rememberAnimatedNavController()
         AnimatedNavHost(navController, startDestination = NavigationKeys.Route.SE_MAIN) {
             composable(
                 route = NavigationKeys.Route.SE_MAIN,
-            ) {
-                MainDestination(navController)
-            }
-            composable(
-                route = "${NavigationKeys.Route.SE_MAIN}/{${NavigationKeys.Arg.PAGE_ID}}",
             ) {
                 MainDestination(navController)
             }
@@ -178,26 +170,14 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
         onEventSent = { event -> addSentenceViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
-                val navEntry = navController.backQueue
-                    .find {
-                        it.destination.route?.let { route ->
-                            route == NavigationKeys.Route.SE_MAIN
-                        } ?: false
-                    }
-//                val navEntry = navController.previousBackStackEntry
-                val navEntrySavedStateHandle = navEntry?.savedStateHandle
-                navEntrySavedStateHandle?.set(
-                    NavigationKeys.Arg.PAGE_ID,
-                    "1"
-                )
                 navController.popBackStack(NavigationKeys.Route.SE_MAIN, false)
             }
         })
 }
 
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @InternalCoroutinesApi
-@ExperimentalPagerApi
 @Composable
 private fun MainDestination(navController: NavHostController) {
     val mainViewModel: MainViewModel = hiltViewModel()

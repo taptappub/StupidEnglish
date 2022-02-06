@@ -2,20 +2,26 @@ package io.taptap.stupidenglish.features.words.ui
 
 import android.content.Context
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -27,14 +33,16 @@ import com.google.accompanist.insets.ProvideWindowInsets
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.noRippleClickable
-import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
-import io.taptap.stupidenglish.ui.theme.getContentTextColor
-import io.taptap.stupidenglish.ui.theme.getTitleTextColor
+import io.taptap.stupidenglish.base.ui.hideSheet
+import io.taptap.stupidenglish.base.ui.showSheet
+import io.taptap.stupidenglish.ui.BottomSheetScreen
+import io.taptap.stupidenglish.ui.theme.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
 
+@ExperimentalMaterialApi
 @Composable
 fun WordListScreen(
     context: Context,
@@ -43,43 +51,75 @@ fun WordListScreen(
     onEventSent: (event: WordListContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: WordListContract.Effect.Navigation) -> Unit
 ) {
-    ProvideWindowInsets {
-        StupidEnglishTheme {
-            val scaffoldState: ScaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
 
-            // Listen for side effects from the VM
-            LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-                effectFlow?.onEach { effect ->
-                    when (effect) {
-                        is WordListContract.Effect.Navigation.ToAddWord ->
-                            onNavigationRequested(effect)
-                        is WordListContract.Effect.GetRandomWordsError ->
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.getString(effect.errorRes),
-                                duration = SnackbarDuration.Short
-                            )
-                        is WordListContract.Effect.GetWordsError ->
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.getString(effect.errorRes),
-                                duration = SnackbarDuration.Short
-                            )
-                        is WordListContract.Effect.Navigation.ToAddSentence ->
-                            onNavigationRequested(effect)
-                    }
-                }?.collect()
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+    )
+
+    if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
+        DisposableEffect(Unit) {
+            onDispose {
+                onEventSent(WordListContract.Event.OnMotivationCancel)
             }
+        }
+    }
 
-            Scaffold(
-                scaffoldState = scaffoldState,
-                backgroundColor = MaterialTheme.colors.background,
-            ) {
-                Box {
-                    MainList(
-                        wordItems = state.wordList,
-                        onEventSent = onEventSent
-                    )
-                    if (state.isLoading) {
-                        LoadingBar()
+    ModalBottomSheetLayout(
+        sheetState = modalBottomSheetState,
+        sheetContent = {
+            MotivationBottomSheetScreen(
+                onEventSent = onEventSent,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            )
+        },
+        sheetBackgroundColor = MaterialTheme.colors.background,
+        sheetShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+    ) {
+        ProvideWindowInsets {
+            StupidEnglishTheme {
+                val scaffoldState: ScaffoldState = rememberScaffoldState()
+
+                // Listen for side effects from the VM
+                LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+                    effectFlow?.onEach { effect ->
+                        when (effect) {
+                            is WordListContract.Effect.HideMotivation ->
+                                modalBottomSheetState.hideSheet(scope)
+                            is WordListContract.Effect.ShowMotivation ->
+                                modalBottomSheetState.showSheet(scope)
+                            is WordListContract.Effect.Navigation.ToAddWord ->
+                                onNavigationRequested(effect)
+                            is WordListContract.Effect.GetRandomWordsError ->
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = context.getString(effect.errorRes),
+                                    duration = SnackbarDuration.Short
+                                )
+                            is WordListContract.Effect.GetWordsError ->
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = context.getString(effect.errorRes),
+                                    duration = SnackbarDuration.Short
+                                )
+                            is WordListContract.Effect.Navigation.ToAddSentence ->
+                                onNavigationRequested(effect)
+                        }
+                    }?.collect()
+                }
+
+                Scaffold(
+                    scaffoldState = scaffoldState,
+                    backgroundColor = MaterialTheme.colors.background,
+                ) {
+                    Box {
+                        MainList(
+                            wordItems = state.wordList,
+                            onEventSent = onEventSent
+                        )
+                        if (state.isLoading) {
+                            LoadingBar()
+                        }
                     }
                 }
             }
@@ -295,18 +335,93 @@ fun LoadingBar() {
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreview() {
-//    StupidEnglishTheme {
-//        MainListScreen(
-//            LocalContext.current,
-//            MainListContract.State(),
-//            null,
-//            { },
-//            { })
-//    }
-//}
+@Composable
+private fun MotivationBottomSheetScreen(
+    modifier: Modifier,
+    onEventSent: (event: WordListContract.Event) -> Unit
+) {
+    BottomSheetScreen(
+        modifier = modifier
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier
+                    .padding(top = 24.dp)
+                    .size(52.dp)
+                    .background(
+                        color = MaterialTheme.colors.secondary,
+                        shape = CircleShape
+                    )
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_pen),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .align(Alignment.Center)
+                )
+            }
+
+            Text(
+                text = stringResource(id = R.string.word_motivation_title),
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(
+                    Font(R.font.rubik_regular, FontWeight.Normal),
+                    Font(R.font.rubik_medium, FontWeight.Medium),
+                    Font(R.font.rubik_bold, FontWeight.Bold)
+                ),
+                color = getTitleTextColor(),
+                style = MaterialTheme.typography.subtitle1,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+            )
+
+            Text(
+                text = stringResource(id = R.string.word_motivation_message),
+                textAlign = TextAlign.Center,
+                fontSize = 16.sp,
+                color = getContentTextColor(),
+                style = MaterialTheme.typography.subtitle1,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 44.dp)
+            ) {
+                Button(
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = getSecondaryButtonBackgroundColor()),
+                    onClick = {
+                        onEventSent(WordListContract.Event.OnMotivationDeclineClick)
+                    }) {
+                    Text(
+                        text = stringResource(id = R.string.word_motivation_decline),
+                        color = Black200,
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = getPrimaryButtonBackgroundColor()),
+                    onClick = {
+                        onEventSent(WordListContract.Event.OnMotivationConfirmClick)
+                    }) {
+                    Text(
+                        text = stringResource(id = R.string.word_motivation_confirm),
+                        color = White100
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable

@@ -6,7 +6,6 @@ import android.content.Context.ALARM_SERVICE
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +21,6 @@ import io.taptap.stupidenglish.features.alarm.ui.AlarmScheduler
 import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Singleton
 
-@ExperimentalPagerApi
 @ExperimentalMaterialNavigationApi
 @InternalCoroutinesApi
 @ExperimentalAnimationApi
