@@ -68,7 +68,7 @@ class AlarmReceiver : BroadcastReceiver() {
                     0)*/
             }
             .header {
-                icon = R.drawable.ic_launcher
+                icon = R.drawable.ic_notification
             }
             .content {
                 largeIcon =

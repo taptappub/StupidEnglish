@@ -4,12 +4,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.navDeepLink
+import androidx.navigation.*
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -24,11 +27,18 @@ import io.taptap.stupidenglish.features.addword.ui.AddWordScreen
 import io.taptap.stupidenglish.features.addword.ui.AddWordViewModel
 import io.taptap.stupidenglish.features.alarm.ui.AlarmScheduler
 import io.taptap.stupidenglish.features.main.ui.MainContract
-import io.taptap.stupidenglish.features.main.ui.MainScreen
 import io.taptap.stupidenglish.features.main.ui.MainViewModel
+import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
+import io.taptap.stupidenglish.features.sentences.ui.SentencesListScreen
+import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
 import io.taptap.stupidenglish.features.stack.ui.StackContract
 import io.taptap.stupidenglish.features.stack.ui.StackScreen
 import io.taptap.stupidenglish.features.stack.ui.StackViewModel
+import io.taptap.stupidenglish.features.words.ui.WordListContract
+import io.taptap.stupidenglish.features.words.ui.WordListScreen
+import io.taptap.stupidenglish.features.words.ui.WordListViewModel
+import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
+import io.taptap.stupidenglish.ui.StupidEnglishScaffold
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Inject
@@ -63,51 +73,118 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun StupidApp() {
         val navController = rememberAnimatedNavController()
-        AnimatedNavHost(navController, startDestination = NavigationKeys.Route.SE_MAIN) {
-            composable(
-                route = NavigationKeys.Route.SE_MAIN,
-            ) {
-                MainDestination(navController)
-            }
-            composable(
-                route = NavigationKeys.Route.SE_ADD_WORD,
-                enterTransition = {
-                    slideInVertically(initialOffsetY = { 1000 })
+        val scaffoldState = rememberScaffoldState()
+
+        val mainViewModel: MainViewModel = hiltViewModel()
+        val mainState = mainViewModel.viewState.value
+
+        if (mainState.isShownGreetings) {
+            AlertDialog(
+                onDismissRequest = {
+                    mainViewModel.setEvent(MainContract.Event.OnGreetingsClose)
                 },
-                exitTransition = {
-                    slideOutVertically(targetOffsetY = { 1000 })
-                }) {
-                AddWordDialogDestination(navController)
-            }
-            composable(
-                route = "${NavigationKeys.Route.SE_REMEMBER}/{${NavigationKeys.Arg.WORDS_ID}}",
-                deepLinks = listOf(navDeepLink {
-                    uriPattern =
-                        "$URI/${NavigationKeys.Arg.WORDS_ID}={${NavigationKeys.Arg.WORDS_ID}}"
-                }),
-                enterTransition = {
-                    fadeIn()
+                text = {
+                    Text(text = stringResource(id = R.string.main_dialog_message))
                 },
-                exitTransition = {
-                    fadeOut()
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            mainViewModel.setEvent(MainContract.Event.OnGreetingsClose)
+                        }
+                    ) {
+                        Text(text = stringResource(id = R.string.main_dialog_ok))
+                    }
                 }
-            ) {
-                StackDestination(navController)
-            }
-            composable(
-                route = "${NavigationKeys.Route.SE_ADD_SENTENCE}/{${NavigationKeys.Arg.SENTENCE_WORDS_ID}}",
-                deepLinks = listOf(navDeepLink {
-                    uriPattern =
-                        "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}={${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
-                }),
-                enterTransition = {
-                    slideInVertically(initialOffsetY = { 1000 })
-                },
-                exitTransition = {
-                    slideOutVertically(targetOffsetY = { 1000 })
+            )
+        }
+
+        StupidEnglishScaffold(
+            scaffoldState = scaffoldState,
+            bottomBar = {
+                if (mainState.shouldShowBottomBar(navController)) {
+                    StupidEnglishBottomBar(
+                        state = mainState,
+                        effectFlow = mainViewModel.effect,
+                        onEventSent = { event -> mainViewModel.setEvent(event) },
+                        onNavigationRequested = { navigationEffect ->
+                            if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
+                                navController.navigate(navigationEffect.route) {
+                                    launchSingleTop = true
+                                    restoreState = true
+                                    // Pop up backstack to the first destination and save state. This makes going back
+                                    // to the start destination when pressing back in any other bottom tab.
+                                    popUpTo(findStartDestination(navController.graph).id) {
+                                        saveState = true
+                                    }
+                                }
+                            }
+                        }
+                    )
                 }
+            }
+        ) { innerPaddingModifier ->
+            AnimatedNavHost(
+                navController = navController,
+                startDestination = NavigationKeys.Route.SE_MAIN,
+                modifier = Modifier.padding(innerPaddingModifier)
             ) {
-                AddSentenceDialogDestination(navController)
+                navigation(
+                    startDestination = NavigationKeys.BottomNavigationScreen.SE_WORDS.route,
+                    route = NavigationKeys.Route.SE_MAIN
+                ) {
+                    composable(
+                        route = NavigationKeys.BottomNavigationScreen.SE_WORDS.route,
+                        enterTransition = null
+                    ) {
+                        WordListDestination(navController = navController)
+                    }
+                    composable(
+                        route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route,
+                        enterTransition = null
+                    ) {
+                        SentenceListDestination(navController = navController)
+                    }
+                }
+                composable(
+                    route = NavigationKeys.Route.SE_ADD_WORD,
+                    enterTransition = {
+                        slideInVertically(initialOffsetY = { 1000 })
+                    },
+                    exitTransition = {
+                        slideOutVertically(targetOffsetY = { 1000 })
+                    }) {
+                    AddWordDialogDestination(navController)
+                }
+                composable(
+                    route = "${NavigationKeys.Route.SE_REMEMBER}/{${NavigationKeys.Arg.WORDS_ID}}",
+                    deepLinks = listOf(navDeepLink {
+                        uriPattern =
+                            "$URI/${NavigationKeys.Arg.WORDS_ID}={${NavigationKeys.Arg.WORDS_ID}}"
+                    }),
+                    enterTransition = {
+                        fadeIn()
+                    },
+                    exitTransition = {
+                        fadeOut()
+                    }
+                ) {
+                    StackDestination(navController)
+                }
+                composable(
+                    route = "${NavigationKeys.Route.SE_ADD_SENTENCE}/{${NavigationKeys.Arg.SENTENCE_WORDS_ID}}",
+                    deepLinks = listOf(navDeepLink {
+                        uriPattern =
+                            "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}={${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
+                    }),
+                    enterTransition = {
+                        slideInVertically(initialOffsetY = { 1000 })
+                    },
+                    exitTransition = {
+                        slideOutVertically(targetOffsetY = { 1000 })
+                    }
+                ) {
+                    AddSentenceDialogDestination(navController)
+                }
             }
         }
     }
@@ -175,29 +252,53 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
         })
 }
 
-@ExperimentalAnimationApi
 @ExperimentalMaterialApi
-@InternalCoroutinesApi
 @Composable
-private fun MainDestination(navController: NavHostController) {
-    val mainViewModel: MainViewModel = hiltViewModel()
-    val mainState = mainViewModel.viewState.value
+private fun WordListDestination(
+    navController: NavHostController
+) {
+    val wordViewModel: WordListViewModel = hiltViewModel()
+    val wordState = wordViewModel.viewState.value
 
-    MainScreen(
-        navController = navController,
-        state = mainState,
-        effectFlow = mainViewModel.effect,
-        onEventSent = { event -> mainViewModel.setEvent(event) },
+    WordListScreen(
+        context = LocalContext.current,
+        state = wordState,
+        effectFlow = wordViewModel.effect,
+        onEventSent = { event -> wordViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             when (navigationEffect) {
-                is MainContract.Effect.Navigation.ToAddSentence -> {
+                is WordListContract.Effect.Navigation.ToAddWord -> {
+                    navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
+                }
+                is WordListContract.Effect.Navigation.ToAddSentence -> {
                     val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
                     navController.navigate("${NavigationKeys.Route.SE_REMEMBER}/${ids}")
                 }
             }
-        }
-    )
+        })
 }
+
+@ExperimentalMaterialApi
+@Composable
+private fun SentenceListDestination(
+    navController: NavHostController
+) {
+    val sentenceViewModel: SentencesListViewModel = hiltViewModel()
+    val sentenceState = sentenceViewModel.viewState.value
+
+    SentencesListScreen(
+        context = LocalContext.current,
+        state = sentenceState,
+        effectFlow = sentenceViewModel.effect,
+        onEventSent = { event -> sentenceViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
+                val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
+                navController.navigate("${NavigationKeys.Route.SE_REMEMBER}/${ids}")
+            }
+        })
+}
+
 //todo
 //4. Поменять иконку
 //3) Добавление одинаковых слов
@@ -216,3 +317,22 @@ private fun MainDestination(navController: NavHostController) {
 
 //1. A/b тестирование
 //5. А потом релизнуть
+
+private val NavGraph.startDestination: NavDestination?
+    get() = findNode(startDestinationId)
+
+/**
+ * Copied from similar function in NavigationUI.kt
+ *
+ * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:navigation/navigation-ui/src/main/java/androidx/navigation/ui/NavigationUI.kt
+ */
+private tailrec fun findStartDestination(graph: NavDestination): NavDestination {
+    return if (graph is NavGraph) findStartDestination(graph.startDestination!!) else graph
+}
+
+@Composable
+private fun MainContract.State.shouldShowBottomBar(navController: NavHostController): Boolean {
+    val tabs = bottomBarTabs.map { it.route }
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+    return currentRoute in tabs
+}

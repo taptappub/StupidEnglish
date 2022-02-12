@@ -1,6 +1,13 @@
 package io.taptap.stupidenglish
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.ui.graphics.vector.ImageVector
 
 object NavigationKeys {
 
@@ -17,18 +24,17 @@ object NavigationKeys {
         const val SE_REMEMBER = "stupid_english_remember"
     }
 
-    sealed class BottomNavigationScreen(
+    enum class BottomNavigationScreen(
         val route: String,
         val title: String,
         @DrawableRes val icon: Int
     ) {
-        object SE_WORDS : BottomNavigationScreen(
+        SE_WORDS(
             route = "stupid_english_words",
             title = "Home",
             icon = android.R.drawable.btn_minus
-        )
-
-        object SE_SENTENCES : BottomNavigationScreen(
+        ),
+        SE_SENTENCES(
             route = "stupid_english_sentences",
             title = "Search",
             icon = android.R.drawable.btn_star
