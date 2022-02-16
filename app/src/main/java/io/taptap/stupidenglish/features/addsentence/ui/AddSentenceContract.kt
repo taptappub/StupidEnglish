@@ -26,7 +26,7 @@ class AddSentenceContract {
         data class WaitingForSentenceError(val errorRes: Int) : Effect()
 
         sealed class Navigation : Effect() {
-            object BackToSentenceList : Navigation()
+            data class BackToSentenceList(val ids: String?) : Navigation()
         }
     }
 }

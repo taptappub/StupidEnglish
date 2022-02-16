@@ -15,7 +15,6 @@ class MainContract {
 
     data class State(
         val isShownGreetings: Boolean,
-        val currentRoute: String?,
         val bottomBarTabs: List<NavigationKeys.BottomNavigationScreen>
     ) : ViewState
 

@@ -1,11 +1,14 @@
 package io.taptap.stupidenglish.features.sentences.ui
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.logic.share.ShareUtil
 import io.taptap.stupidenglish.base.model.Sentence
+import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.sentences.data.SentencesListRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,19 +23,27 @@ private const val SENTENCES_FOR_MOTIVATION = 2
 @HiltViewModel
 class SentencesListViewModel @Inject constructor(
     private val repository: SentencesListRepository,
-    private val shareUtil: ShareUtil
+    private val shareUtil: ShareUtil,
+    stateHandle: SavedStateHandle,
+    addSentenceArgumentsMapper: AddSentenceArgumentsMapper
 ) : BaseViewModel<SentencesListContract.Event, SentencesListContract.State, SentencesListContract.Effect>() {
 
     init {
+        val wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.WORDS_ID)
+        val wordsIds = addSentenceArgumentsMapper.mapFrom(wordsIdsString)
+
+        if (wordsIds != null) {
+            setEffect { SentencesListContract.Effect.Navigation.ToAddSentence(wordsIds) }
+        }
+
         viewModelScope.launch(Dispatchers.IO) { getSentenceList() }
         viewModelScope.launch(Dispatchers.IO) { motivationShare() }
     }
 
-    override fun setInitialState() =
-        SentencesListContract.State(
-            sentenceList = listOf(),
-            isLoading = true
-        )
+    override fun setInitialState() = SentencesListContract.State(
+        sentenceList = listOf(),
+        isLoading = true
+    )
 
     override fun handleEvents(event: SentencesListContract.Event) {
         when (event) {

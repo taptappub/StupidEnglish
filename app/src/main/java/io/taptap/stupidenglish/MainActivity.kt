@@ -18,6 +18,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import dagger.hilt.android.AndroidEntryPoint
+import io.taptap.stupidenglish.NavigationKeys.Route.SENTENCES
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceScreen
@@ -104,18 +105,13 @@ class MainActivity : ComponentActivity() {
                 if (mainState.shouldShowBottomBar(navController)) {
                     StupidEnglishBottomBar(
                         state = mainState,
+                        currentRoute = navController.currentRoute!!,
                         effectFlow = mainViewModel.effect,
                         onEventSent = { event -> mainViewModel.setEvent(event) },
                         onNavigationRequested = { navigationEffect ->
                             if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
-                                navController.navigate(navigationEffect.route) {
-                                    launchSingleTop = true
-                                    restoreState = true
-                                    // Pop up backstack to the first destination and save state. This makes going back
-                                    // to the start destination when pressing back in any other bottom tab.
-                                    popUpTo(findStartDestination(navController.graph).id) {
-                                        saveState = true
-                                    }
+                                if (navigationEffect.route != navController.currentRoute) {
+                                    navController.navigateToTab(navigationEffect.route)
                                 }
                             }
                         }
@@ -136,10 +132,17 @@ class MainActivity : ComponentActivity() {
                         route = NavigationKeys.BottomNavigationScreen.SE_WORDS.route,
                         enterTransition = null
                     ) {
-                        WordListDestination(navController = navController)
+                        WordListDestination(
+                            navController = navController,
+                            onEventSent = { event -> mainViewModel.setEvent(event) }
+                        )
                     }
                     composable(
                         route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route,
+                        arguments = listOf(navArgument(NavigationKeys.Arg.WORDS_ID) {
+                            nullable = true
+                            defaultValue = null
+                        }),
                         enterTransition = null
                     ) {
                         SentenceListDestination(navController = navController)
@@ -152,7 +155,8 @@ class MainActivity : ComponentActivity() {
                     },
                     exitTransition = {
                         slideOutVertically(targetOffsetY = { 1000 })
-                    }) {
+                    }
+                ) {
                     AddWordDialogDestination(navController)
                 }
                 composable(
@@ -228,7 +232,7 @@ private fun StackDestination(navController: NavHostController) {
                 is StackContract.Effect.Navigation.ToAddSentence -> {
                     val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
                     navController.navigate("${NavigationKeys.Route.SE_ADD_SENTENCE}/${ids}") {
-                        popUpTo(NavigationKeys.Route.SE_MAIN)
+                        popUpTo(route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route)
                     }
                 }
             }
@@ -247,7 +251,10 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
         onEventSent = { event -> addSentenceViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
-                navController.popBackStack(NavigationKeys.Route.SE_MAIN, false)
+                navController.popBackStack(
+                    route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route,
+                    inclusive = false
+                )
             }
         })
 }
@@ -255,7 +262,8 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
 @ExperimentalMaterialApi
 @Composable
 private fun WordListDestination(
-    navController: NavHostController
+    navController: NavHostController,
+    onEventSent: (event: MainContract.Event) -> Unit
 ) {
     val wordViewModel: WordListViewModel = hiltViewModel()
     val wordState = wordViewModel.viewState.value
@@ -272,7 +280,11 @@ private fun WordListDestination(
                 }
                 is WordListContract.Effect.Navigation.ToAddSentence -> {
                     val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                    navController.navigate("${NavigationKeys.Route.SE_REMEMBER}/${ids}")
+                    navController.navigateToTab(
+                        route = "$SENTENCES?${NavigationKeys.Arg.WORDS_ID}=$ids"
+                    ) {
+                        popUpTo(route = NavigationKeys.BottomNavigationScreen.SE_WORDS.route)
+                    }
                 }
             }
         })
@@ -330,9 +342,36 @@ private tailrec fun findStartDestination(graph: NavDestination): NavDestination 
     return if (graph is NavGraph) findStartDestination(graph.startDestination!!) else graph
 }
 
+private val NavHostController.currentRoute: String?
+    get() = currentDestination?.route
+
+
 @Composable
 private fun MainContract.State.shouldShowBottomBar(navController: NavHostController): Boolean {
     val tabs = bottomBarTabs.map { it.route }
-    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-    return currentRoute in tabs
+    val curRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+
+    return tabs.containsRoute(curRoute)
+}
+
+private fun List<String>.containsRoute(curRoute: String?): Boolean {
+    forEach {
+        if (curRoute?.contains(it) == true) {
+            return true
+        }
+    }
+    return false
+}
+
+private fun NavController.navigateToTab(route: String, builder: (NavOptionsBuilder.() -> Unit)? = null) {
+    navigate(route) {
+        launchSingleTop = true
+        restoreState = true
+        // Pop up backstack to the first destination and save state. This makes going back
+        // to the start destination when pressing back in any other bottom tab.
+        popUpTo(findStartDestination(graph).id) {
+            saveState = true
+        }
+        builder?.let { this.it() }
+    }
 }

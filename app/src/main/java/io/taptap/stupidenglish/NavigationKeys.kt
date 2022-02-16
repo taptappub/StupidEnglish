@@ -19,6 +19,10 @@ object NavigationKeys {
     object Route {
         const val SE_MAIN = "stupid_english_main"
 
+        const val SE_WORDS = "stupid_english_words"
+        const val SENTENCES = "stupid_english_sentences"
+        const val SE_SENTENCES = "stupid_english_sentences?${Arg.WORDS_ID}={${Arg.WORDS_ID}}"
+
         const val SE_ADD_WORD = "stupid_english_add_word"
         const val SE_ADD_SENTENCE = "stupid_english_add_sentences"
         const val SE_REMEMBER = "stupid_english_remember"
@@ -26,17 +30,17 @@ object NavigationKeys {
 
     enum class BottomNavigationScreen(
         val route: String,
-        val title: String,
+        val title: Int,
         @DrawableRes val icon: Int
     ) {
         SE_WORDS(
-            route = "stupid_english_words",
-            title = "Home",
+            route = Route.SE_WORDS,
+            title = R.string.main_bottom_bar_words_title,
             icon = android.R.drawable.btn_minus
         ),
         SE_SENTENCES(
-            route = "stupid_english_sentences",
-            title = "Search",
+            route = Route.SE_SENTENCES,
+            title = R.string.main_bottom_bar_sentences_title,
             icon = android.R.drawable.btn_star
         )
     }

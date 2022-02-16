@@ -41,4 +41,6 @@
     <string name="adds_motivation_message">Делитесь своими предложениями. Это даёт большую мотивацию вам учиться, а мне разрабатывать это приложение!</string>
     <string name="adds_motivation_confirm">Поделиться</string>
     <string name="adds_motivation_decline">Позже</string>
+    <string name="main_bottom_bar_words_title">Слова</string>
+    <string name="main_bottom_bar_sentences_title">Предложения</string>
 </resources>

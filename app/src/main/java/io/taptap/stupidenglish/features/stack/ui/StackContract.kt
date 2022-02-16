@@ -5,7 +5,6 @@ import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
 import io.taptap.stupidenglish.base.model.Word
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
 
 class StackContract {
     sealed class Event : ViewEvent {
@@ -26,7 +25,7 @@ class StackContract {
     ) : ViewState
 
     sealed class SwipeState {
-        data class WasSwiped(val direction: Direction): SwipeState()
+        data class WasSwiped(val direction: Direction) : SwipeState()
         object WasNotSwiped : SwipeState()
     }
 

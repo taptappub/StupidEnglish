@@ -54,7 +54,7 @@ fun SentencesListScreen(
         val scope = rememberCoroutineScope()
 
         val modalBottomSheetState = rememberModalBottomSheetState(
-            initialValue = ModalBottomSheetValue.Hidden,
+            initialValue = ModalBottomSheetValue.Hidden
         )
 
         // Listen for side effects from the VM

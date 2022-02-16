@@ -27,7 +27,6 @@ class MainViewModel @Inject constructor(
 
     override fun setInitialState() = MainContract.State(
         isShownGreetings = false,
-        currentRoute = NavigationKeys.BottomNavigationScreen.SE_WORDS.route,
         bottomBarTabs = listOf(
             NavigationKeys.BottomNavigationScreen.SE_WORDS,
             NavigationKeys.BottomNavigationScreen.SE_SENTENCES
@@ -36,16 +35,13 @@ class MainViewModel @Inject constructor(
 
     override fun handleEvents(event: MainContract.Event) {
         when (event) {
-            MainContract.Event.OnGreetingsClose -> {
+            is MainContract.Event.OnGreetingsClose -> {
                 repository.isFirstStart = false
                 setState { copy(isShownGreetings = false) }
             }
             is MainContract.Event.OnTabSelected -> {
                 val route = event.item.route
-                setState { copy(currentRoute = route) }
-                if (route != viewState.value.currentRoute) {
-                    setEffect { MainContract.Effect.Navigation.OnTabSelected(route) }
-                }
+                setEffect { MainContract.Effect.Navigation.OnTabSelected(route) }
             }
         }
     }

@@ -4,8 +4,8 @@ import javax.inject.Singleton
 
 @Singleton
 object AddSentenceArgumentsMapper {
-    fun mapFrom(value: String): List<Long> {
-        return value.split(",").map {
+    fun mapFrom(value: String?): List<Long>? {
+        return value?.split(",")?.map {
             it.toLong()
         }
     }

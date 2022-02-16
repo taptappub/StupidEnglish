@@ -22,12 +22,14 @@ class AddSentenceViewModel @Inject constructor(
     private val addSentenceArgumentsMapper: AddSentenceArgumentsMapper
 ) : BaseViewModel<AddSentenceContract.Event, AddSentenceContract.State, AddSentenceContract.Effect>() {
 
+    private var wordsIdsString: String? = null
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.SENTENCE_WORDS_ID)
+            wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.SENTENCE_WORDS_ID)
                 ?: throw IllegalStateException("No wordsIds was passed to AddSentenceViewModel.")
             val wordsIds = addSentenceArgumentsMapper.mapFrom(wordsIdsString)
-            val words = repository.getWordsById(wordsIds).takeOrReturn {
+            val words = repository.getWordsById(wordsIds!!).takeOrReturn {
                 withContext(Dispatchers.Main) {
                     setEffect { AddSentenceContract.Effect.GetWordsError(R.string.adds_get_words_error) }
                 }
@@ -37,8 +39,11 @@ class AddSentenceViewModel @Inject constructor(
         }
     }
 
-    override fun setInitialState() =
-        AddSentenceContract.State(showConfirmSaveDialog = false, sentence = "", words = emptyList())
+    override fun setInitialState() = AddSentenceContract.State(
+        showConfirmSaveDialog = false,
+        sentence = "",
+        words = emptyList()
+    )
 
     override fun handleEvents(event: AddSentenceContract.Event) {
         when (event) {
@@ -70,7 +75,7 @@ class AddSentenceViewModel @Inject constructor(
                 .handle(
                     success = {
                         withContext(Dispatchers.Main) {
-                            setEffect { AddSentenceContract.Effect.Navigation.BackToSentenceList }
+                            setEffect { AddSentenceContract.Effect.Navigation.BackToSentenceList(wordsIdsString) }
                         }
                     },
                     error = {
