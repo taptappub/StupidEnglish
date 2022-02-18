@@ -11,3 +11,6 @@ val Blue100 = Color(0xFFE5ECF1)
 val Red100 = Color(0xFFFF0000)
 val Green100 = Color(0xFF1AB517)
 val Grey100 = Color(0xFFCECECE)
+
+
+val DeepBlue = Color(0xFF587EDE)

@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.sentences.ui
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,6 +33,7 @@ class SentencesListViewModel @Inject constructor(
         val wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.WORDS_ID)
         val wordsIds = addSentenceArgumentsMapper.mapFrom(wordsIdsString)
 
+        Log.d("TAPTAPTAP", "SentencesListViewModel wordsIds = $wordsIds")
         if (wordsIds != null) {
             setEffect { SentencesListContract.Effect.Navigation.ToAddSentence(wordsIds) }
         }
