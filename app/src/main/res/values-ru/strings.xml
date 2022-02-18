@@ -17,7 +17,7 @@
     <string name="addw_description_not_found_error">Ты забыл добавить подсказку =)</string>
     <string name="adds_save_error">Возникла ошибка в момент добавления предложения</string>
     <string name="adds_get_words_error">Возникла ошибка в момент получения слов</string>
-    <string name="adds_main_hint">Make a sentence from selected words. As stupider, it will be, then better!</string>
+    <string name="adds_main_hint">Составьте предложение из выбранных слов. Чем глупее оно будет, тем лучше!</string>
     <string name="adds_sentence_not_found_error">Сначала напиши предложение =)</string>
     <string name="adds_sentence_placeholder">Твое предложение</string>
     <string name="adds_confirm_dialog_text">Ты точно хочешь сохранить это приложение? Оно супер тупое! Мне нравится!</string>
