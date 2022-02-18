@@ -1,6 +1,7 @@
 package io.taptap.stupidenglish
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
@@ -110,7 +111,9 @@ class MainActivity : ComponentActivity() {
                         onEventSent = { event -> mainViewModel.setEvent(event) },
                         onNavigationRequested = { navigationEffect ->
                             if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
+                                Log.d("TAPTAPTAP", "onNavigationRequested route = ${navigationEffect.route}, currentRoute = ${navController.currentRoute}")
                                 if (navigationEffect.route != navController.currentRoute) {
+                                    Log.d("TAPTAPTAP", "onNavigationRequested if true")
                                     navController.navigateToTab(navigationEffect.route)
                                 }
                             }
@@ -282,9 +285,7 @@ private fun WordListDestination(
                     val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
                     navController.navigateToTab(
                         route = "$SENTENCES?${NavigationKeys.Arg.WORDS_ID}=$ids"
-                    ) {
-                        popUpTo(route = NavigationKeys.BottomNavigationScreen.SE_WORDS.route)
-                    }
+                    )
                 }
             }
         })
@@ -310,19 +311,6 @@ private fun SentenceListDestination(
             }
         })
 }
-
-//todo
-//4. Поменять иконку
-//3) Добавление одинаковых слов
-//4) Падение при добавлении предложения
-//5) Сохранения слова без подсказки
-//6) Добавление картинки, как подсказки
-//7) Редактирование и удаление
-//8) импорт
-
-
-//1. A/b тестирование
-//5. А потом релизнуть
 
 private val NavGraph.startDestination: NavDestination?
     get() = findNode(startDestinationId)
@@ -359,7 +347,7 @@ private fun List<String>.containsRoute(curRoute: String?): Boolean {
 
 private fun NavController.navigateToTab(route: String, builder: (NavOptionsBuilder.() -> Unit)? = null) {
     navigate(route) {
-        launchSingleTop = true
+//        launchSingleTop = true
         restoreState = true
         // Pop up backstack to the first destination and save state. This makes going back
         // to the start destination when pressing back in any other bottom tab.
@@ -369,3 +357,16 @@ private fun NavController.navigateToTab(route: String, builder: (NavOptionsBuild
         builder?.let { this.it() }
     }
 }
+
+//todo
+//4. Поменять иконку
+//3) Добавление одинаковых слов
+//4) Падение при добавлении предложения
+//5) Сохранения слова без подсказки
+//6) Добавление картинки, как подсказки
+//7) Редактирование и удаление
+//8) импорт
+
+
+//1. A/b тестирование
+//5. А потом релизнуть

@@ -36,12 +36,12 @@ object NavigationKeys {
         SE_WORDS(
             route = Route.SE_WORDS,
             title = R.string.main_bottom_bar_words_title,
-            icon = android.R.drawable.btn_minus
+            icon = R.drawable.ic_head_icon
         ),
         SE_SENTENCES(
             route = Route.SE_SENTENCES,
             title = R.string.main_bottom_bar_sentences_title,
-            icon = android.R.drawable.btn_star
+            icon = R.drawable.ic_cloud_icon
         )
     }
 }

@@ -1,27 +1,40 @@
 package io.taptap.stupidenglish.ui
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.navigationBarsPadding
+import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.features.main.ui.MainContract
+import io.taptap.stupidenglish.ui.theme.Blue100
 import io.taptap.stupidenglish.ui.theme.DeepBlue
+import io.taptap.stupidenglish.ui.theme.Grey200
 import io.taptap.stupidenglish.ui.theme.Grey600
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -49,40 +62,58 @@ fun StupidEnglishBottomBar(
         }?.collect()
     }
 
-    Column {
-        Divider(color = Grey600, thickness = 1.dp, modifier = Modifier.weight(0.0f))
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colors.background)
+            .height(56.dp)
+            .navigationBarsPadding(start = false, end = false)
+    ) {
+        Divider(color = Grey200, thickness = 1.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+        ) {
 
-        tabs.forEach { item ->
-            val selected = item == currentSection
-            val tint by animateColorAsState(
-                if (selected) {
-                    DeepBlue
-                } else {
-                    Grey600
-                }
-            )
-
-            StupidEnglishBottomNavigationItem(
-                icon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_head_icon),
-                        contentDescription = "words",
-                        tint = DeepBlue
-                    )
-                },
-                text = {
-                    Text(
-                        text = stringResource(item.title),
-                        color = tint,
-                        maxLines = 1
-                    )
-                },
-                selected = selected,
-                onSelected = {
-                    onEventSent(MainContract.Event.OnTabSelected(item))
-                },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
+            tabs.forEach { item ->
+                val selected = item == currentSection
+                val tint by animateColorAsState(
+                    if (selected) {
+                        Color(0xFF587EDE)
+                    } else {
+                        Color(0xFF6c6c6c)
+                    }
+                )
+                StupidEnglishBottomNavigationItem(
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = item.icon),
+                            contentDescription = stringResource(id = item.title),
+                            tint = tint,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(6.dp)
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = stringResource(id = item.title),
+                            color = tint,
+                            maxLines = 1,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(6.dp)
+                        )
+                    },
+                    selected = selected,
+                    onSelected = {
+                        onEventSent(MainContract.Event.OnTabSelected(item))
+                    },
+                    modifier = Modifier
+                        .height(56.dp)
+                        .weight(1.0f)
+                )
+            }
         }
     }
 
@@ -111,7 +142,6 @@ fun StupidEnglishBottomNavigationItem(
     Row(
         modifier = modifier.selectable(selected = selected, onClick = onSelected),
         horizontalArrangement = Arrangement.Center
-//        contentAlignment = Alignment.Center
     ) {
         icon()
         text()
