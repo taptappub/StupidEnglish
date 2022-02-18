@@ -1,64 +1,22 @@
 package io.taptap.stupidenglish.features.stack.ui.adapter
 
+import android.animation.Animator
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
+import androidx.compose.ui.graphics.toArgb
 import androidx.recyclerview.widget.RecyclerView
 import io.taptap.stupidenglish.R
-import io.taptap.stupidenglish.base.model.Word
-import io.taptap.stupidenglish.base.ui.flipCard
-
-private const val FRONT = "front"
-private const val BACK = "back"
+import io.taptap.stupidenglish.features.stack.ui.StackContract
+import io.taptap.stupidenglish.ui.theme.Blue100
 
 class CardStackAdapter(
-    var words: List<Word> = emptyList()
+    var words: List<CardStackModel> = emptyList(),
+    private val onEventSent: (event: StackContract.Event) -> Unit
 ) : RecyclerView.Adapter<CardStackAdapter.ViewHolder>() {
-
-    private val clickListener = View.OnClickListener { v: View ->
-        flip(v)
-    }
-
-    private fun flip(v: View) {
-        val frontView = v.findViewById<View>(R.id.view_front)
-        val backView = v.findViewById<View>(R.id.view_back)
-        if (v.tag?.toString().isNullOrEmpty() || v.tag == BACK) {
-            flipToFront(v, frontView, backView)
-        } else {
-            flipToBack(v, frontView, backView)
-        }
-    }
-
-    private fun flipToFront(rootView: View, frontView: View, backView: View) {
-        if (rootView.tag?.toString().isNullOrEmpty() || rootView.tag == BACK) {
-            rootView.tag = FRONT
-            flipCard(
-                rootView.context, backView, frontView,
-                doOnStart = { rootView.isEnabled = false },
-                doOnEnd = { rootView.isEnabled = true }
-            )
-        }
-    }
-
-    private fun flipToBack(rootView: View, frontView: View, backView: View) {
-        if (rootView.tag?.toString().isNullOrEmpty() || rootView.tag == FRONT) {
-            rootView.tag = BACK
-            flipCard(
-                rootView.context, frontView, backView,
-                doOnStart = { rootView.isEnabled = false },
-                doOnEnd = { rootView.isEnabled = true }
-            )
-        }
-    }
-
-//    fun flipTopCard(topWord: TopWord) {
-//        val itemView = topWord.view
-//        val frontView = itemView.findViewById<View>(R.id.view_front)
-//        val backView = itemView.findViewById<View>(R.id.view_back)
-//
-//        flipToBack(itemView, frontView, backView)
-//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -67,9 +25,47 @@ class CardStackAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val word = words[position]
+        Log.d("TAPTAPTAP", "onBindViewHolder word = $word")
         holder.word.text = word.word
         holder.hint.text = word.description
-        holder.itemView.setOnClickListener(clickListener)
+        holder.hintButton.apply {
+            setBackgroundColor(Blue100.toArgb())
+            setOnClickListener { onShowHintPress(word, holder) }
+        }
+    }
+
+    private fun onShowHintPress(word: CardStackModel, holder: ViewHolder) {
+        onEventSent(StackContract.Event.OnNo)
+
+        holder.hint.apply {
+            text = word.description
+            visibility = View.VISIBLE
+            alpha = 0.0f
+
+            animate()
+                .setStartDelay(500)
+                .setDuration(500)
+                .alpha(1.0f)
+                .setListener(null)
+        }
+        holder.hintButton.apply {
+            alpha = 1.0f
+
+            animate()
+                .setDuration(500)
+                .alpha(0.0f)
+                .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {}
+                    override fun onAnimationEnd(animation: Animator?) {
+                        visibility = View.GONE
+                    }
+
+                    override fun onAnimationCancel(animation: Animator?) {}
+                    override fun onAnimationRepeat(animation: Animator?) {}
+                })
+
+            setOnClickListener(null)
+        }
     }
 
     override fun getItemCount(): Int = words.size
@@ -77,5 +73,14 @@ class CardStackAdapter(
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val word: TextView = view.findViewById(R.id.tv_word)
         val hint: TextView = view.findViewById(R.id.tv_hint)
+        val hintButton: Button = view.findViewById(R.id.btn_hint)
     }
 }
+
+data class CardStackModel(
+    val id: Long,
+    val word: String,
+    val description: String,
+    val showDescription: Boolean,
+    val points: Int
+)

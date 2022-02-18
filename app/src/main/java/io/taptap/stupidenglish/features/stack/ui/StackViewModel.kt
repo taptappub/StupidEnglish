@@ -1,13 +1,16 @@
 package io.taptap.stupidenglish.features.stack.ui
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
+import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.stack.data.StackRepository
+import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -34,25 +37,18 @@ class StackViewModel @Inject constructor(
                 }
             }
 
-            setState { copy(words = words, topWordId = words.first().id) }
+            setState { copy(words = words.toStackAdapterModels(), topWordId = words.first().id) }
         }
     }
 
     override fun setInitialState() =
         StackContract.State(
             words = emptyList(),
-            topWordId = 0,
-            swipeState = StackContract.SwipeState.WasNotSwiped
+            topWordId = 0
         )
 
     override fun handleEvents(event: StackContract.Event) {
         when (event) {
-            is StackContract.Event.Swipe -> {
-                setState { copy(swipeState = StackContract.SwipeState.WasSwiped(event.direction)) }
-            }
-            is StackContract.Event.EndSwipe -> {
-                setState { copy(swipeState = StackContract.SwipeState.WasNotSwiped) }
-            }
             is StackContract.Event.OnYes -> {
                 rememberWord(viewState.value.topWordId)
             }
@@ -73,7 +69,7 @@ class StackViewModel @Inject constructor(
     }
 
     private fun noRememberWord(wordId: Long) {
-
+        //todo add word to the end of list
     }
 
     private fun rememberWord(wordId: Long) {
@@ -87,4 +83,14 @@ class StackViewModel @Inject constructor(
         }
     }
 
+}
+
+private fun List<Word>.toStackAdapterModels(): List<CardStackModel> = map {
+    CardStackModel(
+        id = it.id,
+        word = it.word,
+        description = it.description,
+        points = it.points,
+        showDescription = false
+    )
 }

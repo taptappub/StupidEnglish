@@ -25,7 +25,6 @@ fun StupidEnglishBottomBar(
     onNavigationRequested: (navigationEffect: MainContract.Effect.Navigation) -> Unit
 ) {
     val tabs = state.bottomBarTabs
-    Log.d("TAPTAPTAP", "StupidEnglishBottomBar tabs = $tabs, currentRoute = $currentRoute")
     val currentSection = tabs.first { it.route == currentRoute }
 
     // Listen for side effects from the VM

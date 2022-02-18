@@ -2,34 +2,32 @@ package io.taptap.stupidenglish.features.stack.ui
 
 import android.content.Context
 import android.view.View
-import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.recyclerview.widget.RecyclerView
-import com.yuyakaido.android.cardstackview.*
-import io.taptap.stupidenglish.R
+import androidx.recyclerview.widget.DiffUtil
+import com.yuyakaido.android.cardstackview.CardStackLayoutManager
+import com.yuyakaido.android.cardstackview.CardStackListener
+import com.yuyakaido.android.cardstackview.CardStackView
+import com.yuyakaido.android.cardstackview.Direction
+import com.yuyakaido.android.cardstackview.StackFrom
+import com.yuyakaido.android.cardstackview.SwipeableMethod
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackAdapter
-import io.taptap.stupidenglish.ui.theme.getSuccessTextColor
-import io.taptap.stupidenglish.ui.theme.getTitleTextColor
+import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackDiffUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
-import com.yuyakaido.android.cardstackview.Direction
+
 
 @Composable
 fun StackScreen(
@@ -42,7 +40,11 @@ fun StackScreen(
     Box {
         val scaffoldState: ScaffoldState = rememberScaffoldState()
 
-        val manager: CardStackLayoutManager = remember { initCardStackLayoutManager(context, state, onEventSent).init() }
+        //todo manager и adapter объединить в recyclerState по типу scafoldState
+        val manager: CardStackLayoutManager = remember {
+            initCardStackLayoutManager(context, state, onEventSent).init()
+        }
+        val adapter: CardStackAdapter = remember { CardStackAdapter(state.words, onEventSent) }
 
         // Listen for side effects from the VM
         LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
@@ -74,6 +76,7 @@ fun StackScreen(
             ContentScreen(
                 state = state,
                 manager = manager,
+                adapter = adapter,
                 onEventSent = onEventSent
             )
         }
@@ -84,6 +87,7 @@ fun StackScreen(
 private fun ContentScreen(
     state: StackContract.State,
     manager: CardStackLayoutManager,
+    adapter: CardStackAdapter,
     onEventSent: (event: StackContract.Event) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -94,74 +98,20 @@ private fun ContentScreen(
                     .apply { layoutManager = manager }
             },
             update = { view ->
-                view.adapter = CardStackAdapter(state.words)
-                if (state.swipeState is StackContract.SwipeState.WasSwiped) {
-                    val setting = SwipeAnimationSetting.Builder()
-                        .setDirection(state.swipeState.direction)
-                        .setDuration(Duration.Normal.duration)
-                        .setInterpolator(AccelerateInterpolator())
-                        .build()
-                    manager.setSwipeAnimationSetting(setting)
-                    view.swipe()
-                    onEventSent(StackContract.Event.EndSwipe)
+                if (view.adapter == null) {
+                    view.adapter = adapter
+                } else {
+                    val cardStackDiffUtils = CardStackDiffUtils(adapter.words, state.words)
+                    val diffResult = DiffUtil.calculateDiff(cardStackDiffUtils);
+                    adapter.words = state.words
+                    diffResult.dispatchUpdatesTo(adapter)
                 }
             },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 36.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 36.dp, bottom = 48.dp)
                 .weight(1.0f, false)
         )
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp, start = 48.dp, end = 48.dp, top = 24.dp)
-        ) {
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                elevation = 100.dp,
-                modifier = Modifier.clickable {
-                    onEventSent(StackContract.Event.Swipe(Direction.Left))
-                }
-            ) {
-                Text(
-                    text = stringResource(id = R.string.stck_button_no),
-                    fontSize = 24.sp,
-                    color = getTitleTextColor(),
-                    style = MaterialTheme.typography.subtitle1,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(
-                        top = 16.dp,
-                        bottom = 16.dp,
-                        start = 48.dp,
-                        end = 48.dp
-                    )
-                )
-            }
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                elevation = 100.dp,
-                modifier = Modifier.clickable {
-                    onEventSent(StackContract.Event.Swipe(Direction.Right))
-                }
-            ) {
-                Text(
-                    text = stringResource(id = R.string.stck_button_yes),
-                    fontSize = 24.sp,
-                    color = getSuccessTextColor(),
-                    style = MaterialTheme.typography.subtitle1,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(
-                        top = 16.dp,
-                        bottom = 16.dp,
-                        start = 48.dp,
-                        end = 48.dp
-                    )
-                )
-            }
-        }
     }
 }
 
@@ -173,23 +123,19 @@ fun initCardStackLayoutManager(
     return CardStackLayoutManager(context, object : CardStackListener {
         override fun onCardDragging(direction: Direction, ratio: Float) {
             when (direction) {
-                Direction.Left -> onEventSent(StackContract.Event.OnNo)
+                Direction.Left -> onEventSent(StackContract.Event.OnYes)
                 Direction.Right -> onEventSent(StackContract.Event.OnYes)
-                Direction.Top -> { /*do nothing*/
-                }
-                Direction.Bottom -> { /*do nothing*/
-                }
+                Direction.Top -> onEventSent(StackContract.Event.OnYes)
+                Direction.Bottom -> onEventSent(StackContract.Event.OnYes)
             }
         }
 
         override fun onCardSwiped(direction: Direction) {
             when (direction) {
-                Direction.Left -> onEventSent(StackContract.Event.OnNo)
+                Direction.Left -> onEventSent(StackContract.Event.OnYes)
                 Direction.Right -> onEventSent(StackContract.Event.OnYes)
-                Direction.Top -> { /*do nothing*/
-                }
-                Direction.Bottom -> { /*do nothing*/
-                }
+                Direction.Top -> onEventSent(StackContract.Event.OnYes)
+                Direction.Bottom -> onEventSent(StackContract.Event.OnYes)
             }
         }
 

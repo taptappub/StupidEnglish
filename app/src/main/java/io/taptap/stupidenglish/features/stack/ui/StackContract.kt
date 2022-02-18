@@ -1,16 +1,13 @@
 package io.taptap.stupidenglish.features.stack.ui
 
-import com.yuyakaido.android.cardstackview.Direction
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
 import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackModel
 
 class StackContract {
     sealed class Event : ViewEvent {
-        data class Swipe(val direction: Direction) : Event()
-        object EndSwipe : Event()
-
         data class OnCardAppeared(val position: Int) : Event()
         data class OnCardDisappeared(val position: Int) : Event()
 
@@ -19,15 +16,9 @@ class StackContract {
     }
 
     data class State(
-        val words: List<Word>,
-        val topWordId: Long,
-        val swipeState: SwipeState
+        val words: List<CardStackModel>,
+        val topWordId: Long
     ) : ViewState
-
-    sealed class SwipeState {
-        data class WasSwiped(val direction: Direction) : SwipeState()
-        object WasNotSwiped : SwipeState()
-    }
 
     sealed class Effect : ViewSideEffect {
         data class GetWordsError(val errorRes: Int) : Effect()
