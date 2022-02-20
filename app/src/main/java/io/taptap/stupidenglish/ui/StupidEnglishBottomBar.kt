@@ -116,19 +116,6 @@ fun StupidEnglishBottomBar(
             }
         }
     }
-
-    /*NavigationBar {
-        tabs.forEach { item ->
-            NavigationBarItem(
-                icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
-                label = { Text(text = stringResource(id = item.title)) },
-                selected = item == currentSection,
-                onClick = {
-                    onEventSent(MainContract.Event.OnTabSelected(item))
-                }
-            )
-        }
-    }*/
 }
 
 @Composable

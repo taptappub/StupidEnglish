@@ -163,7 +163,7 @@ class MainActivity : ComponentActivity() {
                     AddWordDialogDestination(navController)
                 }
                 composable(
-                    route = "${NavigationKeys.Route.SE_REMEMBER}/{${NavigationKeys.Arg.WORDS_ID}}",
+                    route = NavigationKeys.Route.SE_REMEMBER,
                     deepLinks = listOf(navDeepLink {
                         uriPattern =
                             "$URI/${NavigationKeys.Arg.WORDS_ID}={${NavigationKeys.Arg.WORDS_ID}}"
@@ -178,7 +178,7 @@ class MainActivity : ComponentActivity() {
                     StackDestination(navController)
                 }
                 composable(
-                    route = "${NavigationKeys.Route.SE_ADD_SENTENCE}/{${NavigationKeys.Arg.SENTENCE_WORDS_ID}}",
+                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
                     deepLinks = listOf(navDeepLink {
                         uriPattern =
                             "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}={${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
@@ -234,7 +234,7 @@ private fun StackDestination(navController: NavHostController) {
                 }
                 is StackContract.Effect.Navigation.ToAddSentence -> {
                     val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                    navController.navigate("${NavigationKeys.Route.SE_ADD_SENTENCE}/${ids}") {
+                    navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${ids}") {
                         popUpTo(route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route)
                     }
                 }
@@ -254,10 +254,25 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
         onEventSent = { event -> addSentenceViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
-                navController.popBackStack(
-                    route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route,
-                    inclusive = false
-                )
+//                navController.navigate(route = SENTENCES) {
+//                    popUpTo(findStartDestination(navController.graph).id) {
+//                        saveState = true
+//                    }
+//                }
+                navController.backQueue.removeIf {
+                    it.destination.route == NavigationKeys.Route.SE_ADD_SENTENCE
+                            || it.destination.route == NavigationKeys.Route.SE_REMEMBER
+                }
+                navController.navigateToTab(route = SENTENCES) {
+                    popUpTo(route = NavigationKeys.Route.SE_ADD_SENTENCE) {
+                        inclusive = true
+                    }
+//                    popUpTo(route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route)
+                }
+//                navController.popBackStack(
+//                    route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route,
+//                    inclusive = false
+//                )
             }
         })
 }
@@ -307,7 +322,7 @@ private fun SentenceListDestination(
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
                 val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                navController.navigate("${NavigationKeys.Route.SE_REMEMBER}/${ids}")
+                navController.navigate("${NavigationKeys.Route.REMEMBER}/${ids}")
             }
         })
 }
@@ -347,7 +362,7 @@ private fun List<String>.containsRoute(curRoute: String?): Boolean {
 
 private fun NavController.navigateToTab(route: String, builder: (NavOptionsBuilder.() -> Unit)? = null) {
     navigate(route) {
-//        launchSingleTop = true
+        launchSingleTop = true
         restoreState = true
         // Pop up backstack to the first destination and save state. This makes going back
         // to the start destination when pressing back in any other bottom tab.
@@ -368,8 +383,8 @@ private fun NavController.navigateToTab(route: String, builder: (NavOptionsBuild
 //8) импорт
 
 //Баги
-//1) При переходе с нотификации, не работает переход по Сохранить
 //2) Темная тема с карточками
 
 //1. A/b тестирование
+//2. Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE, 4) не поняла как смахнуть карточку)
 //5. А потом релизнуть

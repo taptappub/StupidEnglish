@@ -21,11 +21,13 @@ object NavigationKeys {
 
         const val SE_WORDS = "stupid_english_words"
         const val SENTENCES = "stupid_english_sentences"
-        const val SE_SENTENCES = "stupid_english_sentences?${Arg.WORDS_ID}={${Arg.WORDS_ID}}"
+        const val SE_SENTENCES = "$SENTENCES?${Arg.WORDS_ID}={${Arg.WORDS_ID}}"
 
         const val SE_ADD_WORD = "stupid_english_add_word"
-        const val SE_ADD_SENTENCE = "stupid_english_add_sentences"
-        const val SE_REMEMBER = "stupid_english_remember"
+        const val ADD_SENTENCE = "stupid_english_add_sentences"
+        const val SE_ADD_SENTENCE = "$ADD_SENTENCE/{${Arg.SENTENCE_WORDS_ID}}"
+        const val REMEMBER = "stupid_english_remember"
+        const val SE_REMEMBER = "$REMEMBER/{${Arg.WORDS_ID}}"
     }
 
     enum class BottomNavigationScreen(
