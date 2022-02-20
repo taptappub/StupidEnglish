@@ -2,17 +2,16 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mcv_card"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/selectableItemBackground"
     android:elevation="0dp"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardBackgroundColor="#ffffff"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:cardCornerRadius="16dp"
-    app:cardElevation="0dp"
+    app:cardElevation="8dp"
     app:cardPreventCornerOverlap="false"
     app:cardUseCompatPadding="true"
-    app:strokeColor="#FFE5ECF1"
+    app:strokeColor="?android:attr/colorPrimary"
     app:strokeWidth="2dp">
 
     <TextView
@@ -24,14 +23,14 @@
         android:paddingTop="32dp"
         android:paddingEnd="16dp"
         android:text="@string/stck_front_label"
-        android:textColor="#ACACAC"
+        android:textColor="?android:attr/colorPrimary"
         android:textSize="28sp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-<!--        вынеси все настройки цвета, размера, шрифта и т.д. из xml в код, чтобы использовать одни и теже классы -->
+        <!--        вынеси все настройки цвета, размера, шрифта и т.д. из xml в код, чтобы использовать одни и теже классы -->
         <TextView
             android:id="@+id/tv_word"
             android:layout_width="match_parent"
@@ -40,15 +39,15 @@
             android:fontFamily="@font/rubik_medium"
             android:gravity="center"
             android:paddingStart="16dp"
-            android:paddingBottom="32dp"
             android:paddingEnd="16dp"
-            android:textColor="#333333"
+            android:paddingBottom="32dp"
+            android:textColor="?android:attr/colorPrimary"
             android:textSize="24sp"
-            tools:text="Ass"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            tools:text="Ass" />
 
         <TextView
             android:id="@+id/tv_hint"
@@ -59,15 +58,14 @@
             android:paddingStart="16dp"
             android:paddingTop="32dp"
             android:paddingEnd="16dp"
-            android:textColor="#6C6C6C"
             android:textSize="18sp"
-            tools:text="Hit for Ass"
-            tools:visibility="visible"
             android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            tools:text="Hit for Ass"
+            tools:visibility="visible" />
 
         <Button
             android:id="@+id/btn_hint"
@@ -76,15 +74,16 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:paddingBottom="12dp"
-            android:paddingTop="12dp"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:text="@string/stck_hint_button_text"
             android:drawableTop="@drawable/ic_anger"
+            android:drawableTint="?android:attr/colorPrimary"
+            android:paddingStart="14dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="12dp"
+            android:text="@string/stck_hint_button_text"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

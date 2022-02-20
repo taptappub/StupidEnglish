@@ -4,4 +4,13 @@
     <color name="immersive_sys_ui">#FFE5E5E5</color>
     <color name="nav_bar">@color/immersive_sys_ui</color>
 
+    <color name="Grey200">#F5F5F5</color>
+    <color name="Grey600">#6C6C6C</color>
+    <color name="Black200">#121212</color>
+    <color name="White100">#FFFFFF</color>
+    <color name="Blue100">#E5ECF1</color>
+    <color name="Red100">#FF0000</color>
+    <color name="Green100">#1AB517</color>
+    <color name="DeepBlue">#587EDE</color>
+
 </resources>

@@ -9,9 +9,11 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.compose.ui.graphics.toArgb
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.features.stack.ui.StackContract
 import io.taptap.stupidenglish.ui.theme.Blue100
+import io.taptap.stupidenglish.ui.theme.Grey600
 
 class CardStackAdapter(
     var words: List<CardStackModel> = emptyList(),
@@ -27,10 +29,16 @@ class CardStackAdapter(
         val word = words[position]
         Log.d("TAPTAPTAP", "onBindViewHolder word = $word")
         holder.word.text = word.word
-        holder.hint.text = word.description
+        holder.hint.apply {
+            setTextColor(Grey600.toArgb())
+            text = word.description
+        }
         holder.hintButton.apply {
-            setBackgroundColor(Blue100.toArgb())
             setOnClickListener { onShowHintPress(word, holder) }
+        }
+        holder.card.apply {
+            setCardBackgroundColor(android.R.attr.colorPrimary)
+            strokeColor = Blue100.toArgb()
         }
     }
 
@@ -74,6 +82,7 @@ class CardStackAdapter(
         val word: TextView = view.findViewById(R.id.tv_word)
         val hint: TextView = view.findViewById(R.id.tv_hint)
         val hintButton: Button = view.findViewById(R.id.btn_hint)
+        val card: MaterialCardView = view.findViewById(R.id.mcv_card)
     }
 }
 

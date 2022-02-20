@@ -88,17 +88,6 @@ fun getTitleTextColor(
 }
 
 @Composable
-fun getSuccessTextColor(
-    darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
-    return if (darkTheme) {
-        Green100
-    } else {
-        Green100
-    }
-}
-
-@Composable
 fun getContentTextColor(
     darkTheme: Boolean = isSystemInDarkTheme()
 ): Color {
@@ -128,27 +117,5 @@ fun getPrimaryButtonBackgroundColor(
         Grey600
     } else {
         Black200
-    }
-}
-
-@Composable
-fun getIndicatorActiveColor(
-    darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
-    return if (darkTheme) {
-        White100
-    } else {
-        Black200
-    }
-}
-
-@Composable
-fun getIndicatorInactiveColor(
-    darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
-    return if (darkTheme) {
-        Grey100
-    } else {
-        Grey100
     }
 }

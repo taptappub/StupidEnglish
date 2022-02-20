@@ -44,7 +44,12 @@ fun StackScreen(
         val manager: CardStackLayoutManager = remember {
             initCardStackLayoutManager(context, state, onEventSent).init()
         }
-        val adapter: CardStackAdapter = remember { CardStackAdapter(state.words, onEventSent) }
+        val adapter: CardStackAdapter = remember {
+            CardStackAdapter(
+                words = state.words,
+                onEventSent = onEventSent
+            )
+        }
 
         // Listen for side effects from the VM
         LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {

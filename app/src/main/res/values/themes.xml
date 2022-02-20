@@ -1,10 +1,10 @@
 <resources>
 
     <style name="Theme.StupidEnglish" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:colorPrimary">#E5E5E5</item>
-        <item name="android:colorAccent">#ff00ff</item>
-<!--        <item name="android:statusBarColor">@color/immersive_sys_ui</item>-->
-<!--        <item name="android:navigationBarColor">@color/nav_bar</item>-->
+        <item name="android:colorPrimary">@color/Black200</item>
+        <item name="colorSurface">@color/White100</item>
+        <item name="android:colorAccent">@color/Blue100</item>
+
         <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>
