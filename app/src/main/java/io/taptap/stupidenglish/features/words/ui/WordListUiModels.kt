@@ -11,8 +11,4 @@ data class WordListTitleUI(
     val valueRes: Int
 ) : WordListListModels
 
-data class NewWordUI(
-    val valueRes: Int
-) : WordListListModels
-
 object OnboardingWordUI : WordListListModels

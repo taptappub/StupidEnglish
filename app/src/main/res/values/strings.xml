@@ -22,9 +22,7 @@
     <string name="main_bottom_bar_sentences_title">Sentences</string>
 
     <!-- Word List -->
-    <string name="word_list_new_word_title">New word</string>
     <string name="word_list_list_title">My words</string>
-    <string name="word_list_add_word">Add new word</string>
     <string name="word_get_random_words_error">Can\'t find random words</string>
     <string name="word_get_list_error">Error at the time of getting words</string>
     <string name="word_onboarding_text">Make the stupidest sentence from your words</string>
@@ -32,6 +30,7 @@
     <string name="word_motivation_message">Let\'s make some sentences with your words. Once per month we choose the funniest and stupidest sentence and make a picture with it!</string>
     <string name="word_motivation_confirm">Let\'s do it!</string>
     <string name="word_motivation_decline">Nope</string>
+    <string name="word_fab_text">Add word</string>
 
     <!-- Sentences List -->
     <string name="stns_list_new_word_title">Add new sentences</string>

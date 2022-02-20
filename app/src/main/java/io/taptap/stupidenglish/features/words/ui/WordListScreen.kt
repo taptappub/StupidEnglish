@@ -2,11 +2,14 @@ package io.taptap.stupidenglish.features.words.ui
 
 import android.content.Context
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -36,6 +39,7 @@ import io.taptap.stupidenglish.base.noRippleClickable
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.ui.BottomSheetScreen
+import io.taptap.stupidenglish.ui.Fab
 import io.taptap.stupidenglish.ui.theme.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -112,14 +116,28 @@ fun WordListScreen(
                     scaffoldState = scaffoldState,
                     backgroundColor = MaterialTheme.colors.background,
                 ) {
-                    Box {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(it)
+                    ) {
+                        val listState = rememberLazyListState()
+
                         MainList(
                             wordItems = state.wordList,
+                            listState = listState,
                             onEventSent = onEventSent
                         )
                         if (state.isLoading) {
                             LoadingBar()
                         }
+                        Fab(
+                            extended = listState.firstVisibleItemIndex == 0,
+                            modifier = Modifier.align(Alignment.BottomEnd),
+                            iconRes = R.drawable.ic_plus,
+                            text = stringResource(id = R.string.word_fab_text),
+                            onFabClicked = { onEventSent(WordListContract.Event.OnAddWordClick) }
+                        )
                     }
                 }
             }
@@ -131,15 +149,14 @@ fun WordListScreen(
 private fun MainList(
     wordItems: List<WordListListModels>,
     onEventSent: (event: WordListContract.Event) -> Unit,
+    listState: LazyListState,
 ) {
     LazyColumn(
+        state = listState,
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
         items(wordItems) { item ->
             when (item) {
-                is NewWordUI -> NewWordItemRow(item = item) {
-                    onEventSent(WordListContract.Event.OnAddWordClick)
-                }
                 is WordListItemUI -> WordItemRow(item = item)
                 is WordListTitleUI -> TitleItem(item = item)
                 is OnboardingWordUI -> OnboardingItemRow {
@@ -204,36 +221,6 @@ private fun OnboardingItemRow(onClicked: () -> Unit) {
 }
 
 @Composable
-private fun NewWordItemRow(
-    item: NewWordUI,
-    onItemClicked: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp)
-            .clickable { onItemClicked() },
-        elevation = 0.dp,
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Row {
-            NewWordItem(
-                item = item,
-                modifier = Modifier
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 22.dp,
-                        bottom = 22.dp
-                    )
-                    .fillMaxWidth(0.80f)
-                    .align(Alignment.CenterVertically)
-            )
-        }
-    }
-}
-
-@Composable
 private fun TitleItem(
     item: WordListTitleUI
 ) {
@@ -275,24 +262,6 @@ private fun WordItemRow(
                     .align(Alignment.CenterVertically)
             )
         }
-    }
-}
-
-@Composable
-private fun NewWordItem(
-    item: NewWordUI,
-    modifier: Modifier
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = stringResource(id = item.valueRes),
-            textAlign = TextAlign.Center,
-            fontSize = 16.sp,
-            color = getContentTextColor(),
-            style = MaterialTheme.typography.subtitle1,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
     }
 }
 

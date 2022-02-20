@@ -99,6 +99,28 @@ fun getContentTextColor(
 }
 
 @Composable
+fun getFABColor(
+    darkTheme: Boolean = isSystemInDarkTheme()
+): Color {
+    return if (darkTheme) {
+        Blue100
+    } else {
+        Black200
+    }
+}
+
+@Composable
+fun getFABTextColor(
+    darkTheme: Boolean = isSystemInDarkTheme()
+): Color {
+    return if (darkTheme) {
+        Black200
+    } else {
+        White100
+    }
+}
+
+@Composable
 fun getSecondaryButtonBackgroundColor(
     darkTheme: Boolean = isSystemInDarkTheme()
 ): Color {

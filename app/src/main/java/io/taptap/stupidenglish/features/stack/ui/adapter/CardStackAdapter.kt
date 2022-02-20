@@ -36,10 +36,6 @@ class CardStackAdapter(
         holder.hintButton.apply {
             setOnClickListener { onShowHintPress(word, holder) }
         }
-        holder.card.apply {
-            setCardBackgroundColor(android.R.attr.colorPrimary)
-            strokeColor = Blue100.toArgb()
-        }
     }
 
     private fun onShowHintPress(word: CardStackModel, holder: ViewHolder) {
@@ -82,7 +78,6 @@ class CardStackAdapter(
         val word: TextView = view.findViewById(R.id.tv_word)
         val hint: TextView = view.findViewById(R.id.tv_hint)
         val hintButton: Button = view.findViewById(R.id.btn_hint)
-        val card: MaterialCardView = view.findViewById(R.id.mcv_card)
     }
 }
 

@@ -120,16 +120,12 @@ class WordListViewModel @Inject constructor(
     }
 
     private fun makeMainList(savedWordList: List<Word>): List<WordListListModels> {
-        val mainList = mutableListOf(
-            WordListTitleUI(valueRes = R.string.word_list_new_word_title),
-            NewWordUI(valueRes = R.string.word_list_add_word),
-            WordListTitleUI(valueRes = R.string.word_list_list_title),
-        )
-
+        val mainList = mutableListOf<WordListListModels>()
         if (showOnboardingLabel(savedWordList.size)) {
             mainList.add(OnboardingWordUI)
         }
 
+        mainList.add(WordListTitleUI(valueRes = R.string.word_list_list_title))
         mainList.addAll(savedWordList.map {
             WordListItemUI(
                 word = it.word,
