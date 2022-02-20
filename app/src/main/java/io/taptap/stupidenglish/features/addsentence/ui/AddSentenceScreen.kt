@@ -77,12 +77,10 @@ fun AddSentenceScreen(
         Scaffold(
             scaffoldState = scaffoldState,
         ) {
-            BottomSheetScreen(modifier = Modifier.fillMaxSize()) {
-                ContentScreen(
-                    state,
-                    onEventSent
-                )
-            }
+            ContentScreen(
+                state,
+                onEventSent
+            )
         }
     }
 }
