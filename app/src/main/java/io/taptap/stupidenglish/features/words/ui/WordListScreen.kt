@@ -108,6 +108,11 @@ fun WordListScreen(
                                 )
                             is WordListContract.Effect.Navigation.ToAddSentence ->
                                 onNavigationRequested(effect)
+                            is WordListContract.Effect.ShowUnderConstruction ->
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = context.getString(R.string.under_construction),
+                                    duration = SnackbarDuration.Short
+                                )
                         }
                     }?.collect()
                 }
@@ -157,7 +162,9 @@ private fun MainList(
     ) {
         items(wordItems) { item ->
             when (item) {
-                is WordListItemUI -> WordItemRow(item = item)
+                is WordListItemUI -> WordItemRow(item = item) {
+                    onEventSent(WordListContract.Event.OnWordClick)
+                }
                 is WordListTitleUI -> TitleItem(item = item)
                 is OnboardingWordUI -> OnboardingItemRow {
                     onEventSent(WordListContract.Event.OnOnboardingClick)
@@ -239,7 +246,8 @@ private fun TitleItem(
 
 @Composable
 private fun WordItemRow(
-    item: WordListItemUI
+    item: WordListItemUI,
+    onClicked: () -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -247,6 +255,7 @@ private fun WordItemRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
+            .clickable { onClicked() }
     ) {
         Row {
             WordItem(

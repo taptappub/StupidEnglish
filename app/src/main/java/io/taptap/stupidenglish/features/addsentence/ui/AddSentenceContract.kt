@@ -12,6 +12,7 @@ class AddSentenceContract {
         object OnSaveSentence : Event()
         object OnSaveSentenceConfirmed : Event()
         object OnSaveSentenceDeclined : Event()
+        object OnChipClick : Event()
     }
 
     data class State(
@@ -24,6 +25,8 @@ class AddSentenceContract {
         data class SaveError(val errorRes: Int) : Effect()
         data class GetWordsError(val errorRes: Int) : Effect()
         data class WaitingForSentenceError(val errorRes: Int) : Effect()
+
+        object ShowUnderConstruction : Effect()
 
         sealed class Navigation : Effect() {
             data class BackToSentenceList(val ids: String?) : Navigation()

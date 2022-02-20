@@ -1,6 +1,7 @@
 package io.taptap.stupidenglish.features.addsentence.ui
 
 import android.content.Context
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -27,6 +28,7 @@ import com.google.accompanist.flowlayout.FlowRow
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
 import io.taptap.stupidenglish.ui.AddTextField
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.NextButton
@@ -68,6 +70,11 @@ fun AddSentenceScreen(
                     is AddSentenceContract.Effect.GetWordsError ->
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(effect.errorRes),
+                            duration = SnackbarDuration.Short
+                        )
+                    is AddSentenceContract.Effect.ShowUnderConstruction ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(R.string.under_construction),
                             duration = SnackbarDuration.Short
                         )
                 }
@@ -149,6 +156,7 @@ private fun ContentScreen(
 
         AddSentenceWordList(
             state = state,
+            onEventSent = onEventSent,
             modifier = Modifier
                 .padding(bottom = 24.dp, start = 16.dp, end = 88.dp, top = 16.dp)
                 .fillMaxWidth()
@@ -214,6 +222,7 @@ private fun ContentScreen(
 @Composable
 private fun AddSentenceWordList(
     state: AddSentenceContract.State,
+    onEventSent: (event: AddSentenceContract.Event) -> Unit,
     modifier: Modifier
 ) {
     FlowRow(
@@ -222,17 +231,23 @@ private fun AddSentenceWordList(
         crossAxisSpacing = 16.dp
     ) {
         state.words.forEach {
-            CustomChip(item = it)
+            CustomChip(item = it) {
+                onEventSent(AddSentenceContract.Event.OnChipClick)
+            }
         }
     }
 }
 
 @Composable
-private fun CustomChip(item: Word) {
+private fun CustomChip(
+    item: Word,
+    onClicked: () -> Unit
+) {
     Card(
         shape = RoundedCornerShape(12.dp),
         backgroundColor = MaterialTheme.colors.secondary,
-        elevation = 16.dp
+        elevation = 16.dp,
+        modifier = Modifier.clickable { onClicked() }
     ) {
         Text(
             text = item.word,

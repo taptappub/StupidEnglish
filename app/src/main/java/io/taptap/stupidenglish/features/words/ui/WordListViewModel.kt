@@ -80,6 +80,9 @@ class WordListViewModel @Inject constructor(
 
                 setEffect { WordListContract.Effect.HideMotivation }
             }
+            WordListContract.Event.OnWordClick -> {
+                setEffect { WordListContract.Effect.ShowUnderConstruction }
+            }
         }
     }
 

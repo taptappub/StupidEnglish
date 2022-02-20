@@ -9,6 +9,7 @@ class WordListContract {
     sealed class Event : ViewEvent {
         object OnAddWordClick : Event()
         object OnOnboardingClick : Event()
+        object OnWordClick : Event()
 
         object OnMotivationConfirmClick : Event()
         object OnMotivationDeclineClick : Event()
@@ -26,6 +27,7 @@ class WordListContract {
 
         object HideMotivation : Effect()
         object ShowMotivation : Effect()
+        object ShowUnderConstruction : Effect()
 
         sealed class Navigation : Effect() {
             object ToAddWord : Navigation()

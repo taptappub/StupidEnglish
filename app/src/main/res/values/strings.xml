@@ -69,4 +69,7 @@
     <string name="stck_front_label">Do you remember this word?</string>
     <string name="stck_back_label">Your hint</string>
     <string name="stck_hint_button_text">I don\'t remember!</string>
+
+    <!-- Delete this block -->
+    <string name="under_construction">Work in progress</string>
 </resources>

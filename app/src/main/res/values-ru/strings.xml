@@ -41,4 +41,5 @@
     <string name="stck_hint_button_text">Я не помню!</string>
     <string name="word_fab_text">Добавить слово</string>
     <string name="stns_fab_text">Добавить предложение</string>
+    <string name="under_construction">В разработке</string>
 </resources>

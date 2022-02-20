@@ -84,11 +84,14 @@ class SentencesListViewModel @Inject constructor(
                 }
                 setEffect { SentencesListContract.Effect.HideMotivation }
             }
-            SentencesListContract.Event.OnMotivationCancel ->  {
+            is SentencesListContract.Event.OnMotivationCancel ->  {
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isShareMotivationShown = true
                 }
                 setEffect { SentencesListContract.Effect.HideMotivation }
+            }
+            is SentencesListContract.Event.OnSentenceClick -> {
+                setEffect { SentencesListContract.Effect.ShowUnderConstruction }
             }
         }
     }

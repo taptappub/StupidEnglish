@@ -62,9 +62,11 @@ class AddSentenceViewModel @Inject constructor(
                 val sentence = viewState.value.sentence
                 saveSentence(sentence)
             }
-            AddSentenceContract.Event.OnSaveSentenceDeclined -> {
+            is AddSentenceContract.Event.OnSaveSentenceDeclined -> {
                 setState { copy(showConfirmSaveDialog = false) }
             }
+            is AddSentenceContract.Event.OnChipClick ->
+                setEffect { AddSentenceContract.Effect.ShowUnderConstruction }
         }
     }
 

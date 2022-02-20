@@ -12,6 +12,7 @@ class SentencesListContract {
         object OnMotivationConfirmClick : Event()
         object OnMotivationDeclineClick : Event()
         object OnMotivationCancel : Event()
+        object OnSentenceClick : Event()
     }
 
     data class State(
@@ -25,6 +26,7 @@ class SentencesListContract {
 
         object HideMotivation : Effect()
         object ShowMotivation : Effect()
+        object ShowUnderConstruction : Effect()
 
         sealed class Navigation : Effect() {
             data class ToAddSentence(val wordIds: List<Long>) : Navigation()

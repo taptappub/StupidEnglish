@@ -3,6 +3,7 @@ package io.taptap.stupidenglish.features.sentences.ui
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,6 +58,7 @@ import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
+import io.taptap.stupidenglish.features.words.ui.WordListContract
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.Fab
 import io.taptap.stupidenglish.ui.theme.Black200
@@ -110,6 +112,11 @@ fun SentencesListScreen(
                         )
                     is SentencesListContract.Effect.Navigation.ToAddSentence ->
                         onNavigationRequested(effect)
+                    is SentencesListContract.Effect.ShowUnderConstruction ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(R.string.under_construction),
+                            duration = SnackbarDuration.Short
+                        )
                 }
             }?.collect()
         }
@@ -264,9 +271,15 @@ fun SentencesList(
     ) {
         items(sentencesItems) { item ->
             when (item) {
-                is SentencesListItemUI -> SentenceItemRow(item = item) { sentence ->
-                    onEventSent(SentencesListContract.Event.OnShareClick(sentence))
-                }
+                is SentencesListItemUI -> SentenceItemRow(
+                    item = item,
+                    onClicked = {
+                        onEventSent(SentencesListContract.Event.OnSentenceClick)
+                    },
+                    onShareClicked = { sentence ->
+                        onEventSent(SentencesListContract.Event.OnShareClick(sentence))
+                    }
+                )
                 is SentencesListTitleUI -> SentenceTitleItem(item = item)
             }
         }
@@ -293,6 +306,7 @@ fun SentenceTitleItem(
 @Composable
 fun SentenceItemRow(
     item: SentencesListItemUI,
+    onClicked: () -> Unit,
     onShareClicked: (SentencesListItemUI) -> Unit
 ) {
     ConstraintLayout {
@@ -303,6 +317,7 @@ fun SentenceItemRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
+                .clickable { onClicked() }
                 .constrainAs(card) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -377,12 +392,6 @@ fun LoadingBar() {
 @Composable
 fun SentenceItemPreview() {
     StupidEnglishTheme {
-        SentenceItemRow(
-            SentencesListItemUI(
-                id = 0,
-                sentence = "Some long long long long sentence for testing only",
-            ),
-            {}
-        )
+
     }
 }
