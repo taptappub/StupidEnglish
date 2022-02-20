@@ -4,9 +4,7 @@
     <string name="word_get_random_words_error">Не хватает слов для создание предложения</string>
     <string name="word_get_list_error">Возникла ошибка в момент получения слов</string>
     <string name="word_onboarding_text">Пора написать очень глупое предложение!</string>
-    <string name="stns_list_new_word_title">Составь свое предложение</string>
     <string name="stns_list_list_title">Глупые предложения</string>
-    <string name="stns_list_add_word">Составь самое глупое предложение…</string>
     <string name="stns_get_random_words_error">Не хватает слов для создание предложения</string>
     <string name="stns_get_sentences_error">Возникла ошибка в момент получения предложений</string>
     <string name="addw_save_error">Возникла ошибка в момент добавления слова</string>
@@ -42,4 +40,5 @@
     <string name="main_bottom_bar_sentences_title">Предложения</string>
     <string name="stck_hint_button_text">Я не помню!</string>
     <string name="word_fab_text">Добавить слово</string>
+    <string name="stns_fab_text">Добавить предложение</string>
 </resources>

@@ -27,12 +27,8 @@ class CardStackAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val word = words[position]
-        Log.d("TAPTAPTAP", "onBindViewHolder word = $word")
         holder.word.text = word.word
-        holder.hint.apply {
-            setTextColor(Grey600.toArgb())
-            text = word.description
-        }
+        holder.hint.text = word.description
         holder.hintButton.apply {
             setOnClickListener { onShowHintPress(word, holder) }
         }

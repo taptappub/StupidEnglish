@@ -10,7 +10,3 @@ data class SentencesListItemUI(
 data class SentencesListTitleUI(
     val valueRes: Int
 ) : SentencesListListModels
-
-data class SentencesListNewSentenceUI(
-    val valueRes: Int
-) : SentencesListListModels

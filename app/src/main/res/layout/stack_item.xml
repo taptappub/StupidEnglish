@@ -57,6 +57,7 @@
             android:gravity="center"
             android:paddingStart="16dp"
             android:paddingTop="32dp"
+            android:textColor="?android:attr/colorPrimary"
             android:paddingEnd="16dp"
             android:textSize="18sp"
             android:visibility="gone"

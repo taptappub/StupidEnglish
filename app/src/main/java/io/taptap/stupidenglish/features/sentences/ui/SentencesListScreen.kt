@@ -3,13 +3,38 @@ package io.taptap.stupidenglish.features.sentences.ui
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.Text
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -33,7 +58,15 @@ import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.ui.BottomSheetScreen
-import io.taptap.stupidenglish.ui.theme.*
+import io.taptap.stupidenglish.ui.Fab
+import io.taptap.stupidenglish.ui.theme.Black200
+import io.taptap.stupidenglish.ui.theme.Blue100
+import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
+import io.taptap.stupidenglish.ui.theme.White100
+import io.taptap.stupidenglish.ui.theme.getContentTextColor
+import io.taptap.stupidenglish.ui.theme.getPrimaryButtonBackgroundColor
+import io.taptap.stupidenglish.ui.theme.getSecondaryButtonBackgroundColor
+import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -107,13 +140,23 @@ fun SentencesListScreen(
                 backgroundColor = MaterialTheme.colors.background,
             ) {
                 Box {
+                    val listState = rememberLazyListState()
+
                     SentencesList(
                         sentencesItems = state.sentenceList,
+                        listState = listState,
                         onEventSent = onEventSent
                     )
                     if (state.isLoading) {
                         LoadingBar()
                     }
+                    Fab(
+                        extended = listState.firstVisibleItemIndex == 0,
+                        modifier = Modifier.align(Alignment.BottomEnd),
+                        iconRes = R.drawable.ic_plus,
+                        text = stringResource(id = R.string.stns_fab_text),
+                        onFabClicked = { onEventSent(SentencesListContract.Event.OnAddSentenceClick) }
+                    )
                 }
             }
         }
@@ -212,50 +255,20 @@ private fun MotivationBottomSheetScreen(
 fun SentencesList(
     sentencesItems: List<SentencesListListModels>,
     onEventSent: (event: SentencesListContract.Event) -> Unit,
+    listState: LazyListState,
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(bottom = 12.dp)
+        state = listState,
+        contentPadding = PaddingValues(bottom = 12.dp),
+        modifier = Modifier.fillMaxSize()
     ) {
         items(sentencesItems) { item ->
             when (item) {
-                is SentencesListNewSentenceUI -> NewSentenceItemRow(item = item) {
-                    onEventSent(SentencesListContract.Event.OnAddSentenceClick)
-                }
                 is SentencesListItemUI -> SentenceItemRow(item = item) { sentence ->
                     onEventSent(SentencesListContract.Event.OnShareClick(sentence))
                 }
                 is SentencesListTitleUI -> SentenceTitleItem(item = item)
             }
-        }
-    }
-}
-
-@Composable
-fun NewSentenceItemRow(
-    item: SentencesListNewSentenceUI,
-    onItemClicked: () -> Unit
-) {
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        elevation = 0.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp)
-            .clickable { onItemClicked() }
-    ) {
-        Row {
-            NewSentenceItem(
-                item = item,
-                modifier = Modifier
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 22.dp,
-                        bottom = 22.dp
-                    )
-                    .fillMaxWidth(0.80f)
-                    .align(Alignment.CenterVertically)
-            )
         }
     }
 }
@@ -329,21 +342,6 @@ fun SentenceItemRow(
                 contentDescription = null
             )
         }
-    }
-}
-
-@Composable
-fun NewSentenceItem(
-    item: SentencesListNewSentenceUI,
-    modifier: Modifier
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = stringResource(id = item.valueRes),
-            fontSize = 16.sp,
-            color = getContentTextColor(),
-            style = MaterialTheme.typography.subtitle1
-        )
     }
 }
 

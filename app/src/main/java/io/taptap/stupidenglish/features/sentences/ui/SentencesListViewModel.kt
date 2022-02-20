@@ -115,9 +115,7 @@ class SentencesListViewModel @Inject constructor(
     }
 
     private fun makeSentenceList(savedSentenceList: List<Sentence>): List<SentencesListListModels> {
-        return mutableListOf(
-            SentencesListTitleUI(valueRes = R.string.stns_list_new_word_title),
-            SentencesListNewSentenceUI(valueRes = R.string.stns_list_add_word),
+        return mutableListOf<SentencesListListModels>(
             SentencesListTitleUI(valueRes = R.string.stns_list_list_title),
         ).apply {
             addAll(savedSentenceList.map {
