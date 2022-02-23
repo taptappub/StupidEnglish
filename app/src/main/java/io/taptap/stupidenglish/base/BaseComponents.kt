@@ -37,7 +37,7 @@ abstract class BaseViewModel<Event : ViewEvent, UiState : ViewState, Effect : Vi
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
 
     private val _effect: Channel<Effect> = Channel()
-    val effect = _effect.receiveAsFlow().debounce(1000)
+    val effect = _effect.receiveAsFlow()
 
     init {
         subscribeToEvents()

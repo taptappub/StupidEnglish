@@ -2,21 +2,45 @@ package io.taptap.stupidenglish.features.words.ui
 
 import android.content.Context
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.Text
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +65,13 @@ import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.Fab
-import io.taptap.stupidenglish.ui.theme.*
+import io.taptap.stupidenglish.ui.theme.Black200
+import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
+import io.taptap.stupidenglish.ui.theme.White100
+import io.taptap.stupidenglish.ui.theme.getContentTextColor
+import io.taptap.stupidenglish.ui.theme.getPrimaryButtonBackgroundColor
+import io.taptap.stupidenglish.ui.theme.getSecondaryButtonBackgroundColor
+import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -109,11 +139,12 @@ fun WordListScreen(
                                 )
                             is WordListContract.Effect.Navigation.ToAddSentence ->
                                 onNavigationRequested(effect)
-                            is WordListContract.Effect.ShowUnderConstruction ->
+                            is WordListContract.Effect.ShowUnderConstruction -> {
                                 scaffoldState.snackbarHostState.showSnackbar(
                                     message = context.getString(R.string.under_construction),
                                     duration = SnackbarDuration.Short
                                 )
+                            }
                         }
                     }?.collect()
                 }
@@ -124,7 +155,7 @@ fun WordListScreen(
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxHeight()
+                            .fillMaxSize()
                             .padding(it)
                     ) {
                         val listState = rememberLazyListState()
