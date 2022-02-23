@@ -380,9 +380,7 @@ private fun NavController.navigateToTab(route: String, builder: (NavOptionsBuild
 //7) Редактирование и удаление
 //8) импорт
 //9) ОНБОРДИНГ (+состояния пустых списков)
-
-
-//1. A/b тестирование
+//10) A/b тестирование
 
 
 //Следующий билд
@@ -390,3 +388,9 @@ private fun NavController.navigateToTab(route: String, builder: (NavOptionsBuild
 //2) Поменять иконку
 //3) Поменять баннер в Google Play
 //5) Добавить кнопку "помню" на экран с карточками
+
+//Гугл аналитика без play service'ов
+//https://developers.google.com/analytics/devguides/collection/android/v4?hl=ru
+
+//БАГИ
+//если кучу раз нажать на слово, то блокируется UI

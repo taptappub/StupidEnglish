@@ -42,4 +42,5 @@
     <string name="word_fab_text">Добавить слово</string>
     <string name="stns_fab_text">Добавить предложение</string>
     <string name="under_construction">В разработке</string>
+    <string name="stck_button_remember">Помню!</string>
 </resources>

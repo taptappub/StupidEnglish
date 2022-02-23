@@ -72,4 +72,5 @@
 
     <!-- Delete this block -->
     <string name="under_construction">Work in progress</string>
+    <string name="stck_button_remember">I remember!</string>
 </resources>

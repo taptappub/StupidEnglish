@@ -7,9 +7,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,6 +24,7 @@ interface ViewEvent
 
 interface ViewSideEffect
 
+@FlowPreview
 abstract class BaseViewModel<Event : ViewEvent, UiState : ViewState, Effect : ViewSideEffect> :
     ViewModel() {
 
@@ -34,7 +37,7 @@ abstract class BaseViewModel<Event : ViewEvent, UiState : ViewState, Effect : Vi
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
 
     private val _effect: Channel<Effect> = Channel()
-    val effect = _effect.receiveAsFlow()
+    val effect = _effect.receiveAsFlow().debounce(1000)
 
     init {
         subscribeToEvents()

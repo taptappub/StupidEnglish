@@ -8,6 +8,9 @@ import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackModel
 
 class StackContract {
     sealed class Event : ViewEvent {
+        object Swipe : Event()
+        object EndSwipe : Event()
+
         data class OnCardAppeared(val position: Int) : Event()
         data class OnCardDisappeared(val position: Int) : Event()
 
@@ -16,9 +19,15 @@ class StackContract {
     }
 
     data class State(
+        val swipeState: SwipeState,
         val words: List<CardStackModel>,
         val topWordId: Long
     ) : ViewState
+
+    sealed class SwipeState {
+        object WasSwiped : SwipeState()
+        object WasNotSwiped : SwipeState()
+    }
 
     sealed class Effect : ViewSideEffect {
         data class GetWordsError(val errorRes: Int) : Effect()

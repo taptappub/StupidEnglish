@@ -2,28 +2,47 @@ package io.taptap.stupidenglish.features.stack.ui
 
 import android.content.Context
 import android.view.View
+import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.recyclerview.widget.DiffUtil
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager
 import com.yuyakaido.android.cardstackview.CardStackListener
 import com.yuyakaido.android.cardstackview.CardStackView
 import com.yuyakaido.android.cardstackview.Direction
+import com.yuyakaido.android.cardstackview.Duration
 import com.yuyakaido.android.cardstackview.StackFrom
+import com.yuyakaido.android.cardstackview.SwipeAnimationSetting
 import com.yuyakaido.android.cardstackview.SwipeableMethod
+import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackAdapter
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackDiffUtils
+import io.taptap.stupidenglish.features.stack.ui.adapter.randomDirection
+import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -37,54 +56,52 @@ fun StackScreen(
     onEventSent: (event: StackContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: StackContract.Effect.Navigation) -> Unit
 ) {
-    Box {
-        val scaffoldState: ScaffoldState = rememberScaffoldState()
+    val scaffoldState: ScaffoldState = rememberScaffoldState()
 
-        //todo manager и adapter объединить в recyclerState по типу scafoldState
-        val manager: CardStackLayoutManager = remember {
-            initCardStackLayoutManager(context, state, onEventSent).init()
-        }
-        val adapter: CardStackAdapter = remember {
-            CardStackAdapter(
-                words = state.words,
-                onEventSent = onEventSent
-            )
-        }
+    //todo manager и adapter объединить в recyclerState по типу scafoldState
+    val manager: CardStackLayoutManager = remember {
+        initCardStackLayoutManager(context, state, onEventSent).init()
+    }
+    val adapter: CardStackAdapter = remember {
+        CardStackAdapter(
+            words = state.words,
+            onEventSent = onEventSent
+        )
+    }
 
-        // Listen for side effects from the VM
-        LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-            effectFlow?.onEach { effect ->
-                when (effect) {
-                    is StackContract.Effect.GetWordsError ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(effect.errorRes),
-                            duration = SnackbarDuration.Short
-                        )
-                    is StackContract.Effect.SaveError ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(effect.errorRes),
-                            duration = SnackbarDuration.Short
-                        )
-                    is StackContract.Effect.Navigation.BackToSentenceList -> onNavigationRequested(
-                        effect
+    // Listen for side effects from the VM
+    LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+        effectFlow?.onEach { effect ->
+            when (effect) {
+                is StackContract.Effect.GetWordsError ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(effect.errorRes),
+                        duration = SnackbarDuration.Short
                     )
-                    is StackContract.Effect.Navigation.ToAddSentence -> onNavigationRequested(
-                        effect
+                is StackContract.Effect.SaveError ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(effect.errorRes),
+                        duration = SnackbarDuration.Short
                     )
-                }
-            }?.collect()
-        }
+                is StackContract.Effect.Navigation.BackToSentenceList -> onNavigationRequested(
+                    effect
+                )
+                is StackContract.Effect.Navigation.ToAddSentence -> onNavigationRequested(
+                    effect
+                )
+            }
+        }?.collect()
+    }
 
-        Scaffold(
-            scaffoldState = scaffoldState,
-        ) {
-            ContentScreen(
-                state = state,
-                manager = manager,
-                adapter = adapter,
-                onEventSent = onEventSent
-            )
-        }
+    Scaffold(
+        scaffoldState = scaffoldState,
+    ) {
+        ContentScreen(
+            state = state,
+            manager = manager,
+            adapter = adapter,
+            onEventSent = onEventSent
+        )
     }
 }
 
@@ -100,23 +117,61 @@ private fun ContentScreen(
         AndroidView(
             factory = { context ->
                 CardStackView(context)
-                    .apply { layoutManager = manager }
+                    .apply {
+                        layoutManager = manager
+                        setAdapter(adapter)
+                    }
             },
             update = { view ->
-                if (view.adapter == null) {
-                    view.adapter = adapter
-                } else {
-                    val cardStackDiffUtils = CardStackDiffUtils(adapter.words, state.words)
-                    val diffResult = DiffUtil.calculateDiff(cardStackDiffUtils);
-                    adapter.words = state.words
-                    diffResult.dispatchUpdatesTo(adapter)
+                val cardStackDiffUtils = CardStackDiffUtils(adapter.words, state.words)
+                val diffResult = DiffUtil.calculateDiff(cardStackDiffUtils);
+                adapter.words = state.words
+                diffResult.dispatchUpdatesTo(adapter)
+
+                if (state.swipeState is StackContract.SwipeState.WasSwiped) {
+                    val setting = SwipeAnimationSetting.Builder()
+                        .randomDirection()
+                        .setDuration(Duration.Normal.duration)
+                        .setInterpolator(AccelerateInterpolator())
+                        .build()
+                    manager.setSwipeAnimationSetting(setting)
+                    view.swipe()
+                    onEventSent(StackContract.Event.EndSwipe)
                 }
             },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 36.dp, bottom = 48.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 36.dp)
                 .weight(1.0f, false)
         )
+
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            elevation = 100.dp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp, start = 48.dp, end = 48.dp, top = 24.dp)
+                .clickable {
+                    onEventSent(StackContract.Event.Swipe)
+                }
+        ) {
+            Text(
+                text = stringResource(id = R.string.stck_button_remember),
+                fontSize = 24.sp,
+                textAlign = TextAlign.Center,
+                color = getTitleTextColor(),
+                style = MaterialTheme.typography.subtitle1,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .align(CenterHorizontally)
+                    .padding(
+                        top = 16.dp,
+                        bottom = 16.dp,
+                        start = 48.dp,
+                        end = 48.dp
+                    )
+            )
+        }
     }
 }
 
@@ -169,7 +224,7 @@ private fun CardStackLayoutManager.init(): CardStackLayoutManager {
         setSwipeThreshold(0.3f)
         setVisibleCount(3)
         setMaxDegree(20.0f)
-        setDirections(Direction.HORIZONTAL)
+        setDirections(Direction.FREEDOM)
         setCanScrollHorizontal(true)
         setCanScrollVertical(true)
         setSwipeableMethod(SwipeableMethod.AutomaticAndManual)

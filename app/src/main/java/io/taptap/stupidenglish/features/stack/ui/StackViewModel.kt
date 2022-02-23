@@ -44,11 +44,18 @@ class StackViewModel @Inject constructor(
     override fun setInitialState() =
         StackContract.State(
             words = emptyList(),
+            swipeState = StackContract.SwipeState.WasNotSwiped,
             topWordId = 0
         )
 
     override fun handleEvents(event: StackContract.Event) {
         when (event) {
+            is StackContract.Event.Swipe -> {
+                setState { copy(swipeState = StackContract.SwipeState.WasSwiped) }
+            }
+            is StackContract.Event.EndSwipe -> {
+                setState { copy(swipeState = StackContract.SwipeState.WasNotSwiped) }
+            }
             is StackContract.Event.OnYes -> {
                 rememberWord(viewState.value.topWordId)
             }
