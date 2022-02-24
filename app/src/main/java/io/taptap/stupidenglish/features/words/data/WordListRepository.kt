@@ -34,10 +34,6 @@ class WordListRepository @Inject constructor(
             }
     }
 
-    suspend fun getWordList(): Reaction<List<Word>> = Reaction.on {
-        wordDao.getWords().toWords()
-    }
-
     suspend fun deleteWord(id: Long): Reaction<Unit> = Reaction.on {
         wordDao.deleteWord(id)
     }

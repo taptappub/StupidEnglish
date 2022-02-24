@@ -1,6 +1,8 @@
 package io.taptap.stupidenglish.features.sentences.ui
 
 import android.content.Context
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,22 +28,33 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissState
+import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -58,7 +71,6 @@ import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
-import io.taptap.stupidenglish.features.words.ui.WordListContract
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.Fab
 import io.taptap.stupidenglish.ui.theme.Black200
@@ -74,6 +86,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
 
+@ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
 fun SentencesListScreen(
@@ -258,6 +271,8 @@ private fun MotivationBottomSheetScreen(
     }
 }
 
+@ExperimentalMaterialApi
+@ExperimentalFoundationApi
 @Composable
 fun SentencesList(
     sentencesItems: List<SentencesListListModels>,
@@ -269,10 +284,20 @@ fun SentencesList(
         contentPadding = PaddingValues(bottom = 12.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        items(sentencesItems) { item ->
+        items(
+            items = sentencesItems,
+            key = { it.id }
+        ) { item ->
+            val dismissState = rememberDismissState()
+            if (dismissState.isDismissed(DismissDirection.StartToEnd)) {
+                onEventSent(SentencesListContract.Event.OnSentenceDismiss(item as SentencesListItemUI))
+            }
+
             when (item) {
                 is SentencesListItemUI -> SentenceItemRow(
                     item = item,
+                    dismissState = dismissState,
+                    modifier = Modifier.animateItemPlacement(),
                     onClicked = {
                         onEventSent(SentencesListContract.Event.OnSentenceClick)
                     },
@@ -303,59 +328,90 @@ fun SentenceTitleItem(
     )
 }
 
+@ExperimentalMaterialApi
 @Composable
 fun SentenceItemRow(
     item: SentencesListItemUI,
     onClicked: () -> Unit,
-    onShareClicked: (SentencesListItemUI) -> Unit
+    dismissState: DismissState,
+    onShareClicked: (SentencesListItemUI) -> Unit,
+    modifier: Modifier
 ) {
-    ConstraintLayout {
-        val (button, card) = createRefs()
-        Card(
-            shape = RoundedCornerShape(12.dp),
-            elevation = 0.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
-                .clickable { onClicked() }
-                .constrainAs(card) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-        ) {
-            Row {
-                SentenceItem(
-                    item = item,
-                    modifier = Modifier
-                        .padding(
-                            start = 16.dp,
-                            end = 16.dp,
-                            top = 12.dp,
-                            bottom = 12.dp
-                        )
-                        .fillMaxWidth(0.80f)
+    SwipeToDismiss(
+        state = dismissState,
+        dismissThresholds = { direction ->
+            FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
+        },
+        modifier = modifier
+            .padding(vertical = 1.dp),
+        directions = setOf(DismissDirection.StartToEnd),
+        background = {
+            val scale by animateFloatAsState(
+                targetValue = if (dismissState.targetValue == DismissValue.Default) 0.6f else 2.2f
+            )
+
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "icon",
+                    modifier = Modifier.scale(scale)
                 )
             }
         }
-        Button(
-            onClick = { onShareClicked(item) },
-            contentPadding = PaddingValues(0.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = Blue100),
-            modifier = Modifier
-                .size(width = 40.dp, height = 32.dp)
-                .padding(0.dp)
-                .constrainAs(button) {
-                    bottom.linkTo(parent.bottom, margin = (6).dp)
-                    end.linkTo(parent.end, margin = (10).dp)
+    ) {
+        ConstraintLayout {
+            val (button, card) = createRefs()
+            Card(
+                shape = RoundedCornerShape(12.dp),
+                elevation = 0.dp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
+                    .clickable { onClicked() }
+                    .constrainAs(card) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+            ) {
+                Row {
+                    SentenceItem(
+                        item = item,
+                        modifier = Modifier
+                            .padding(
+                                start = 16.dp,
+                                end = 16.dp,
+                                top = 12.dp,
+                                bottom = 12.dp
+                            )
+                            .fillMaxWidth(0.80f)
+                    )
                 }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_share_24),
-                contentDescription = null
-            )
+            }
+            Button(
+                onClick = { onShareClicked(item) },
+                contentPadding = PaddingValues(0.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Blue100),
+                modifier = Modifier
+                    .size(width = 40.dp, height = 32.dp)
+                    .padding(0.dp)
+                    .constrainAs(button) {
+                        bottom.linkTo(parent.bottom, margin = (6).dp)
+                        end.linkTo(parent.end, margin = (10).dp)
+                    }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_share_24),
+                    contentDescription = null
+                )
+            }
         }
     }
 }

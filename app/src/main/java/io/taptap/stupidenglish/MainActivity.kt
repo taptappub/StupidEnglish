@@ -309,6 +309,7 @@ private fun WordListDestination(
         })
 }
 
+@ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
 private fun SentenceListDestination(

@@ -1,12 +1,12 @@
 package io.taptap.stupidenglish.features.sentences.ui
 
-sealed interface SentencesListListModels
+sealed class SentencesListListModels(open val id: Long)
 
 data class SentencesListItemUI(
-    val id: Long,
+    override val id: Long,
     val sentence: String
-) : SentencesListListModels
+) : SentencesListListModels(id)
 
 data class SentencesListTitleUI(
     val valueRes: Int
-) : SentencesListListModels
+) : SentencesListListModels(-1)

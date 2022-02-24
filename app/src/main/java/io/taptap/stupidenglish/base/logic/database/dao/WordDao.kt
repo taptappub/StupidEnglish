@@ -75,4 +75,12 @@ interface WordDao {
         """
     )
     fun observeSentences(): Flow<List<SentenceDto>>
+
+    @Query(
+        """
+        DELETE FROM SentenceTable 
+        WHERE SentenceTable.id = :sentenceId
+        """
+    )
+    suspend fun deleteSentence(sentenceId: Long): Int
 }

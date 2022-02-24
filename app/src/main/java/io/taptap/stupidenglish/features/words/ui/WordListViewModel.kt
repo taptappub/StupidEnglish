@@ -1,6 +1,5 @@
 package io.taptap.stupidenglish.features.words.ui
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R

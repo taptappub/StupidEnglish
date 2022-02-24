@@ -27,10 +27,14 @@ class SentencesListRepository @Inject constructor(
             settings.isShareMotivationShown = value
         }
 
-    fun getSentenceList(): Reaction<Flow<List<Sentence>>> = Reaction.on {
+    fun observeSentenceList(): Reaction<Flow<List<Sentence>>> = Reaction.on {
         wordDao.observeSentences()
             .map { sentenceDtos ->
                 sentenceDtos.toSentences()
             }
+    }
+
+    suspend fun deleteSentence(id: Long): Reaction<Unit> = Reaction.on {
+        wordDao.deleteSentence(id)
     }
 }

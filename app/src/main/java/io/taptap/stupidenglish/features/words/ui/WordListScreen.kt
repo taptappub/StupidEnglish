@@ -208,8 +208,6 @@ private fun MainList(
     onEventSent: (event: WordListContract.Event) -> Unit,
     listState: LazyListState,
 ) {
-    val comparator by remember { mutableStateOf(listComparator) }
-
     LazyColumn(
         state = listState,
         contentPadding = PaddingValues(bottom = 16.dp)
@@ -230,9 +228,6 @@ private fun MainList(
                     dismissState = dismissState,
                     onClicked = {
                         onEventSent(WordListContract.Event.OnWordClick)
-                    },
-                    onDismiss = { item ->
-                        onEventSent(WordListContract.Event.OnWordDismiss(item))
                     }
                 )
                 is WordListTitleUI -> TitleItem(item = item)
@@ -324,7 +319,6 @@ private fun TitleItem(
 private fun WordItemRow(
     item: WordListItemUI,
     onClicked: () -> Unit,
-    onDismiss: (WordListItemUI) -> Unit,
     dismissState: DismissState,
     modifier: Modifier
 ) {
@@ -518,8 +512,4 @@ fun DefaultOnboardingItemRowPreview() {
     StupidEnglishTheme {
         //OnboardingItemRow {}
     }
-}
-
-private val listComparator = Comparator<WordListListModels> { left, right ->
-    left.id.compareTo(right.id)
 }

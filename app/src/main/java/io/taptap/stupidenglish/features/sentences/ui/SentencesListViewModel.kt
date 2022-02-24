@@ -93,7 +93,16 @@ class SentencesListViewModel @Inject constructor(
             is SentencesListContract.Event.OnSentenceClick -> {
                 setEffect { SentencesListContract.Effect.ShowUnderConstruction }
             }
+            is SentencesListContract.Event.OnSentenceDismiss -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    deleteSentence(event.item)
+                }
+            }
         }
+    }
+
+    private suspend fun deleteSentence(item: SentencesListItemUI) {
+        repository.deleteSentence(item.id)
     }
 
     private suspend fun getRandomWords(): List<Long>? {
@@ -105,7 +114,7 @@ class SentencesListViewModel @Inject constructor(
     }
 
     private suspend fun getSentenceList() {
-        val savedSentenceList = repository.getSentenceList().takeOrReturn {
+        val savedSentenceList = repository.observeSentenceList().takeOrReturn {
             setEffect { SentencesListContract.Effect.GetSentencesError(R.string.stns_get_sentences_error) }
         }
         savedSentenceList.collect {
@@ -132,7 +141,7 @@ class SentencesListViewModel @Inject constructor(
 
     private suspend fun motivationShare() {
         if (!repository.isShareMotivationShown) {
-            val savedSentenceList = repository.getSentenceList().takeOrReturn {
+            val savedSentenceList = repository.observeSentenceList().takeOrReturn {
                 setEffect { SentencesListContract.Effect.GetSentencesError(R.string.stns_get_sentences_error) }
             }
             savedSentenceList.collect {
