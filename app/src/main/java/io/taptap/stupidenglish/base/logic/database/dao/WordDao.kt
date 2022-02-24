@@ -1,6 +1,9 @@
 package io.taptap.stupidenglish.base.logic.database.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 import io.taptap.stupidenglish.base.logic.database.dto.SentenceDto
 import io.taptap.stupidenglish.base.logic.database.dto.WordDto
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +18,14 @@ interface WordDao {
 
     @Update
     suspend fun updateWord(word: WordDto)
+
+    @Query(
+        """
+        DELETE FROM WordTable 
+        WHERE WordTable.id = :wordId
+        """
+    )
+    suspend fun deleteWord(wordId: Long): Int
 
     @Query(
         """

@@ -7,6 +7,8 @@ import io.taptap.stupidenglish.features.main.ui.MainContract
 
 class WordListContract {
     sealed class Event : ViewEvent {
+        data class OnWordDismiss(val item: WordListItemUI) : Event()
+
         object OnAddWordClick : Event()
         object OnOnboardingClick : Event()
         object OnWordClick : Event()

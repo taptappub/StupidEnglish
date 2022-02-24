@@ -27,10 +27,18 @@ class WordListRepository @Inject constructor(
             settings.isSentenceMotivationShown = value
         }
 
-    suspend fun getWordList(): Reaction<Flow<List<Word>>> = Reaction.on {
+    suspend fun observeWordList(): Reaction<Flow<List<Word>>> = Reaction.on {
         wordDao.observeWords()
             .map { wordDtos ->
                 wordDtos.toWords()
             }
+    }
+
+    suspend fun getWordList(): Reaction<List<Word>> = Reaction.on {
+        wordDao.getWords().toWords()
+    }
+
+    suspend fun deleteWord(id: Long): Reaction<Unit> = Reaction.on {
+        wordDao.deleteWord(id)
     }
 }

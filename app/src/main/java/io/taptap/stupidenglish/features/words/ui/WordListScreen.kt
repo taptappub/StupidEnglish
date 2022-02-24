@@ -1,6 +1,9 @@
 package io.taptap.stupidenglish.features.words.ui
 
 import android.content.Context
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,22 +31,35 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissState
+import androidx.compose.material.DismissValue.*
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -75,8 +91,10 @@ import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
+import java.util.*
 
 
+@ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
 fun WordListScreen(
@@ -182,32 +200,57 @@ fun WordListScreen(
     }
 }
 
+@ExperimentalFoundationApi
+@ExperimentalMaterialApi
 @Composable
 private fun MainList(
     wordItems: List<WordListListModels>,
     onEventSent: (event: WordListContract.Event) -> Unit,
     listState: LazyListState,
 ) {
+    val comparator by remember { mutableStateOf(listComparator) }
+
     LazyColumn(
         state = listState,
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
-        items(wordItems) { item ->
+        items(
+            items = wordItems,
+            key = { it.id }
+        ) { item ->
+            val dismissState = rememberDismissState()
+            if (dismissState.isDismissed(DismissDirection.StartToEnd)) {
+                onEventSent(WordListContract.Event.OnWordDismiss(item as WordListItemUI))
+            }
+
             when (item) {
-                is WordListItemUI -> WordItemRow(item = item) {
-                    onEventSent(WordListContract.Event.OnWordClick)
-                }
+                is WordListItemUI -> WordItemRow(
+                    item = item,
+                    modifier = Modifier.animateItemPlacement(),
+                    dismissState = dismissState,
+                    onClicked = {
+                        onEventSent(WordListContract.Event.OnWordClick)
+                    },
+                    onDismiss = { item ->
+                        onEventSent(WordListContract.Event.OnWordDismiss(item))
+                    }
+                )
                 is WordListTitleUI -> TitleItem(item = item)
-                is OnboardingWordUI -> OnboardingItemRow {
-                    onEventSent(WordListContract.Event.OnOnboardingClick)
-                }
+                is OnboardingWordUI -> OnboardingItemRow(
+                    onClicked = {
+                        onEventSent(WordListContract.Event.OnOnboardingClick)
+                    }
+                )
             }
         }
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
-private fun OnboardingItemRow(onClicked: () -> Unit) {
+private fun OnboardingItemRow(
+    onClicked: () -> Unit
+) {
     ConstraintLayout(
         modifier = Modifier.noRippleClickable(onClick = onClicked)
     ) {
@@ -276,34 +319,68 @@ private fun TitleItem(
     )
 }
 
+@ExperimentalMaterialApi
 @Composable
 private fun WordItemRow(
     item: WordListItemUI,
-    onClicked: () -> Unit
+    onClicked: () -> Unit,
+    onDismiss: (WordListItemUI) -> Unit,
+    dismissState: DismissState,
+    modifier: Modifier
 ) {
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        elevation = 0.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
-            .clickable {
-                onClicked()
-            }
-    ) {
-        Row {
-            WordItem(
-                item = item,
-                modifier = Modifier
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 16.dp,
-                        bottom = 16.dp
-                    )
-                    .fillMaxWidth(0.80f)
-                    .align(Alignment.CenterVertically)
+    SwipeToDismiss(
+        state = dismissState,
+        dismissThresholds = { direction ->
+            FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
+        },
+        modifier = modifier
+            .padding(vertical = 1.dp),
+        directions = setOf(DismissDirection.StartToEnd),
+        background = {
+            val scale by animateFloatAsState(
+                targetValue = if (dismissState.targetValue == Default) 0.6f else 2.2f
             )
+
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "icon",
+                    modifier = Modifier.scale(scale)
+                )
+            }
+        }
+    ) {
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            elevation = animateDpAsState(
+                if (dismissState.dismissDirection != null) 4.dp else 0.dp
+            ).value,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
+                .clickable {
+                    onClicked()
+                }
+        ) {
+            Row {
+                WordItem(
+                    item = item,
+                    modifier = Modifier
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 16.dp,
+                            bottom = 16.dp
+                        )
+                        .fillMaxWidth(0.80f)
+                        .align(Alignment.CenterVertically)
+                )
+            }
         }
     }
 }
@@ -439,7 +516,10 @@ private fun MotivationBottomSheetScreen(
 @Composable
 fun DefaultOnboardingItemRowPreview() {
     StupidEnglishTheme {
-        OnboardingItemRow {}
+        //OnboardingItemRow {}
     }
 }
 
+private val listComparator = Comparator<WordListListModels> { left, right ->
+    left.id.compareTo(right.id)
+}

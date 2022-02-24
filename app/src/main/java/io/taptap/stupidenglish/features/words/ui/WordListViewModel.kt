@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.words.ui
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
@@ -83,7 +84,16 @@ class WordListViewModel @Inject constructor(
             WordListContract.Event.OnWordClick -> {
                 setEffect { WordListContract.Effect.ShowUnderConstruction }
             }
+            is WordListContract.Event.OnWordDismiss -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    deleteWord(event.item)
+                }
+            }
         }
+    }
+
+    private suspend fun deleteWord(item: WordListItemUI) {
+        repository.deleteWord(item.id)
     }
 
     private suspend fun getRandomWords(): List<Long>? {
@@ -95,7 +105,7 @@ class WordListViewModel @Inject constructor(
     }
 
     private suspend fun showMotivation() {
-        val wordsCountFlow = repository.getWordList().takeOrNull()
+        val wordsCountFlow = repository.observeWordList().takeOrNull()
         wordsCountFlow?.collect { words ->
             val size = words.size
 
@@ -109,7 +119,7 @@ class WordListViewModel @Inject constructor(
     }
 
     private suspend fun getMainList() {
-        val savedWordList = repository.getWordList().takeOrReturn {
+        val savedWordList = repository.observeWordList().takeOrReturn {
             setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
         }
 
@@ -131,6 +141,7 @@ class WordListViewModel @Inject constructor(
         mainList.add(WordListTitleUI(valueRes = R.string.word_list_list_title))
         mainList.addAll(savedWordList.map {
             WordListItemUI(
+                id = it.id,
                 word = it.word,
                 description = it.description
             )

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -47,6 +48,7 @@ import javax.inject.Inject
 
 const val URI = "https://stupidenglish.app"
 
+@ExperimentalFoundationApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -277,6 +279,7 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
         })
 }
 
+@ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
 private fun WordListDestination(
@@ -387,7 +390,7 @@ private fun NavController.navigateToTab(route: String, builder: (NavOptionsBuild
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE, 4) не поняла как смахнуть карточку)
 //2) Поменять иконку
 //3) Поменять баннер в Google Play
-//5) Добавить кнопку "помню" на экран с карточками
+//4) Удаление и того и сего
 
 //Гугл аналитика без play service'ов
 //https://developers.google.com/analytics/devguides/collection/android/v4?hl=ru

@@ -1,14 +1,15 @@
 package io.taptap.stupidenglish.features.words.ui
 
-sealed interface WordListListModels
+sealed class WordListListModels(open val id: Long)
 
 data class WordListItemUI(
+    override val id: Long,
     val word: String,
     val description: String
-) : WordListListModels
+) : WordListListModels(id)
 
 data class WordListTitleUI(
     val valueRes: Int
-) : WordListListModels
+) : WordListListModels(-1)
 
-object OnboardingWordUI : WordListListModels
+object OnboardingWordUI : WordListListModels(-2)
