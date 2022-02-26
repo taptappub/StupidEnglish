@@ -44,24 +44,23 @@ fun StupidEnglishTheme(
 ) {
     val systemUiController = rememberSystemUiController()
 
-    SideEffect {
-        // Update all of the system bar colors to be transparent, and use
-        // dark icons if we're in light theme
-        systemUiController.setSystemBarsColor(
-            color = Color.Transparent,
-            darkIcons = !darkTheme
-        )
+    // Update all of the system bar colors to be transparent, and use
+    // dark icons if we're in light theme
+    systemUiController.setSystemBarsColor(
+        color = MaterialTheme.colors.background,
+        darkIcons = !darkTheme
+    )
 
-        systemUiController.setNavigationBarColor(
-            color = Color.Transparent,
-            darkIcons = !darkTheme
-        )
+    systemUiController.setNavigationBarColor(
+        color = MaterialTheme.colors.background,
+        darkIcons = !darkTheme,
+        navigationBarContrastEnforced = false
+    )
 
-        systemUiController.setStatusBarColor(
-            color = Color.Transparent,
-            darkIcons = !darkTheme
-        )
-    }
+    systemUiController.setStatusBarColor(
+        color = MaterialTheme.colors.background,
+        darkIcons = !darkTheme
+    )
 
     val colors = if (darkTheme) {
         DarkColorPalette

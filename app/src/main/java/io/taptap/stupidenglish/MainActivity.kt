@@ -63,6 +63,8 @@ class MainActivity : ComponentActivity() {
         alarmScheduler.enableNotifications()
         alarmScheduler.schedulePushNotifications()
 
+        //WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContent {
             StupidEnglishTheme {
                 StupidApp()
@@ -113,9 +115,7 @@ class MainActivity : ComponentActivity() {
                         onEventSent = { event -> mainViewModel.setEvent(event) },
                         onNavigationRequested = { navigationEffect ->
                             if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
-                                Log.d("TAPTAPTAP", "onNavigationRequested route = ${navigationEffect.route}, currentRoute = ${navController.currentRoute}")
                                 if (navigationEffect.route != navController.currentRoute) {
-                                    Log.d("TAPTAPTAP", "onNavigationRequested if true")
                                     navController.navigateToTab(navigationEffect.route)
                                 }
                             }
@@ -364,7 +364,10 @@ private fun List<String>.containsRoute(curRoute: String?): Boolean {
     return false
 }
 
-private fun NavController.navigateToTab(route: String, builder: (NavOptionsBuilder.() -> Unit)? = null) {
+private fun NavController.navigateToTab(
+    route: String,
+    builder: (NavOptionsBuilder.() -> Unit)? = null
+) {
     navigate(route) {
         launchSingleTop = true
         restoreState = true
