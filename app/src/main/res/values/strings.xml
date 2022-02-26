@@ -16,7 +16,7 @@
     <string name="app_name" translatable="false">Stupid Language</string>
 
     <!-- Main -->
-    <string name="main_dialog_message">Hey! This is a <b>Beta version</b> of a large app… in future.\n\nI have been trying to learn this stupid English for several years now, and memorizing words is one of the pillars of my learning.\n\nThe approach of creating apps from words gave the most effect, so I decided to make an app which I would like to use myself. If it helps you as well as it does me, I will be very happy. I will try to listen to all wishes!\n\nIt\'s time to learn words!</string>
+    <string name="main_dialog_message">Hey! This is a <b>Beta version</b> of a large app… in future.\n\nI have been trying to learn this stupid English for several years now, and memorizing words is one of the pillars of my learning.\n\nThe approach of creating apps from words gave the most effect, so I decided to make an app which I would like to use myself. If it helps you as well as it does me, I will be very happy. I will try to listen to all your wishes!\n\nIt\'s time to learn words!</string>
     <string name="main_dialog_ok">I agree</string>
     <string name="main_bottom_bar_words_title">Words</string>
     <string name="main_bottom_bar_sentences_title">Sentences</string>
@@ -24,10 +24,10 @@
     <!-- Word List -->
     <string name="word_list_list_title">My words</string>
     <string name="word_get_random_words_error">Can\'t find random words</string>
-    <string name="word_get_list_error">Error at the time of getting words</string>
+    <string name="word_get_list_error">Error while getting words</string>
     <string name="word_onboarding_text">Make the stupidest sentence from your words</string>
     <string name="word_motivation_title">Is it time to make a sentence?</string>
-    <string name="word_motivation_message">Let\'s make some sentences with your words. Once per month we choose the funniest and stupidest sentence and make a picture with it!</string>
+    <string name="word_motivation_message">Let\'s make some sentences with your words. Once per month we choose the funniest and the most stupid sentence and make a picture with it!</string>
     <string name="word_motivation_confirm">Let\'s do it!</string>
     <string name="word_motivation_decline">Nope</string>
     <string name="word_fab_text">Add word</string>
@@ -35,26 +35,26 @@
     <!-- Sentences List -->
     <string name="stns_list_list_title">Stupid sentences</string>
     <string name="stns_get_random_words_error">Can\'t find random words</string>
-    <string name="stns_get_sentences_error">Error at the time of getting sentences</string>
+    <string name="stns_get_sentences_error">Error while getting sentences</string>
     <string name="stns_fab_text">Add sentence</string>
 
     <!-- Add Word -->
-    <string name="addw_save_error">Error at the time of saving</string>
+    <string name="addw_save_error">Error while saving</string>
     <string name="addw_word_placeholder">Unknown word</string>
     <string name="addw_description_placeholder">Your hint for word above</string>
     <string name="addw_description_not_found_error">Add your hint, please =)</string>
 
     <!-- Add Sentence -->
-    <string name="adds_save_error">Error at the time of saving</string>
-    <string name="adds_get_words_error">Error at the time of getting words</string>
-    <string name="adds_main_hint">Make a sentence from selected words. As stupider, it will be, then better!</string>
+    <string name="adds_save_error">Error while saving</string>
+    <string name="adds_get_words_error">Error while getting words</string>
+    <string name="adds_main_hint">Make a sentence from selected words. The more stupider, then better!</string>
     <string name="adds_sentence_not_found_error">Add your sentence, please =)</string>
     <string name="adds_sentence_placeholder">Your sentence</string>
     <string name="adds_confirm_dialog_text">Do you want to save this sentence? It\'s very stupid! I so like it!</string>
     <string name="adds_confirm_dialog_ok">Save</string>
     <string name="adds_confirm_dialog_cancel">Cancel</string>
     <string name="adds_motivation_title">Let\'s share last sentence!</string>
-    <string name="adds_motivation_message">Try to share your last sentence with friends. It is a huge motivation for your education, and so do my…</string>
+    <string name="adds_motivation_message">Try to share your last sentence with friends. It is a huge motivation for learning.</string>
     <string name="adds_motivation_confirm">Share</string>
     <string name="adds_motivation_decline">Later</string>
     <string name="adds_share_text" translatable="false">%1$s\n\nThis sentence was created by StupidLanguage app! #Education #StupidLanguage"</string>
@@ -66,7 +66,7 @@
     <!-- Learning Stack -->
     <string name="stck_button_no">No</string>
     <string name="stck_button_yes">Yes</string>
-    <string name="stck_save_error">Error at the time of saving</string>
+    <string name="stck_save_error">Error while saving</string>
     <string name="stck_front_label">Do you remember this word?</string>
     <string name="stck_back_label">Your hint</string>
     <string name="stck_hint_button_text">I don\'t remember!</string>
