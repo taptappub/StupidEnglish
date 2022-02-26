@@ -13,7 +13,7 @@ private val DarkColorPalette = darkColors(
     surface = Grey600,
     primary = White100,
     background = Black200,
-    secondary = Blue100,
+    secondary = DeepBlue,
     error = Red100,
 
     onBackground = White100,
@@ -27,7 +27,7 @@ private val LightColorPalette = lightColors(
     surface = White100,
     primary = Black200,
     background = Grey200,
-    secondary = Blue100,
+    secondary = DeepBlue,
     error = Red100,
 
     onBackground = Black200,
@@ -44,8 +44,6 @@ fun StupidEnglishTheme(
 ) {
     val systemUiController = rememberSystemUiController()
 
-    // Update all of the system bar colors to be transparent, and use
-    // dark icons if we're in light theme
     systemUiController.setSystemBarsColor(
         color = MaterialTheme.colors.background,
         darkIcons = !darkTheme
