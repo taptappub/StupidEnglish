@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.core.app.TaskStackBuilder
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
@@ -79,11 +80,11 @@ class AlarmReceiver : BroadcastReceiver() {
             .show()
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     private fun createPendingIntent(context: Context, words: List<Word>): PendingIntent {
         val string = words.joinToString(",") { it.id.toString() }
         val taskDetailIntent = Intent(
             Intent.ACTION_VIEW,
-            //"$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}=$string".toUri(),
             "$URI/${NavigationKeys.Arg.WORDS_ID}=$string".toUri(),
             context,
             MainActivity::class.java

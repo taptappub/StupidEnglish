@@ -394,7 +394,6 @@ private fun NavController.navigateToTab(
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE, 4) не поняла как смахнуть карточку)
 //2) Поменять иконку
 //3) Поменять баннер в Google Play
-//4) Удаление и того и сего
 
 //Гугл аналитика без play service'ов
 //https://developers.google.com/analytics/devguides/collection/android/v4?hl=ru

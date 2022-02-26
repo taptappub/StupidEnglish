@@ -2,6 +2,7 @@ package io.taptap.stupidenglish.base.logic.share
 
 import android.content.Context
 import android.content.Intent
+import io.taptap.stupidenglish.R
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -11,7 +12,7 @@ class ShareUtil @Inject constructor(
 ) {
 
     fun share(text: String) {
-        val newText = "$text\n\nThis sentence was created by StupidEnglish app! #Education #StupidEnglish"
+        val newText = context.getString(R.string.adds_share_text, text)
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, newText)
