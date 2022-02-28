@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
+import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.features.addword.data.AddWordRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,6 +25,7 @@ class AddWordViewModel @Inject constructor(
     override fun setInitialState() = AddWordContract.State(
         word = "",
         description = "",
+        groups = emptyList(),
         addWordState = AddWordContract.AddWordState.None
     )
 
@@ -49,7 +51,8 @@ class AddWordViewModel @Inject constructor(
                 setInitialState()
                 val word = viewState.value.word
                 val description = viewState.value.description
-                saveWord(word, description)
+                val groupsIds = viewState.value.groups
+                saveWord(word, description, groupsIds)
             }
             is AddWordContract.Event.OnWaitingDescriptionError -> setEffect {
                 AddWordContract.Effect.WaitingForDescriptionError(
@@ -59,9 +62,10 @@ class AddWordViewModel @Inject constructor(
         }
     }
 
-    private fun saveWord(word: String, description: String) {
+    private fun saveWord(word: String, description: String, groups: List<Group>) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.saveWord(word, description)
+            val groupsIds = groups.map { it.id }
+            repository.saveWord(word, description, groupsIds)
                 .handle(
                     success = {
                         withContext(Dispatchers.Main) {

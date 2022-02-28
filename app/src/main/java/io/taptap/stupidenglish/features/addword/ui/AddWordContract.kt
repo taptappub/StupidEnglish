@@ -3,6 +3,7 @@ package io.taptap.stupidenglish.features.addword.ui
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewState
+import io.taptap.stupidenglish.base.model.Group
 
 class AddWordContract {
     sealed class Event : ViewEvent {
@@ -21,6 +22,7 @@ class AddWordContract {
     data class State(
         val word: String,
         val description: String,
+        val groups: List<Group>,
         val addWordState: AddWordState
     ) : ViewState
 

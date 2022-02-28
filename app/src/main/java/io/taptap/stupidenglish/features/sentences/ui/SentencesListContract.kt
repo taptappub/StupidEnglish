@@ -3,9 +3,6 @@ package io.taptap.stupidenglish.features.sentences.ui
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
-import io.taptap.stupidenglish.features.main.ui.MainContract
-import io.taptap.stupidenglish.features.words.ui.WordListContract
-import io.taptap.stupidenglish.features.words.ui.WordListItemUI
 
 class SentencesListContract {
     sealed class Event : ViewEvent {

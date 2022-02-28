@@ -13,8 +13,8 @@ class AddWordRepository @Inject constructor(
     private val alarmScheduler: AlarmScheduler
 ) {
 
-    suspend fun saveWord(word: String, description: String): Reaction<Long> = Reaction.on {
-        wordDao.insertWord(WordDto(word = word, description = description, points = 0))
+    suspend fun saveWord(word: String, description: String, groupsIds: List<Long>): Reaction<Long> = Reaction.on {
+        wordDao.insertWord(WordDto(word = word, description = description, points = 0, groupsIds = groupsIds.joinToString(",")))
             .also { alarmScheduler.enableNotifications() } // todo не забудь удалять нотификации, когда добавишь удаление слов. И поищи ALARM_STOP
     }
 }

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import io.taptap.stupidenglish.base.logic.database.dto.GroupDto
 import io.taptap.stupidenglish.base.logic.database.dto.SentenceDto
 import io.taptap.stupidenglish.base.logic.database.dto.WordDto
 import kotlinx.coroutines.flow.Flow
@@ -83,4 +84,46 @@ interface WordDao {
         """
     )
     suspend fun deleteSentence(sentenceId: Long): Int
+
+    //-----------------Group-----------------
+
+    @Insert
+    suspend fun insertGroup(group: GroupDto): Long
+
+    @Update
+    suspend fun updateGroup(group: GroupDto)
+
+    @Query(
+        """
+        DELETE FROM GroupTable 
+        WHERE GroupTable.id = :groupId
+        """
+    )
+    suspend fun deleteGroup(groupId: Long): Int
+
+    @Query(
+        """
+        SELECT *
+        FROM GroupTable
+        WHERE GroupTable.id = :groupId
+        LIMIT 1
+        """
+    )
+    suspend fun getGroupDto(groupId: Long): GroupDto?
+
+    @Query(
+        """
+        SELECT *
+        FROM GroupTable
+        """
+    )
+    fun observeGroups(): Flow<List<GroupDto>>
+
+    @Query(
+        """
+        SELECT *
+        FROM GroupTable
+        """
+    )
+    fun getGroups(): List<GroupDto>
 }

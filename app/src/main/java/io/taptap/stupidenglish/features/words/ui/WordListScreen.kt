@@ -3,9 +3,11 @@ package io.taptap.stupidenglish.features.words.ui
 import android.content.Context
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +26,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -60,6 +63,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -69,14 +75,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.google.accompanist.insets.ProvideWindowInsets
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.noRippleClickable
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
+import io.taptap.stupidenglish.features.words.ui.model.GroupItemUI
+import io.taptap.stupidenglish.features.words.ui.model.GroupListModels
+import io.taptap.stupidenglish.features.words.ui.model.NoGroupItemUI
+import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
+import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
+import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
+import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
+import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.Fab
 import io.taptap.stupidenglish.ui.theme.Black200
@@ -233,8 +249,163 @@ private fun MainList(
                         onEventSent(WordListContract.Event.OnOnboardingClick)
                     }
                 )
+                is WordListGroupUI -> GroupItemRow(
+                    title = stringResource(id = item.titleRes),
+                    button = stringResource(id = item.buttonRes),
+                    list = item.groups,
+                    onButtonClicked = {
+                        onEventSent(WordListContract.Event.OnAddGroupClick)
+                    },
+                    onGroupClicked = { groupId ->
+                        onEventSent(WordListContract.Event.OnGroupClick(groupId))
+                    }
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun GroupItemRow(
+    title: String,
+    button: String,
+    list: List<GroupListModels>,
+    onButtonClicked: () -> Unit,
+    onGroupClicked: (Long) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 28.dp)
+    ) {
+        GroupItemHeader(
+            title = title,
+            button = button,
+            onButtonClicked = onButtonClicked
+        )
+        GroupItemGroupsRow(
+            list = list,
+            onGroupClicked = onGroupClicked
+        )
+    }
+}
+
+@Composable
+private fun GroupItemGroupsRow(list: List<GroupListModels>, onGroupClicked: (Long) -> Unit) {
+    val listState = rememberLazyListState()
+
+    LazyRow(
+        state = listState,
+        contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
+    ) {
+        items(
+            items = list,
+            key = { it.id }
+        ) { item ->
+            when (item) {
+                is NoGroupItemUI -> GroupItem(
+                    title = stringResource(id = item.titleRes),
+                    color = item.color,
+                    onGroupClicked = onGroupClicked
+                )
+                is GroupItemUI -> GroupItem(
+                    title = item.name,
+                    color = item.color,
+                    onGroupClicked = onGroupClicked
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun GroupItem(
+    title: String,
+    color: Color,
+    onGroupClicked: (Long) -> Unit
+) {
+    Column(
+        modifier = Modifier.clickable { onGroupClicked }
+    ) {
+        GroupIcon(
+            letter = title[0],
+            color = color,
+            elevation = 8.dp
+        )
+        Text(
+            text = title,
+            textAlign = TextAlign.Center,
+            fontSize = 12.sp,
+            color = getContentTextColor(),
+            style = MaterialTheme.typography.subtitle2,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun GroupIcon(
+    letter: Char,
+    color: Color,
+    modifier: Modifier = Modifier,
+    border: BorderStroke? = null,
+    elevation: Dp = 0.dp,
+    shape: Shape = CircleShape
+) {
+    Box(
+        modifier = modifier
+            .shadow(elevation = elevation, shape = shape, clip = false)
+            .zIndex(elevation.value)
+            .then(if (border != null) Modifier.border(border, shape) else Modifier)
+            .background(
+                color = color,
+                shape = shape
+            )
+            .clip(shape)
+    ) {
+        Text(
+            text = letter.toString(),
+            textAlign = TextAlign.Center,
+            fontSize = 12.sp,
+            color = getContentTextColor(),
+            style = MaterialTheme.typography.subtitle2,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun GroupItemHeader(title: String, button: String, onButtonClicked: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = title,
+            textAlign = TextAlign.Left,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.subtitle1,
+            color = getTitleTextColor(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
+            text = button,
+            textAlign = TextAlign.Left,
+            fontSize = 14.sp,
+            color = MaterialTheme.colors.secondary,
+            style = MaterialTheme.typography.subtitle2,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.clickable {
+                onButtonClicked
+            }
+        )
     }
 }
 
@@ -503,11 +674,28 @@ private fun MotivationBottomSheetScreen(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Preview(showBackground = true)
 @Composable
-fun DefaultOnboardingItemRowPreview() {
+fun GroupItemHeader() {
     StupidEnglishTheme {
-        OnboardingItemRow() {}
+        GroupItemHeader(
+            title = "Groups",
+            button = "Add",
+            onButtonClicked = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GroupItemRow() {
+    StupidEnglishTheme {
+        GroupItemRow(
+            title = "Groups",
+            button = "Add",
+            onButtonClicked = {},
+            list = emptyList(),
+            onGroupClicked = {}
+        )
     }
 }
