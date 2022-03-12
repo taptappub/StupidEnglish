@@ -247,16 +247,7 @@ private fun HasWordScreen(
 @Composable
 fun DefaultPreview() {
     StupidEnglishTheme {
-        AddWordScreen(
-            LocalContext.current,
-            AddWordContract.State(
-                word = "",
-                description = "",
-                addWordState = AddWordContract.AddWordState.None
-            ),
-            null,
-            { },
-            { })
+
     }
 }
 
@@ -265,14 +256,7 @@ fun DefaultPreview() {
 @Composable
 fun NoneScreenPreview() {
     StupidEnglishTheme {
-        ContentScreen(
-            AddWordContract.State(
-                word = "",
-                description = "",
-                addWordState = AddWordContract.AddWordState.None
-            ),
-            { }
-        )
+
     }
 }
 

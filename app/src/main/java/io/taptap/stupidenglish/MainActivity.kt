@@ -1,20 +1,34 @@
 package io.taptap.stupidenglish
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.*
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.*
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.NavGraph
+import androidx.navigation.NavHostController
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
+import androidx.navigation.navigation
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -294,6 +308,9 @@ private fun WordListDestination(
         state = wordState,
         effectFlow = wordViewModel.effect,
         onEventSent = { event -> wordViewModel.setEvent(event) },
+        onChangeBottomSheetVisibility = { visibility ->
+            onEventSent(MainContract.Event.ChangeBottomSheetVisibility(visibility))
+        },
         onNavigationRequested = { navigationEffect ->
             when (navigationEffect) {
                 is WordListContract.Effect.Navigation.ToAddWord -> {
@@ -352,7 +369,7 @@ private fun MainContract.State.shouldShowBottomBar(navController: NavHostControl
     val tabs = bottomBarTabs.map { it.route }
     val curRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    return tabs.containsRoute(curRoute)
+    return tabs.containsRoute(curRoute) && isBottomBarShown
 }
 
 private fun List<String>.containsRoute(curRoute: String?): Boolean {
@@ -388,12 +405,17 @@ private fun NavController.navigateToTab(
 //8) импорт
 //9) ОНБОРДИНГ (+состояния пустых списков)
 //10) A/b тестирование
+//11) верхняя навигация потом
+//12) палочка в bottomSheet
 
 
 //Следующий билд
-//1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE, 4) не поняла как смахнуть карточку)
+//1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
 //2) Поменять иконку
-//3) Поменять баннер в Google Play
+//4) Новая группа
+//5) Кнопки квадратные
+//6) Горизонтальный скрол, убрать падинги слева и справа
+//7) добавить пустое состояние
 
 //Гугл аналитика без play service'ов
 //https://developers.google.com/analytics/devguides/collection/android/v4?hl=ru

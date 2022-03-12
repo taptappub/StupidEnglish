@@ -35,6 +35,7 @@ class StackViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     setEffect { StackContract.Effect.GetWordsError(R.string.adds_get_words_error) }
                 }
+                return@launch
             }
 
             setState { copy(words = words.toStackAdapterModels(), topWordId = words.first().id) }

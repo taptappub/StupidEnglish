@@ -4,6 +4,8 @@ import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewState
 import io.taptap.stupidenglish.base.model.Group
+import io.taptap.stupidenglish.features.addword.ui.AddWordContract
+import io.taptap.stupidenglish.features.words.ui.model.GroupListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 
@@ -20,22 +22,33 @@ class WordListContract {
         object OnMotivationCancel : Event()
 
         object OnAddGroupClick : Event()
-        data class OnGroupClick(val groupId: Long) : Event()
+        object OnApplyGroup : Event()
+        object OnGroupAddingCancel : Event()
+        data class OnGroupChanging(val value: String) : Event()
+        data class OnGroupClick(val group: GroupListModels) : Event()
     }
 
     data class State(
-        val wordList: List<WordListListModels> = listOf(),
+        val wordList: List<WordListListModels>,
         val isLoading: Boolean = false,
-        val currentGroup: Group? = null
+        val currentGroup: GroupListModels,
+        val sheetContentType: SheetContentType,
+        val group: String
     ) : ViewState
+
+    enum class SheetContentType {
+        AddGroup,
+        Motivation
+    }
 
     sealed class Effect : ViewSideEffect {
         data class GetRandomWordsError(val errorRes: Int) : Effect()
         data class GetWordsError(val errorRes: Int) : Effect()
 
-        object HideMotivation : Effect()
-        object ShowMotivation : Effect()
+        object HideBottomSheet : Effect()
+        object ShowBottomSheet : Effect()
         object ShowUnderConstruction : Effect()
+        data class ChangeBottomBarVisibility(val isShown: Boolean) : Effect()
 
         sealed class Navigation : Effect() {
             object ToAddWord : Navigation()

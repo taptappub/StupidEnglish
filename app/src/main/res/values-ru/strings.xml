@@ -43,4 +43,9 @@
     <string name="stns_fab_text">Добавить предложение</string>
     <string name="under_construction">В разработке</string>
     <string name="stck_button_remember">Помню!</string>
+    <string name="word_get_groups_error">Возникла ошибка в момент получения групп</string>
+    <string name="word_group_title">Группы</string>
+    <string name="word_group_button">Добавить</string>
+    <string name="word_group_no_group_name">Мой словарь</string>
+    <string name="word_group_add_group_title">Новая группа</string>
 </resources>

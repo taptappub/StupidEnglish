@@ -32,8 +32,7 @@ fun List<SentenceDto>.toSentences(): List<Sentence> = map { it.toSentence() }
 
 fun GroupDto.toGroup(): Group = Group(
     id = id,
-    name = name,
-    color = color
+    name = name
 )
 
 fun List<GroupDto>.toGroups(): List<Group> = map { it.toGroup() }

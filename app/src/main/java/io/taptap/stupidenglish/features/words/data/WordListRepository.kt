@@ -1,6 +1,8 @@
 package io.taptap.stupidenglish.features.words.data
 
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
+import io.taptap.stupidenglish.base.logic.database.dto.GroupDto
+import io.taptap.stupidenglish.base.logic.database.dto.WordDto
 import io.taptap.stupidenglish.base.logic.mapper.toGroups
 import io.taptap.stupidenglish.base.logic.mapper.toWords
 import io.taptap.stupidenglish.base.logic.prefs.Settings
@@ -53,5 +55,9 @@ class WordListRepository @Inject constructor(
 
     suspend fun deleteWord(id: Long): Reaction<Unit> = Reaction.on {
         wordDao.deleteWord(id)
+    }
+
+    suspend fun saveGroup(group: String): Reaction<Long> = Reaction.on {
+        wordDao.insertGroup(GroupDto(name = group))
     }
 }

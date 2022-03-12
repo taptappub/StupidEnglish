@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.model.Group
-import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.stupidenglish.features.words.data.WordListRepository
 import io.taptap.stupidenglish.features.words.ui.model.GroupItemUI
 import io.taptap.stupidenglish.features.words.ui.model.GroupListModels
@@ -22,6 +22,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import taptap.pub.handle
 import taptap.pub.map
 import taptap.pub.takeOrNull
 import taptap.pub.takeOrReturn
@@ -34,13 +35,21 @@ class WordListViewModel @Inject constructor(
     private val repository: WordListRepository
 ) : BaseViewModel<WordListContract.Event, WordListContract.State, WordListContract.Effect>() {
 
+    private lateinit var words: List<WordListItemUI>
+    private lateinit var groups: List<GroupListModels>
+
     init {
         viewModelScope.launch(Dispatchers.IO) { getMainList() }
         viewModelScope.launch(Dispatchers.IO) { showMotivation() }
     }
 
-    override fun setInitialState() =
-        WordListContract.State(wordList = listOf(), isLoading = true, currentGroup = null)
+    override fun setInitialState() = WordListContract.State(
+        wordList = listOf(),
+        isLoading = true,
+        group = "",
+        currentGroup = getNoGroup(),
+        sheetContentType = WordListContract.SheetContentType.Motivation
+    )
 
     override fun handleEvents(event: WordListContract.Event) {
         when (event) {
@@ -66,7 +75,7 @@ class WordListViewModel @Inject constructor(
                 }
             }
             WordListContract.Event.OnMotivationConfirmClick -> {
-                setEffect { WordListContract.Effect.HideMotivation }
+                setEffect { WordListContract.Effect.HideBottomSheet }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
 
@@ -85,14 +94,14 @@ class WordListViewModel @Inject constructor(
                     repository.isSentenceMotivationShown = true
                 }
 
-                setEffect { WordListContract.Effect.HideMotivation }
+                setEffect { WordListContract.Effect.HideBottomSheet }
             }
             WordListContract.Event.OnMotivationCancel -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
                 }
 
-                setEffect { WordListContract.Effect.HideMotivation }
+                setEffect { WordListContract.Effect.HideBottomSheet }
             }
             WordListContract.Event.OnWordClick -> {
                 setEffect { WordListContract.Effect.ShowUnderConstruction }
@@ -103,9 +112,44 @@ class WordListViewModel @Inject constructor(
                 }
             }
             is WordListContract.Event.OnGroupClick -> {
-
+                if (viewState.value.currentGroup != event.group) {
+                    filterWordListByGroup(event.group)
+                    setState { copy(currentGroup = event.group) }
+                }
+            }
+            is WordListContract.Event.OnAddGroupClick -> {
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
+                setState { copy(sheetContentType = WordListContract.SheetContentType.AddGroup) }
+                setEffect { WordListContract.Effect.ShowBottomSheet }
+            }
+            is WordListContract.Event.OnApplyGroup -> {
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
+                saveGroup(viewState.value.group)
+            }
+            is WordListContract.Event.OnGroupChanging -> {
+                setState { copy(group = event.value) }
+            }
+            is WordListContract.Event.OnGroupAddingCancel -> {
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
+                setState {
+                    copy(
+                        sheetContentType = WordListContract.SheetContentType.Motivation,
+                        group = ""
+                    )
+                }
             }
         }
+    }
+
+    private fun filterWordListByGroup(group: GroupListModels) {
+        val list = if (group == getNoGroup()) {
+            words
+        } else {
+            words.filter {
+                it.groupsIds.contains(group.id)
+            }
+        }
+        makeMainList(list, groups)
     }
 
     private suspend fun deleteWord(item: WordListItemUI) {
@@ -129,7 +173,8 @@ class WordListViewModel @Inject constructor(
             if (size == WORDS_FOR_MOTIVATION && !repository.isSentenceMotivationShown) { //todo придумать время мотивации
                 delay(2000)
                 if (size % WORDS_FOR_MOTIVATION == 0) {
-                    setEffect { WordListContract.Effect.ShowMotivation }
+                    setState { copy(sheetContentType = WordListContract.SheetContentType.Motivation) }
+                    setEffect { WordListContract.Effect.ShowBottomSheet }
                 }
             }
         }
@@ -138,9 +183,11 @@ class WordListViewModel @Inject constructor(
     private suspend fun getMainList() {
         val savedWordList = repository.observeWordList().takeOrReturn {
             setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
+            return
         }
         val groupList = repository.observeGroupList().takeOrReturn {
             setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_groups_error) }
+            return
         }
 
         savedWordList.combine(groupList) { words, groups ->
@@ -150,64 +197,98 @@ class WordListViewModel @Inject constructor(
         }.collect { pair ->
             val mainList = pair.first
             val groupsList = pair.second
-            val list = makeMainList(mainList, groupsList)
 
-            setState {
-                copy(wordList = list, isLoading = false)
+            words = mainList.map {
+                WordListItemUI(
+                    id = it.id,
+                    word = it.word,
+                    description = it.description,
+                    groupsIds = it.groupsIds
+                )
             }
+            groups = makeGroupsList(groupsList)
+
+            makeMainList(words, groups)
         }
     }
 
     private fun makeMainList(
-        savedWordList: List<Word>,
-        groupsList: List<Group>
-    ): List<WordListListModels> {
+        list: List<WordListItemUI>,
+        groupsList: List<GroupListModels>
+    ) {
         val mainList = mutableListOf<WordListListModels>()
-        if (showOnboardingLabel(savedWordList.size)) {
+        if (showOnboardingLabel(words.size)) {
             mainList.add(OnboardingWordUI)
         }
+
         mainList.add(
             WordListGroupUI(
                 titleRes = R.string.word_group_title,
                 buttonRes = R.string.word_group_button,
-                groups = makeGroupsList(groupsList)
+                groups = groupsList
             )
         )
 
         mainList.add(WordListTitleUI(valueRes = R.string.word_list_list_title))
-        mainList.addAll(savedWordList.map {
-            WordListItemUI(
-                id = it.id,
-                word = it.word,
-                description = it.description,
-                groupsIds = it.groupsIds
-            )
-        })
+        mainList.addAll(list)
 
-        return mainList
+        setState {
+            copy(wordList = mainList, isLoading = false)
+        }
     }
 
     private fun makeGroupsList(groupsList: List<Group>): List<GroupListModels> {
         val groupList = mutableListOf<GroupListModels>()
-        val noGroupGroup = NoGroupItemUI(
-            id = -1,
-            titleRes = R.string.word_group_no_group_name,
-            color = DeepBlue
-        )
+        groupList.add(getNoGroup())
 
-        groupList.add(noGroupGroup)
         groupList.addAll(groupsList.map {
             GroupItemUI(
                 id = it.id,
                 name = it.name,
-                color = Color(it.color)
+                color = DeepBlue
             )
         })
 
         return groupList
     }
 
+    private fun getNoGroup(): GroupListModels = NoGroupItemUI(
+        id = -1,
+        titleRes = R.string.word_group_no_group_name,
+        color = DeepBlue
+    )
+
     private fun showOnboardingLabel(size: Int): Boolean {
         return size > 0
+    }
+
+    private fun saveGroup(group: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.saveGroup(group)
+                .handle(
+                    success = {
+                        withContext(Dispatchers.Main) {
+                            setState {
+                                copy(
+                                    sheetContentType = WordListContract.SheetContentType.Motivation,
+                                    group = ""
+                                )
+                            }
+                            setEffect { WordListContract.Effect.HideBottomSheet }
+                        }
+                    },
+                    error = {
+                        withContext(Dispatchers.Main) {
+                            setState {
+                                copy(
+                                    sheetContentType = WordListContract.SheetContentType.Motivation,
+                                    group = ""
+                                )
+                            }
+                            setEffect { WordListContract.Effect.HideBottomSheet }
+                        }
+                    }
+                )
+        }
     }
 }

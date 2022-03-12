@@ -22,3 +22,10 @@ val Green100 = Color(0xFF1AB517)
 //New colors
 @Stable
 val DeepBlue = Color(0xFF587EDE)
+
+val ColorsPool = listOf(
+    Color(0xFF58DE86),
+    Color(0xFFABDE58),
+    Color(0xFFDE5898),
+    Color(0xFFDED158)
+)

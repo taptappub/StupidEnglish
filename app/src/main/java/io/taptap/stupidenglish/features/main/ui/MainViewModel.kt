@@ -27,6 +27,7 @@ class MainViewModel @Inject constructor(
 
     override fun setInitialState() = MainContract.State(
         isShownGreetings = false,
+        isBottomBarShown = true,
         bottomBarTabs = listOf(
             NavigationKeys.BottomNavigationScreen.SE_WORDS,
             NavigationKeys.BottomNavigationScreen.SE_SENTENCES
@@ -43,6 +44,8 @@ class MainViewModel @Inject constructor(
                 val route = event.item.route
                 setEffect { MainContract.Effect.Navigation.OnTabSelected(route) }
             }
+            is MainContract.Event.ChangeBottomSheetVisibility ->
+                setState { copy(isBottomBarShown = event.visibility) }
         }
     }
 }

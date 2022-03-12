@@ -31,6 +31,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
@@ -64,6 +66,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
@@ -72,6 +77,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -79,6 +85,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.google.accompanist.insets.ProvideWindowInsets
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
@@ -93,9 +100,12 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
+import io.taptap.stupidenglish.ui.AddTextField
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.Fab
+import io.taptap.stupidenglish.ui.NextButton
 import io.taptap.stupidenglish.ui.theme.Black200
+import io.taptap.stupidenglish.ui.theme.DeepBlue
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import io.taptap.stupidenglish.ui.theme.White100
 import io.taptap.stupidenglish.ui.theme.getContentTextColor
@@ -115,6 +125,7 @@ fun WordListScreen(
     state: WordListContract.State,
     effectFlow: Flow<WordListContract.Effect>?,
     onEventSent: (event: WordListContract.Event) -> Unit,
+    onChangeBottomSheetVisibility: (visibility: Boolean) -> Unit,
     onNavigationRequested: (navigationEffect: WordListContract.Effect.Navigation) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -126,7 +137,12 @@ fun WordListScreen(
     if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
         DisposableEffect(Unit) {
             onDispose {
-                onEventSent(WordListContract.Event.OnMotivationCancel)
+                when (state.sheetContentType) {
+                    WordListContract.SheetContentType.AddGroup ->
+                        onEventSent(WordListContract.Event.OnGroupAddingCancel)
+                    WordListContract.SheetContentType.Motivation ->
+                        onEventSent(WordListContract.Event.OnMotivationCancel)
+                }
             }
         }
     }
@@ -134,12 +150,23 @@ fun WordListScreen(
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
-            MotivationBottomSheetScreen(
-                onEventSent = onEventSent,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-            )
+            when (state.sheetContentType) {
+                WordListContract.SheetContentType.AddGroup ->
+                    AddGroupBottomSheetScreen(
+                        state = state,
+                        onEventSent = onEventSent,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp)
+                    )
+                WordListContract.SheetContentType.Motivation ->
+                    MotivationBottomSheetScreen(
+                        onEventSent = onEventSent,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                    )
+            }
         },
         sheetBackgroundColor = MaterialTheme.colors.background,
         sheetShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
@@ -152,9 +179,9 @@ fun WordListScreen(
                 LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
                     effectFlow?.onEach { effect ->
                         when (effect) {
-                            is WordListContract.Effect.HideMotivation ->
+                            is WordListContract.Effect.HideBottomSheet ->
                                 modalBottomSheetState.hideSheet(scope)
-                            is WordListContract.Effect.ShowMotivation ->
+                            is WordListContract.Effect.ShowBottomSheet ->
                                 modalBottomSheetState.showSheet(scope)
                             is WordListContract.Effect.Navigation.ToAddWord ->
                                 onNavigationRequested(effect)
@@ -170,12 +197,13 @@ fun WordListScreen(
                                 )
                             is WordListContract.Effect.Navigation.ToAddSentence ->
                                 onNavigationRequested(effect)
-                            is WordListContract.Effect.ShowUnderConstruction -> {
+                            is WordListContract.Effect.ShowUnderConstruction ->
                                 scaffoldState.snackbarHostState.showSnackbar(
                                     message = context.getString(R.string.under_construction),
                                     duration = SnackbarDuration.Short
                                 )
-                            }
+                            is WordListContract.Effect.ChangeBottomBarVisibility ->
+                                onChangeBottomSheetVisibility(effect.isShown)
                         }
                     }?.collect()
                 }
@@ -193,6 +221,7 @@ fun WordListScreen(
 
                         MainList(
                             wordItems = state.wordList,
+                            group = state.currentGroup,
                             listState = listState,
                             onEventSent = onEventSent
                         )
@@ -218,8 +247,9 @@ fun WordListScreen(
 @Composable
 private fun MainList(
     wordItems: List<WordListListModels>,
-    onEventSent: (event: WordListContract.Event) -> Unit,
+    group: GroupListModels?,
     listState: LazyListState,
+    onEventSent: (event: WordListContract.Event) -> Unit,
 ) {
     LazyColumn(
         state = listState,
@@ -253,11 +283,12 @@ private fun MainList(
                     title = stringResource(id = item.titleRes),
                     button = stringResource(id = item.buttonRes),
                     list = item.groups,
+                    currentGroup = group,
                     onButtonClicked = {
                         onEventSent(WordListContract.Event.OnAddGroupClick)
                     },
-                    onGroupClicked = { groupId ->
-                        onEventSent(WordListContract.Event.OnGroupClick(groupId))
+                    onGroupClicked = { group ->
+                        onEventSent(WordListContract.Event.OnGroupClick(group))
                     }
                 )
             }
@@ -269,9 +300,10 @@ private fun MainList(
 private fun GroupItemRow(
     title: String,
     button: String,
+    currentGroup: GroupListModels?,
     list: List<GroupListModels>,
     onButtonClicked: () -> Unit,
-    onGroupClicked: (Long) -> Unit
+    onGroupClicked: (GroupListModels) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -285,18 +317,24 @@ private fun GroupItemRow(
         )
         GroupItemGroupsRow(
             list = list,
+            currentGroup = currentGroup,
             onGroupClicked = onGroupClicked
         )
     }
 }
 
 @Composable
-private fun GroupItemGroupsRow(list: List<GroupListModels>, onGroupClicked: (Long) -> Unit) {
+private fun GroupItemGroupsRow(
+    list: List<GroupListModels>,
+    currentGroup: GroupListModels?,
+    onGroupClicked: (GroupListModels) -> Unit
+) {
     val listState = rememberLazyListState()
 
     LazyRow(
         state = listState,
-        contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(top = 16.dp, start = 4.dp, end = 4.dp)
     ) {
         items(
             items = list,
@@ -306,11 +344,15 @@ private fun GroupItemGroupsRow(list: List<GroupListModels>, onGroupClicked: (Lon
                 is NoGroupItemUI -> GroupItem(
                     title = stringResource(id = item.titleRes),
                     color = item.color,
+                    group = item,
+                    selected = currentGroup == item,
                     onGroupClicked = onGroupClicked
                 )
                 is GroupItemUI -> GroupItem(
                     title = item.name,
                     color = item.color,
+                    group = item,
+                    selected = currentGroup == item,
                     onGroupClicked = onGroupClicked
                 )
             }
@@ -322,14 +364,35 @@ private fun GroupItemGroupsRow(list: List<GroupListModels>, onGroupClicked: (Lon
 private fun GroupItem(
     title: String,
     color: Color,
-    onGroupClicked: (Long) -> Unit
+    group: GroupListModels,
+    selected: Boolean,
+    onGroupClicked: (GroupListModels) -> Unit
 ) {
     Column(
-        modifier = Modifier.clickable { onGroupClicked }
+        modifier = Modifier
+            .width(60.dp)
+            .padding(horizontal = 2.dp)
+            .noRippleClickable { onGroupClicked(group) }
     ) {
         GroupIcon(
-            letter = title[0],
+            letter = title[0].uppercaseChar(),
             color = color,
+            border1 = if (selected) {
+                BorderStroke(
+                    width = 4.dp,
+                    color = MaterialTheme.colors.background
+                )
+            } else {
+                null
+            },
+            border2 = if (selected) {
+                BorderStroke(
+                    width = 2.dp,
+                    brush = Brush.radialGradient(listOf(Color.Green, Color.Magenta))
+                )
+            } else {
+                null
+            },
             elevation = 8.dp
         )
         Text(
@@ -338,8 +401,11 @@ private fun GroupItem(
             fontSize = 12.sp,
             color = getContentTextColor(),
             style = MaterialTheme.typography.subtitle2,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(2.dp)
         )
     }
 }
@@ -349,15 +415,22 @@ private fun GroupIcon(
     letter: Char,
     color: Color,
     modifier: Modifier = Modifier,
-    border: BorderStroke? = null,
+    border1: BorderStroke? = null,
+    border2: BorderStroke? = null,
     elevation: Dp = 0.dp,
     shape: Shape = CircleShape
 ) {
     Box(
         modifier = modifier
+            .size(56.dp)
             .shadow(elevation = elevation, shape = shape, clip = false)
             .zIndex(elevation.value)
-            .then(if (border != null) Modifier.border(border, shape) else Modifier)
+            .then(
+                if (border2 != null) Modifier.border(border2, shape) else Modifier
+            )
+            .then(
+                if (border1 != null) Modifier.border(border1, shape) else Modifier
+            )
             .background(
                 color = color,
                 shape = shape
@@ -367,11 +440,13 @@ private fun GroupIcon(
         Text(
             text = letter.toString(),
             textAlign = TextAlign.Center,
-            fontSize = 12.sp,
-            color = getContentTextColor(),
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            color = White100,
             style = MaterialTheme.typography.subtitle2,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.align(Alignment.Center)
         )
     }
 }
@@ -403,7 +478,7 @@ private fun GroupItemHeader(title: String, button: String, onButtonClicked: () -
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.clickable {
-                onButtonClicked
+                onButtonClicked()
             }
         )
     }
@@ -674,6 +749,83 @@ private fun MotivationBottomSheetScreen(
     }
 }
 
+@Composable
+private fun AddGroupBottomSheetScreen(
+    modifier: Modifier,
+    onEventSent: (event: WordListContract.Event) -> Unit,
+    state: WordListContract.State
+) {
+    BottomSheetScreen(
+        modifier = modifier
+    ) {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            val (title, content, button) = createRefs()
+
+            Box(
+                modifier = modifier.constrainAs(content) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
+            ) {
+                val focusRequester = FocusRequester()
+
+                AddTextField(
+                    value = state.group,
+                    onValueChange = { onEventSent(WordListContract.Event.OnGroupChanging(it)) },
+                    placeholder = "",
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            if (state.group.isNotEmpty()) {
+                                onEventSent(WordListContract.Event.OnApplyGroup)
+                            }
+                        }
+                    ),
+                    modifier = Modifier
+                        .focusRequester(focusRequester)
+                        .align(Alignment.Center)
+                )
+
+                DisposableEffect(Unit) {
+                    focusRequester.requestFocus()
+                    onDispose { }
+                }
+            }
+
+            Text(
+                text = stringResource(id = R.string.word_group_add_group_title),
+                textAlign = TextAlign.Left,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = getTitleTextColor(),
+                style = MaterialTheme.typography.subtitle1,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp)
+                    .constrainAs(title) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                    }
+            )
+
+            NextButton(
+                visibility = state.group.isNotEmpty(),
+                onClick = {
+                    onEventSent(WordListContract.Event.OnApplyGroup)
+                },
+                modifier = Modifier.constrainAs(button) {
+                    bottom.linkTo(parent.bottom, 16.dp)
+                    end.linkTo(parent.end, 16.dp)
+                }
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun GroupItemHeader() {
@@ -693,9 +845,33 @@ fun GroupItemRow() {
         GroupItemRow(
             title = "Groups",
             button = "Add",
+            currentGroup = null,
             onButtonClicked = {},
             list = emptyList(),
             onGroupClicked = {}
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GroupItem() {
+    StupidEnglishTheme {
+        GroupItem(
+            title = "Title",
+            group = NoGroupItemUI(
+                id = -1,
+                color = Color.Blue,
+                titleRes = R.string.word_group_title
+            ),
+            color = DeepBlue,
+            selected = true,
+            onGroupClicked = {}
+        )
+//        title = stringResource(id = item.titleRes),
+//        color = item.color,
+//        group = item,
+//        selected = currentGroup == item,
+//        onGroupClicked = onGroupClicke
     }
 }

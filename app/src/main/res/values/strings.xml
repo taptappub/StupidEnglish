@@ -25,12 +25,17 @@
     <string name="word_list_list_title">My words</string>
     <string name="word_get_random_words_error">Can\'t find random words</string>
     <string name="word_get_list_error">Error while getting words</string>
+    <string name="word_get_groups_error">Error while getting groups</string>
     <string name="word_onboarding_text">Make the most stupid sentence from your words</string>
     <string name="word_motivation_title">Is it time to make a sentence?</string>
     <string name="word_motivation_message">Let\'s make some sentences with your words. Once per month we choose the funniest and the most stupid sentence and make a picture with it!</string>
     <string name="word_motivation_confirm">Let\'s do it!</string>
     <string name="word_motivation_decline">Nope</string>
     <string name="word_fab_text">Add word</string>
+    <string name="word_group_title">Groups</string>
+    <string name="word_group_button">Add</string>
+    <string name="word_group_no_group_name">My vocabulary</string>
+    <string name="word_group_add_group_title">New group</string>
 
     <!-- Sentences List -->
     <string name="stns_list_list_title">Stupid sentences</string>

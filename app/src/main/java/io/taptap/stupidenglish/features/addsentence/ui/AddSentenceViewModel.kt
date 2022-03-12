@@ -33,6 +33,7 @@ class AddSentenceViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     setEffect { AddSentenceContract.Effect.GetWordsError(R.string.adds_get_words_error) }
                 }
+                return@launch
             }
 
             setState { copy(words = words) }

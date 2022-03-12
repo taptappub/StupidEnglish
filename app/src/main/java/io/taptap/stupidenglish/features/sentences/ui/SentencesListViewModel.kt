@@ -116,6 +116,7 @@ class SentencesListViewModel @Inject constructor(
     private suspend fun getSentenceList() {
         val savedSentenceList = repository.observeSentenceList().takeOrReturn {
             setEffect { SentencesListContract.Effect.GetSentencesError(R.string.stns_get_sentences_error) }
+            return
         }
         savedSentenceList.collect {
             val sentenceList = makeSentenceList(it.reversed())
@@ -143,6 +144,7 @@ class SentencesListViewModel @Inject constructor(
         if (!repository.isShareMotivationShown) {
             val savedSentenceList = repository.observeSentenceList().takeOrReturn {
                 setEffect { SentencesListContract.Effect.GetSentencesError(R.string.stns_get_sentences_error) }
+                return
             }
             savedSentenceList.collect {
                 if (it.size == SENTENCES_FOR_MOTIVATION) {
