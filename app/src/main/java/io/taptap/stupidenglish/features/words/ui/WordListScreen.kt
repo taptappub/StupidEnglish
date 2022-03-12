@@ -308,7 +308,7 @@ private fun GroupItemRow(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 28.dp)
+            .padding(vertical = 28.dp)
     ) {
         GroupItemHeader(
             title = title,
@@ -334,7 +334,7 @@ private fun GroupItemGroupsRow(
     LazyRow(
         state = listState,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(top = 16.dp, start = 4.dp, end = 4.dp)
+        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         items(
             items = list,
@@ -454,7 +454,8 @@ private fun GroupIcon(
 @Composable
 private fun GroupItemHeader(title: String, button: String, onButtonClicked: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {

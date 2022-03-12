@@ -23,7 +23,6 @@ fun Fab(
     modifier: Modifier = Modifier,
     onFabClicked: () -> Unit
 ) {
-
     key(text) { // Prevent multiple invocations to execute during composition
         FloatingActionButton(
             containerColor = getFABColor(),
