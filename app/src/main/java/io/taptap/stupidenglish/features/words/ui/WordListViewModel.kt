@@ -1,17 +1,16 @@
 package io.taptap.stupidenglish.features.words.ui
 
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.model.Group
-import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.stupidenglish.features.words.data.WordListRepository
 import io.taptap.stupidenglish.features.words.ui.model.GroupItemUI
 import io.taptap.stupidenglish.features.words.ui.model.GroupListModels
 import io.taptap.stupidenglish.features.words.ui.model.NoGroupItemUI
 import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
+import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
@@ -230,7 +229,11 @@ class WordListViewModel @Inject constructor(
         )
 
         mainList.add(WordListTitleUI(valueRes = R.string.word_list_list_title))
-        mainList.addAll(list)
+        if (list.isEmpty()) {
+            mainList.add(WordListEmptyUI(descriptionRes = R.string.word_empty_list_description))
+        } else {
+            mainList.addAll(list)
+        }
 
         setState {
             copy(wordList = mainList, isLoading = false)

@@ -48,4 +48,6 @@
     <string name="word_group_button">Добавить</string>
     <string name="word_group_no_group_name">Мой словарь</string>
     <string name="word_group_add_group_title">Новая группа</string>
+    <string name="word_empty_list_title">Список пуст</string>
+    <string name="word_empty_list_description">Добавь слова в эту группу</string>
 </resources>

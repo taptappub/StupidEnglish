@@ -9,6 +9,10 @@ data class WordListItemUI(
     val groupsIds: List<Long>
 ) : WordListListModels(id)
 
+data class WordListEmptyUI(
+    val descriptionRes: Int
+) : WordListListModels(-4)
+
 data class WordListGroupUI(
     val titleRes: Int,
     val buttonRes: Int,

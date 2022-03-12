@@ -96,6 +96,7 @@ import io.taptap.stupidenglish.features.words.ui.model.GroupItemUI
 import io.taptap.stupidenglish.features.words.ui.model.GroupListModels
 import io.taptap.stupidenglish.features.words.ui.model.NoGroupItemUI
 import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
+import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
@@ -103,6 +104,7 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import io.taptap.stupidenglish.ui.AddTextField
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.Fab
+import io.taptap.stupidenglish.ui.MainListEmptyContent
 import io.taptap.stupidenglish.ui.NextButton
 import io.taptap.stupidenglish.ui.theme.Black200
 import io.taptap.stupidenglish.ui.theme.DeepBlue
@@ -249,7 +251,7 @@ private fun MainList(
     wordItems: List<WordListListModels>,
     group: GroupListModels?,
     listState: LazyListState,
-    onEventSent: (event: WordListContract.Event) -> Unit,
+    onEventSent: (event: WordListContract.Event) -> Unit
 ) {
     LazyColumn(
         state = listState,
@@ -290,6 +292,10 @@ private fun MainList(
                     onGroupClicked = { group ->
                         onEventSent(WordListContract.Event.OnGroupClick(group))
                     }
+                )
+                is WordListEmptyUI -> MainListEmptyContent(
+                    description = stringResource(id = item.descriptionRes),
+                    modifier = Modifier.height(300.dp)
                 )
             }
         }
@@ -454,7 +460,8 @@ private fun GroupIcon(
 @Composable
 private fun GroupItemHeader(title: String, button: String, onButtonClicked: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
