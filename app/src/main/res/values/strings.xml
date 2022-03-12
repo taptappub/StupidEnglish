@@ -44,6 +44,7 @@
     <string name="stns_get_random_words_error">Can\'t find random words</string>
     <string name="stns_get_sentences_error">Error while getting sentences</string>
     <string name="stns_fab_text">Add sentence</string>
+    <string name="stns_empty_list_description">Time to the first stupid sentence!</string>
 
     <!-- Add Word -->
     <string name="addw_save_error">Error while saving</string>

@@ -104,7 +104,7 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import io.taptap.stupidenglish.ui.AddTextField
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.Fab
-import io.taptap.stupidenglish.ui.MainListEmptyContent
+import io.taptap.stupidenglish.ui.EmptyListContent
 import io.taptap.stupidenglish.ui.NextButton
 import io.taptap.stupidenglish.ui.theme.Black200
 import io.taptap.stupidenglish.ui.theme.DeepBlue
@@ -293,7 +293,7 @@ private fun MainList(
                         onEventSent(WordListContract.Event.OnGroupClick(group))
                     }
                 )
-                is WordListEmptyUI -> MainListEmptyContent(
+                is WordListEmptyUI -> EmptyListContent(
                     description = stringResource(id = item.descriptionRes),
                     modifier = Modifier.height(300.dp)
                 )

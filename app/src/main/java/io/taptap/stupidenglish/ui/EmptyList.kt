@@ -22,7 +22,7 @@ import io.taptap.stupidenglish.ui.theme.getContentTextColor
 import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 
 @Composable
-fun MainListEmptyContent(
+fun EmptyListContent(
     description: String,
     modifier: Modifier
 ) {

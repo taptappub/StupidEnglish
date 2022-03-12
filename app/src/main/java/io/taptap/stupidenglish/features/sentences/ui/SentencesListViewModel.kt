@@ -11,6 +11,9 @@ import io.taptap.stupidenglish.base.logic.share.ShareUtil
 import io.taptap.stupidenglish.base.model.Sentence
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.sentences.data.SentencesListRepository
+import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
+import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
+import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -128,16 +131,21 @@ class SentencesListViewModel @Inject constructor(
     }
 
     private fun makeSentenceList(savedSentenceList: List<Sentence>): List<SentencesListListModels> {
-        return mutableListOf<SentencesListListModels>(
-            SentencesListTitleUI(valueRes = R.string.stns_list_list_title),
-        ).apply {
-            addAll(savedSentenceList.map {
+        val sentenceList = mutableListOf<SentencesListListModels>()
+
+        sentenceList.add(SentencesListTitleUI(valueRes = R.string.stns_list_list_title))
+        if (savedSentenceList.isEmpty()) {
+            sentenceList.add(SentencesListEmptyUI(descriptionRes = R.string.stns_empty_list_description))
+        } else {
+            sentenceList.addAll(savedSentenceList.map {
                 SentencesListItemUI(
                     id = it.id,
                     sentence = it.sentence
                 )
             })
         }
+
+        return sentenceList
     }
 
     private suspend fun motivationShare() {

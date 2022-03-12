@@ -50,4 +50,5 @@
     <string name="word_group_add_group_title">Новая группа</string>
     <string name="word_empty_list_title">Список пуст</string>
     <string name="word_empty_list_description">Добавь слова в эту группу</string>
+    <string name="stns_empty_list_description">Настало время для первого глупого предложения!</string>
 </resources>

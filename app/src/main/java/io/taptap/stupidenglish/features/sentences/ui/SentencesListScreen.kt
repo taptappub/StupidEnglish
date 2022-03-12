@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -73,6 +75,7 @@ import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.Fab
+import io.taptap.stupidenglish.ui.EmptyListContent
 import io.taptap.stupidenglish.ui.theme.Black200
 import io.taptap.stupidenglish.ui.theme.Blue100
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
@@ -306,6 +309,10 @@ fun SentencesList(
                     }
                 )
                 is SentencesListTitleUI -> SentenceTitleItem(item = item)
+                is SentencesListEmptyUI -> EmptyListContent(
+                    description = stringResource(id = item.descriptionRes),
+                    modifier = Modifier.height(600.dp)
+                )
             }
         }
     }
