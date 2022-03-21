@@ -42,23 +42,23 @@ fun StupidEnglishTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val systemUiController = rememberSystemUiController()
-
-    systemUiController.setSystemBarsColor(
-        color = MaterialTheme.colors.background,
-        darkIcons = !darkTheme
-    )
-
-    systemUiController.setNavigationBarColor(
-        color = MaterialTheme.colors.background,
-        darkIcons = !darkTheme,
-        navigationBarContrastEnforced = false
-    )
-
-    systemUiController.setStatusBarColor(
-        color = MaterialTheme.colors.background,
-        darkIcons = !darkTheme
-    )
+//    val systemUiController = rememberSystemUiController()
+//
+//    systemUiController.setSystemBarsColor(
+//        color = MaterialTheme.colors.background,
+//        darkIcons = !darkTheme
+//    )
+//
+//    systemUiController.setNavigationBarColor(
+//        color = MaterialTheme.colors.background,
+//        darkIcons = !darkTheme,
+//        navigationBarContrastEnforced = false
+//    )
+//
+//    systemUiController.setStatusBarColor(
+//        color = MaterialTheme.colors.background,
+//        darkIcons = !darkTheme
+//    )
 
     val colors = if (darkTheme) {
         DarkColorPalette

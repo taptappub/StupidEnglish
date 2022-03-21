@@ -26,16 +26,14 @@ class AddWordViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Main) { getGroupsList() }
     }
 
-    override fun setInitialState(): AddWordContract.State {
-        return AddWordContract.State(
-            word = "",
-            description = "",
-            selectedGroups = listOf(NoGroup),
-            dialogSelectedGroups = listOf(NoGroup),
-            groups = emptyList(),
-            addWordState = AddWordContract.AddWordState.None
-        )
-    }
+    override fun setInitialState() = AddWordContract.State(
+        word = "",
+        description = "",
+        selectedGroups = listOf(NoGroup),
+        dialogSelectedGroups = listOf(NoGroup),
+        groups = emptyList(),
+        addWordState = AddWordContract.AddWordState.None
+    )
 
     override fun handleEvents(event: AddWordContract.Event) {
         when (event) {

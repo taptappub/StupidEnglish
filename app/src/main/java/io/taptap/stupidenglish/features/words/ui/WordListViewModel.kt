@@ -46,6 +46,8 @@ class WordListViewModel @Inject constructor(
         wordList = listOf(),
         isLoading = true,
         group = "",
+        dialogGroups = listOf(),
+        removedGroups = listOf(),
         currentGroup = NoGroup,
         sheetContentType = WordListContract.SheetContentType.Motivation
     )
@@ -95,14 +97,23 @@ class WordListViewModel @Inject constructor(
 
                 setEffect { WordListContract.Effect.HideBottomSheet }
             }
-            WordListContract.Event.OnMotivationCancel -> {
+            is WordListContract.Event.OnMotivationCancel -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
                 }
 
                 setEffect { WordListContract.Effect.HideBottomSheet }
             }
-            WordListContract.Event.OnWordClick -> {
+            is WordListContract.Event.OnGroupRemovingCancel -> {
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
+                setState {
+                    copy(
+                        sheetContentType = WordListContract.SheetContentType.Motivation,
+                        group = ""
+                    )
+                }
+            }
+            is WordListContract.Event.OnWordClick -> {
                 setEffect { WordListContract.Effect.ShowUnderConstruction }
             }
             is WordListContract.Event.OnWordDismiss -> {
@@ -136,6 +147,34 @@ class WordListViewModel @Inject constructor(
                         group = ""
                     )
                 }
+            }
+
+            is WordListContract.Event.OnGroupLongClick -> {
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
+                setEffect { WordListContract.Effect.ShowBottomSheet }
+
+                val selectedGroups = ArrayList(viewState.value.removedGroups)
+                selectedGroups.add(event.group)
+
+                setState {
+                    copy(
+                        removedGroups = selectedGroups,
+                        sheetContentType = WordListContract.SheetContentType.RemoveGroup
+                    )
+                }
+            }
+            is WordListContract.Event.OnGroupSelect -> {
+                val selectedGroups = ArrayList(viewState.value.removedGroups)
+                if (selectedGroups.contains(event.item)) {
+                    selectedGroups.remove(event.item)
+                } else {
+                    selectedGroups.add(event.item)
+                }
+                setState { copy(removedGroups = selectedGroups) }
+            }
+            is WordListContract.Event.OnApplyGroupsRemove -> {
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
+                removeGroups(viewState.value.removedGroups)
             }
         }
     }
@@ -235,8 +274,12 @@ class WordListViewModel @Inject constructor(
             mainList.addAll(list)
         }
 
+        val dialogGroups = groupsList.toMutableList().apply {
+            remove(NoGroup)
+        }
+
         setState {
-            copy(wordList = mainList, isLoading = false)
+            copy(wordList = mainList, isLoading = false, dialogGroups = dialogGroups)
         }
     }
 
@@ -280,6 +323,36 @@ class WordListViewModel @Inject constructor(
                                 copy(
                                     sheetContentType = WordListContract.SheetContentType.Motivation,
                                     group = ""
+                                )
+                            }
+                            setEffect { WordListContract.Effect.HideBottomSheet }
+                        }
+                    }
+                )
+        }
+    }
+
+    private fun removeGroups(removedGroups: List<GroupListModels>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.removeGroups(removedGroups.map { it.id })
+                .handle(
+                    success = {
+                        withContext(Dispatchers.Main) {
+                            setState {
+                                copy(
+                                    sheetContentType = WordListContract.SheetContentType.Motivation,
+                                    removedGroups = emptyList()
+                                )
+                            }
+                            setEffect { WordListContract.Effect.HideBottomSheet }
+                        }
+                    },
+                    error = {
+                        withContext(Dispatchers.Main) {
+                            setState {
+                                copy(
+                                    sheetContentType = WordListContract.SheetContentType.Motivation,
+                                    removedGroups = emptyList()
                                 )
                             }
                             setEffect { WordListContract.Effect.HideBottomSheet }

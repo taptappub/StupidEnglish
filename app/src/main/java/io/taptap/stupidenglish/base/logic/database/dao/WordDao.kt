@@ -103,6 +103,14 @@ interface WordDao {
 
     @Query(
         """
+        DELETE FROM GroupTable 
+        WHERE GroupTable.id in (:groupIds)
+        """
+    )
+    suspend fun deleteGroups(groupIds: List<Long>)
+
+    @Query(
+        """
         SELECT *
         FROM GroupTable
         WHERE GroupTable.id = :groupId

@@ -22,12 +22,19 @@ class WordListContract {
         object OnAddGroupClick : Event()
         object OnApplyGroup : Event()
         object OnGroupAddingCancel : Event()
+        object OnApplyGroupsRemove : Event()
+
+        object OnGroupRemovingCancel : Event()
+        data class OnGroupSelect(val item: GroupListModels) : Event()
         data class OnGroupChanging(val value: String) : Event()
         data class OnGroupClick(val group: GroupListModels) : Event()
+        data class OnGroupLongClick(val group: GroupListModels) : Event()
     }
 
     data class State(
         val wordList: List<WordListListModels>,
+        val removedGroups: List<GroupListModels>,
+        val dialogGroups: List<GroupListModels>,
         val isLoading: Boolean = false,
         val currentGroup: GroupListModels,
         val sheetContentType: SheetContentType,
@@ -36,6 +43,7 @@ class WordListContract {
 
     enum class SheetContentType {
         AddGroup,
+        RemoveGroup,
         Motivation
     }
 

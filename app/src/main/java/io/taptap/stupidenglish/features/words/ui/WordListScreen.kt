@@ -1,6 +1,7 @@
 package io.taptap.stupidenglish.features.words.ui
 
 import android.content.Context
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
@@ -8,6 +9,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -84,12 +86,12 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.google.accompanist.insets.ProvideWindowInsets
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.stupidenglish.base.noRippleClickable
-import io.taptap.stupidenglish.base.ui.hideSheet
-import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
 import io.taptap.stupidenglish.base.logic.groups.GroupListModels
 import io.taptap.stupidenglish.base.logic.groups.NoGroupItemUI
+import io.taptap.stupidenglish.base.noRippleClickable
+import io.taptap.stupidenglish.base.ui.hideSheet
+import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
@@ -98,10 +100,11 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import io.taptap.stupidenglish.ui.AddTextField
 import io.taptap.stupidenglish.ui.BottomSheetScreen
-import io.taptap.stupidenglish.ui.Fab
 import io.taptap.stupidenglish.ui.EmptyListContent
+import io.taptap.stupidenglish.ui.Fab
 import io.taptap.stupidenglish.ui.LetterRoundView
 import io.taptap.stupidenglish.ui.NextButton
+import io.taptap.stupidenglish.ui.bottomsheet.ChooseGroupBottomSheetScreen
 import io.taptap.stupidenglish.ui.theme.Black200
 import io.taptap.stupidenglish.ui.theme.DeepBlue
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
@@ -140,6 +143,8 @@ fun WordListScreen(
                         onEventSent(WordListContract.Event.OnGroupAddingCancel)
                     WordListContract.SheetContentType.Motivation ->
                         onEventSent(WordListContract.Event.OnMotivationCancel)
+                    WordListContract.SheetContentType.RemoveGroup ->
+                        onEventSent(WordListContract.Event.OnGroupRemovingCancel)
                 }
             }
         }
@@ -163,6 +168,22 @@ fun WordListScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
+                    )
+                WordListContract.SheetContentType.RemoveGroup ->
+                    ChooseGroupBottomSheetScreen(
+                        list = state.dialogGroups,
+                        selectedList = state.removedGroups,
+                        buttonRes = R.string.word_remove_group_button,
+                        titleRes = R.string.word_remove_group_title,
+                        onItemClick = { item ->
+                            onEventSent(WordListContract.Event.OnGroupSelect(item))
+                        },
+                        onButtonClick = {
+                            onEventSent(WordListContract.Event.OnApplyGroupsRemove)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateContentSize()
                     )
             }
         },
@@ -287,6 +308,9 @@ private fun MainList(
                     },
                     onGroupClicked = { group ->
                         onEventSent(WordListContract.Event.OnGroupClick(group))
+                    },
+                    onGroupLongClicked = { group ->
+                        onEventSent(WordListContract.Event.OnGroupLongClick(group))
                     }
                 )
                 is WordListEmptyUI -> EmptyListContent(
@@ -305,7 +329,8 @@ private fun GroupItemRow(
     currentGroup: GroupListModels?,
     list: List<GroupListModels>,
     onButtonClicked: () -> Unit,
-    onGroupClicked: (GroupListModels) -> Unit
+    onGroupClicked: (GroupListModels) -> Unit,
+    onGroupLongClicked: (GroupListModels) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -320,7 +345,8 @@ private fun GroupItemRow(
         GroupItemGroupsRow(
             list = list,
             currentGroup = currentGroup,
-            onGroupClicked = onGroupClicked
+            onGroupClicked = onGroupClicked,
+            onGroupLongClicked = onGroupLongClicked
         )
     }
 }
@@ -329,7 +355,8 @@ private fun GroupItemRow(
 private fun GroupItemGroupsRow(
     list: List<GroupListModels>,
     currentGroup: GroupListModels?,
-    onGroupClicked: (GroupListModels) -> Unit
+    onGroupClicked: (GroupListModels) -> Unit,
+    onGroupLongClicked: (GroupListModels) -> Unit
 ) {
     val listState = rememberLazyListState()
 
@@ -348,33 +375,36 @@ private fun GroupItemGroupsRow(
                     color = item.color,
                     group = item,
                     selected = currentGroup == item,
-                    onGroupClicked = onGroupClicked
+                    onGroupClicked = onGroupClicked,
+                    onGroupLongClicked = onGroupLongClicked
                 )
                 is GroupItemUI -> GroupItem(
                     title = item.name,
                     color = item.color,
                     group = item,
                     selected = currentGroup == item,
-                    onGroupClicked = onGroupClicked
+                    onGroupClicked = onGroupClicked,
+                    onGroupLongClicked = onGroupLongClicked
                 )
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun GroupItem(
     title: String,
     color: Color,
     group: GroupListModels,
     selected: Boolean,
-    onGroupClicked: (GroupListModels) -> Unit
+    onGroupClicked: (GroupListModels) -> Unit,
+    onGroupLongClicked: (GroupListModels) -> Unit
 ) {
     Column(
         modifier = Modifier
             .width(60.dp)
             .padding(horizontal = 2.dp)
-            .noRippleClickable { onGroupClicked(group) }
     ) {
         LetterRoundView(
             letter = title[0].uppercaseChar(),
@@ -398,6 +428,10 @@ private fun GroupItem(
             elevation = 8.dp,
             fontSize = 28.sp,
             modifier = Modifier.size(56.dp)
+                .combinedClickable(
+                    onClick = { onGroupClicked(group) },
+                    onLongClick = { onGroupLongClicked(group) },
+                )
         )
         Text(
             text = title,
@@ -813,7 +847,8 @@ fun GroupItemRow() {
             currentGroup = null,
             onButtonClicked = {},
             list = emptyList(),
-            onGroupClicked = {}
+            onGroupClicked = {},
+            onGroupLongClicked = {}
         )
     }
 }
@@ -831,7 +866,8 @@ fun GroupItem() {
             ),
             color = DeepBlue,
             selected = true,
-            onGroupClicked = {}
+            onGroupClicked = {},
+            onGroupLongClicked = {}
         )
 //        title = stringResource(id = item.titleRes),
 //        color = item.color,

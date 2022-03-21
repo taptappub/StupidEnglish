@@ -52,4 +52,8 @@ class WordListRepository @Inject constructor(
     suspend fun saveGroup(group: String): Reaction<Long> = Reaction.on {
         wordDao.insertGroup(GroupDto(name = group))
     }
+
+    suspend fun removeGroups(groups: List<Long>): Reaction<Unit> = Reaction.on {
+        wordDao.deleteGroups(groups)
+    }
 }

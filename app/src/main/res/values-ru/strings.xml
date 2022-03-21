@@ -59,4 +59,6 @@
         <item quantity="many">%d Групп</item>
     </plurals>
     <string name="addw_get_groups_error">Возникла ошибка в момент получения слов</string>
+    <string name="word_remove_group_button">Удалить</string>
+    <string name="word_remove_group_title">Выбери группы для удаления</string>
 </resources>
