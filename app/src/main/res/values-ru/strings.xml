@@ -16,7 +16,7 @@
     <string name="adds_main_hint">Составьте предложение из выбранных слов. Чем глупее оно будет, тем лучше!</string>
     <string name="adds_sentence_not_found_error">Сначала напиши предложение =)</string>
     <string name="adds_sentence_placeholder">Твое предложение</string>
-    <string name="adds_confirm_dialog_text">Ты точно хочешь сохранить это приложение? Оно супер тупое! Мне нравится!</string>
+    <string name="adds_confirm_dialog_text">Ты точно хочешь сохранить это предложение? Оно супер тупое! Мне нравится!</string>
     <string name="adds_confirm_dialog_ok">Сохранить</string>
     <string name="adds_confirm_dialog_cancel">Отмена</string>
     <string name="main_dialog_ok">Все понятно</string>
@@ -51,4 +51,12 @@
     <string name="word_empty_list_title">Список пуст</string>
     <string name="word_empty_list_description">Добавь слова в эту группу</string>
     <string name="stns_empty_list_description">Настало время для первого глупого предложения!</string>
+    <string name="addw_group_choose_group_title">Выбери группы для добавления</string>
+    <string name="addw_group_button">Выбрать</string>
+    <plurals name="addw_group_count">
+        <item quantity="one">%d Группа</item>
+        <item quantity="few">%d Группы</item>
+        <item quantity="many">%d Групп</item>
+    </plurals>
+    <string name="addw_get_groups_error">Возникла ошибка в момент получения слов</string>
 </resources>

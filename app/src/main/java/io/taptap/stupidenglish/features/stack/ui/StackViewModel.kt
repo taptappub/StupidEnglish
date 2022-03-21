@@ -1,6 +1,5 @@
 package io.taptap.stupidenglish.features.stack.ui
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel

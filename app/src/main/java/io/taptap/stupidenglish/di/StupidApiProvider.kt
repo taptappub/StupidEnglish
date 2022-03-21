@@ -12,6 +12,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
+import io.taptap.stupidenglish.base.logic.groups.GroupsDataSource
+import io.taptap.stupidenglish.base.logic.groups.IGroupsDataSource
 import io.taptap.stupidenglish.base.logic.prefs.Settings
 import io.taptap.stupidenglish.base.logic.randomwords.IRandomWordsDataSource
 import io.taptap.stupidenglish.base.logic.randomwords.RandomWordsDataSource
@@ -33,6 +35,12 @@ class StupidApiProvider {
     @Singleton
     fun provideRandomWordsDataSource(wordDao : WordDao): IRandomWordsDataSource {
         return RandomWordsDataSource(wordDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGroupsDataSource(wordDao : WordDao): IGroupsDataSource {
+        return GroupsDataSource(wordDao)
     }
 
     @Provides

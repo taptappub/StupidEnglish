@@ -6,6 +6,7 @@ import javax.inject.Inject
 
 private const val PREFERENCES_NAME = "storage"
 
+//todo переделай на DataStore
 open class Settings @Inject constructor(context: Context) {
 
     private val sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)

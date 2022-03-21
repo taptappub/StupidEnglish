@@ -7,7 +7,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,12 +64,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -81,10 +78,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.google.accompanist.insets.ProvideWindowInsets
 import io.taptap.stupidenglish.R
@@ -92,9 +87,9 @@ import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.noRippleClickable
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
-import io.taptap.stupidenglish.features.words.ui.model.GroupItemUI
-import io.taptap.stupidenglish.features.words.ui.model.GroupListModels
-import io.taptap.stupidenglish.features.words.ui.model.NoGroupItemUI
+import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
+import io.taptap.stupidenglish.base.logic.groups.GroupListModels
+import io.taptap.stupidenglish.base.logic.groups.NoGroupItemUI
 import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
@@ -105,6 +100,7 @@ import io.taptap.stupidenglish.ui.AddTextField
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.Fab
 import io.taptap.stupidenglish.ui.EmptyListContent
+import io.taptap.stupidenglish.ui.LetterRoundView
 import io.taptap.stupidenglish.ui.NextButton
 import io.taptap.stupidenglish.ui.theme.Black200
 import io.taptap.stupidenglish.ui.theme.DeepBlue
@@ -380,7 +376,7 @@ private fun GroupItem(
             .padding(horizontal = 2.dp)
             .noRippleClickable { onGroupClicked(group) }
     ) {
-        GroupIcon(
+        LetterRoundView(
             letter = title[0].uppercaseChar(),
             color = color,
             border1 = if (selected) {
@@ -399,7 +395,9 @@ private fun GroupItem(
             } else {
                 null
             },
-            elevation = 8.dp
+            elevation = 8.dp,
+            fontSize = 28.sp,
+            modifier = Modifier.size(56.dp)
         )
         Text(
             text = title,
@@ -412,47 +410,6 @@ private fun GroupItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(2.dp)
-        )
-    }
-}
-
-@Composable
-private fun GroupIcon(
-    letter: Char,
-    color: Color,
-    modifier: Modifier = Modifier,
-    border1: BorderStroke? = null,
-    border2: BorderStroke? = null,
-    elevation: Dp = 0.dp,
-    shape: Shape = CircleShape
-) {
-    Box(
-        modifier = modifier
-            .size(56.dp)
-            .shadow(elevation = elevation, shape = shape, clip = false)
-            .zIndex(elevation.value)
-            .then(
-                if (border2 != null) Modifier.border(border2, shape) else Modifier
-            )
-            .then(
-                if (border1 != null) Modifier.border(border1, shape) else Modifier
-            )
-            .background(
-                color = color,
-                shape = shape
-            )
-            .clip(shape)
-    ) {
-        Text(
-            text = letter.toString(),
-            textAlign = TextAlign.Center,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = White100,
-            style = MaterialTheme.typography.subtitle2,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.align(Alignment.Center)
         )
     }
 }
@@ -803,7 +760,7 @@ private fun AddGroupBottomSheetScreen(
                 }
             }
 
-            Text(
+            Text(//todo кога появится дизайн-система все эти заголовки можно будет вынести
                 text = stringResource(id = R.string.word_group_add_group_title),
                 textAlign = TextAlign.Left,
                 fontSize = 16.sp,

@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.view.isVisible
@@ -66,7 +67,7 @@ fun ModalBottomSheetState.hideSheet(scope: CoroutineScope) {
 fun ModalBottomSheetState.showSheet(scope: CoroutineScope) {
     scope.launch {
         if (!isAnimationRunning) {
-            show()
+            animateTo(ModalBottomSheetValue.Expanded)
         }
     }
 }

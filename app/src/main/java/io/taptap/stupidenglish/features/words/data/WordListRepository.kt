@@ -2,13 +2,10 @@ package io.taptap.stupidenglish.features.words.data
 
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
 import io.taptap.stupidenglish.base.logic.database.dto.GroupDto
-import io.taptap.stupidenglish.base.logic.database.dto.WordDto
-import io.taptap.stupidenglish.base.logic.mapper.toGroups
+import io.taptap.stupidenglish.base.logic.groups.IGroupsDataSource
 import io.taptap.stupidenglish.base.logic.mapper.toWords
 import io.taptap.stupidenglish.base.logic.prefs.Settings
 import io.taptap.stupidenglish.base.logic.randomwords.IRandomWordsDataSource
-import io.taptap.stupidenglish.base.logic.randomwords.RandomWordsDataSource
-import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.base.model.Word
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,10 +15,12 @@ import javax.inject.Singleton
 
 @Singleton
 class WordListRepository @Inject constructor(
-    randomWordsDataSource: RandomWordsDataSource,
+    randomWordsDataSource: IRandomWordsDataSource,
+    groupsDataSource: IGroupsDataSource,
     private val wordDao: WordDao,
     private val settings: Settings
-) : IRandomWordsDataSource by randomWordsDataSource {
+) : IRandomWordsDataSource by randomWordsDataSource,
+    IGroupsDataSource by groupsDataSource {
 
     var isSentenceMotivationShown: Boolean
         get() {
@@ -43,13 +42,6 @@ class WordListRepository @Inject constructor(
         wordDao.observeWords()
             .map { wordDtos ->
                 wordDtos.toWords()
-            }
-    }
-
-    suspend fun observeGroupList(): Reaction<Flow<List<Group>>> = Reaction.on {
-        wordDao.observeGroups()
-            .map { groupDtos ->
-                groupDtos.toGroups()
             }
     }
 

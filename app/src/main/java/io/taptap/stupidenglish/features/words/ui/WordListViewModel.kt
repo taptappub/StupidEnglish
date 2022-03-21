@@ -4,11 +4,11 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
+import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
+import io.taptap.stupidenglish.base.logic.groups.GroupListModels
+import io.taptap.stupidenglish.base.logic.groups.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.features.words.data.WordListRepository
-import io.taptap.stupidenglish.features.words.ui.model.GroupItemUI
-import io.taptap.stupidenglish.features.words.ui.model.GroupListModels
-import io.taptap.stupidenglish.features.words.ui.model.NoGroupItemUI
 import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
@@ -46,7 +46,7 @@ class WordListViewModel @Inject constructor(
         wordList = listOf(),
         isLoading = true,
         group = "",
-        currentGroup = getNoGroup(),
+        currentGroup = NoGroup,
         sheetContentType = WordListContract.SheetContentType.Motivation
     )
 
@@ -141,7 +141,7 @@ class WordListViewModel @Inject constructor(
     }
 
     private fun filterWordListByGroup(group: GroupListModels) {
-        val list = if (group == getNoGroup()) {
+        val list = if (group == NoGroup) {
             words
         } else {
             words.filter {
@@ -242,7 +242,7 @@ class WordListViewModel @Inject constructor(
 
     private fun makeGroupsList(groupsList: List<Group>): List<GroupListModels> {
         val groupList = mutableListOf<GroupListModels>()
-        groupList.add(getNoGroup())
+        groupList.add(NoGroup)
 
         groupList.addAll(groupsList.map {
             GroupItemUI(
@@ -254,12 +254,6 @@ class WordListViewModel @Inject constructor(
 
         return groupList
     }
-
-    private fun getNoGroup(): GroupListModels = NoGroupItemUI(
-        id = -1,
-        titleRes = R.string.word_group_no_group_name,
-        color = DeepBlue
-    )
 
     private fun showOnboardingLabel(size: Int): Boolean {
         return size > 0

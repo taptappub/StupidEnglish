@@ -170,10 +170,12 @@ class MainActivity : ComponentActivity() {
                 composable(
                     route = NavigationKeys.Route.SE_ADD_WORD,
                     enterTransition = {
-                        slideInVertically(initialOffsetY = { 1000 })
+                        fadeIn()
+//                        slideInVertically(initialOffsetY = { 1000 })
                     },
                     exitTransition = {
-                        slideOutVertically(targetOffsetY = { 1000 })
+                        fadeOut()
+//                        slideOutVertically(targetOffsetY = { 1000 })
                     }
                 ) {
                     AddWordDialogDestination(navController)
@@ -200,10 +202,12 @@ class MainActivity : ComponentActivity() {
                             "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}={${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
                     }),
                     enterTransition = {
-                        slideInVertically(initialOffsetY = { 1000 })
+                        fadeIn()
+//                        slideInVertically(initialOffsetY = { 1000 })
                     },
                     exitTransition = {
-                        slideOutVertically(targetOffsetY = { 1000 })
+                        fadeOut()
+//                        slideOutVertically(targetOffsetY = { 1000 })
                     }
                 ) {
                     AddSentenceDialogDestination(navController)
@@ -407,11 +411,13 @@ private fun NavController.navigateToTab(
 //10) A/b тестирование
 //12) палочка в bottomSheet
 //13) редизайн
+//14) Дизайн система! - найди одинаковые виджеты и вынеси как один объект
 
 
 //Следующий билд
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
 //2) Поменять иконку
+//3) Удаление группы
 //3) Выбор группы при добавлении слова!!!
 //11) верхняя навигация
 

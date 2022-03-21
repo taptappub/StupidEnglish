@@ -51,6 +51,13 @@
     <string name="addw_word_placeholder">Unknown word</string>
     <string name="addw_description_placeholder">Your hint for word above</string>
     <string name="addw_description_not_found_error">Add your hint, please =)</string>
+    <string name="addw_group_choose_group_title">Choose groups for the word</string>
+    <string name="addw_group_button">Apply</string>
+    <string name="addw_get_groups_error">Error while getting groups</string>
+    <plurals name="addw_group_count">
+        <item quantity="one">%d group</item>
+        <item quantity="other">%d groups</item>
+    </plurals>
 
     <!-- Add Sentence -->
     <string name="adds_save_error">Error while saving</string>

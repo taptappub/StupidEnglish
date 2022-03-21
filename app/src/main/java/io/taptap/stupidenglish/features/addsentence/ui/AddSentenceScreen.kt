@@ -45,50 +45,46 @@ fun AddSentenceScreen(
     onEventSent: (event: AddSentenceContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: AddSentenceContract.Effect.Navigation) -> Unit
 ) {
-    Card(
-        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-    ) {
-        val scaffoldState: ScaffoldState = rememberScaffoldState()
+    val scaffoldState: ScaffoldState = rememberScaffoldState()
 
-        // Listen for side effects from the VM
-        LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-            effectFlow?.onEach { effect ->
-                when (effect) {
-                    is AddSentenceContract.Effect.Navigation.BackToSentenceList -> onNavigationRequested(
-                        effect
+    // Listen for side effects from the VM
+    LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+        effectFlow?.onEach { effect ->
+            when (effect) {
+                is AddSentenceContract.Effect.Navigation.BackToSentenceList -> onNavigationRequested(
+                    effect
+                )
+                is AddSentenceContract.Effect.SaveError ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(effect.errorRes),
+                        duration = SnackbarDuration.Short
                     )
-                    is AddSentenceContract.Effect.SaveError ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(effect.errorRes),
-                            duration = SnackbarDuration.Short
-                        )
-                    is AddSentenceContract.Effect.WaitingForSentenceError ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(effect.errorRes),
-                            duration = SnackbarDuration.Short
-                        )
-                    is AddSentenceContract.Effect.GetWordsError ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(effect.errorRes),
-                            duration = SnackbarDuration.Short
-                        )
-                    is AddSentenceContract.Effect.ShowUnderConstruction ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(R.string.under_construction),
-                            duration = SnackbarDuration.Short
-                        )
-                }
-            }?.collect()
-        }
+                is AddSentenceContract.Effect.WaitingForSentenceError ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(effect.errorRes),
+                        duration = SnackbarDuration.Short
+                    )
+                is AddSentenceContract.Effect.GetWordsError ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(effect.errorRes),
+                        duration = SnackbarDuration.Short
+                    )
+                is AddSentenceContract.Effect.ShowUnderConstruction ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.under_construction),
+                        duration = SnackbarDuration.Short
+                    )
+            }
+        }?.collect()
+    }
 
-        Scaffold(
-            scaffoldState = scaffoldState,
-        ) {
-            ContentScreen(
-                state,
-                onEventSent
-            )
-        }
+    Scaffold(
+        scaffoldState = scaffoldState,
+    ) {
+        ContentScreen(
+            state,
+            onEventSent
+        )
     }
 }
 
