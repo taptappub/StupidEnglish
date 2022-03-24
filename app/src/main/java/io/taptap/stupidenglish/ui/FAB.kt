@@ -11,7 +11,6 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.navigationBarsPadding
 import io.taptap.stupidenglish.ui.theme.getFABColor
 import io.taptap.stupidenglish.ui.theme.getFABTextColor
 
@@ -30,7 +29,6 @@ fun Fab(
             onClick = onFabClicked,
             modifier = modifier
                 .padding(16.dp)
-                .navigationBarsPadding()
                 .height(48.dp)
                 .widthIn(min = 48.dp)
         ) {

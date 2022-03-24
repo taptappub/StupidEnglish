@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 
@@ -21,6 +23,8 @@ fun StupidEnglishScaffold(
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     drawerShape: Shape = MaterialTheme.shapes.large,
     drawerElevation: Dp = DrawerDefaults.Elevation,
+    backgroundColor: Color = Color.Transparent,
+    contentColor: Color = Color.Transparent,
 //    drawerBackgroundColor: Color = JetsnackTheme.colors.uiBackground,
 //    drawerContentColor: Color = JetsnackTheme.colors.textSecondary,
 //    drawerScrimColor: Color = JetsnackTheme.colors.uiBorder,
@@ -40,6 +44,8 @@ fun StupidEnglishScaffold(
         drawerContent = drawerContent,
         drawerShape = drawerShape,
         drawerElevation = drawerElevation,
+        backgroundColor = backgroundColor,
+        contentColor = contentColor,
 //        drawerBackgroundColor = drawerBackgroundColor,
 //        drawerContentColor = drawerContentColor,
 //        drawerScrimColor = drawerScrimColor,

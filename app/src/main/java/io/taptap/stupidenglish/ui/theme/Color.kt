@@ -15,17 +15,30 @@ val White100 = Color(0xFFFFFFFF)
 @Stable
 val Blue100 = Color(0xFFE5ECF1)
 @Stable
-val Red100 = Color(0xFFFF0000)
-@Stable
 val Green100 = Color(0xFF1AB517)
 
 //New colors
 @Stable
 val DeepBlue = Color(0xFF587EDE)
 
-val ColorsPool = listOf(
-    Color(0xFF58DE86),
-    Color(0xFFABDE58),
-    Color(0xFFDE5898),
-    Color(0xFFDED158)
-)
+
+
+
+@Stable
+val WarmWhite1 = Color(0xFFFDF3EA)
+@Stable
+val WarmWhite2 = Color(0xFFFAEBDD)
+@Stable
+val Yellow = Color(0xFFF6B862)
+@Stable
+val Black = Color(0xFF151515)
+@Stable
+val Grey = Color(0xFF92928D)
+@Stable
+val White = Color(0xFFFFFFFF)
+@Stable
+val Red = Color(0xFFFF0000)
+//-------------------------------------------//
+@Stable
+val Esspresso = Color(0xFF181411)
+
