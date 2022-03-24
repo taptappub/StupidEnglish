@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -108,6 +107,7 @@ import io.taptap.stupidenglish.ui.bottomsheet.ChooseGroupBottomSheetScreen
 import io.taptap.stupidenglish.ui.theme.Black200
 import io.taptap.stupidenglish.ui.theme.DeepBlue
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
+import io.taptap.stupidenglish.ui.theme.StupidLanguageBackgroundBox
 import io.taptap.stupidenglish.ui.theme.White100
 import io.taptap.stupidenglish.ui.theme.getContentTextColor
 import io.taptap.stupidenglish.ui.theme.getPrimaryButtonBackgroundColor
@@ -132,7 +132,7 @@ fun WordListScreen(
     val scope = rememberCoroutineScope()
 
     val modalBottomSheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
+        initialValue = ModalBottomSheetValue.Hidden
     )
 
     if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
@@ -167,7 +167,6 @@ fun WordListScreen(
                         onEventSent = onEventSent,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight()
                     )
                 WordListContract.SheetContentType.RemoveGroup ->
                     ChooseGroupBottomSheetScreen(
@@ -228,14 +227,9 @@ fun WordListScreen(
                 }
 
                 Scaffold(
-                    scaffoldState = scaffoldState,
-                    backgroundColor = MaterialTheme.colors.background,
+                    scaffoldState = scaffoldState
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(it)
-                    ) {
+                    StupidLanguageBackgroundBox {
                         val listState = rememberLazyListState()
 
                         MainList(
@@ -427,7 +421,8 @@ private fun GroupItem(
             },
             elevation = 8.dp,
             fontSize = 28.sp,
-            modifier = Modifier.size(56.dp)
+            modifier = Modifier
+                .size(56.dp)
                 .combinedClickable(
                     onClick = { onGroupClicked(group) },
                     onLongClick = { onGroupLongClicked(group) },
@@ -665,12 +660,12 @@ private fun MotivationBottomSheetScreen(
     modifier: Modifier,
     onEventSent: (event: WordListContract.Event) -> Unit
 ) {
-    BottomSheetScreen(
-        modifier = modifier
-    ) {
+//    BottomSheetScreen(
+//        modifier = modifier
+//    ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth()
         ) {
             Box(
                 modifier = Modifier
@@ -744,7 +739,7 @@ private fun MotivationBottomSheetScreen(
                     )
                 }
             }
-        }
+//        }
     }
 }
 
