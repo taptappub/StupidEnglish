@@ -88,6 +88,7 @@ import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
 import io.taptap.stupidenglish.base.logic.groups.GroupListModels
+import io.taptap.stupidenglish.base.logic.groups.NoGroup
 import io.taptap.stupidenglish.base.logic.groups.NoGroupItemUI
 import io.taptap.stupidenglish.base.noRippleClickable
 import io.taptap.stupidenglish.base.ui.hideSheet
@@ -428,9 +429,15 @@ private fun GroupItem(
             elevation = 8.dp,
             fontSize = 28.sp,
             modifier = Modifier.size(56.dp)
-                .combinedClickable(
-                    onClick = { onGroupClicked(group) },
-                    onLongClick = { onGroupLongClicked(group) },
+                .then(
+                    if (group == NoGroup) {
+                        Modifier.clickable { onGroupClicked(group) }
+                    } else {
+                        Modifier.combinedClickable(
+                            onClick = { onGroupClicked(group) },
+                            onLongClick = { onGroupLongClicked(group) },
+                        )
+                    }
                 )
         )
         Text(
