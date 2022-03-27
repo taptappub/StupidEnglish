@@ -1,6 +1,7 @@
 package io.taptap.stupidenglish.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,13 +12,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.R
+import io.taptap.stupidenglish.ui.theme.getStupidLanguageBackgroundBox
 
 @Composable
 fun BottomSheetScreen(
     modifier: Modifier,
     content: @Composable () -> Unit
 ) {
-    ConstraintLayout(modifier = modifier) {
+    ConstraintLayout(modifier = modifier
+        .background(getStupidLanguageBackgroundBox())
+    ) {
         val (stick, content) = createRefs()
 
         Image(

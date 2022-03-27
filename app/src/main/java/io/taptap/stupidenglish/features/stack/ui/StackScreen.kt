@@ -147,7 +147,7 @@ private fun ContentScreen(
 
         Card(
             shape = RoundedCornerShape(16.dp),
-            elevation = 100.dp,
+            elevation = 20.dp,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 24.dp, start = 48.dp, end = 48.dp, top = 24.dp)

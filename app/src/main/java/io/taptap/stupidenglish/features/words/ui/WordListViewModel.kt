@@ -15,7 +15,6 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
-import io.taptap.stupidenglish.ui.theme.DeepBlue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -290,8 +289,7 @@ class WordListViewModel @Inject constructor(
         groupList.addAll(groupsList.map {
             GroupItemUI(
                 id = it.id,
-                name = it.name,
-                color = DeepBlue
+                name = it.name
             )
         })
 

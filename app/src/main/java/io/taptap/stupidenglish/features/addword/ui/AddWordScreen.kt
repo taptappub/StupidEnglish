@@ -63,13 +63,13 @@ import io.taptap.stupidenglish.ui.AddTextField
 import io.taptap.stupidenglish.ui.LetterRoundView
 import io.taptap.stupidenglish.ui.NextButton
 import io.taptap.stupidenglish.ui.bottomsheet.ChooseGroupBottomSheetScreen
-import io.taptap.stupidenglish.ui.theme.DeepBlue
 import io.taptap.stupidenglish.ui.theme.Grey200
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import io.taptap.stupidenglish.ui.theme.getContentTextColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.selects.select
 
 
 @ExperimentalMaterialApi
@@ -292,12 +292,12 @@ private fun StackRowOfGroups(groups: List<GroupListModels>) {
         groups.forEach {
             LetterRoundView(
                 letter = it.getTitle()[0].uppercaseChar(),
-                color = it.color,
+                selected = true,
                 border1 = BorderStroke(
                     width = 2.dp,
                     color = Color.White
                 ),
-                elevation = 8.dp,
+                border2 = null,
                 fontSize = 12.sp,
                 modifier = Modifier
                     .padding(vertical = 10.dp)
@@ -315,8 +315,7 @@ private fun OneGroup(first: GroupListModels) {
     ) {
         LetterRoundView(
             letter = first.getTitle()[0].uppercaseChar(),
-            color = first.color,
-            elevation = 8.dp,
+            selected = true,
             fontSize = 12.sp,
             modifier = Modifier
                 .padding(vertical = 10.dp, horizontal = 16.dp)
@@ -463,17 +462,14 @@ fun ManyGroupsPreview() {
         val groups = listOf(
             GroupItemUI(
                 id = 1,
-                color = DeepBlue,
                 name = "test name"
             ),
             GroupItemUI(
                 id = 1,
-                color = DeepBlue,
                 name = "dtest name"
             ),
             GroupItemUI(
                 id = 1,
-                color = DeepBlue,
                 name = "dtest name"
             )
         )
@@ -492,17 +488,14 @@ fun StackRowOfGroupsPreview() {
             groups = listOf(
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 ),
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 ),
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 )
             )
@@ -518,17 +511,14 @@ fun GroupsStackRowPreview() {
             groups = listOf(
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 ),
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 ),
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 )
             ),
@@ -545,7 +535,6 @@ fun OneGroupPreview() {
         OneGroup(
             GroupItemUI(
                 id = 1,
-                color = DeepBlue,
                 name = "test name"
             )
         )
@@ -563,17 +552,14 @@ fun ContentScreenPreview() {
                 groups = listOf(
                     GroupItemUI(
                         id = 1,
-                        color = DeepBlue,
                         name = "test name"
                     ),
                     GroupItemUI(
                         id = 1,
-                        color = DeepBlue,
                         name = "test name"
                     ),
                     GroupItemUI(
                         id = 1,
-                        color = DeepBlue,
                         name = "test name"
                     )
                 ),

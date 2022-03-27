@@ -14,12 +14,8 @@ val Black200 = Color(0xFF121212)
 val White100 = Color(0xFFFFFFFF)
 @Stable
 val Blue100 = Color(0xFFE5ECF1)
-@Stable
-val Green100 = Color(0xFF1AB517)
 
 //New colors
-@Stable
-val DeepBlue = Color(0xFF587EDE)
 
 
 
@@ -40,5 +36,5 @@ val White = Color(0xFFFFFFFF)
 val Red = Color(0xFFFF0000)
 //-------------------------------------------//
 @Stable
-val Esspresso = Color(0xFF181411)
+val Esspresso = Color(0xFF322419)
 

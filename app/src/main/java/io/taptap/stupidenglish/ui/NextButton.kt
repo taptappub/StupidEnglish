@@ -6,11 +6,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
@@ -18,7 +17,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.taptap.stupidenglish.R
-import io.taptap.stupidenglish.ui.theme.getPrimaryButtonBackgroundColor
 
 @Composable
 fun NextButton(
@@ -40,7 +38,7 @@ fun NextButton(
             ) {
                 Button(
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = getPrimaryButtonBackgroundColor()),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colorScheme.primary),
                     onClick = onClick,
                     modifier = Modifier
                         .size(52.dp)
@@ -48,7 +46,7 @@ fun NextButton(
                     Image(
                         painter = painterResource(id = R.drawable.ic_arrow_right),
                         contentDescription = "next",
-                        colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary)
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
                     )
                 }
             }

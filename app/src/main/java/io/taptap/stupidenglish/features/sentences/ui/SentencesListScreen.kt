@@ -81,7 +81,6 @@ import io.taptap.stupidenglish.ui.theme.Blue100
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import io.taptap.stupidenglish.ui.theme.White100
 import io.taptap.stupidenglish.ui.theme.getContentTextColor
-import io.taptap.stupidenglish.ui.theme.getPrimaryButtonBackgroundColor
 import io.taptap.stupidenglish.ui.theme.getSecondaryButtonBackgroundColor
 import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.Flow
@@ -99,88 +98,86 @@ fun SentencesListScreen(
     onEventSent: (event: SentencesListContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: SentencesListContract.Effect.Navigation) -> Unit
 ) {
-    ProvideWindowInsets {
-        val scaffoldState: ScaffoldState = rememberScaffoldState()
+    val scaffoldState: ScaffoldState = rememberScaffoldState()
 
-        val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
-        val modalBottomSheetState = rememberModalBottomSheetState(
-            initialValue = ModalBottomSheetValue.Hidden
-        )
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden
+    )
 
-        // Listen for side effects from the VM
-        LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-            effectFlow?.onEach { effect ->
-                when (effect) {
-                    is SentencesListContract.Effect.HideMotivation ->
-                        modalBottomSheetState.hideSheet(scope)
-                    is SentencesListContract.Effect.ShowMotivation ->
-                        modalBottomSheetState.showSheet(scope)
-                    is SentencesListContract.Effect.GetRandomWordsError ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(effect.errorRes),
-                            duration = SnackbarDuration.Short
-                        )
-                    is SentencesListContract.Effect.GetSentencesError ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(effect.errorRes),
-                            duration = SnackbarDuration.Short
-                        )
-                    is SentencesListContract.Effect.Navigation.ToAddSentence ->
-                        onNavigationRequested(effect)
-                    is SentencesListContract.Effect.ShowUnderConstruction ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(R.string.under_construction),
-                            duration = SnackbarDuration.Short
-                        )
-                }
-            }?.collect()
-        }
+    // Listen for side effects from the VM
+    LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+        effectFlow?.onEach { effect ->
+            when (effect) {
+                is SentencesListContract.Effect.HideMotivation ->
+                    modalBottomSheetState.hideSheet(scope)
+                is SentencesListContract.Effect.ShowMotivation ->
+                    modalBottomSheetState.showSheet(scope)
+                is SentencesListContract.Effect.GetRandomWordsError ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(effect.errorRes),
+                        duration = SnackbarDuration.Short
+                    )
+                is SentencesListContract.Effect.GetSentencesError ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(effect.errorRes),
+                        duration = SnackbarDuration.Short
+                    )
+                is SentencesListContract.Effect.Navigation.ToAddSentence ->
+                    onNavigationRequested(effect)
+                is SentencesListContract.Effect.ShowUnderConstruction ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.under_construction),
+                        duration = SnackbarDuration.Short
+                    )
+            }
+        }?.collect()
+    }
 
-        if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
-            DisposableEffect(Unit) {
-                onDispose {
-                    onEventSent(SentencesListContract.Event.OnMotivationCancel)
-                }
+    if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
+        DisposableEffect(Unit) {
+            onDispose {
+                onEventSent(SentencesListContract.Event.OnMotivationCancel)
             }
         }
+    }
 
-        ModalBottomSheetLayout(
-            sheetState = modalBottomSheetState,
-            sheetContent = {
-                MotivationBottomSheetScreen(
-                    onEventSent = onEventSent,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                )
-            },
-            sheetBackgroundColor = MaterialTheme.colors.background,
-            sheetShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+    ModalBottomSheetLayout(
+        sheetState = modalBottomSheetState,
+        sheetContent = {
+            MotivationBottomSheetScreen(
+                onEventSent = onEventSent,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            )
+        },
+        sheetBackgroundColor = MaterialTheme.colors.background,
+        sheetShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+    ) {
+        Scaffold(
+            scaffoldState = scaffoldState,
+            backgroundColor = MaterialTheme.colors.background,
         ) {
-            Scaffold(
-                scaffoldState = scaffoldState,
-                backgroundColor = MaterialTheme.colors.background,
-            ) {
-                Box {
-                    val listState = rememberLazyListState()
+            Box {
+                val listState = rememberLazyListState()
 
-                    SentencesList(
-                        sentencesItems = state.sentenceList,
-                        listState = listState,
-                        onEventSent = onEventSent
-                    )
-                    if (state.isLoading) {
-                        LoadingBar()
-                    }
-                    Fab(
-                        extended = listState.firstVisibleItemIndex == 0,
-                        modifier = Modifier.align(Alignment.BottomEnd),
-                        iconRes = R.drawable.ic_plus,
-                        text = stringResource(id = R.string.stns_fab_text),
-                        onFabClicked = { onEventSent(SentencesListContract.Event.OnAddSentenceClick) }
-                    )
+                SentencesList(
+                    sentencesItems = state.sentenceList,
+                    listState = listState,
+                    onEventSent = onEventSent
+                )
+                if (state.isLoading) {
+                    LoadingBar()
                 }
+                Fab(
+                    extended = listState.firstVisibleItemIndex == 0,
+                    modifier = Modifier.align(Alignment.BottomEnd),
+                    iconRes = R.drawable.ic_plus,
+                    text = stringResource(id = R.string.stns_fab_text),
+                    onFabClicked = { onEventSent(SentencesListContract.Event.OnAddSentenceClick) }
+                )
             }
         }
     }
@@ -260,7 +257,7 @@ private fun MotivationBottomSheetScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
                     modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = getPrimaryButtonBackgroundColor()),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.primary),
                     onClick = {
                         onEventSent(SentencesListContract.Event.OnMotivationConfirmClick)
                     }) {

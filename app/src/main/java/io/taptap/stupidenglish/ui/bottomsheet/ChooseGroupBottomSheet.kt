@@ -36,12 +36,10 @@ import io.taptap.stupidenglish.base.logic.groups.NoGroup
 import io.taptap.stupidenglish.base.logic.groups.getTitle
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.LetterRoundView
-import io.taptap.stupidenglish.ui.theme.DeepBlue
 import io.taptap.stupidenglish.ui.theme.Grey200
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import io.taptap.stupidenglish.ui.theme.White100
 import io.taptap.stupidenglish.ui.theme.getContentTextColor
-import io.taptap.stupidenglish.ui.theme.getPrimaryButtonBackgroundColor
 import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 
 @Composable
@@ -86,7 +84,7 @@ fun ChooseGroupBottomSheetScreen(
                 modifier = Modifier
                     .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 36.dp)
                     .fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(backgroundColor = getPrimaryButtonBackgroundColor()),
+                colors = ButtonDefaults.buttonColors(backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.primary),
                 onClick = onButtonClick
             ) {
                 Text(
@@ -143,7 +141,7 @@ fun GroupItemRow(
     ) {
         LetterRoundView(
             letter = item.getTitle()[0].uppercaseChar(),
-            color = item.color,
+            selected = isSelected,
             elevation = 8.dp,
             fontSize = 12.sp,
             modifier = Modifier
@@ -186,17 +184,14 @@ fun ChooseGroupBottomSheetScreenPreview() {
             list = listOf(
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 ),
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 ),
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 )
             ),
@@ -219,7 +214,6 @@ fun GroupItemPreview() {
         GroupItemRow(
             GroupItemUI(
                 id = 1,
-                color = DeepBlue,
                 name = "test name"
             ),
             true
@@ -237,29 +231,24 @@ fun GroupsPreview() {
             list = listOf(
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 ),
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 ),
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 )
             ),
             selectedList = listOf(
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 ),
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 )
             ),

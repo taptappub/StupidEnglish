@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -12,22 +13,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorPalette = darkColorScheme(
-    surface = Grey600,
-    primary = White100,
-    background = Esspresso,
-    secondary = DeepBlue,
+    surface = Esspresso,
+    onSurface = White,
+    primary = White,
+    onPrimary = Black,
+    background = Black,
+    secondary = Grey,
     tertiary = Yellow,
     error = Red
 )
 
 private val LightColorPalette = lightColorScheme(
-    surface = WarmWhite1,
+    surface = White,
+    onSurface = Black,
     primary = Black,
+    onPrimary = White,
     background = White,
     secondary = Grey,
     tertiary = Yellow,
@@ -47,7 +51,7 @@ fun StupidEnglishTheme(
 //    )
 
     systemUiController.setNavigationBarColor(
-        color = Color.Transparent,
+        color = MaterialTheme.colorScheme.background.copy(alpha = 0.77f),
         darkIcons = !darkTheme,
         navigationBarContrastEnforced = false
     )
@@ -73,14 +77,48 @@ fun StupidEnglishTheme(
 @Composable
 fun StupidLanguageBackgroundBox(
     modifier: Modifier = Modifier,
-    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable BoxScope.() -> Unit
 ) {
-    val brush = if (darkTheme) {
-        Brush.verticalGradient(
+    Box(
+        modifier = modifier
+            .background(brush = getStupidLanguageBackgroundBox())
+    ) {
+        Box(modifier = Modifier.systemBarsPadding()) {
+            content()
+        }
+    }
+}
+
+@Composable
+fun getStupidLanguageBackgroundRow(
+    darkTheme: Boolean = isSystemInDarkTheme()
+): Brush {
+    return if (darkTheme) {
+        Brush.horizontalGradient(
             colors = listOf(
                 Esspresso,
                 Esspresso
+            )
+        )
+    } else {
+        Brush.horizontalGradient(
+            colors = listOf(
+                WarmWhite2,
+                WarmWhite1
+            )
+        )
+    }
+}
+
+@Composable
+fun getStupidLanguageBackgroundBox(
+    darkTheme: Boolean = isSystemInDarkTheme()
+): Brush {
+    return if (darkTheme) {
+        Brush.verticalGradient(
+            colors = listOf(
+                Black,
+                Black
             )
         )
     } else {
@@ -91,16 +129,6 @@ fun StupidLanguageBackgroundBox(
             )
         )
     }
-    ProvideWindowInsets {
-        Box(
-            modifier = modifier
-                .background(brush = brush)
-        ) {
-            Box(modifier = Modifier.statusBarsPadding()) {
-                content()
-            }
-        }
-    }
 }
 
 @Composable
@@ -108,9 +136,9 @@ fun getTitleTextColor(
     darkTheme: Boolean = isSystemInDarkTheme()
 ): Color {
     return if (darkTheme) {
-        White100
+        White
     } else {
-        Black200
+        Black
     }
 }
 
@@ -126,28 +154,6 @@ fun getContentTextColor(
 }
 
 @Composable
-fun getFABColor(
-    darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
-    return if (darkTheme) {
-        Blue100
-    } else {
-        Black200
-    }
-}
-
-@Composable
-fun getFABTextColor(
-    darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
-    return if (darkTheme) {
-        Black200
-    } else {
-        White100
-    }
-}
-
-@Composable
 fun getSecondaryButtonBackgroundColor(
     darkTheme: Boolean = isSystemInDarkTheme()
 ): Color {
@@ -155,16 +161,5 @@ fun getSecondaryButtonBackgroundColor(
         Grey200
     } else {
         Grey200
-    }
-}
-
-@Composable
-fun getPrimaryButtonBackgroundColor(
-    darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
-    return if (darkTheme) {
-        Grey600
-    } else {
-        Black200
     }
 }

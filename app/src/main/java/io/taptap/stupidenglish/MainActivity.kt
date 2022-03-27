@@ -7,6 +7,9 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -17,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -28,6 +32,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
+import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -119,23 +124,23 @@ class MainActivity : ComponentActivity() {
 
         StupidEnglishScaffold(
             scaffoldState = scaffoldState,
-            bottomBar = {
-                if (mainState.shouldShowBottomBar(navController)) {
-                    StupidEnglishBottomBar(
-                        state = mainState,
-                        currentRoute = navController.currentRoute!!,
-                        effectFlow = mainViewModel.effect,
-                        onEventSent = { event -> mainViewModel.setEvent(event) },
-                        onNavigationRequested = { navigationEffect ->
-                            if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
-                                if (navigationEffect.route != navController.currentRoute) {
-                                    navController.navigateToTab(navigationEffect.route)
-                                }
-                            }
-                        }
-                    )
-                }
-            }
+//            bottomBar = {
+//                if (mainState.shouldShowBottomBar(navController)) {
+//                    StupidEnglishBottomBar(
+//                        state = mainState,
+//                        currentRoute = navController.currentRoute!!,
+//                        effectFlow = mainViewModel.effect,
+//                        onEventSent = { event -> mainViewModel.setEvent(event) },
+//                        onNavigationRequested = { navigationEffect ->
+//                            if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
+//                                if (navigationEffect.route != navController.currentRoute) {
+//                                    navController.navigateToTab(navigationEffect.route)
+//                                }
+//                            }
+//                        }
+//                    )
+//                }
+//            }
         ) { innerPaddingModifier ->
             AnimatedNavHost(
                 navController = navController,
@@ -210,6 +215,33 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     AddSentenceDialogDestination(navController)
+                }
+            }
+
+            if (mainState.shouldShowBottomBar(navController)) {
+                ConstraintLayout(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    val (bottomBar) = createRefs()
+                    StupidEnglishBottomBar(
+                        state = mainState,
+                        currentRoute = navController.currentRoute!!,
+                        effectFlow = mainViewModel.effect,
+                        onEventSent = { event -> mainViewModel.setEvent(event) },
+                        onNavigationRequested = { navigationEffect ->
+                            if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
+                                if (navigationEffect.route != navController.currentRoute) {
+                                    navController.navigateToTab(navigationEffect.route)
+                                }
+                            }
+                        },
+                        modifier = Modifier.constrainAs(bottomBar) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                    )
                 }
             }
         }

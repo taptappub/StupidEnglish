@@ -1,19 +1,20 @@
 package io.taptap.stupidenglish.ui
 
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import io.taptap.stupidenglish.ui.theme.getFABColor
-import io.taptap.stupidenglish.ui.theme.getFABTextColor
 
+//ver2
 @Composable
 fun Fab(
     extended: Boolean,
@@ -24,11 +25,12 @@ fun Fab(
 ) {
     key(text) { // Prevent multiple invocations to execute during composition
         FloatingActionButton(
-            containerColor = getFABColor(),
-            contentColor = getFABTextColor(),
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
             onClick = onFabClicked,
             modifier = modifier
-                .padding(16.dp)
+                .navigationBarsPadding()
+                .padding(bottom = BOTTOM_BAR_MARGIN, start = 16.dp, end = 16.dp)
                 .height(48.dp)
                 .widthIn(min = 48.dp)
         ) {
@@ -41,6 +43,7 @@ fun Fab(
                 },
                 text = {
                     Text(
+                        style = MaterialTheme.typography.headlineLarge,
                         text = text
                     )
                 },

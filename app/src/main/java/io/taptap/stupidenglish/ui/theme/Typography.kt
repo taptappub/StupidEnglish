@@ -31,12 +31,19 @@ val StupidEnglishTypography = androidx.compose.material3.Typography(
     ),
     titleLarge = TextStyle(
         fontFamily = NunitoFontFamily,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 28.sp,
+        lineHeight = 33.sp,
+        letterSpacing = 0.2.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = NunitoFontFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.2.sp
     ),
-    titleMedium = TextStyle(
+    titleSmall = TextStyle(
         fontFamily = NunitoFontFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
