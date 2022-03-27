@@ -53,7 +53,7 @@ fun LetterRoundView(
     },
     modifier: Modifier,
     fontSize: TextUnit,
-    elevation: Dp = 8.dp,
+    elevation: Dp = 4.dp,
     shape: Shape = CircleShape
 ) {
     Box(

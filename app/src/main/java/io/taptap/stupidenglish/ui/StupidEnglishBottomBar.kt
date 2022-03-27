@@ -64,7 +64,7 @@ fun StupidEnglishBottomBar(
     Card(
         shape = RoundedCornerShape(16.dp),
         backgroundColor = MaterialTheme.colorScheme.surface,
-        elevation = 16.dp,
+        elevation = 8.dp,
         modifier = modifier
             .navigationBarsPadding()
             .padding(horizontal = 16.dp, vertical = BOTTOM_BAR_VERTICAL_PADDING)

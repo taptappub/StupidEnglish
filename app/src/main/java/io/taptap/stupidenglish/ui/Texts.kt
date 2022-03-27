@@ -1,29 +1,26 @@
 package io.taptap.stupidenglish.ui
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import io.taptap.stupidenglish.R
 
 @Composable
 fun LargeTitle(
     text: String,
     modifier: Modifier = Modifier,
     maxLines: Int = 2,
+    textAlign: TextAlign = TextAlign.Center,
     color: Color = MaterialTheme.colorScheme.onSurface,
     style: TextStyle = MaterialTheme.typography.labelLarge
 ) {
     Text(
         text = text,
-        textAlign = TextAlign.Center,
+        textAlign = textAlign,
         color = color,
         style = style,
         maxLines = maxLines,
@@ -54,6 +51,7 @@ fun AverageTitle(
 @Composable
 fun AverageText(
     text: String,
+    maxLines: Int = 2,
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Center,
     color: Color = MaterialTheme.colorScheme.onSurface,
@@ -64,6 +62,7 @@ fun AverageText(
         textAlign = textAlign,
         color = color,
         style = style,
+        maxLines = maxLines,
         overflow = TextOverflow.Ellipsis,
         modifier = modifier
     )

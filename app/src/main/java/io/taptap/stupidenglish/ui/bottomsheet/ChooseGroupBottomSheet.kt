@@ -19,8 +19,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +33,7 @@ import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
 import io.taptap.stupidenglish.base.logic.groups.GroupListModels
 import io.taptap.stupidenglish.base.logic.groups.NoGroup
 import io.taptap.stupidenglish.base.logic.groups.getTitle
+import io.taptap.stupidenglish.ui.AverageText
 import io.taptap.stupidenglish.ui.AverageTitle
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.LetterRoundView
@@ -126,23 +129,20 @@ fun GroupItemRow(
         LetterRoundView(
             letter = item.getTitle()[0].uppercaseChar(),
             selected = isSelected,
-            elevation = 8.dp,
+            elevation = 4.dp,
             fontSize = 12.sp,
             modifier = Modifier
                 .padding(vertical = 10.dp, horizontal = 16.dp)
                 .size(28.dp)
         )
-        Text(
+        AverageText(
             text = item.getTitle(),
-            textAlign = TextAlign.Left,
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleSmall,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .weight(1.0f, true)
                 .fillMaxWidth()
-                .padding(2.dp)
+                .padding(2.dp),
+            textAlign = TextAlign.Left,
         )
 
         Image(

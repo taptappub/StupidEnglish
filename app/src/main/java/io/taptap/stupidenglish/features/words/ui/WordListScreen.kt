@@ -99,6 +99,7 @@ import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.DialogSheetScreen
 import io.taptap.stupidenglish.ui.EmptyListContent
 import io.taptap.stupidenglish.ui.Fab
+import io.taptap.stupidenglish.ui.LargeTitle
 import io.taptap.stupidenglish.ui.LetterRoundView
 import io.taptap.stupidenglish.ui.NextButton
 import io.taptap.stupidenglish.ui.bottomsheet.ChooseGroupBottomSheetScreen
@@ -125,7 +126,7 @@ fun WordListScreen(
     val scope = rememberCoroutineScope()
 
     val modalBottomSheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Expanded
+        initialValue = ModalBottomSheetValue.Hidden
     )
 
     if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
@@ -483,7 +484,7 @@ private fun OnboardingItemRow(
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        elevation = 8.dp,
+        elevation = 4.dp,
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
             .noRippleClickable(onClick = onClicked)
@@ -514,19 +515,13 @@ private fun OnboardingItemRow(
                         end = 12.dp
                     )
             ) {
-                Text(
+                LargeTitle(
                     text = stringResource(id = R.string.app_name),
                     textAlign = TextAlign.Left,
-                    fontSize = 20.sp,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = stringResource(id = R.string.word_onboarding_text),
                     textAlign = TextAlign.Left,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     overflow = TextOverflow.Ellipsis
@@ -575,7 +570,7 @@ private fun WordItemRow(
             backgroundColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(12.dp),
             elevation = animateDpAsState(
-                if (dismissState.dismissDirection != null) 16.dp else 8.dp
+                if (dismissState.dismissDirection != null) 8.dp else 4.dp
             ).value,
             modifier = Modifier
                 .fillMaxWidth()
@@ -749,9 +744,3 @@ fun GroupItem() {
         )
     }
 }
-
-//fixme
-/**
- * 2) снек без отступа снизу
- * 4) все elevation поделить на 2
- */
