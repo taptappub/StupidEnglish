@@ -14,9 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,12 +31,9 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DismissDirection
@@ -76,8 +71,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -101,21 +94,17 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import io.taptap.stupidenglish.ui.AddTextField
-import io.taptap.stupidenglish.ui.BOTTOM_BAR_MARGIN
+import io.taptap.stupidenglish.ui.AverageTitle
 import io.taptap.stupidenglish.ui.BottomSheetScreen
+import io.taptap.stupidenglish.ui.DialogSheetScreen
 import io.taptap.stupidenglish.ui.EmptyListContent
 import io.taptap.stupidenglish.ui.Fab
 import io.taptap.stupidenglish.ui.LetterRoundView
 import io.taptap.stupidenglish.ui.NextButton
 import io.taptap.stupidenglish.ui.bottomsheet.ChooseGroupBottomSheetScreen
-import io.taptap.stupidenglish.ui.theme.Black200
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import io.taptap.stupidenglish.ui.theme.StupidLanguageBackgroundBox
-import io.taptap.stupidenglish.ui.theme.White100
-import io.taptap.stupidenglish.ui.theme.getContentTextColor
-import io.taptap.stupidenglish.ui.theme.getSecondaryButtonBackgroundColor
 import io.taptap.stupidenglish.ui.theme.getStupidLanguageBackgroundRow
-import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -136,7 +125,7 @@ fun WordListScreen(
     val scope = rememberCoroutineScope()
 
     val modalBottomSheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden
+        initialValue = ModalBottomSheetValue.Expanded
     )
 
     if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
@@ -176,10 +165,19 @@ fun WordListScreen(
                             .height(300.dp)
                     )
                 WordListContract.SheetContentType.Motivation ->
-                    MotivationBottomSheetScreen(
-                        onEventSent = onEventSent,
-                        modifier = Modifier
-                            .fillMaxWidth()
+                    DialogSheetScreen(
+                        painter = painterResource(R.drawable.ic_pen),
+                        title = stringResource(id = R.string.word_motivation_title),
+                        message = stringResource(id = R.string.word_motivation_message),
+                        okButtonText = stringResource(id = R.string.word_motivation_confirm),
+                        cancelButtonText = stringResource(id = R.string.word_motivation_decline),
+                        modifier = Modifier.fillMaxWidth(),
+                        onOkButtonClick = {
+                            onEventSent(WordListContract.Event.OnMotivationConfirmClick)
+                        },
+                        onCancelButtonClick = {
+                            onEventSent(WordListContract.Event.OnMotivationDeclineClick)
+                        }
                     )
                 WordListContract.SheetContentType.RemoveGroup ->
                     ChooseGroupBottomSheetScreen(
@@ -301,7 +299,10 @@ private fun MainList(
                         onEventSent(WordListContract.Event.OnWordClick)
                     }
                 )
-                is WordListTitleUI -> TitleItem(item = item)
+                is WordListTitleUI -> AverageTitle(
+                    text = stringResource(id = item.valueRes),
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+                )
                 is OnboardingWordUI -> OnboardingItemRow(
                     onClicked = {
                         onEventSent(WordListContract.Event.OnOnboardingClick)
@@ -455,14 +456,9 @@ private fun GroupItemHeader(title: String, button: String, onButtonClicked: () -
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(
+        AverageTitle(
             text = title,
-            textAlign = TextAlign.Left,
-            fontSize = 18.sp,
-            style = MaterialTheme.typography.headlineLarge,
-            color = getTitleTextColor(),
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
@@ -540,23 +536,6 @@ private fun OnboardingItemRow(
     }
 }
 
-@Composable
-private fun TitleItem(
-    item: WordListTitleUI
-) {
-    Text(
-        text = stringResource(id = item.valueRes),
-        textAlign = TextAlign.Left,
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onSurface,
-        style = MaterialTheme.typography.headlineLarge,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
-    )
-}
-
 @ExperimentalMaterialApi
 @Composable
 private fun WordItemRow(
@@ -627,20 +606,16 @@ private fun WordItem(
     modifier: Modifier
 ) {
     Column(modifier = modifier) {
-        Text(
+        AverageTitle(
             text = item.word,
-            textAlign = TextAlign.Left,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.headlineLarge,
-            color = getTitleTextColor(),
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
             text = item.description,
             textAlign = TextAlign.Left,
-            color = getContentTextColor(),
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.bodyMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
@@ -658,97 +633,9 @@ fun LoadingBar() {
     }
 }
 
-@Composable
-private fun MotivationBottomSheetScreen(
-    modifier: Modifier,
-    onEventSent: (event: WordListContract.Event) -> Unit
-) {
-    BottomSheetScreen(
-        modifier = modifier
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(top = 24.dp)
-                    .size(52.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.secondary,
-                        shape = CircleShape
-                    )
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_pen),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .align(Alignment.Center)
-                )
-            }
-
-            Text(
-                text = stringResource(id = R.string.word_motivation_title),
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily(
-                    Font(R.font.rubik_regular, FontWeight.Normal),
-                    Font(R.font.rubik_medium, FontWeight.Medium),
-                    Font(R.font.rubik_bold, FontWeight.Bold)
-                ),
-                color = getTitleTextColor(),
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
-            )
-
-            Text(
-                text = stringResource(id = R.string.word_motivation_message),
-                textAlign = TextAlign.Center,
-                fontSize = 16.sp,
-                color = getContentTextColor(),
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 44.dp)
-            ) {
-                Button(
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = getSecondaryButtonBackgroundColor()),
-                    onClick = {
-                        onEventSent(WordListContract.Event.OnMotivationDeclineClick)
-                    }) {
-                    Text(
-                        text = stringResource(id = R.string.word_motivation_decline),
-                        color = Black200,
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colorScheme.primary),
-                    onClick = {
-                        onEventSent(WordListContract.Event.OnMotivationConfirmClick)
-                    }) {
-                    Text(
-                        text = stringResource(id = R.string.word_motivation_confirm),
-                        color = White100
-                    )
-                }
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun AddGroupBottomSheetScreen(
+fun AddGroupBottomSheetScreen(
     modifier: Modifier,
     onAddGroup: () -> Unit,
     onEventSent: (event: WordListContract.Event) -> Unit,
@@ -793,16 +680,8 @@ private fun AddGroupBottomSheetScreen(
                     onDispose { }
                 }
             }
-
-            Text(//todo кога появится дизайн-система все эти заголовки можно будет вынести
+            AverageTitle(
                 text = stringResource(id = R.string.word_group_add_group_title),
-                textAlign = TextAlign.Left,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = getTitleTextColor(),
-                style = MaterialTheme.typography.labelMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, top = 8.dp)
                     .constrainAs(title) {
@@ -873,7 +752,6 @@ fun GroupItem() {
 
 //fixme
 /**
- * 1) проверь все диалоги на этом экране
  * 2) снек без отступа снизу
- * 3)
+ * 4) все elevation поделить на 2
  */

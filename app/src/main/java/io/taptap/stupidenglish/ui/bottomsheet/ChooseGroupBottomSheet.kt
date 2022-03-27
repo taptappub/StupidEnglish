@@ -7,23 +7,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,13 +31,12 @@ import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
 import io.taptap.stupidenglish.base.logic.groups.GroupListModels
 import io.taptap.stupidenglish.base.logic.groups.NoGroup
 import io.taptap.stupidenglish.base.logic.groups.getTitle
+import io.taptap.stupidenglish.ui.AverageTitle
 import io.taptap.stupidenglish.ui.BottomSheetScreen
 import io.taptap.stupidenglish.ui.LetterRoundView
-import io.taptap.stupidenglish.ui.theme.Grey200
+import io.taptap.stupidenglish.ui.PrimaryButton
+import io.taptap.stupidenglish.ui.StupidLanguageDivider
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
-import io.taptap.stupidenglish.ui.theme.White100
-import io.taptap.stupidenglish.ui.theme.getContentTextColor
-import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 
 @Composable
 fun ChooseGroupBottomSheetScreen(
@@ -52,21 +48,12 @@ fun ChooseGroupBottomSheetScreen(
     onItemClick: (GroupListModels) -> Unit,
     onButtonClick: () -> Unit
 ) {
-    BottomSheetScreen(
-        modifier = modifier
-    ) {
+    BottomSheetScreen(modifier = modifier) {
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
+            AverageTitle(
                 text = stringResource(id = titleRes),
-                textAlign = TextAlign.Left,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = getTitleTextColor(),
-                style = MaterialTheme.typography.subtitle1,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, top = 8.dp)
             )
@@ -80,18 +67,13 @@ fun ChooseGroupBottomSheetScreen(
                     .wrapContentHeight()
             )
 
-            Button(
+            PrimaryButton(
                 modifier = Modifier
-                    .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 36.dp)
+                    .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)
                     .fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.primary),
-                onClick = onButtonClick
-            ) {
-                Text(
-                    text = stringResource(id = buttonRes),
-                    color = White100
-                )
-            }
+                onClick = onButtonClick,
+                text = stringResource(id = buttonRes),
+            )
         }
     }
 }
@@ -116,7 +98,9 @@ private fun ChooseGroupContent(
             ) {
                 onItemClick(item)
             }
-            if (index < list.lastIndex) Divider(color = Grey200)
+            if (index < list.lastIndex)
+                StupidLanguageDivider(modifier = Modifier
+                    .padding(horizontal = 20.dp))
         }
     }
 }
@@ -151,9 +135,8 @@ fun GroupItemRow(
         Text(
             text = item.getTitle(),
             textAlign = TextAlign.Left,
-            fontSize = 15.sp,
-            color = getContentTextColor(),
-            style = MaterialTheme.typography.subtitle2,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.titleSmall,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier

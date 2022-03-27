@@ -75,6 +75,7 @@ class WordListViewModel @Inject constructor(
                 }
             }
             WordListContract.Event.OnMotivationConfirmClick -> {
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 setEffect { WordListContract.Effect.HideBottomSheet }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
@@ -90,6 +91,7 @@ class WordListViewModel @Inject constructor(
                 }
             }
             WordListContract.Event.OnMotivationDeclineClick -> {
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
                 }
@@ -97,6 +99,7 @@ class WordListViewModel @Inject constructor(
                 setEffect { WordListContract.Effect.HideBottomSheet }
             }
             is WordListContract.Event.OnMotivationCancel -> {
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
                 }
@@ -212,6 +215,7 @@ class WordListViewModel @Inject constructor(
                 if (size % WORDS_FOR_MOTIVATION == 0) {
                     setState { copy(sheetContentType = WordListContract.SheetContentType.Motivation) }
                     setEffect { WordListContract.Effect.ShowBottomSheet }
+                    setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
                 }
             }
         }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
@@ -20,6 +21,7 @@ fun BottomSheetScreen(
     content: @Composable () -> Unit
 ) {
     ConstraintLayout(modifier = modifier
+        .navigationBarsPadding()
         .background(getStupidLanguageBackgroundBox())
     ) {
         val (stick, content) = createRefs()

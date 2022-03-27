@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
@@ -62,14 +61,12 @@ import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.ui.AddTextField
 import io.taptap.stupidenglish.ui.LetterRoundView
 import io.taptap.stupidenglish.ui.NextButton
+import io.taptap.stupidenglish.ui.StupidLanguageDivider
 import io.taptap.stupidenglish.ui.bottomsheet.ChooseGroupBottomSheetScreen
-import io.taptap.stupidenglish.ui.theme.Grey200
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
-import io.taptap.stupidenglish.ui.theme.getContentTextColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.selects.select
 
 
 @ExperimentalMaterialApi
@@ -230,7 +227,7 @@ private fun GroupsStackRow(
     modifier: Modifier
 ) {
     Column(modifier = modifier.clickable { onClick() }) {
-        Divider(color = Grey200, thickness = 1.dp)
+        StupidLanguageDivider()
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -270,7 +267,7 @@ private fun ManyGroups(groups: List<GroupListModels>, text: String) {
             text = text,
             textAlign = TextAlign.Left,
             fontSize = 15.sp,
-            color = getContentTextColor(),
+            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.subtitle2,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -325,7 +322,7 @@ private fun OneGroup(first: GroupListModels) {
             text = first.getTitle(),
             textAlign = TextAlign.Left,
             fontSize = 15.sp,
-            color = getContentTextColor(),
+            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.subtitle2,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

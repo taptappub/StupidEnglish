@@ -4,27 +4,20 @@ import android.content.Context
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -59,8 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -68,21 +59,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.google.accompanist.insets.ProvideWindowInsets
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
-import io.taptap.stupidenglish.ui.BottomSheetScreen
-import io.taptap.stupidenglish.ui.Fab
+import io.taptap.stupidenglish.ui.DialogSheetScreen
 import io.taptap.stupidenglish.ui.EmptyListContent
-import io.taptap.stupidenglish.ui.theme.Black200
+import io.taptap.stupidenglish.ui.Fab
 import io.taptap.stupidenglish.ui.theme.Blue100
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
-import io.taptap.stupidenglish.ui.theme.White100
-import io.taptap.stupidenglish.ui.theme.getContentTextColor
-import io.taptap.stupidenglish.ui.theme.getSecondaryButtonBackgroundColor
-import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -146,11 +131,19 @@ fun SentencesListScreen(
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
-            MotivationBottomSheetScreen(
-                onEventSent = onEventSent,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
+            DialogSheetScreen(
+                painter = painterResource(R.drawable.ic_mail),
+                title = stringResource(id = R.string.adds_motivation_title),
+                message = stringResource(id = R.string.adds_motivation_message),
+                okButtonText = stringResource(id = R.string.adds_motivation_confirm),
+                cancelButtonText = stringResource(id = R.string.adds_motivation_decline),
+                modifier = Modifier.fillMaxWidth(),
+                onOkButtonClick = {
+                    onEventSent(SentencesListContract.Event.OnMotivationConfirmClick)
+                },
+                onCancelButtonClick = {
+                    onEventSent(SentencesListContract.Event.OnMotivationDeclineClick)
+                }
             )
         },
         sheetBackgroundColor = MaterialTheme.colors.background,
@@ -178,94 +171,6 @@ fun SentencesListScreen(
                     text = stringResource(id = R.string.stns_fab_text),
                     onFabClicked = { onEventSent(SentencesListContract.Event.OnAddSentenceClick) }
                 )
-            }
-        }
-    }
-}
-
-@Composable
-private fun MotivationBottomSheetScreen(
-    modifier: Modifier,
-    onEventSent: (event: SentencesListContract.Event) -> Unit
-) {
-    BottomSheetScreen(
-        modifier = modifier
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(top = 24.dp)
-                    .size(52.dp)
-                    .background(
-                        color = MaterialTheme.colors.secondary,
-                        shape = CircleShape
-                    )
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_pen),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .align(Alignment.Center)
-                )
-            }
-
-            Text(
-                text = stringResource(id = R.string.adds_motivation_title),
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily(
-                    Font(R.font.rubik_regular, FontWeight.Normal),
-                    Font(R.font.rubik_medium, FontWeight.Medium),
-                    Font(R.font.rubik_bold, FontWeight.Bold)
-                ),
-                color = getTitleTextColor(),
-                style = MaterialTheme.typography.subtitle1,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
-            )
-
-            Text(
-                text = stringResource(id = R.string.adds_motivation_message),
-                textAlign = TextAlign.Center,
-                fontSize = 16.sp,
-                color = getContentTextColor(),
-                style = MaterialTheme.typography.subtitle1,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 44.dp)
-            ) {
-                Button(
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = getSecondaryButtonBackgroundColor()),
-                    onClick = {
-                        onEventSent(SentencesListContract.Event.OnMotivationDeclineClick)
-                    }) {
-                    Text(
-                        text = stringResource(id = R.string.adds_motivation_decline),
-                        color = Black200,
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.primary),
-                    onClick = {
-                        onEventSent(SentencesListContract.Event.OnMotivationConfirmClick)
-                    }) {
-                    Text(
-                        text = stringResource(id = R.string.adds_motivation_confirm),
-                        color = White100
-                    )
-                }
             }
         }
     }
@@ -324,7 +229,7 @@ fun SentenceTitleItem(
         textAlign = TextAlign.Left,
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
-        color = getTitleTextColor(),
+        color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
         style = MaterialTheme.typography.subtitle1,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
@@ -431,7 +336,7 @@ fun SentenceItem(
             textAlign = TextAlign.Left,
             fontSize = 16.sp,
             style = MaterialTheme.typography.subtitle1,
-            color = getTitleTextColor(),
+            color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(bottom = 4.dp)
         )

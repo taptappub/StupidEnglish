@@ -12,8 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorPalette = darkColorScheme(
@@ -128,38 +126,5 @@ fun getStupidLanguageBackgroundBox(
                 White
             )
         )
-    }
-}
-
-@Composable
-fun getTitleTextColor(
-    darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
-    return if (darkTheme) {
-        White
-    } else {
-        Black
-    }
-}
-
-@Composable
-fun getContentTextColor(
-    darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
-    return if (darkTheme) {
-        White100
-    } else {
-        Grey600
-    }
-}
-
-@Composable
-fun getSecondaryButtonBackgroundColor(
-    darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
-    return if (darkTheme) {
-        Grey200
-    } else {
-        Grey200
     }
 }

@@ -42,7 +42,6 @@ import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackAdapter
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackDiffUtils
 import io.taptap.stupidenglish.features.stack.ui.adapter.randomDirection
-import io.taptap.stupidenglish.ui.theme.getTitleTextColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -159,7 +158,7 @@ private fun ContentScreen(
                 text = stringResource(id = R.string.stck_button_remember),
                 fontSize = 24.sp,
                 textAlign = TextAlign.Center,
-                color = getTitleTextColor(),
+                color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.subtitle1,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
