@@ -48,34 +48,4 @@ fun BottomSheetScreen(
             content()
         }
     }
-//    ConstraintLayout(
-//        modifier = modifier
-//            .navigationBarsPadding()
-//            .background(getStupidLanguageBackgroundBox())
-//    ) {
-//        val (stick, content) = createRefs()
-//
-//        Image(
-//            painter = painterResource(id = R.drawable.ic_rectangle),
-//            contentDescription = null,
-//            modifier = Modifier
-//                .padding(top = 8.dp)
-//                .constrainAs(stick) {
-//                    top.linkTo(parent.top)
-//                    start.linkTo(parent.start)
-//                    end.linkTo(parent.end)
-//                }
-//        )
-//        Box(modifier = Modifier
-//            .wrapContentSize()
-//            .constrainAs(content) {
-//                top.linkTo(stick.bottom)
-//                bottom.linkTo(parent.bottom)
-//                start.linkTo(parent.start)
-//                end.linkTo(parent.end)
-//            }) {
-//
-//            content()
-//        }
-//    }
 }

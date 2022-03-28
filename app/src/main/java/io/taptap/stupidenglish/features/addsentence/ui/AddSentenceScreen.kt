@@ -29,6 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -128,7 +130,12 @@ private fun ContentScreen(
                 onEventSent(AddSentenceContract.Event.OnSentenceChanging(text))
             },
             placeholder = stringResource(id = R.string.adds_sentence_placeholder),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                capitalization = KeyboardCapitalization.Sentences,
+                autoCorrect = false,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
             keyboardActions = KeyboardActions(
                 onDone = {
                     if (state.sentence.isNotEmpty()) {

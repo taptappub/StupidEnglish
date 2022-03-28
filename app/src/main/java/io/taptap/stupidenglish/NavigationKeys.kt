@@ -1,13 +1,6 @@
 package io.taptap.stupidenglish
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.ShoppingCart
-import androidx.compose.ui.graphics.vector.ImageVector
 
 object NavigationKeys {
 
