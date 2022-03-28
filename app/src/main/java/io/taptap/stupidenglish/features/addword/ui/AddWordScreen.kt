@@ -174,6 +174,8 @@ private fun ContentScreen(
     StupidLanguageBackgroundBox {
         ConstraintLayout(
             modifier = Modifier
+                .navigationBarsPadding()
+                .imePadding()
                 .fillMaxSize()
         ) {
             val (content, button, groups) = createRefs()
@@ -229,8 +231,6 @@ private fun ContentScreen(
                     }
                 },
                 modifier = Modifier
-                    .navigationBarsPadding()
-                    .imePadding()
                     .constrainAs(button) {
                         bottom.linkTo(parent.bottom, 16.dp + 52.dp)
                         end.linkTo(parent.end, 16.dp)

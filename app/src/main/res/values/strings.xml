@@ -67,9 +67,6 @@
     <string name="adds_main_hint">Make a sentence from selected words. The more stupider, then better!</string>
     <string name="adds_sentence_not_found_error">Add your sentence, please =)</string>
     <string name="adds_sentence_placeholder">Your sentence</string>
-    <string name="adds_confirm_dialog_text">Do you want to save this sentence? It\'s very stupid! I so like it!</string>
-    <string name="adds_confirm_dialog_ok">Save</string>
-    <string name="adds_confirm_dialog_cancel">Cancel</string>
     <string name="adds_motivation_title">Let\'s share last sentence!</string>
     <string name="adds_motivation_message">Try to share your last sentence with friends. It is a huge motivation for learning.</string>
     <string name="adds_motivation_confirm">Share</string>
