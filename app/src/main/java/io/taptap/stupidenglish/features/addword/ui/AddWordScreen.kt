@@ -18,12 +18,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
@@ -61,6 +59,7 @@ import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.ui.AddTextField
 import io.taptap.stupidenglish.ui.LetterRoundView
 import io.taptap.stupidenglish.ui.NextButton
+import io.taptap.stupidenglish.ui.StupidEnglishModalBottomSheetLayout
 import io.taptap.stupidenglish.ui.StupidLanguageDivider
 import io.taptap.stupidenglish.ui.bottomsheet.ChooseGroupBottomSheetScreen
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
@@ -124,7 +123,7 @@ fun AddWordScreen(
             }
         }
     }
-    ModalBottomSheetLayout(
+    StupidEnglishModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
             ChooseGroupBottomSheetScreen(
@@ -142,9 +141,7 @@ fun AddWordScreen(
                     .fillMaxWidth()
                     .animateContentSize()
             )
-        },
-        sheetBackgroundColor = MaterialTheme.colors.background,
-        sheetShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+        }
     ) {
         Scaffold(
             scaffoldState = scaffoldState,

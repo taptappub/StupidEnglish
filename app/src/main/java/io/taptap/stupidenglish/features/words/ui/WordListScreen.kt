@@ -42,7 +42,6 @@ import androidx.compose.material.DismissValue.Default
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Icon
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
@@ -66,13 +65,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -103,6 +100,7 @@ import io.taptap.stupidenglish.ui.Fab
 import io.taptap.stupidenglish.ui.LargeTitle
 import io.taptap.stupidenglish.ui.LetterRoundView
 import io.taptap.stupidenglish.ui.NextButton
+import io.taptap.stupidenglish.ui.StupidEnglishModalBottomSheetLayout
 import io.taptap.stupidenglish.ui.bottomsheet.ChooseGroupBottomSheetScreen
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import io.taptap.stupidenglish.ui.theme.StupidLanguageBackgroundBox
@@ -146,10 +144,8 @@ fun WordListScreen(
             }
         }
     }
-
-    ModalBottomSheetLayout(
+    StupidEnglishModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
-        sheetElevation = 0.dp,
         sheetContent = {
             when (state.sheetContentType) {
                 WordListContract.SheetContentType.AddGroup ->
@@ -200,8 +196,6 @@ fun WordListScreen(
                     )
             }
         },
-        sheetBackgroundColor = Color.Transparent,
-        sheetShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
     ) {
         StupidEnglishTheme {
             val scaffoldState: ScaffoldState = rememberScaffoldState()
