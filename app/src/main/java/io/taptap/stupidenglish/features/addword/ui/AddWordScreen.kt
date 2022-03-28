@@ -132,6 +132,7 @@ fun AddWordScreen(
             }
         }
     }
+
     StupidEnglishModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
@@ -155,7 +156,7 @@ fun AddWordScreen(
         }
     ) {
         Scaffold(
-            scaffoldState = scaffoldState,
+            scaffoldState = scaffoldState
         ) {
             ContentScreen(
                 state,

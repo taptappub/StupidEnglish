@@ -168,7 +168,10 @@ class MainActivity : ComponentActivity() {
                         }),
                         enterTransition = null
                     ) {
-                        SentenceListDestination(navController = navController)
+                        SentenceListDestination(
+                            navController = navController,
+                            onEventSent = { event -> mainViewModel.setEvent(event) }
+                        )
                     }
                 }
                 composable(
@@ -365,7 +368,8 @@ private fun WordListDestination(
 @ExperimentalMaterialApi
 @Composable
 private fun SentenceListDestination(
-    navController: NavHostController
+    navController: NavHostController,
+    onEventSent: (event: MainContract.Event) -> Unit
 ) {
     val sentenceViewModel: SentencesListViewModel = hiltViewModel()
     val sentenceState = sentenceViewModel.viewState.value
@@ -375,12 +379,16 @@ private fun SentenceListDestination(
         state = sentenceState,
         effectFlow = sentenceViewModel.effect,
         onEventSent = { event -> sentenceViewModel.setEvent(event) },
+        onChangeBottomSheetVisibility = { visibility ->
+            onEventSent(MainContract.Event.ChangeBottomSheetVisibility(visibility))
+        },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
                 val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
                 navController.navigate("${NavigationKeys.Route.REMEMBER}/${ids}")
             }
-        })
+        }
+    )
 }
 
 private val NavGraph.startDestination: NavDestination?
@@ -457,3 +465,8 @@ private fun NavController.navigateToTab(
 // - по клику на банне рне всегда начинается сценарий добавления предложения
 // - при удалении, при лонг тапе, карточка слова поднимается и там и остается
 // - снек без отступа снизу
+
+//Modifier.shadow(
+//elevation = 4.dp,
+//shape = RoundedCornerShape(8.dp)
+//)

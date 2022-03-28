@@ -3,6 +3,7 @@ package io.taptap.stupidenglish.features.sentences.ui
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
+import io.taptap.stupidenglish.features.words.ui.WordListContract
 
 class SentencesListContract {
     sealed class Event : ViewEvent {
@@ -28,6 +29,7 @@ class SentencesListContract {
         object HideMotivation : Effect()
         object ShowMotivation : Effect()
         object ShowUnderConstruction : Effect()
+        data class ChangeBottomBarVisibility(val isShown: Boolean) : Effect()
 
         sealed class Navigation : Effect() {
             data class ToAddSentence(val wordIds: List<Long>) : Navigation()

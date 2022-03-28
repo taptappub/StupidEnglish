@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -74,14 +75,14 @@ fun StupidEnglishTheme(
 
 @Composable
 fun StupidLanguageBackgroundBox(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxSize(),
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
         modifier = modifier
             .background(brush = getStupidLanguageBackgroundBox())
     ) {
-        Box(modifier = Modifier.systemBarsPadding()) {
+        Box(modifier = modifier.systemBarsPadding()) {
             content()
         }
     }
