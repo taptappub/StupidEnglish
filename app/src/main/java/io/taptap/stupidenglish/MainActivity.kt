@@ -7,14 +7,10 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -32,7 +28,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
-import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -58,6 +53,8 @@ import io.taptap.stupidenglish.features.stack.ui.StackViewModel
 import io.taptap.stupidenglish.features.words.ui.WordListContract
 import io.taptap.stupidenglish.features.words.ui.WordListScreen
 import io.taptap.stupidenglish.features.words.ui.WordListViewModel
+import io.taptap.stupidenglish.ui.AverageText
+import io.taptap.stupidenglish.ui.PrimaryButton
 import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
 import io.taptap.stupidenglish.ui.StupidEnglishScaffold
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
@@ -108,15 +105,16 @@ class MainActivity : ComponentActivity() {
                     mainViewModel.setEvent(MainContract.Event.OnGreetingsClose)
                 },
                 text = {
-                    Text(text = stringResource(id = R.string.main_dialog_message))
+                    AverageText(
+                        text = stringResource(id = R.string.main_dialog_message),
+                        maxLines = 10
+                    )
                 },
                 confirmButton = {
-                    Button(
-                        onClick = {
-                            mainViewModel.setEvent(MainContract.Event.OnGreetingsClose)
-                        }
+                    PrimaryButton(
+                        text = stringResource(id = R.string.main_dialog_ok)
                     ) {
-                        Text(text = stringResource(id = R.string.main_dialog_ok))
+                        mainViewModel.setEvent(MainContract.Event.OnGreetingsClose)
                     }
                 }
             )
