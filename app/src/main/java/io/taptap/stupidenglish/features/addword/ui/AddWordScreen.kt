@@ -438,7 +438,12 @@ private fun HasWordScreen(
             value = state.description,
             onValueChange = { onEventSent(AddWordContract.Event.OnDescriptionChanging(it)) },
             placeholder = stringResource(id = R.string.addw_description_placeholder),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                capitalization = KeyboardCapitalization.Sentences,
+                autoCorrect = false,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
             keyboardActions = KeyboardActions(
                 onDone = {
                     if (state.word.isNotEmpty() && state.description.isNotEmpty()) {
