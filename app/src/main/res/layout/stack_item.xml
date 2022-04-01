@@ -5,14 +5,12 @@
     android:id="@+id/mcv_card"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:elevation="0dp"
+    android:elevation="4dp"
     app:cardBackgroundColor="?attr/colorSurface"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="0dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
     app:cardPreventCornerOverlap="false"
-    app:cardUseCompatPadding="true"
-    app:strokeColor="?android:attr/colorAccent"
-    app:strokeWidth="2dp">
+    app:cardUseCompatPadding="true">
 
     <TextView
         android:layout_width="match_parent"
@@ -30,7 +28,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!--        вынеси все настройки цвета, размера, шрифта и т.д. из xml в код, чтобы использовать одни и теже классы -->
         <TextView
             android:id="@+id/tv_word"
             android:layout_width="match_parent"
@@ -47,7 +44,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Ass" />
+            tools:text="test" />
 
         <TextView
             android:id="@+id/tv_hint"
@@ -55,11 +52,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
+            android:fontFamily="@font/nunito_regular"
             android:paddingStart="16dp"
             android:paddingTop="32dp"
-            android:textColor="?android:attr/colorPrimary"
+            android:textColor="@color/Grey"
             android:paddingEnd="16dp"
-            android:textSize="18sp"
+            android:textSize="24sp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -76,11 +74,15 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:drawableTop="@drawable/ic_anger"
-            android:drawableTint="?android:attr/colorPrimary"
-            android:paddingStart="14dp"
-            android:paddingTop="12dp"
-            android:paddingEnd="14dp"
-            android:paddingBottom="12dp"
+            android:fontFamily="@font/nunito_regular"
+            android:drawableTint="?android:attr/colorAccent"
+            android:paddingStart="16dp"
+            android:textSize="18sp"
+            android:paddingTop="16dp"
+            android:textColor="?android:attr/colorAccent"
+            android:background="@drawable/dont_remember_shape"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
             android:text="@string/stck_hint_button_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

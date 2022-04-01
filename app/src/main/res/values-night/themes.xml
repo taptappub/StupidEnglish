@@ -1,8 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.StupidEnglish" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorSurface">@color/Black200</item>
-        <item name="android:colorPrimary">@color/White100</item>
-        <item name="android:colorAccent">@color/Blue100</item>
+        <item name="colorSurface">@color/Esspresso</item>
+        <item name="android:colorPrimary">@color/White</item>
+        <item name="android:colorAccent">@color/Black</item>
+        <item name="android:colorButtonNormal">@color/WarmWhite1</item>
 
         <item name="android:windowLightStatusBar">true</item>
     </style>

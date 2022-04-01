@@ -22,6 +22,8 @@ private val DarkColorPalette = darkColorScheme(
     onPrimary = Black,
     background = Black,
     secondary = Grey,
+    secondaryContainer = WarmWhite1,
+    onSecondaryContainer = Black,
     tertiary = Yellow,
     error = Red
 )
@@ -33,6 +35,8 @@ private val LightColorPalette = lightColorScheme(
     onPrimary = White,
     background = White,
     secondary = Grey,
+    secondaryContainer = WarmWhite1,
+    onSecondaryContainer = Black,
     tertiary = Yellow,
     error = Red
 )

@@ -1,9 +1,10 @@
 <resources>
 
     <style name="Theme.StupidEnglish" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:colorPrimary">@color/Black200</item>
-        <item name="colorSurface">@color/White100</item>
-        <item name="android:colorAccent">@color/Blue100</item>
+        <item name="colorSurface">@color/White</item>
+        <item name="android:colorPrimary">@color/Black</item>
+        <item name="android:colorAccent">@color/Black</item>
+        <item name="android:colorButtonNormal">@color/WarmWhite1</item>
 
         <item name="android:windowLightStatusBar">true</item>
     </style>
