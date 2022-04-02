@@ -63,16 +63,16 @@ import javax.inject.Inject
 
 const val URI = "https://stupidenglish.app"
 
-@ExperimentalMaterialNavigationApi
-@ExperimentalAnimationApi
-@ExperimentalMaterialApi
-@ExperimentalFoundationApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var alarmScheduler: AlarmScheduler
 
+    @OptIn(ExperimentalMaterialApi::class,
+        androidx.compose.animation.ExperimentalAnimationApi::class,
+        com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi::class
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         alarmScheduler.enableNotifications()
@@ -88,7 +88,9 @@ class MainActivity : ComponentActivity() {
     }
 
     @ExperimentalMaterialApi
-    @OptIn(InternalCoroutinesApi::class)
+    @OptIn(InternalCoroutinesApi::class,
+        androidx.compose.foundation.ExperimentalFoundationApi::class
+    )
     @ExperimentalAnimationApi
     @ExperimentalMaterialNavigationApi
     @Composable
