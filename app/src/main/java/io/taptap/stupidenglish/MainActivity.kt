@@ -63,6 +63,9 @@ import javax.inject.Inject
 
 const val URI = "https://stupidenglish.app"
 
+@ExperimentalMaterialNavigationApi
+@ExperimentalAnimationApi
+@ExperimentalMaterialApi
 @ExperimentalFoundationApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -70,9 +73,6 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var alarmScheduler: AlarmScheduler
 
-    @ExperimentalMaterialApi
-    @ExperimentalAnimationApi
-    @ExperimentalMaterialNavigationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         alarmScheduler.enableNotifications()
@@ -462,3 +462,4 @@ private fun NavController.navigateToTab(
 // - по клику на банне рне всегда начинается сценарий добавления предложения
 // - при удалении, при лонг тапе, карточка слова поднимается и там и остается
 // - снек без отступа снизу
+// - нотификации не показываются
