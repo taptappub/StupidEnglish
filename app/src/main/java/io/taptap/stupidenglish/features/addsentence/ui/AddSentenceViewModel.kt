@@ -41,7 +41,6 @@ class AddSentenceViewModel @Inject constructor(
     }
 
     override fun setInitialState() = AddSentenceContract.State(
-        showConfirmSaveDialog = false,
         sentence = "",
         words = emptyList()
     )
@@ -56,15 +55,9 @@ class AddSentenceViewModel @Inject constructor(
                 )
             }
             is AddSentenceContract.Event.OnSaveSentence -> {
-                setState { copy(showConfirmSaveDialog = true) }
-            }
-            is AddSentenceContract.Event.OnSaveSentenceConfirmed -> {
                 setInitialState()
                 val sentence = viewState.value.sentence
                 saveSentence(sentence)
-            }
-            is AddSentenceContract.Event.OnSaveSentenceDeclined -> {
-                setState { copy(showConfirmSaveDialog = false) }
             }
             is AddSentenceContract.Event.OnChipClick ->
                 setEffect { AddSentenceContract.Effect.ShowUnderConstruction }

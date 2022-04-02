@@ -3,29 +3,20 @@ package io.taptap.stupidenglish.ui.theme
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 
-// Colors List
 @Stable
-val Grey200 = Color(0xFFF5F5F5)
+val WarmWhite1 = Color(0xFFFDF3EA)
 @Stable
-val Grey600 = Color(0xFF6C6C6C)
+val WarmWhite2 = Color(0xFFFAEBDD)
 @Stable
-val Black200 = Color(0xFF121212)
+val Yellow = Color(0xFFF6B862)
 @Stable
-val White100 = Color(0xFFFFFFFF)
+val Black = Color(0xFF151515)
 @Stable
-val Blue100 = Color(0xFFE5ECF1)
+val Grey = Color(0xFF92928D)
 @Stable
-val Red100 = Color(0xFFFF0000)
+val White = Color(0xFFFFFFFF)
 @Stable
-val Green100 = Color(0xFF1AB517)
+val Red = Color(0xFFFF0000)
+@Stable
+val Esspresso = Color(0xFF322419)
 
-//New colors
-@Stable
-val DeepBlue = Color(0xFF587EDE)
-
-val ColorsPool = listOf(
-    Color(0xFF58DE86),
-    Color(0xFFABDE58),
-    Color(0xFFDE5898),
-    Color(0xFFDED158)
-)

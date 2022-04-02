@@ -6,19 +6,18 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -54,6 +53,8 @@ import io.taptap.stupidenglish.features.stack.ui.StackViewModel
 import io.taptap.stupidenglish.features.words.ui.WordListContract
 import io.taptap.stupidenglish.features.words.ui.WordListScreen
 import io.taptap.stupidenglish.features.words.ui.WordListViewModel
+import io.taptap.stupidenglish.ui.AverageText
+import io.taptap.stupidenglish.ui.PrimaryButton
 import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
 import io.taptap.stupidenglish.ui.StupidEnglishScaffold
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
@@ -77,7 +78,7 @@ class MainActivity : ComponentActivity() {
         alarmScheduler.enableNotifications()
         alarmScheduler.schedulePushNotifications()
 
-        //WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             StupidEnglishTheme {
@@ -104,15 +105,16 @@ class MainActivity : ComponentActivity() {
                     mainViewModel.setEvent(MainContract.Event.OnGreetingsClose)
                 },
                 text = {
-                    Text(text = stringResource(id = R.string.main_dialog_message))
+                    AverageText(
+                        text = stringResource(id = R.string.main_dialog_message),
+                        maxLines = 10
+                    )
                 },
                 confirmButton = {
-                    Button(
-                        onClick = {
-                            mainViewModel.setEvent(MainContract.Event.OnGreetingsClose)
-                        }
+                    PrimaryButton(
+                        text = stringResource(id = R.string.main_dialog_ok)
                     ) {
-                        Text(text = stringResource(id = R.string.main_dialog_ok))
+                        mainViewModel.setEvent(MainContract.Event.OnGreetingsClose)
                     }
                 }
             )
@@ -120,23 +122,23 @@ class MainActivity : ComponentActivity() {
 
         StupidEnglishScaffold(
             scaffoldState = scaffoldState,
-            bottomBar = {
-                if (mainState.shouldShowBottomBar(navController)) {
-                    StupidEnglishBottomBar(
-                        state = mainState,
-                        currentRoute = navController.currentRoute!!,
-                        effectFlow = mainViewModel.effect,
-                        onEventSent = { event -> mainViewModel.setEvent(event) },
-                        onNavigationRequested = { navigationEffect ->
-                            if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
-                                if (navigationEffect.route != navController.currentRoute) {
-                                    navController.navigateToTab(navigationEffect.route)
-                                }
-                            }
-                        }
-                    )
-                }
-            }
+//            bottomBar = {
+//                if (mainState.shouldShowBottomBar(navController)) {
+//                    StupidEnglishBottomBar(
+//                        state = mainState,
+//                        currentRoute = navController.currentRoute!!,
+//                        effectFlow = mainViewModel.effect,
+//                        onEventSent = { event -> mainViewModel.setEvent(event) },
+//                        onNavigationRequested = { navigationEffect ->
+//                            if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
+//                                if (navigationEffect.route != navController.currentRoute) {
+//                                    navController.navigateToTab(navigationEffect.route)
+//                                }
+//                            }
+//                        }
+//                    )
+//                }
+//            }
         ) { innerPaddingModifier ->
             AnimatedNavHost(
                 navController = navController,
@@ -164,7 +166,10 @@ class MainActivity : ComponentActivity() {
                         }),
                         enterTransition = null
                     ) {
-                        SentenceListDestination(navController = navController)
+                        SentenceListDestination(
+                            navController = navController,
+                            onEventSent = { event -> mainViewModel.setEvent(event) }
+                        )
                     }
                 }
                 composable(
@@ -211,6 +216,33 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     AddSentenceDialogDestination(navController)
+                }
+            }
+
+            if (mainState.shouldShowBottomBar(navController)) {
+                ConstraintLayout(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    val (bottomBar) = createRefs()
+                    StupidEnglishBottomBar(
+                        state = mainState,
+                        currentRoute = navController.currentRoute!!,
+                        effectFlow = mainViewModel.effect,
+                        onEventSent = { event -> mainViewModel.setEvent(event) },
+                        onNavigationRequested = { navigationEffect ->
+                            if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
+                                if (navigationEffect.route != navController.currentRoute) {
+                                    navController.navigateToTab(navigationEffect.route)
+                                }
+                            }
+                        },
+                        modifier = Modifier.constrainAs(bottomBar) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                    )
                 }
             }
         }
@@ -334,7 +366,8 @@ private fun WordListDestination(
 @ExperimentalMaterialApi
 @Composable
 private fun SentenceListDestination(
-    navController: NavHostController
+    navController: NavHostController,
+    onEventSent: (event: MainContract.Event) -> Unit
 ) {
     val sentenceViewModel: SentencesListViewModel = hiltViewModel()
     val sentenceState = sentenceViewModel.viewState.value
@@ -344,12 +377,16 @@ private fun SentenceListDestination(
         state = sentenceState,
         effectFlow = sentenceViewModel.effect,
         onEventSent = { event -> sentenceViewModel.setEvent(event) },
+        onChangeBottomSheetVisibility = { visibility ->
+            onEventSent(MainContract.Event.ChangeBottomSheetVisibility(visibility))
+        },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
                 val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
                 navController.navigate("${NavigationKeys.Route.REMEMBER}/${ids}")
             }
-        })
+        }
+    )
 }
 
 private val NavGraph.startDestination: NavDestination?
@@ -409,17 +446,13 @@ private fun NavController.navigateToTab(
 //8) импорт
 //9) ОНБОРДИНГ (+состояния пустых списков)
 //10) A/b тестирование
-//12) палочка в bottomSheet
-//13) редизайн
-//14) Дизайн система! - найди одинаковые виджеты и вынеси как один объект
+//11) Перетаскивание в папку слов драг энд дропом. Список групп вылезает сбоку, с анимацией волны, и ты перетягиваешь слово в нужную папку
 
 
 //Следующий билд
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
 //2) Поменять иконку
-//3) Удаление группы
-//3) Выбор группы при добавлении слова!!!
-//11) верхняя навигация
+//11) Верхняя навигация
 
 //Гугл аналитика без play service'ов
 //https://developers.google.com/analytics/devguides/collection/android/v4?hl=ru
@@ -428,3 +461,4 @@ private fun NavController.navigateToTab(
 // - если кучу раз нажать на слово, то блокируется UI
 // - по клику на банне рне всегда начинается сценарий добавления предложения
 // - при удалении, при лонг тапе, карточка слова поднимается и там и остается
+// - снек без отступа снизу

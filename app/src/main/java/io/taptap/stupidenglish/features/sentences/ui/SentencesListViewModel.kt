@@ -11,6 +11,7 @@ import io.taptap.stupidenglish.base.logic.share.ShareUtil
 import io.taptap.stupidenglish.base.model.Sentence
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.sentences.data.SentencesListRepository
+import io.taptap.stupidenglish.features.words.ui.WordListContract
 import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
@@ -71,6 +72,7 @@ class SentencesListViewModel @Inject constructor(
                 shareUtil.share(event.sentence.sentence)
             }
             is SentencesListContract.Event.OnMotivationConfirmClick -> {
+                setEffect { SentencesListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 setEffect { SentencesListContract.Effect.HideMotivation }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isShareMotivationShown = true
@@ -82,12 +84,14 @@ class SentencesListViewModel @Inject constructor(
                 shareUtil.share(first.sentence)
             }
             is SentencesListContract.Event.OnMotivationDeclineClick -> {
+                setEffect { SentencesListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isShareMotivationShown = true
                 }
                 setEffect { SentencesListContract.Effect.HideMotivation }
             }
             is SentencesListContract.Event.OnMotivationCancel ->  {
+                setEffect { SentencesListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isShareMotivationShown = true
                 }
@@ -157,6 +161,7 @@ class SentencesListViewModel @Inject constructor(
             savedSentenceList.collect {
                 if (it.size == SENTENCES_FOR_MOTIVATION) {
                     setEffect { SentencesListContract.Effect.ShowMotivation }
+                    setEffect { SentencesListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
                 }
             }
         }

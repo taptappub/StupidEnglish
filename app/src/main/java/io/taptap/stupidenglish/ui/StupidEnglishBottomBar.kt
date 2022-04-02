@@ -1,22 +1,19 @@
 package io.taptap.stupidenglish.ui
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,22 +24,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.navigationBarsPadding
 import io.taptap.stupidenglish.NavigationKeys
-import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.features.main.ui.MainContract
-import io.taptap.stupidenglish.ui.theme.Blue100
-import io.taptap.stupidenglish.ui.theme.DeepBlue
-import io.taptap.stupidenglish.ui.theme.Grey200
-import io.taptap.stupidenglish.ui.theme.Grey600
+import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
+
+val BOTTOM_BAR_VERTICAL_PADDING = 12.dp
+val BOTTOM_BAR_HEIGHT = 56.dp
+val BOTTOM_BAR_MARGIN = BOTTOM_BAR_HEIGHT + BOTTOM_BAR_VERTICAL_PADDING * 2
+
+//ver2
 @Composable
 fun StupidEnglishBottomBar(
     currentRoute: String,
+    modifier: Modifier = Modifier,
     state: MainContract.State,
     effectFlow: Flow<MainContract.Effect>?,
     onEventSent: (event: MainContract.Event) -> Unit,
@@ -62,26 +61,27 @@ fun StupidEnglishBottomBar(
         }?.collect()
     }
 
-    Column(
-        modifier = Modifier
-            .background(MaterialTheme.colors.background)
-            .height(56.dp)
-            .navigationBarsPadding(start = false, end = false)
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = MaterialTheme.colorScheme.surface,
+        elevation = 8.dp,
+        modifier = modifier
+            .navigationBarsPadding()
+            .padding(horizontal = 16.dp, vertical = BOTTOM_BAR_VERTICAL_PADDING)
     ) {
-        Divider(color = Grey200, thickness = 1.dp)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .navigationBarsPadding()
+                .height(BOTTOM_BAR_HEIGHT)
         ) {
 
             tabs.forEach { item ->
                 val selected = item == currentSection
                 val tint by animateColorAsState(
                     if (selected) {
-                        Color(0xFF587EDE)
+                        MaterialTheme.colorScheme.tertiary
                     } else {
-                        Color(0xFF6c6c6c)
+                        MaterialTheme.colorScheme.secondary
                     }
                 )
                 StupidEnglishBottomNavigationItem(
@@ -110,7 +110,7 @@ fun StupidEnglishBottomBar(
                         onEventSent(MainContract.Event.OnTabSelected(item))
                     },
                     modifier = Modifier
-                        .height(56.dp)
+                        .height(BOTTOM_BAR_HEIGHT)
                         .weight(1.0f)
                 )
             }
@@ -132,5 +132,26 @@ fun StupidEnglishBottomNavigationItem(
     ) {
         icon()
         text()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StupidEnglishBottomNavigationItemPreview() {
+    StupidEnglishTheme {
+        StupidEnglishBottomBar(
+            currentRoute = NavigationKeys.BottomNavigationScreen.SE_WORDS.route,
+            state = MainContract.State(
+                isBottomBarShown = false,
+                isShownGreetings = false,
+                bottomBarTabs = listOf(
+                    NavigationKeys.BottomNavigationScreen.SE_WORDS,
+                    NavigationKeys.BottomNavigationScreen.SE_SENTENCES
+                )
+            ),
+            effectFlow = null,
+            onEventSent = {},
+            onNavigationRequested = {}
+        )
     }
 }

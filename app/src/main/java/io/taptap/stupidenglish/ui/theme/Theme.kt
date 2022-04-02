@@ -1,40 +1,44 @@
 package io.taptap.stupidenglish.ui.theme
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
-private val DarkColorPalette = darkColors(
-    surface = Grey600,
-    primary = White100,
-    background = Black200,
-    secondary = DeepBlue,
-    error = Red100,
-
-    onBackground = White100,
-    onPrimary = Black200,
-    onSecondary = White100,
-    onError = White100,
-    onSurface = White100
+private val DarkColorPalette = darkColorScheme(
+    surface = Esspresso,
+    onSurface = White,
+    primary = White,
+    onPrimary = Black,
+    background = Black,
+    secondary = Grey,
+    secondaryContainer = WarmWhite1,
+    onSecondaryContainer = Black,
+    tertiary = Yellow,
+    error = Red
 )
 
-private val LightColorPalette = lightColors(
-    surface = White100,
-    primary = Black200,
-    background = Grey200,
-    secondary = DeepBlue,
-    error = Red100,
-
-    onBackground = Black200,
-    onPrimary = White100,
-    onSecondary = Black200,
-    onError = White100,
-    onSurface = Black200
+private val LightColorPalette = lightColorScheme(
+    surface = White,
+    onSurface = Black,
+    primary = Black,
+    onPrimary = White,
+    background = White,
+    secondary = Grey,
+    secondaryContainer = WarmWhite1,
+    onSecondaryContainer = Black,
+    tertiary = Yellow,
+    error = Red
 )
 
 @Composable
@@ -44,19 +48,19 @@ fun StupidEnglishTheme(
 ) {
     val systemUiController = rememberSystemUiController()
 
-    systemUiController.setSystemBarsColor(
-        color = MaterialTheme.colors.background,
-        darkIcons = !darkTheme
-    )
+//    systemUiController.setSystemBarsColor(
+//        color = Color.Transparent,
+//        darkIcons = !darkTheme
+//    )
 
     systemUiController.setNavigationBarColor(
-        color = MaterialTheme.colors.background,
+        color = MaterialTheme.colorScheme.background.copy(alpha = 0.77f),
         darkIcons = !darkTheme,
         navigationBarContrastEnforced = false
     )
 
     systemUiController.setStatusBarColor(
-        color = MaterialTheme.colors.background,
+        color = Color.Transparent,
         darkIcons = !darkTheme
     )
 
@@ -67,74 +71,65 @@ fun StupidEnglishTheme(
     }
 
     MaterialTheme(
-        colors = colors,
-        typography = Typography,
+        colorScheme = colors,
+        typography = StupidEnglishTypography,
         content = content
     )
 }
 
 @Composable
-fun getTitleTextColor(
-    darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
-    return if (darkTheme) {
-        White100
-    } else {
-        Black200
+fun StupidLanguageBackgroundBox(
+    modifier: Modifier = Modifier.fillMaxSize(),
+    content: @Composable BoxScope.() -> Unit
+) {
+    Box(
+        modifier = modifier
+            .background(brush = getStupidLanguageBackgroundBox())
+    ) {
+        Box(modifier = modifier.systemBarsPadding()) {
+            content()
+        }
     }
 }
 
 @Composable
-fun getContentTextColor(
+fun getStupidLanguageBackgroundRow(
     darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
+): Brush {
     return if (darkTheme) {
-        White100
+        Brush.horizontalGradient(
+            colors = listOf(
+                Esspresso,
+                Esspresso
+            )
+        )
     } else {
-        Grey600
+        Brush.horizontalGradient(
+            colors = listOf(
+                WarmWhite2,
+                WarmWhite1
+            )
+        )
     }
 }
 
 @Composable
-fun getFABColor(
+fun getStupidLanguageBackgroundBox(
     darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
+): Brush {
     return if (darkTheme) {
-        Blue100
+        Brush.verticalGradient(
+            colors = listOf(
+                Black,
+                Black
+            )
+        )
     } else {
-        Black200
-    }
-}
-
-@Composable
-fun getFABTextColor(
-    darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
-    return if (darkTheme) {
-        Black200
-    } else {
-        White100
-    }
-}
-
-@Composable
-fun getSecondaryButtonBackgroundColor(
-    darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
-    return if (darkTheme) {
-        Grey200
-    } else {
-        Grey200
-    }
-}
-
-@Composable
-fun getPrimaryButtonBackgroundColor(
-    darkTheme: Boolean = isSystemInDarkTheme()
-): Color {
-    return if (darkTheme) {
-        Grey600
-    } else {
-        Black200
+        Brush.verticalGradient(
+            colors = listOf(
+                WarmWhite2,
+                White
+            )
+        )
     }
 }

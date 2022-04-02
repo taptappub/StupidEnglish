@@ -1,6 +1,7 @@
 package io.taptap.stupidenglish.features.sentences.ui
 
 import android.content.Context
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -8,23 +9,22 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -36,59 +36,57 @@ import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SwipeToDismiss
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.google.accompanist.insets.ProvideWindowInsets
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
-import io.taptap.stupidenglish.ui.BottomSheetScreen
-import io.taptap.stupidenglish.ui.Fab
+import io.taptap.stupidenglish.features.words.ui.WordListContract
+import io.taptap.stupidenglish.ui.AverageText
+import io.taptap.stupidenglish.ui.AverageTitle
+import io.taptap.stupidenglish.ui.DialogSheetScreen
 import io.taptap.stupidenglish.ui.EmptyListContent
-import io.taptap.stupidenglish.ui.theme.Black200
-import io.taptap.stupidenglish.ui.theme.Blue100
+import io.taptap.stupidenglish.ui.Fab
+import io.taptap.stupidenglish.ui.StupidEnglishModalBottomSheetLayout
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
-import io.taptap.stupidenglish.ui.theme.White100
-import io.taptap.stupidenglish.ui.theme.getContentTextColor
-import io.taptap.stupidenglish.ui.theme.getPrimaryButtonBackgroundColor
-import io.taptap.stupidenglish.ui.theme.getSecondaryButtonBackgroundColor
-import io.taptap.stupidenglish.ui.theme.getTitleTextColor
+import io.taptap.stupidenglish.ui.theme.StupidLanguageBackgroundBox
+import io.taptap.stupidenglish.ui.theme.getStupidLanguageBackgroundRow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
@@ -97,180 +95,117 @@ fun SentencesListScreen(
     state: SentencesListContract.State,
     effectFlow: Flow<SentencesListContract.Effect>?,
     onEventSent: (event: SentencesListContract.Event) -> Unit,
+    onChangeBottomSheetVisibility: (visibility: Boolean) -> Unit,
     onNavigationRequested: (navigationEffect: SentencesListContract.Effect.Navigation) -> Unit
 ) {
-    ProvideWindowInsets {
-        val scaffoldState: ScaffoldState = rememberScaffoldState()
+    val scaffoldState: ScaffoldState = rememberScaffoldState()
 
-        val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
-        val modalBottomSheetState = rememberModalBottomSheetState(
-            initialValue = ModalBottomSheetValue.Hidden
-        )
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden
+    )
 
-        // Listen for side effects from the VM
-        LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-            effectFlow?.onEach { effect ->
-                when (effect) {
-                    is SentencesListContract.Effect.HideMotivation ->
-                        modalBottomSheetState.hideSheet(scope)
-                    is SentencesListContract.Effect.ShowMotivation ->
-                        modalBottomSheetState.showSheet(scope)
-                    is SentencesListContract.Effect.GetRandomWordsError ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(effect.errorRes),
-                            duration = SnackbarDuration.Short
-                        )
-                    is SentencesListContract.Effect.GetSentencesError ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(effect.errorRes),
-                            duration = SnackbarDuration.Short
-                        )
-                    is SentencesListContract.Effect.Navigation.ToAddSentence ->
-                        onNavigationRequested(effect)
-                    is SentencesListContract.Effect.ShowUnderConstruction ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(R.string.under_construction),
-                            duration = SnackbarDuration.Short
-                        )
-                }
-            }?.collect()
-        }
-
-        if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
-            DisposableEffect(Unit) {
-                onDispose {
-                    onEventSent(SentencesListContract.Event.OnMotivationCancel)
+    // Listen for side effects from the VM
+    LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+        effectFlow?.onEach { effect ->
+            when (effect) {
+                is SentencesListContract.Effect.HideMotivation ->
+                    modalBottomSheetState.hideSheet(scope)
+                is SentencesListContract.Effect.ShowMotivation ->
+                    modalBottomSheetState.showSheet(scope)
+                is SentencesListContract.Effect.GetRandomWordsError ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(effect.errorRes),
+                        duration = SnackbarDuration.Short
+                    )
+                is SentencesListContract.Effect.GetSentencesError ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(effect.errorRes),
+                        duration = SnackbarDuration.Short
+                    )
+                is SentencesListContract.Effect.Navigation.ToAddSentence ->
+                    onNavigationRequested(effect)
+                is SentencesListContract.Effect.ShowUnderConstruction ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.under_construction),
+                        duration = SnackbarDuration.Short
+                    )
+                is SentencesListContract.Effect.ChangeBottomBarVisibility -> {
+                    onChangeBottomSheetVisibility(effect.isShown)
                 }
             }
-        }
+        }?.collect()
+    }
 
-        ModalBottomSheetLayout(
-            sheetState = modalBottomSheetState,
-            sheetContent = {
-                MotivationBottomSheetScreen(
-                    onEventSent = onEventSent,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                )
-            },
-            sheetBackgroundColor = MaterialTheme.colors.background,
-            sheetShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+    if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
+        val keyboardController = LocalSoftwareKeyboardController.current
+        DisposableEffect(Unit) {
+            onDispose {
+                onEventSent(SentencesListContract.Event.OnMotivationCancel)
+                keyboardController?.hide()
+            }
+        }
+    }
+
+    StupidEnglishModalBottomSheetLayout(
+        sheetState = modalBottomSheetState,
+        sheetContent = {
+            DialogSheetScreen(
+                painter = painterResource(R.drawable.ic_mail),
+                title = stringResource(id = R.string.adds_motivation_title),
+                message = stringResource(id = R.string.adds_motivation_message),
+                okButtonText = stringResource(id = R.string.adds_motivation_confirm),
+                cancelButtonText = stringResource(id = R.string.adds_motivation_decline),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .imePadding(),
+                onOkButtonClick = {
+                    onEventSent(SentencesListContract.Event.OnMotivationConfirmClick)
+                },
+                onCancelButtonClick = {
+                    onEventSent(SentencesListContract.Event.OnMotivationDeclineClick)
+                }
+            )
+        }
+    ) {
+        Scaffold(
+            scaffoldState = scaffoldState
         ) {
-            Scaffold(
-                scaffoldState = scaffoldState,
-                backgroundColor = MaterialTheme.colors.background,
-            ) {
-                Box {
-                    val listState = rememberLazyListState()
-
-                    SentencesList(
-                        sentencesItems = state.sentenceList,
-                        listState = listState,
-                        onEventSent = onEventSent
-                    )
-                    if (state.isLoading) {
-                        LoadingBar()
-                    }
-                    Fab(
-                        extended = listState.firstVisibleItemIndex == 0,
-                        modifier = Modifier.align(Alignment.BottomEnd),
-                        iconRes = R.drawable.ic_plus,
-                        text = stringResource(id = R.string.stns_fab_text),
-                        onFabClicked = { onEventSent(SentencesListContract.Event.OnAddSentenceClick) }
-                    )
-                }
-            }
+            ContentScreen(
+                state,
+                onEventSent
+            )
         }
     }
 }
 
+@ExperimentalFoundationApi
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun MotivationBottomSheetScreen(
-    modifier: Modifier,
+private fun ContentScreen(
+    state: SentencesListContract.State,
     onEventSent: (event: SentencesListContract.Event) -> Unit
 ) {
-    BottomSheetScreen(
-        modifier = modifier
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(top = 24.dp)
-                    .size(52.dp)
-                    .background(
-                        color = MaterialTheme.colors.secondary,
-                        shape = CircleShape
-                    )
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_pen),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .align(Alignment.Center)
-                )
-            }
+    StupidLanguageBackgroundBox {
+        val listState = rememberLazyListState()
 
-            Text(
-                text = stringResource(id = R.string.adds_motivation_title),
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily(
-                    Font(R.font.rubik_regular, FontWeight.Normal),
-                    Font(R.font.rubik_medium, FontWeight.Medium),
-                    Font(R.font.rubik_bold, FontWeight.Bold)
-                ),
-                color = getTitleTextColor(),
-                style = MaterialTheme.typography.subtitle1,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
-            )
-
-            Text(
-                text = stringResource(id = R.string.adds_motivation_message),
-                textAlign = TextAlign.Center,
-                fontSize = 16.sp,
-                color = getContentTextColor(),
-                style = MaterialTheme.typography.subtitle1,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 44.dp)
-            ) {
-                Button(
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = getSecondaryButtonBackgroundColor()),
-                    onClick = {
-                        onEventSent(SentencesListContract.Event.OnMotivationDeclineClick)
-                    }) {
-                    Text(
-                        text = stringResource(id = R.string.adds_motivation_decline),
-                        color = Black200,
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = getPrimaryButtonBackgroundColor()),
-                    onClick = {
-                        onEventSent(SentencesListContract.Event.OnMotivationConfirmClick)
-                    }) {
-                    Text(
-                        text = stringResource(id = R.string.adds_motivation_confirm),
-                        color = White100
-                    )
-                }
-            }
+        SentencesList(
+            sentencesItems = state.sentenceList,
+            listState = listState,
+            onEventSent = onEventSent
+        )
+        if (state.isLoading) {
+            LoadingBar()
         }
+        Fab(
+            extended = listState.firstVisibleItemIndex == 0,
+            modifier = Modifier.align(Alignment.BottomEnd),
+            iconRes = R.drawable.ic_plus,
+            text = stringResource(id = R.string.stns_fab_text),
+            onFabClicked = { onEventSent(SentencesListContract.Event.OnAddSentenceClick) }
+        )
     }
 }
 
@@ -284,8 +219,10 @@ fun SentencesList(
 ) {
     LazyColumn(
         state = listState,
-        contentPadding = PaddingValues(bottom = 12.dp),
-        modifier = Modifier.fillMaxSize()
+        contentPadding = PaddingValues(
+            top = WindowInsets.navigationBars.getTop(LocalDensity.current).dp,
+            bottom = WindowInsets.navigationBars.getBottom(LocalDensity.current).dp + 12.dp
+        )
     ) {
         items(
             items = sentencesItems,
@@ -308,31 +245,17 @@ fun SentencesList(
                         onEventSent(SentencesListContract.Event.OnShareClick(sentence))
                     }
                 )
-                is SentencesListTitleUI -> SentenceTitleItem(item = item)
+                is SentencesListTitleUI -> AverageTitle(
+                    text = stringResource(id = item.valueRes),
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+                )
                 is SentencesListEmptyUI -> EmptyListContent(
                     description = stringResource(id = item.descriptionRes),
-                    modifier = Modifier.height(600.dp)
+                    modifier = Modifier.height(300.dp)
                 )
             }
         }
     }
-}
-
-@Composable
-fun SentenceTitleItem(
-    item: SentencesListTitleUI
-) {
-    Text(
-        text = stringResource(id = item.valueRes),
-        textAlign = TextAlign.Left,
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Bold,
-        color = getTitleTextColor(),
-        style = MaterialTheme.typography.subtitle1,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
-    )
 }
 
 @ExperimentalMaterialApi
@@ -371,73 +294,82 @@ fun SentenceItemRow(
             }
         }
     ) {
-        ConstraintLayout {
-            val (button, card) = createRefs()
-            Card(
-                shape = RoundedCornerShape(12.dp),
-                elevation = 0.dp,
+        Card(
+            backgroundColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(12.dp),
+            elevation = animateDpAsState(
+                if (dismissState.dismissDirection != null) 8.dp else 4.dp
+            ).value,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
+                .clickable { onClicked() }
+        ) {
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
-                    .clickable { onClicked() }
-                    .constrainAs(card) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 16.dp,
+                        bottom = 16.dp
+                    )
+                    .fillMaxWidth(0.80f)
             ) {
-                Row {
-                    SentenceItem(
-                        item = item,
-                        modifier = Modifier
-                            .padding(
-                                start = 16.dp,
-                                end = 16.dp,
-                                top = 12.dp,
-                                bottom = 12.dp
-                            )
-                            .fillMaxWidth(0.80f)
+                AverageText(
+                    text = item.sentence,
+                    maxLines = 10,
+                    textAlign = TextAlign.Left,
+                    modifier = Modifier
+                        .weight(weight = 1.0f, fill = true)
+                        .align(Alignment.CenterVertically)
+                )
+
+                GradientButton(
+                    onClick = { onShareClicked(item) },
+                    contentPadding = PaddingValues(0.dp),
+                    gradient = getStupidLanguageBackgroundRow(),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .size(width = 40.dp, height = 32.dp)
+//                        .padding(start = 16.dp)
+                        .align(Alignment.Bottom)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_share_24),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                        contentDescription = null
                     )
                 }
-            }
-            Button(
-                onClick = { onShareClicked(item) },
-                contentPadding = PaddingValues(0.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Blue100),
-                modifier = Modifier
-                    .size(width = 40.dp, height = 32.dp)
-                    .padding(0.dp)
-                    .constrainAs(button) {
-                        bottom.linkTo(parent.bottom, margin = (6).dp)
-                        end.linkTo(parent.end, margin = (10).dp)
-                    }
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_share_24),
-                    contentDescription = null
-                )
             }
         }
     }
 }
 
 @Composable
-fun SentenceItem(
-    item: SentencesListItemUI,
-    modifier: Modifier
+private fun GradientButton(
+    gradient: Brush,
+    contentPadding: PaddingValues,
+    shape: RoundedCornerShape,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = { },
+    content: @Composable (RowScope.() -> Unit)
 ) {
-    Column(modifier = modifier) {
-        Text(
-            text = item.sentence,
-            textAlign = TextAlign.Left,
-            fontSize = 16.sp,
-            style = MaterialTheme.typography.subtitle1,
-            color = getTitleTextColor(),
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
+    Button(
+        modifier = modifier,
+        shape = shape,
+        contentPadding = contentPadding,
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+        onClick = { onClick() },
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .background(gradient)
+                .then(modifier),
+        ) {
+            content()
+        }
     }
 }
 
@@ -447,7 +379,7 @@ fun LoadingBar() {
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()
     ) {
-        CircularProgressIndicator(color = MaterialTheme.colors.secondary)
+        CircularProgressIndicator(color = MaterialTheme.colorScheme.secondary)
     }
 }
 

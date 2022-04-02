@@ -4,29 +4,22 @@ import android.content.Context
 import android.view.View
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.recyclerview.widget.DiffUtil
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager
@@ -42,7 +35,8 @@ import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackAdapter
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackDiffUtils
 import io.taptap.stupidenglish.features.stack.ui.adapter.randomDirection
-import io.taptap.stupidenglish.ui.theme.getTitleTextColor
+import io.taptap.stupidenglish.ui.SecondaryButton
+import io.taptap.stupidenglish.ui.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -112,65 +106,49 @@ private fun ContentScreen(
     adapter: CardStackAdapter,
     onEventSent: (event: StackContract.Event) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    StupidLanguageBackgroundBox {
+        Column(modifier = Modifier.fillMaxWidth()) {
 
-        AndroidView(
-            factory = { context ->
-                CardStackView(context)
-                    .apply {
-                        layoutManager = manager
-                        setAdapter(adapter)
+            AndroidView(
+                factory = { context ->
+                    CardStackView(context)
+                        .apply {
+                            layoutManager = manager
+                            setAdapter(adapter)
+                        }
+                },
+                update = { view ->
+                    val cardStackDiffUtils = CardStackDiffUtils(adapter.words, state.words)
+                    val diffResult = DiffUtil.calculateDiff(cardStackDiffUtils);
+                    adapter.words = state.words
+                    diffResult.dispatchUpdatesTo(adapter)
+
+                    if (state.swipeState is StackContract.SwipeState.WasSwiped) {
+                        val setting = SwipeAnimationSetting.Builder()
+                            .randomDirection()
+                            .setDuration(Duration.Normal.duration)
+                            .setInterpolator(AccelerateInterpolator())
+                            .build()
+                        manager.setSwipeAnimationSetting(setting)
+                        view.swipe()
+                        onEventSent(StackContract.Event.EndSwipe)
                     }
-            },
-            update = { view ->
-                val cardStackDiffUtils = CardStackDiffUtils(adapter.words, state.words)
-                val diffResult = DiffUtil.calculateDiff(cardStackDiffUtils);
-                adapter.words = state.words
-                diffResult.dispatchUpdatesTo(adapter)
+                },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 16.dp, end = 16.dp, top = 36.dp)
+                    .weight(1.0f, false)
+            )
 
-                if (state.swipeState is StackContract.SwipeState.WasSwiped) {
-                    val setting = SwipeAnimationSetting.Builder()
-                        .randomDirection()
-                        .setDuration(Duration.Normal.duration)
-                        .setInterpolator(AccelerateInterpolator())
-                        .build()
-                    manager.setSwipeAnimationSetting(setting)
-                    view.swipe()
-                    onEventSent(StackContract.Event.EndSwipe)
-                }
-            },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 36.dp)
-                .weight(1.0f, false)
-        )
-
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            elevation = 100.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp, start = 48.dp, end = 48.dp, top = 24.dp)
-                .clickable {
-                    onEventSent(StackContract.Event.Swipe)
-                }
-        ) {
-            Text(
+            SecondaryButton(
                 text = stringResource(id = R.string.stck_button_remember),
-                fontSize = 24.sp,
-                textAlign = TextAlign.Center,
-                color = getTitleTextColor(),
-                style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier
                     .align(CenterHorizontally)
-                    .padding(
-                        top = 16.dp,
-                        bottom = 16.dp,
-                        start = 48.dp,
-                        end = 48.dp
-                    )
-            )
+                    .padding(vertical = 16.dp)
+            ) {
+                onEventSent(StackContract.Event.Swipe)
+            }
         }
     }
 }

@@ -1,19 +1,14 @@
 package io.taptap.stupidenglish.features.stack.ui.adapter
 
 import android.animation.Animator
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.compose.ui.graphics.toArgb
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.features.stack.ui.StackContract
-import io.taptap.stupidenglish.ui.theme.Blue100
-import io.taptap.stupidenglish.ui.theme.Grey600
 
 class CardStackAdapter(
     var words: List<CardStackModel> = emptyList(),

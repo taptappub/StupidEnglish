@@ -9,7 +9,6 @@ import io.taptap.stupidenglish.base.logic.groups.GroupListModels
 import io.taptap.stupidenglish.base.logic.groups.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.features.addword.data.AddWordRepository
-import io.taptap.stupidenglish.ui.theme.DeepBlue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -142,8 +141,7 @@ class AddWordViewModel @Inject constructor(
         groupList.addAll(groupsList.map {
             GroupItemUI(
                 id = it.id,
-                name = it.name,
-                color = DeepBlue
+                name = it.name
             )
         })
 

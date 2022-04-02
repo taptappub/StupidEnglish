@@ -10,13 +10,10 @@ class AddSentenceContract {
         object OnWaitingSentenceError : Event()
         data class OnSentenceChanging(val value: String) : AddSentenceContract.Event()
         object OnSaveSentence : Event()
-        object OnSaveSentenceConfirmed : Event()
-        object OnSaveSentenceDeclined : Event()
         object OnChipClick : Event()
     }
 
     data class State(
-        val showConfirmSaveDialog: Boolean,
         val sentence: String,
         val words: List<Word>
     ) : ViewState

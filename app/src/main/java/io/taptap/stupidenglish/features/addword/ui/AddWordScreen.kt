@@ -15,21 +15,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -37,16 +35,19 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,18 +61,20 @@ import io.taptap.stupidenglish.base.logic.groups.getTitle
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.ui.AddTextField
+import io.taptap.stupidenglish.ui.AverageTitle
 import io.taptap.stupidenglish.ui.LetterRoundView
 import io.taptap.stupidenglish.ui.NextButton
+import io.taptap.stupidenglish.ui.StupidEnglishModalBottomSheetLayout
+import io.taptap.stupidenglish.ui.StupidLanguageDivider
 import io.taptap.stupidenglish.ui.bottomsheet.ChooseGroupBottomSheetScreen
-import io.taptap.stupidenglish.ui.theme.DeepBlue
-import io.taptap.stupidenglish.ui.theme.Grey200
 import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
-import io.taptap.stupidenglish.ui.theme.getContentTextColor
+import io.taptap.stupidenglish.ui.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalMaterialApi
 @Composable
 fun AddWordScreen(
@@ -121,13 +124,16 @@ fun AddWordScreen(
     }
 
     if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
+        val keyboardController = LocalSoftwareKeyboardController.current
         DisposableEffect(Unit) {
             onDispose {
                 onEventSent(AddWordContract.Event.OnChooseGroupBottomSheetCancel)
+                keyboardController?.hide()
             }
         }
     }
-    ModalBottomSheetLayout(
+
+    StupidEnglishModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
             ChooseGroupBottomSheetScreen(
@@ -143,14 +149,14 @@ fun AddWordScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .imePadding()
                     .animateContentSize()
             )
-        },
-        sheetBackgroundColor = MaterialTheme.colors.background,
-        sheetShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+        }
     ) {
         Scaffold(
-            scaffoldState = scaffoldState,
+            scaffoldState = scaffoldState
         ) {
             ContentScreen(
                 state,
@@ -165,61 +171,72 @@ private fun ContentScreen(
     state: AddWordContract.State,
     onEventSent: (event: AddWordContract.Event) -> Unit
 ) {
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        val (content, button, groups) = createRefs()
-
-        AddWordContextBox(
-            state = state,
-            onEventSent = onEventSent,
+    StupidLanguageBackgroundBox {
+        ConstraintLayout(
             modifier = Modifier
+                .navigationBarsPadding()
+                .imePadding()
                 .fillMaxSize()
-                .constrainAs(content) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(groups.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-        )
+        ) {
+            val (content, button, groups) = createRefs()
 
-        GroupsStackRow(
-            groups = state.selectedGroups,
-            onClick = {
-                onEventSent(AddWordContract.Event.OnGroupsClick)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(groups) {
-                    top.linkTo(content.bottom)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-        )
+            AddWordContextBox(
+                state = state,
+                onEventSent = onEventSent,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .constrainAs(content) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(groups.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+            )
 
-        NextButton(
-            visibility = state.word.isNotEmpty(),
-            onClick = {
-                when {
-                    state.addWordState == AddWordContract.AddWordState.None -> {
-                        onEventSent(AddWordContract.Event.OnWord)
+            GroupsStackRow(
+                groups = state.selectedGroups,
+                onClick = {
+                    onEventSent(AddWordContract.Event.OnGroupsClick)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .constrainAs(groups) {
+                        top.linkTo(content.bottom)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
                     }
-                    state.addWordState == AddWordContract.AddWordState.HasWord
-                            && state.description.isNotEmpty()
-                            && state.word.isNotEmpty() -> {
-                        onEventSent(AddWordContract.Event.OnSaveWord)
+            )
+
+            val focusManager = LocalFocusManager.current
+
+            NextButton(
+                visibility = state.word.isNotEmpty(),
+                onClick = {
+                    when {
+                        state.addWordState == AddWordContract.AddWordState.None -> {
+                            onEventSent(AddWordContract.Event.OnWord)
+                        }
+                        state.addWordState == AddWordContract.AddWordState.HasWord
+                                && state.description.isNotEmpty()
+                                && state.word.isNotEmpty() -> {
+                            focusManager.clearFocus()
+                            onEventSent(AddWordContract.Event.OnSaveWord)
+                        }
+                        else -> {
+                            onEventSent(AddWordContract.Event.OnWaitingDescriptionError)
+                        }
                     }
-                    else -> {
-                        onEventSent(AddWordContract.Event.OnWaitingDescriptionError)
+                },
+                modifier = Modifier
+                    .constrainAs(button) {
+                        bottom.linkTo(parent.bottom, 16.dp + 52.dp)
+                        end.linkTo(parent.end, 16.dp)
                     }
-                }
-            },
-            modifier = Modifier.constrainAs(button) {
-                bottom.linkTo(parent.bottom, 16.dp)
-                end.linkTo(parent.end, 16.dp)
-            })
+            )
+        }
     }
 }
 
@@ -229,8 +246,11 @@ private fun GroupsStackRow(
     onClick: () -> Unit,
     modifier: Modifier
 ) {
-    Column(modifier = modifier.clickable { onClick() }) {
-        Divider(color = Grey200, thickness = 1.dp)
+    Column(modifier = modifier
+        .height(52.dp)
+        .clickable { onClick() }
+    ) {
+        StupidLanguageDivider()
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -266,14 +286,9 @@ private fun ManyGroups(groups: List<GroupListModels>, text: String) {
     ) {
         StackRowOfGroups(groups)
 
-        Text(
+        AverageTitle(
             text = text,
-            textAlign = TextAlign.Left,
-            fontSize = 15.sp,
-            color = getContentTextColor(),
-            style = MaterialTheme.typography.subtitle2,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .padding(2.dp)
         )
@@ -292,12 +307,12 @@ private fun StackRowOfGroups(groups: List<GroupListModels>) {
         groups.forEach {
             LetterRoundView(
                 letter = it.getTitle()[0].uppercaseChar(),
-                color = it.color,
+                selected = true,
                 border1 = BorderStroke(
                     width = 2.dp,
                     color = Color.White
                 ),
-                elevation = 8.dp,
+                border2 = null,
                 fontSize = 12.sp,
                 modifier = Modifier
                     .padding(vertical = 10.dp)
@@ -315,21 +330,15 @@ private fun OneGroup(first: GroupListModels) {
     ) {
         LetterRoundView(
             letter = first.getTitle()[0].uppercaseChar(),
-            color = first.color,
-            elevation = 8.dp,
+            selected = true,
             fontSize = 12.sp,
             modifier = Modifier
                 .padding(vertical = 10.dp, horizontal = 16.dp)
                 .size(28.dp)
         )
-        Text(
+        AverageTitle(
             text = first.getTitle(),
-            textAlign = TextAlign.Left,
-            fontSize = 15.sp,
-            color = getContentTextColor(),
-            style = MaterialTheme.typography.subtitle2,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .padding(2.dp)
         )
@@ -366,7 +375,12 @@ private fun NoneScreen(
             value = state.word,
             onValueChange = { onEventSent(AddWordContract.Event.OnWordChanging(it)) },
             placeholder = stringResource(id = R.string.addw_word_placeholder),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                capitalization = KeyboardCapitalization.Sentences,
+                autoCorrect = false,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
             keyboardActions = KeyboardActions(
                 onNext = {
                     if (state.word.isNotEmpty()) {
@@ -399,7 +413,12 @@ private fun HasWordScreen(
             onValueChange = {},
             enabled = false,
             placeholder = stringResource(id = R.string.addw_word_placeholder),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                capitalization = KeyboardCapitalization.Sentences,
+                autoCorrect = false,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Default
+            ),
             keyboardActions = KeyboardActions.Default,
             modifier = Modifier
                 .clickable {
@@ -414,15 +433,21 @@ private fun HasWordScreen(
         )
 
         val focusRequester = FocusRequester()
-
+        val focusManager = LocalFocusManager.current
         AddTextField(
             value = state.description,
             onValueChange = { onEventSent(AddWordContract.Event.OnDescriptionChanging(it)) },
             placeholder = stringResource(id = R.string.addw_description_placeholder),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                capitalization = KeyboardCapitalization.Sentences,
+                autoCorrect = false,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
             keyboardActions = KeyboardActions(
                 onDone = {
                     if (state.word.isNotEmpty() && state.description.isNotEmpty()) {
+                        focusManager.clearFocus()
                         onEventSent(AddWordContract.Event.OnSaveWord)
                     } else {
                         onEventSent(AddWordContract.Event.OnWaitingDescriptionError)
@@ -463,17 +488,14 @@ fun ManyGroupsPreview() {
         val groups = listOf(
             GroupItemUI(
                 id = 1,
-                color = DeepBlue,
                 name = "test name"
             ),
             GroupItemUI(
                 id = 1,
-                color = DeepBlue,
                 name = "dtest name"
             ),
             GroupItemUI(
                 id = 1,
-                color = DeepBlue,
                 name = "dtest name"
             )
         )
@@ -492,17 +514,14 @@ fun StackRowOfGroupsPreview() {
             groups = listOf(
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 ),
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 ),
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 )
             )
@@ -518,17 +537,14 @@ fun GroupsStackRowPreview() {
             groups = listOf(
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 ),
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 ),
                 GroupItemUI(
                     id = 1,
-                    color = DeepBlue,
                     name = "test name"
                 )
             ),
@@ -545,7 +561,6 @@ fun OneGroupPreview() {
         OneGroup(
             GroupItemUI(
                 id = 1,
-                color = DeepBlue,
                 name = "test name"
             )
         )
@@ -563,17 +578,14 @@ fun ContentScreenPreview() {
                 groups = listOf(
                     GroupItemUI(
                         id = 1,
-                        color = DeepBlue,
                         name = "test name"
                     ),
                     GroupItemUI(
                         id = 1,
-                        color = DeepBlue,
                         name = "test name"
                     ),
                     GroupItemUI(
                         id = 1,
-                        color = DeepBlue,
                         name = "test name"
                     )
                 ),

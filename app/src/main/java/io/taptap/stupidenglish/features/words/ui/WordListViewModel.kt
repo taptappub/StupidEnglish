@@ -15,7 +15,6 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
-import io.taptap.stupidenglish.ui.theme.DeepBlue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -76,6 +75,7 @@ class WordListViewModel @Inject constructor(
                 }
             }
             WordListContract.Event.OnMotivationConfirmClick -> {
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 setEffect { WordListContract.Effect.HideBottomSheet }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
@@ -91,6 +91,7 @@ class WordListViewModel @Inject constructor(
                 }
             }
             WordListContract.Event.OnMotivationDeclineClick -> {
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
                 }
@@ -98,6 +99,7 @@ class WordListViewModel @Inject constructor(
                 setEffect { WordListContract.Effect.HideBottomSheet }
             }
             is WordListContract.Event.OnMotivationCancel -> {
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
                 }
@@ -213,6 +215,7 @@ class WordListViewModel @Inject constructor(
                 if (size % WORDS_FOR_MOTIVATION == 0) {
                     setState { copy(sheetContentType = WordListContract.SheetContentType.Motivation) }
                     setEffect { WordListContract.Effect.ShowBottomSheet }
+                    setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
                 }
             }
         }
@@ -290,8 +293,7 @@ class WordListViewModel @Inject constructor(
         groupList.addAll(groupsList.map {
             GroupItemUI(
                 id = it.id,
-                name = it.name,
-                color = DeepBlue
+                name = it.name
             )
         })
 
