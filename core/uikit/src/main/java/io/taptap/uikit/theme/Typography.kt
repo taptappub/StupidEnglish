@@ -1,11 +1,11 @@
-package io.taptap.stupidenglish.ui.theme
+package io.taptap.uikit.theme
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import io.taptap.stupidenglish.R
+import io.taptap.uikit.R
 
 private val NunitoFontFamily = FontFamily(
     Font(R.font.nunito_regular),

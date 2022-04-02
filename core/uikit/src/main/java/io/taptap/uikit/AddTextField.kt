@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.ui
+package io.taptap.uikit
 
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardActions

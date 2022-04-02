@@ -4,55 +4,16 @@ import android.content.Context
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.DismissDirection
-import androidx.compose.material.DismissState
+import androidx.compose.material.*
 import androidx.compose.material.DismissValue.Default
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FractionalThreshold
-import androidx.compose.material.Icon
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SwipeToDismiss
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.rememberDismissState
-import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -88,26 +49,12 @@ import io.taptap.stupidenglish.base.logic.groups.NoGroupItemUI
 import io.taptap.stupidenglish.base.noRippleClickable
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
-import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
-import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
-import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
-import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
-import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
-import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
-import io.taptap.stupidenglish.ui.AddTextField
-import io.taptap.stupidenglish.ui.AverageTitle
-import io.taptap.stupidenglish.ui.BottomSheetScreen
-import io.taptap.stupidenglish.ui.DialogSheetScreen
-import io.taptap.stupidenglish.ui.EmptyListContent
-import io.taptap.stupidenglish.ui.Fab
-import io.taptap.stupidenglish.ui.LargeTitle
-import io.taptap.stupidenglish.ui.LetterRoundView
-import io.taptap.stupidenglish.ui.NextButton
-import io.taptap.stupidenglish.ui.StupidEnglishModalBottomSheetLayout
-import io.taptap.stupidenglish.ui.bottomsheet.ChooseGroupBottomSheetScreen
-import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
-import io.taptap.stupidenglish.ui.theme.StupidLanguageBackgroundBox
-import io.taptap.stupidenglish.ui.theme.getStupidLanguageBackgroundRow
+import io.taptap.stupidenglish.features.words.ui.model.*
+import io.taptap.stupidenglish.ui.ChooseGroupBottomSheetScreen
+import io.taptap.uikit.*
+import io.taptap.uikit.theme.StupidEnglishTheme
+import io.taptap.uikit.theme.StupidLanguageBackgroundBox
+import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -147,7 +94,7 @@ fun WordListScreen(
             }
         }
     }
-    StupidEnglishModalBottomSheetLayout(
+    ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
             when (state.sheetContentType) {
@@ -324,6 +271,7 @@ private fun MainList(
                     }
                 )
                 is WordListEmptyUI -> EmptyListContent(
+                    title = stringResource(id = R.string.word_empty_list_title),
                     description = stringResource(id = item.descriptionRes),
                     modifier = Modifier.height(300.dp)
                 )

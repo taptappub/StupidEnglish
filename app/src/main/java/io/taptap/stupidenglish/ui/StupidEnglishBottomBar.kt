@@ -27,15 +27,12 @@ import androidx.compose.ui.unit.dp
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.features.main.ui.MainContract
-import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
+import io.taptap.uikit.BOTTOM_BAR_HEIGHT
+import io.taptap.uikit.BOTTOM_BAR_VERTICAL_PADDING
+import io.taptap.uikit.theme.StupidEnglishTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
-
-
-val BOTTOM_BAR_VERTICAL_PADDING = 12.dp
-val BOTTOM_BAR_HEIGHT = 56.dp
-val BOTTOM_BAR_MARGIN = BOTTOM_BAR_HEIGHT + BOTTOM_BAR_VERTICAL_PADDING * 2
 
 //ver2
 @Composable

@@ -35,11 +35,11 @@ import com.google.accompanist.flowlayout.FlowRow
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.model.Word
-import io.taptap.stupidenglish.ui.AddTextField
-import io.taptap.stupidenglish.ui.AverageText
-import io.taptap.stupidenglish.ui.AverageTitle
-import io.taptap.stupidenglish.ui.NextButton
-import io.taptap.stupidenglish.ui.theme.StupidLanguageBackgroundBox
+import io.taptap.uikit.AddTextField
+import io.taptap.uikit.AverageText
+import io.taptap.uikit.AverageTitle
+import io.taptap.uikit.NextButton
+import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach

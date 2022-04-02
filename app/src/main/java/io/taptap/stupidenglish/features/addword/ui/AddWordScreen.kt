@@ -60,15 +60,10 @@ import io.taptap.stupidenglish.base.logic.groups.NoGroup
 import io.taptap.stupidenglish.base.logic.groups.getTitle
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
-import io.taptap.stupidenglish.ui.AddTextField
-import io.taptap.stupidenglish.ui.AverageTitle
-import io.taptap.stupidenglish.ui.LetterRoundView
-import io.taptap.stupidenglish.ui.NextButton
-import io.taptap.stupidenglish.ui.StupidEnglishModalBottomSheetLayout
-import io.taptap.stupidenglish.ui.StupidLanguageDivider
-import io.taptap.stupidenglish.ui.bottomsheet.ChooseGroupBottomSheetScreen
-import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
-import io.taptap.stupidenglish.ui.theme.StupidLanguageBackgroundBox
+import io.taptap.stupidenglish.ui.ChooseGroupBottomSheetScreen
+import io.taptap.uikit.*
+import io.taptap.uikit.theme.StupidEnglishTheme
+import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -133,7 +128,7 @@ fun AddWordScreen(
         }
     }
 
-    StupidEnglishModalBottomSheetLayout(
+    ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
             ChooseGroupBottomSheetScreen(
@@ -250,7 +245,7 @@ private fun GroupsStackRow(
         .height(52.dp)
         .clickable { onClick() }
     ) {
-        StupidLanguageDivider()
+        Divider()
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

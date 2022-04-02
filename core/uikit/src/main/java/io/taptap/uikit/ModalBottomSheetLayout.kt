@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.ui
+package io.taptap.uikit
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 @ExperimentalMaterialApi
-fun StupidEnglishModalBottomSheetLayout(
+fun ModalBottomSheetLayout(
     sheetState: ModalBottomSheetState =
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
     sheetElevation: Dp = 0.dp,

@@ -53,11 +53,11 @@ import io.taptap.stupidenglish.features.stack.ui.StackViewModel
 import io.taptap.stupidenglish.features.words.ui.WordListContract
 import io.taptap.stupidenglish.features.words.ui.WordListScreen
 import io.taptap.stupidenglish.features.words.ui.WordListViewModel
-import io.taptap.stupidenglish.ui.AverageText
-import io.taptap.stupidenglish.ui.PrimaryButton
 import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
-import io.taptap.stupidenglish.ui.StupidEnglishScaffold
-import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
+import io.taptap.uikit.AverageText
+import io.taptap.uikit.PrimaryButton
+import io.taptap.uikit.StupidEnglishScaffold
+import io.taptap.uikit.theme.StupidEnglishTheme
 import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Inject
 
@@ -69,9 +69,10 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var alarmScheduler: AlarmScheduler
 
-    @OptIn(ExperimentalMaterialApi::class,
-        androidx.compose.animation.ExperimentalAnimationApi::class,
-        com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi::class
+    @OptIn(
+        ExperimentalMaterialApi::class,
+        ExperimentalAnimationApi::class,
+        ExperimentalMaterialNavigationApi::class
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

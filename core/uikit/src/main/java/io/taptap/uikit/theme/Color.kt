@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.ui.theme
+package io.taptap.uikit.theme
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color

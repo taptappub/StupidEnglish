@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.ui
+package io.taptap.uikit
 
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun StupidLanguageDivider(
+fun Divider(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.secondary,
     thickness: Dp = 1.dp

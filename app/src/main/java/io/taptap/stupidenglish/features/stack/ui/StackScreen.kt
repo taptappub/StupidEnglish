@@ -35,8 +35,8 @@ import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackAdapter
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackDiffUtils
 import io.taptap.stupidenglish.features.stack.ui.adapter.randomDirection
-import io.taptap.stupidenglish.ui.SecondaryButton
-import io.taptap.stupidenglish.ui.theme.StupidLanguageBackgroundBox
+import io.taptap.uikit.SecondaryButton
+import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach

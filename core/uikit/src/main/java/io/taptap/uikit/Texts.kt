@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.ui
+package io.taptap.uikit
 
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme

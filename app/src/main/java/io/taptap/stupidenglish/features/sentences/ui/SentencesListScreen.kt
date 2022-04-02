@@ -66,21 +66,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
-import io.taptap.stupidenglish.features.words.ui.WordListContract
-import io.taptap.stupidenglish.ui.AverageText
-import io.taptap.stupidenglish.ui.AverageTitle
-import io.taptap.stupidenglish.ui.DialogSheetScreen
-import io.taptap.stupidenglish.ui.EmptyListContent
-import io.taptap.stupidenglish.ui.Fab
-import io.taptap.stupidenglish.ui.StupidEnglishModalBottomSheetLayout
-import io.taptap.stupidenglish.ui.theme.StupidEnglishTheme
-import io.taptap.stupidenglish.ui.theme.StupidLanguageBackgroundBox
-import io.taptap.stupidenglish.ui.theme.getStupidLanguageBackgroundRow
+import io.taptap.uikit.*
+import io.taptap.uikit.theme.StupidEnglishTheme
+import io.taptap.uikit.theme.StupidLanguageBackgroundBox
+import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -148,7 +141,7 @@ fun SentencesListScreen(
         }
     }
 
-    StupidEnglishModalBottomSheetLayout(
+    ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
             DialogSheetScreen(
@@ -250,6 +243,7 @@ fun SentencesList(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
                 )
                 is SentencesListEmptyUI -> EmptyListContent(
+                    title = stringResource(id = R.string.word_empty_list_title),
                     description = stringResource(id = item.descriptionRes),
                     modifier = Modifier.height(300.dp)
                 )
@@ -331,7 +325,6 @@ fun SentenceItemRow(
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
                         .size(width = 40.dp, height = 32.dp)
-//                        .padding(start = 16.dp)
                         .align(Alignment.Bottom)
                 ) {
                     Image(

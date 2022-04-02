@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.util.Log
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -70,10 +71,9 @@ class AlarmReceiver : BroadcastReceiver() {
             }
             .header {
                 icon = R.drawable.ic_notification
+                color = Color.YELLOW
             }
             .content {
-                largeIcon =
-                    AppCompatResources.getDrawable(context, R.drawable.ic_launcher)?.toBitmap()
                 title = context.getString(R.string.alrm_sentence_title)
                 text = context.getString(R.string.alrm_sentence_message, string)
             }

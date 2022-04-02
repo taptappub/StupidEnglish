@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.taptap.stupidenglish.ui
+package io.taptap.uikit
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing

@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.ui.theme
+package io.taptap.uikit.theme
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
