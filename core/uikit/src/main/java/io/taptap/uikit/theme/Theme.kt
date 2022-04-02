@@ -13,7 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import java.lang.Float.POSITIVE_INFINITY
 
 private val DarkColorPalette = darkColorScheme(
     surface = Esspresso,
@@ -117,6 +120,10 @@ fun getStupidLanguageBackgroundRow(
 fun getStupidLanguageBackgroundBox(
     darkTheme: Boolean = isSystemInDarkTheme()
 ): Brush {
+    val configuration = LocalConfiguration.current
+
+    val screenHeight = configuration.screenHeightDp
+
     return if (darkTheme) {
         Brush.verticalGradient(
             colors = listOf(
@@ -129,7 +136,8 @@ fun getStupidLanguageBackgroundBox(
             colors = listOf(
                 WarmWhite2,
                 White
-            )
+            ),
+            startY = screenHeight * 0.4f
         )
     }
 }
