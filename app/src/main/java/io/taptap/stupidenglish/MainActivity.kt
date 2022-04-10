@@ -59,6 +59,7 @@ import io.taptap.uikit.PrimaryButton
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
 import kotlinx.coroutines.InternalCoroutinesApi
+import java.lang.Exception
 import javax.inject.Inject
 
 const val URI = "https://stupidenglish.app"
@@ -429,15 +430,19 @@ private fun NavController.navigateToTab(
     route: String,
     builder: (NavOptionsBuilder.() -> Unit)? = null
 ) {
-    navigate(route) {
-        launchSingleTop = true
-        restoreState = true
-        // Pop up backstack to the first destination and save state. This makes going back
-        // to the start destination when pressing back in any other bottom tab.
-        popUpTo(findStartDestination(graph).id) {
-            saveState = true
+    try {
+        navigate(route) {
+            launchSingleTop = true
+            restoreState = true
+            // Pop up backstack to the first destination and save state. This makes going back
+            // to the start destination when pressing back in any other bottom tab.
+            popUpTo(findStartDestination(graph).id) {
+                saveState = true
+            }
+            builder?.let { this.it() }
         }
-        builder?.let { this.it() }
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
 }
 
@@ -462,8 +467,6 @@ private fun NavController.navigateToTab(
 
 //Следующий билд
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
-//2) Поменять иконку
-//11) Верхняя навигация
-//https://rmmbr.io/import/
-//обернуть handleEvents в io thread
-//выставить один id для всех нотификаций
+//2) Верхняя навигация
+//3) import https://rmmbr.io/import/
+//4) обернуть handleEvents в io thread
