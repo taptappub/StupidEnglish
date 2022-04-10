@@ -23,6 +23,8 @@ import kotlinx.coroutines.*
 import taptap.pub.takeOrNull
 import javax.inject.Inject
 
+const val ALARM_NOTIFICATION_ID = 3957
+
 @AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
 
@@ -77,7 +79,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 title = context.getString(R.string.alrm_sentence_title)
                 text = context.getString(R.string.alrm_sentence_message, string)
             }
-            .show(1)
+            .show(ALARM_NOTIFICATION_ID)
     }
 
     @OptIn(ExperimentalFoundationApi::class)
