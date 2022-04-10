@@ -4,12 +4,18 @@ import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewState
 import io.taptap.stupidenglish.base.logic.groups.GroupListModels
+import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
+import io.taptap.stupidenglish.features.sentences.ui.SentencesListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 
 class WordListContract {
     sealed class Event : ViewEvent {
         data class OnWordDismiss(val item: WordListItemUI) : Event()
+
+        data class OnRecovered(val item: WordListListModels) : Event()
+        object OnRecover : Event()
+        object OnApplySentenceDismiss : Event()
 
         object OnAddWordClick : Event()
         object OnOnboardingClick : Event()
@@ -38,7 +44,8 @@ class WordListContract {
         val isLoading: Boolean = false,
         val currentGroup: GroupListModels,
         val sheetContentType: SheetContentType,
-        val group: String
+        val group: String,
+        val deletedWordIds: MutableList<Long>
     ) : ViewState
 
     enum class SheetContentType {
@@ -54,6 +61,7 @@ class WordListContract {
         object HideBottomSheet : Effect()
         object ShowBottomSheet : Effect()
         object ShowUnderConstruction : Effect()
+        object ShowRecover : Effect()
         data class ChangeBottomBarVisibility(val isShown: Boolean) : Effect()
 
         sealed class Navigation : Effect() {

@@ -3,6 +3,7 @@ package io.taptap.stupidenglish.features.words.data
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
 import io.taptap.stupidenglish.base.logic.database.dto.GroupDto
 import io.taptap.stupidenglish.base.logic.groups.IGroupsDataSource
+import io.taptap.stupidenglish.base.logic.mapper.toWord
 import io.taptap.stupidenglish.base.logic.mapper.toWords
 import io.taptap.stupidenglish.base.logic.prefs.Settings
 import io.taptap.stupidenglish.base.logic.randomwords.IRandomWordsDataSource
@@ -30,18 +31,17 @@ class WordListRepository @Inject constructor(
             settings.isSentenceMotivationShown = value
         }
 
-    var currentColorIndex: Int
-        get() {
-            return settings.currentColorIndex
-        }
-        set(value) {
-            settings.currentColorIndex = value
-        }
-
     suspend fun observeWordList(): Reaction<Flow<List<Word>>> = Reaction.on {
         wordDao.observeWords()
             .map { wordDtos ->
                 wordDtos.toWords()
+            }
+    }
+
+    fun getWordList(): Reaction<List<Word>> = Reaction.on {
+        wordDao.getWords()
+            .map { wordDto ->
+                wordDto.toWord()
             }
     }
 
@@ -55,5 +55,9 @@ class WordListRepository @Inject constructor(
 
     suspend fun removeGroups(groups: List<Long>): Reaction<Unit> = Reaction.on {
         wordDao.deleteGroups(groups)
+    }
+
+    suspend fun deleteWords(list: List<Long>): Reaction<Unit> = Reaction.on {
+        wordDao.deleteWords(list)
     }
 }

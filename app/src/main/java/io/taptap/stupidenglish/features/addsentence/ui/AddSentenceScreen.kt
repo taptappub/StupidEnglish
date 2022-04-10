@@ -39,6 +39,7 @@ import io.taptap.uikit.AddTextField
 import io.taptap.uikit.AverageText
 import io.taptap.uikit.AverageTitle
 import io.taptap.uikit.NextButton
+import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -86,7 +87,7 @@ fun AddSentenceScreen(
         }?.collect()
     }
 
-    Scaffold(
+    StupidEnglishScaffold(
         scaffoldState = scaffoldState,
     ) {
         ContentScreen(

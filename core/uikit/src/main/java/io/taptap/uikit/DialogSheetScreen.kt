@@ -62,6 +62,7 @@ fun DialogSheetScreen(
 
             AverageText(
                 text = message,
+                maxLines = 10,
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
             )
 

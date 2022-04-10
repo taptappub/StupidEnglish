@@ -54,6 +54,14 @@ interface WordDao {
     )
     fun getWords(): List<WordDto>
 
+    @Query(
+        """
+        DELETE FROM WordTable 
+        WHERE WordTable.id in (:wordIds)
+        """
+    )
+    suspend fun deleteWords(wordIds: List<Long>)
+
     //-----------------Sentence-----------------
 
     @Insert
@@ -79,11 +87,27 @@ interface WordDao {
 
     @Query(
         """
+        SELECT *
+        FROM SentenceTable
+        """
+    )
+    fun getSentences(): List<SentenceDto>
+
+    @Query(
+        """
         DELETE FROM SentenceTable 
         WHERE SentenceTable.id = :sentenceId
         """
     )
     suspend fun deleteSentence(sentenceId: Long): Int
+
+    @Query(
+        """
+        DELETE FROM SentenceTable 
+        WHERE SentenceTable.id in (:sentenceIds)
+        """
+    )
+    suspend fun deleteSentences(sentenceIds: List<Long>)
 
     //-----------------Group-----------------
 

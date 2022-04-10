@@ -180,11 +180,22 @@ fun WordListScreen(
                         is WordListContract.Effect.ChangeBottomBarVisibility -> {
                             onChangeBottomSheetVisibility(effect.isShown)
                         }
+                        is WordListContract.Effect.ShowRecover -> {
+                            val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.word_delete_message),
+                                duration = SnackbarDuration.Short,
+                                actionLabel = context.getString(R.string.word_recover)
+                            )
+                            when (snackbarResult) {
+                                SnackbarResult.Dismissed -> onEventSent(WordListContract.Event.OnApplySentenceDismiss)
+                                SnackbarResult.ActionPerformed -> onEventSent(WordListContract.Event.OnRecover)
+                            }
+                        }
                     }
                 }?.collect()
             }
 
-            Scaffold(
+            StupidEnglishScaffold(
                 scaffoldState = scaffoldState
             ) {
                 StupidLanguageBackgroundBox {
@@ -192,6 +203,7 @@ fun WordListScreen(
 
                     MainList(
                         wordItems = state.wordList,
+                        deletedSentenceIds = state.deletedWordIds,
                         group = state.currentGroup,
                         listState = listState,
                         onEventSent = onEventSent
@@ -219,13 +231,14 @@ private fun MainList(
     wordItems: List<WordListListModels>,
     group: GroupListModels?,
     listState: LazyListState,
-    onEventSent: (event: WordListContract.Event) -> Unit
+    onEventSent: (event: WordListContract.Event) -> Unit,
+    deletedSentenceIds: MutableList<Long>
 ) {
     LazyColumn(
         state = listState,
         contentPadding = PaddingValues(
             top = WindowInsets.navigationBars.getTop(LocalDensity.current).dp,
-            bottom = WindowInsets.navigationBars.getBottom(LocalDensity.current).dp
+            bottom = WindowInsets.navigationBars.getBottom(LocalDensity.current).dp + 12.dp + BOTTOM_BAR_MARGIN
         )
     ) {
         items(
@@ -233,8 +246,19 @@ private fun MainList(
             key = { it.id }
         ) { item ->
             val dismissState = rememberDismissState()
-            if (dismissState.isDismissed(DismissDirection.StartToEnd)) {
-                onEventSent(WordListContract.Event.OnWordDismiss(item as WordListItemUI))
+            if (deletedSentenceIds.contains(item.id)) { //todo выделить в отдельный класс с возможностью удалять?
+                if (dismissState.currentValue != DismissValue.Default) {
+                    LaunchedEffect(Unit) {
+                        dismissState.reset()
+                        onEventSent(WordListContract.Event.OnRecovered(item))
+                    }
+                }
+            } else {
+                if (item is WordListItemUI) {
+                    if (dismissState.isDismissed(DismissDirection.StartToEnd)) {
+                        onEventSent(WordListContract.Event.OnWordDismiss(item))
+                    }
+                }
             }
 
             when (item) {
@@ -635,7 +659,7 @@ fun AddGroupBottomSheetScreen(
             AverageTitle(
                 text = stringResource(id = R.string.word_group_add_group_title),
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, top = 8.dp)
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp)
                     .constrainAs(title) {
                         top.linkTo(parent.top)
                         start.linkTo(parent.start)

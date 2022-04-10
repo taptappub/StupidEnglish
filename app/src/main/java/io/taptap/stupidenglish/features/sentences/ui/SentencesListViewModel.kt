@@ -1,6 +1,6 @@
 package io.taptap.stupidenglish.features.sentences.ui
 
-import android.util.Log
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,13 +11,10 @@ import io.taptap.stupidenglish.base.logic.share.ShareUtil
 import io.taptap.stupidenglish.base.model.Sentence
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.sentences.data.SentencesListRepository
-import io.taptap.stupidenglish.features.words.ui.WordListContract
-import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
-import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
-import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import taptap.pub.handle
 import taptap.pub.map
 import taptap.pub.takeOrNull
 import taptap.pub.takeOrReturn
@@ -37,18 +34,19 @@ class SentencesListViewModel @Inject constructor(
         val wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.WORDS_ID)
         val wordsIds = addSentenceArgumentsMapper.mapFrom(wordsIdsString)
 
-        Log.d("TAPTAPTAP", "SentencesListViewModel wordsIds = $wordsIds")
         if (wordsIds != null) {
             setEffect { SentencesListContract.Effect.Navigation.ToAddSentence(wordsIds) }
         }
 
-        viewModelScope.launch(Dispatchers.IO) { getSentenceList() }
+        viewModelScope.launch(Dispatchers.IO) { observeSentenceList() }
         viewModelScope.launch(Dispatchers.IO) { motivationShare() }
     }
 
+    @OptIn(ExperimentalMaterialApi::class)
     override fun setInitialState() = SentencesListContract.State(
         sentenceList = listOf(),
-        isLoading = true
+        isLoading = true,
+        deletedSentenceIds = mutableListOf()
     )
 
     override fun handleEvents(event: SentencesListContract.Event) {
@@ -90,7 +88,7 @@ class SentencesListViewModel @Inject constructor(
                 }
                 setEffect { SentencesListContract.Effect.HideMotivation }
             }
-            is SentencesListContract.Event.OnMotivationCancel ->  {
+            is SentencesListContract.Event.OnMotivationCancel -> {
                 setEffect { SentencesListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isShareMotivationShown = true
@@ -102,14 +100,57 @@ class SentencesListViewModel @Inject constructor(
             }
             is SentencesListContract.Event.OnSentenceDismiss -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    deleteSentence(event.item)
+                    predeleteSentence(event.item)
                 }
+            }
+            is SentencesListContract.Event.OnApplySentenceDismiss -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    deleteSentences()
+                }
+            }
+            is SentencesListContract.Event.OnRecover -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    repository.getSentenceList()
+                        .handle(
+                            success = {
+                                val sentenceList = makeSentenceList(it.reversed())
+                                setState {
+                                    copy(
+                                        sentenceList = sentenceList,
+                                        isLoading = false
+                                    )
+                                }
+                            },
+                            error = {
+                                setEffect { SentencesListContract.Effect.GetSentencesError(R.string.stns_get_sentences_error) }
+                                setState { copy(deletedSentenceIds = mutableListOf()) }
+                            }
+                        )
+                }
+            }
+            is SentencesListContract.Event.OnRecovered -> {
+                setState { copy(deletedSentenceIds = mutableListOf()) }
             }
         }
     }
 
-    private suspend fun deleteSentence(item: SentencesListItemUI) {
-        repository.deleteSentence(item.id)
+    private suspend fun predeleteSentence(item: SentencesListItemUI) {
+        val mutableDeletedSentenceIds = viewState.value.deletedSentenceIds.toMutableList()
+        mutableDeletedSentenceIds.add(item.id)
+        val list = viewState.value.sentenceList.toMutableList()
+        list.remove(item)
+        setState { copy(sentenceList = list, deletedSentenceIds = mutableDeletedSentenceIds) }
+        setEffect { SentencesListContract.Effect.ShowRecover }
+    }
+
+    private suspend fun deleteSentences() {
+        deleteSentences(viewState.value.deletedSentenceIds)
+
+        setState { copy(deletedSentenceIds = mutableListOf()) }
+    }
+
+    private suspend fun deleteSentences(list: List<Long>) {
+        repository.deleteSentences(list)
     }
 
     private suspend fun getRandomWords(): List<Long>? {
@@ -120,17 +161,21 @@ class SentencesListViewModel @Inject constructor(
             .takeOrNull()
     }
 
-    private suspend fun getSentenceList() {
+    private suspend fun observeSentenceList() {
         val savedSentenceList = repository.observeSentenceList().takeOrReturn {
             setEffect { SentencesListContract.Effect.GetSentencesError(R.string.stns_get_sentences_error) }
             return
         }
         savedSentenceList.collect {
-            val sentenceList = makeSentenceList(it.reversed())
+            saveListToState(it)
+        }
+    }
 
-            setState {
-                copy(sentenceList = sentenceList, isLoading = false)
-            }
+    private fun saveListToState(list: List<Sentence>) {
+        val sentenceList = makeSentenceList(list.reversed())
+
+        setState {
+            copy(sentenceList = sentenceList, isLoading = false)
         }
     }
 

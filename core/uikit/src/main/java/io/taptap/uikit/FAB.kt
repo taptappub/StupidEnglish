@@ -16,9 +16,11 @@ import androidx.compose.ui.unit.dp
 
 val BOTTOM_BAR_VERTICAL_PADDING = 12.dp
 val BOTTOM_BAR_HEIGHT = 56.dp
+val FAB_HEIGHT = 48.dp
 val BOTTOM_BAR_MARGIN = BOTTOM_BAR_HEIGHT + BOTTOM_BAR_VERTICAL_PADDING * 2
+val BOTTOM_BAR_MARGIN_WITH_FAB = BOTTOM_BAR_MARGIN + FAB_HEIGHT
 
-//ver2
+    //ver2
 @Composable
 fun Fab(
     extended: Boolean,
@@ -35,8 +37,8 @@ fun Fab(
             modifier = modifier
                 .navigationBarsPadding()
                 .padding(bottom = BOTTOM_BAR_MARGIN, start = 16.dp, end = 16.dp)
-                .height(48.dp)
-                .widthIn(min = 48.dp)
+                .height(FAB_HEIGHT)
+                .widthIn(min = FAB_HEIGHT)
         ) {
             AnimatingFabContent(
                 icon = {

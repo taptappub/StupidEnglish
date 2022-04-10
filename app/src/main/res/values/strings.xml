@@ -28,7 +28,8 @@
     <string name="word_get_groups_error">Error while getting groups</string>
     <string name="word_onboarding_text">Make the most stupid sentence from your words</string>
     <string name="word_motivation_title">Is it time to make a sentence?</string>
-    <string name="word_motivation_message">Let\'s make some sentences with your words. Once per month we choose the funniest and the most stupid sentence and make a picture with it!</string>
+<!--    <string name="word_motivation_message">Let\'s make some sentences with your words. Once per month we choose the funniest and the most stupid sentence and make a picture with it!</string>-->
+    <string name="word_motivation_message">Let\'s make some sentences with your words</string>
     <string name="word_motivation_confirm">Let\'s do it!</string>
     <string name="word_motivation_decline">Nope</string>
     <string name="word_fab_text">Add word</string>
@@ -40,6 +41,8 @@
     <string name="word_empty_list_description">Add some words to the group</string>
     <string name="word_remove_group_title">Choose groups for removing</string>
     <string name="word_remove_group_button">Remove</string>
+    <string name="word_delete_message">Are you sure?</string>
+    <string name="word_recover">Recover</string>
 
     <!-- Sentences List -->
     <string name="stns_list_list_title">Stupid sentences</string>
@@ -47,6 +50,8 @@
     <string name="stns_get_sentences_error">Error while getting sentences</string>
     <string name="stns_fab_text">Add sentence</string>
     <string name="stns_empty_list_description">Time to the first stupid sentence!</string>
+    <string name="stns_delete_message">Are you sure?</string>
+    <string name="stns_recover">Recover</string>
 
     <!-- Add Word -->
     <string name="addw_save_error">Error while saving</string>
@@ -64,7 +69,7 @@
     <!-- Add Sentence -->
     <string name="adds_save_error">Error while saving</string>
     <string name="adds_get_words_error">Error while getting words</string>
-    <string name="adds_main_hint">Make a sentence from selected words. The more stupider, then better!</string>
+    <string name="adds_main_hint">Make a sentence from selected words.\nThe more stupider, then better!</string>
     <string name="adds_sentence_not_found_error">Add your sentence, please =)</string>
     <string name="adds_sentence_placeholder">Your sentence</string>
     <string name="adds_motivation_title">Let\'s share last sentence!</string>

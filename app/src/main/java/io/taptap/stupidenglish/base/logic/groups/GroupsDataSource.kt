@@ -1,6 +1,7 @@
 package io.taptap.stupidenglish.base.logic.groups
 
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
+import io.taptap.stupidenglish.base.logic.mapper.toGroup
 import io.taptap.stupidenglish.base.logic.mapper.toGroups
 import io.taptap.stupidenglish.base.model.Group
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,13 @@ class GroupsDataSource @Inject constructor(
         wordDao.observeGroups()
             .map { groupDtos ->
                 groupDtos.toGroups()
+            }
+    }
+
+    override suspend fun getGroupList(): Reaction<List<Group>> = Reaction.on {
+        wordDao.getGroups()
+            .map { groupDto ->
+                groupDto.toGroup()
             }
     }
 }

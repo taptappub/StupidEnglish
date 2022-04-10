@@ -13,7 +13,7 @@
     <string name="addw_description_not_found_error">Ты забыл добавить подсказку =)</string>
     <string name="adds_save_error">Возникла ошибка в момент добавления предложения</string>
     <string name="adds_get_words_error">Возникла ошибка в момент получения слов</string>
-    <string name="adds_main_hint">Составьте предложение из выбранных слов. Чем глупее оно будет, тем лучше!</string>
+    <string name="adds_main_hint">Составьте предложение из выбранных слов.\nЧем глупее оно будет, тем лучше!</string>
     <string name="adds_sentence_not_found_error">Сначала напиши предложение =)</string>
     <string name="adds_sentence_placeholder">Твое предложение</string>
     <string name="main_dialog_ok">Все понятно</string>
@@ -26,7 +26,8 @@
     <string name="stck_front_label">Помнишь это слово?</string>
     <string name="word_motivation_title">Составим предложение?</string>
     <string name="stck_back_label">Подсказка</string>
-    <string name="word_motivation_message">Настало время составить предложение с добавленными словами. Раз в месяц, мы выбираем самое веселое и глупое предложение, и на его основе нарисуем иллюстрацию!</string>
+<!--    <string name="word_motivation_message">Настало время составить предложение с добавленными словами. Раз в месяц, мы выбираем самое веселое и глупое предложение, и на его основе нарисуем иллюстрацию!</string>-->
+    <string name="word_motivation_message">Настало время составить предложение с добавленными словами</string>
     <string name="word_motivation_confirm">Составить</string>
     <string name="word_motivation_decline">Позже</string>
     <string name="adds_motivation_title">Хочешь поделиться своим предложением?</string>
@@ -58,4 +59,8 @@
     <string name="addw_get_groups_error">Возникла ошибка в момент получения слов</string>
     <string name="word_remove_group_button">Удалить</string>
     <string name="word_remove_group_title">Выбери группы для удаления</string>
+    <string name="stns_delete_message">Точно удалить?</string>
+    <string name="stns_recover">Восстановить</string>
+    <string name="word_delete_message">Точно удалить?</string>
+    <string name="word_recover">Восстановить</string>
 </resources>

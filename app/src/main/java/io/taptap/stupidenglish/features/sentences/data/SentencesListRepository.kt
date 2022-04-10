@@ -1,6 +1,7 @@
 package io.taptap.stupidenglish.features.sentences.data
 
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
+import io.taptap.stupidenglish.base.logic.mapper.toSentence
 import io.taptap.stupidenglish.base.logic.mapper.toSentences
 import io.taptap.stupidenglish.base.logic.prefs.Settings
 import io.taptap.stupidenglish.base.logic.randomwords.IRandomWordsDataSource
@@ -34,7 +35,14 @@ class SentencesListRepository @Inject constructor(
             }
     }
 
-    suspend fun deleteSentence(id: Long): Reaction<Unit> = Reaction.on {
-        wordDao.deleteSentence(id)
+    fun getSentenceList(): Reaction<List<Sentence>> = Reaction.on {
+        wordDao.getSentences()
+            .map { sentenceDto ->
+                sentenceDto.toSentence()
+            }
+    }
+
+    suspend fun deleteSentences(list: List<Long>): Reaction<Unit> = Reaction.on {
+        wordDao.deleteSentences(list)
     }
 }

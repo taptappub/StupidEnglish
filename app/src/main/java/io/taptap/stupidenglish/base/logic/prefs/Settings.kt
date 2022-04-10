@@ -14,7 +14,6 @@ open class Settings @Inject constructor(context: Context) {
     var isFirstStart by publicProperty(true, "is_first_start")
     var isSentenceMotivationShown by publicProperty(false, "is_sentence_motivation_shown")
     var isShareMotivationShown by publicProperty(false, "is_share_motivation_shown")
-    var currentColorIndex by publicProperty(0, "current_group_color_index")
 
     private fun <T> publicProperty(default: T, key: String) =
         PreferenceProperty(default, key, sharedPreferences)

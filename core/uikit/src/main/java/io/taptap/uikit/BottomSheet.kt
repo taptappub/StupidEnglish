@@ -32,7 +32,7 @@ fun BottomSheetScreen(
             Modifier
                 .wrapContentSize()
                 .background(
-                    shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+                    shape = RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp),
                     brush = getStupidLanguageBackgroundBox()
                 )
         ) {

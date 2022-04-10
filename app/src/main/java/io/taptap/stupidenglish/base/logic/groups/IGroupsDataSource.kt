@@ -6,4 +6,5 @@ import taptap.pub.Reaction
 
 interface IGroupsDataSource {
     suspend fun observeGroupList(): Reaction<Flow<List<Group>>>
+    suspend fun getGroupList(): Reaction<List<Group>>
 }

@@ -40,6 +40,8 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarResult
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -77,6 +79,7 @@ import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -119,13 +122,25 @@ fun SentencesListScreen(
                     )
                 is SentencesListContract.Effect.Navigation.ToAddSentence ->
                     onNavigationRequested(effect)
-                is SentencesListContract.Effect.ShowUnderConstruction ->
+                is SentencesListContract.Effect.ShowUnderConstruction -> {
                     scaffoldState.snackbarHostState.showSnackbar(
                         message = context.getString(R.string.under_construction),
                         duration = SnackbarDuration.Short
                     )
+                }
                 is SentencesListContract.Effect.ChangeBottomBarVisibility -> {
                     onChangeBottomSheetVisibility(effect.isShown)
+                }
+                is SentencesListContract.Effect.ShowRecover -> {
+                    val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.stns_delete_message),
+                        duration = SnackbarDuration.Short,
+                        actionLabel = context.getString(R.string.stns_recover)
+                    )
+                    when (snackbarResult) {
+                        SnackbarResult.Dismissed -> onEventSent(SentencesListContract.Event.OnApplySentenceDismiss)
+                        SnackbarResult.ActionPerformed -> onEventSent(SentencesListContract.Event.OnRecover)
+                    }
                 }
             }
         }?.collect()
@@ -163,7 +178,7 @@ fun SentencesListScreen(
             )
         }
     ) {
-        Scaffold(
+        StupidEnglishScaffold(
             scaffoldState = scaffoldState
         ) {
             ContentScreen(
@@ -186,6 +201,7 @@ private fun ContentScreen(
 
         SentencesList(
             sentencesItems = state.sentenceList,
+            deletedSentenceIds = state.deletedSentenceIds,
             listState = listState,
             onEventSent = onEventSent
         )
@@ -205,25 +221,37 @@ private fun ContentScreen(
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
 @Composable
-fun SentencesList(
+private fun SentencesList(
     sentencesItems: List<SentencesListListModels>,
     onEventSent: (event: SentencesListContract.Event) -> Unit,
     listState: LazyListState,
+    deletedSentenceIds: MutableList<Long>
 ) {
     LazyColumn(
         state = listState,
         contentPadding = PaddingValues(
             top = WindowInsets.navigationBars.getTop(LocalDensity.current).dp,
-            bottom = WindowInsets.navigationBars.getBottom(LocalDensity.current).dp + 12.dp
+            bottom = WindowInsets.navigationBars.getBottom(LocalDensity.current).dp + 12.dp + BOTTOM_BAR_MARGIN
         )
     ) {
         items(
             items = sentencesItems,
-            key = { it.id }
+            key = { it.id}
         ) { item ->
             val dismissState = rememberDismissState()
-            if (dismissState.isDismissed(DismissDirection.StartToEnd)) {
-                onEventSent(SentencesListContract.Event.OnSentenceDismiss(item as SentencesListItemUI))
+            if (deletedSentenceIds.contains(item.id)) { //todo выделить в отдельный класс с возможностью удалять?
+                if (dismissState.currentValue != DismissValue.Default) {
+                    LaunchedEffect(Unit) {
+                        dismissState.reset()
+                        onEventSent(SentencesListContract.Event.OnRecovered(item))
+                    }
+                }
+            } else {
+                if (item is SentencesListItemUI) {
+                    if (dismissState.isDismissed(DismissDirection.StartToEnd)) {
+                        onEventSent(SentencesListContract.Event.OnSentenceDismiss(item))
+                    }
+                }
             }
 
             when (item) {
@@ -254,7 +282,7 @@ fun SentencesList(
 
 @ExperimentalMaterialApi
 @Composable
-fun SentenceItemRow(
+private fun SentenceItemRow(
     item: SentencesListItemUI,
     onClicked: () -> Unit,
     dismissState: DismissState,

@@ -1,5 +1,6 @@
 package io.taptap.uikit
 
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -57,13 +58,14 @@ fun AverageText(
     color: Color = MaterialTheme.colorScheme.onSurface,
     style: TextStyle = MaterialTheme.typography.titleSmall
 ) {
-    Text(
-        text = text,
-        textAlign = textAlign,
-        color = color,
-        style = style,
-        maxLines = maxLines,
-        overflow = TextOverflow.Ellipsis,
-        modifier = modifier
-    )
+    SelectionContainer(modifier = modifier) {
+        Text(
+            text = text,
+            textAlign = textAlign,
+            color = color,
+            style = style,
+            maxLines = maxLines,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
 }

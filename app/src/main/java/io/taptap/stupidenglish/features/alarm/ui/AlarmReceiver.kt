@@ -77,7 +77,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 title = context.getString(R.string.alrm_sentence_title)
                 text = context.getString(R.string.alrm_sentence_message, string)
             }
-            .show()
+            .show(1)
     }
 
     @OptIn(ExperimentalFoundationApi::class)

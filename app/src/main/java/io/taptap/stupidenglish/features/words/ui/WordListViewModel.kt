@@ -8,6 +8,9 @@ import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
 import io.taptap.stupidenglish.base.logic.groups.GroupListModels
 import io.taptap.stupidenglish.base.logic.groups.NoGroup
 import io.taptap.stupidenglish.base.model.Group
+import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
+import io.taptap.stupidenglish.features.sentences.ui.SentencesListItemUI
 import io.taptap.stupidenglish.features.words.data.WordListRepository
 import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
@@ -48,7 +51,8 @@ class WordListViewModel @Inject constructor(
         dialogGroups = listOf(),
         removedGroups = listOf(),
         currentGroup = NoGroup,
-        sheetContentType = WordListContract.SheetContentType.Motivation
+        sheetContentType = WordListContract.SheetContentType.Motivation,
+        deletedWordIds = mutableListOf()
     )
 
     override fun handleEvents(event: WordListContract.Event) {
@@ -120,7 +124,7 @@ class WordListViewModel @Inject constructor(
             }
             is WordListContract.Event.OnWordDismiss -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    deleteWord(event.item)
+                    predeleteSentence(event.item)
                 }
             }
             is WordListContract.Event.OnGroupClick -> {
@@ -150,7 +154,6 @@ class WordListViewModel @Inject constructor(
                     )
                 }
             }
-
             is WordListContract.Event.OnGroupLongClick -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
                 setEffect { WordListContract.Effect.ShowBottomSheet }
@@ -178,7 +181,51 @@ class WordListViewModel @Inject constructor(
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 removeGroups(viewState.value.removedGroups)
             }
+            is WordListContract.Event.OnApplySentenceDismiss -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    deleteWords()
+                }
+            }
+            is WordListContract.Event.OnRecover -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val words = repository.getWordList().takeOrReturn {
+                        setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
+                        setState { copy(deletedWordIds = mutableListOf()) }
+                        return@launch
+                    }
+
+                    val groups = repository.getGroupList().takeOrReturn {
+                        setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
+                        setState { copy(deletedWordIds = mutableListOf()) }
+                        return@launch
+                    }
+
+                    makeMainListWithMap(words.reversed(), groups.reversed())
+                }
+            }
+            is WordListContract.Event.OnRecovered -> {
+                setState { copy(deletedWordIds = mutableListOf()) }
+            }
         }
+    }
+
+    private suspend fun predeleteSentence(item: WordListItemUI) {
+        val mutableDeletedWordIds = viewState.value.deletedWordIds.toMutableList()
+        mutableDeletedWordIds.add(item.id)
+        val list = viewState.value.wordList.toMutableList()
+        list.remove(item)
+        setState { copy(wordList = list, deletedWordIds = mutableDeletedWordIds) }
+        setEffect { WordListContract.Effect.ShowRecover }
+    }
+
+    private suspend fun deleteWords() {
+        deleteWords(viewState.value.deletedWordIds)
+
+        setState { copy(deletedWordIds = mutableListOf()) }
+    }
+
+    private suspend fun deleteWords(list: List<Long>) {
+        repository.deleteWords(list)
     }
 
     private fun filterWordListByGroup(group: GroupListModels) {
@@ -239,18 +286,22 @@ class WordListViewModel @Inject constructor(
             val mainList = pair.first
             val groupsList = pair.second
 
-            words = mainList.map {
-                WordListItemUI(
-                    id = it.id,
-                    word = it.word,
-                    description = it.description,
-                    groupsIds = it.groupsIds
-                )
-            }
-            groups = makeGroupsList(groupsList)
-
-            makeMainList(words, groups)
+            makeMainListWithMap(mainList, groupsList)
         }
+    }
+
+    private fun makeMainListWithMap(mainList: List<Word>, groupsList: List<Group>) {
+        words = mainList.map {
+            WordListItemUI(
+                id = it.id,
+                word = it.word,
+                description = it.description,
+                groupsIds = it.groupsIds
+            )
+        }
+        groups = makeGroupsList(groupsList)
+
+        makeMainList(words, groups)
     }
 
     private fun makeMainList(

@@ -36,6 +36,7 @@ import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackAdapter
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackDiffUtils
 import io.taptap.stupidenglish.features.stack.ui.adapter.randomDirection
 import io.taptap.uikit.SecondaryButton
+import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -87,7 +88,7 @@ fun StackScreen(
         }?.collect()
     }
 
-    Scaffold(
+    StupidEnglishScaffold(
         scaffoldState = scaffoldState,
     ) {
         ContentScreen(
