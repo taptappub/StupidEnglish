@@ -2,7 +2,7 @@ package io.taptap.stupidenglish.features.words.data
 
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
 import io.taptap.stupidenglish.base.logic.database.dto.GroupDto
-import io.taptap.stupidenglish.base.logic.groups.IGroupsDataSource
+import io.taptap.stupidenglish.base.logic.sources.groups.IGroupsDataSource
 import io.taptap.stupidenglish.base.logic.mapper.toWord
 import io.taptap.stupidenglish.base.logic.mapper.toWords
 import io.taptap.stupidenglish.base.logic.prefs.Settings

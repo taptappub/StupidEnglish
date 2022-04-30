@@ -78,6 +78,9 @@
     <string name="adds_motivation_decline">Later</string>
     <string name="adds_share_text" translatable="false">%1$s\n\nThis sentence was created by StupidLanguage app! #Education #StupidLanguage"</string>
 
+    <!-- Import Words -->
+    <string name="impw_get_groups_error">Error while getting groups</string>
+
     <!-- Alarm notification -->
     <string name="alrm_sentence_title">Time to make a sentence!</string>
     <string name="alrm_sentence_message">Challenge yourself with words %1$s</string>

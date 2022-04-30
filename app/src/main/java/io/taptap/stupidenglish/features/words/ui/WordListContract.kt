@@ -3,9 +3,7 @@ package io.taptap.stupidenglish.features.words.ui
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewState
-import io.taptap.stupidenglish.base.logic.groups.GroupListModels
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListListModels
+import io.taptap.stupidenglish.base.logic.sources.groups.GroupListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 

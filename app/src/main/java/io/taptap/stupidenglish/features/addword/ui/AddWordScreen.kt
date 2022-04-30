@@ -25,7 +25,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.rememberModalBottomSheetState
@@ -54,14 +53,20 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
-import io.taptap.stupidenglish.base.logic.groups.GroupListModels
-import io.taptap.stupidenglish.base.logic.groups.NoGroup
-import io.taptap.stupidenglish.base.logic.groups.getTitle
+import io.taptap.stupidenglish.base.logic.sources.groups.GroupItemUI
+import io.taptap.stupidenglish.base.logic.sources.groups.GroupListModels
+import io.taptap.stupidenglish.base.logic.sources.groups.NoGroup
+import io.taptap.stupidenglish.base.logic.sources.groups.getTitle
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.ui.ChooseGroupBottomSheetScreen
-import io.taptap.uikit.*
+import io.taptap.uikit.AddTextField
+import io.taptap.uikit.AverageTitle
+import io.taptap.uikit.Divider
+import io.taptap.uikit.LetterRoundView
+import io.taptap.uikit.ModalBottomSheetLayout
+import io.taptap.uikit.NextButton
+import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
@@ -150,7 +155,7 @@ fun AddWordScreen(
             )
         }
     ) {
-        Scaffold(
+        StupidEnglishScaffold(
             scaffoldState = scaffoldState
         ) {
             ContentScreen(

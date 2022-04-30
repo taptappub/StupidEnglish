@@ -17,6 +17,9 @@ interface WordDao {
     @Insert
     suspend fun insertWord(word: WordDto): Long
 
+    @Insert
+    suspend fun insertWords(word: List<WordDto>)
+
     @Update
     suspend fun updateWord(word: WordDto)
 

@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.base.logic.groups
+package io.taptap.stupidenglish.base.logic.sources.groups
 
 import io.taptap.stupidenglish.base.model.Group
 import kotlinx.coroutines.flow.Flow

@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.base.logic.groups
+package io.taptap.stupidenglish.base.logic.sources.groups
 
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
 import io.taptap.stupidenglish.base.logic.mapper.toGroup

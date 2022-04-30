@@ -42,6 +42,9 @@ import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.stupidenglish.features.addword.ui.AddWordScreen
 import io.taptap.stupidenglish.features.addword.ui.AddWordViewModel
 import io.taptap.stupidenglish.features.alarm.ui.AlarmScheduler
+import io.taptap.stupidenglish.features.importwords.ui.ImportWordsContract
+import io.taptap.stupidenglish.features.importwords.ui.ImportWordsScreen
+import io.taptap.stupidenglish.features.importwords.ui.ImportWordsViewModel
 import io.taptap.stupidenglish.features.main.ui.MainContract
 import io.taptap.stupidenglish.features.main.ui.MainViewModel
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
@@ -187,7 +190,12 @@ class MainActivity : ComponentActivity() {
 //                        slideOutVertically(targetOffsetY = { 1000 })
                     }
                 ) {
-                    AddWordDialogDestination(navController)
+                    AddWordDestination(navController)
+                }
+                composable(
+                    route = NavigationKeys.Route.SE_IMPORT_WORDS
+                ) {
+                    ImportWordsDestination(navController)
                 }
                 composable(
                     route = NavigationKeys.Route.SE_REMEMBER,
@@ -255,7 +263,7 @@ class MainActivity : ComponentActivity() {
 
 @ExperimentalMaterialApi
 @Composable
-private fun AddWordDialogDestination(
+private fun AddWordDestination(
     navController: NavHostController
 ) {
     val addWordViewModel: AddWordViewModel = hiltViewModel()
@@ -268,6 +276,26 @@ private fun AddWordDialogDestination(
         onEventSent = { event -> addWordViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddWordContract.Effect.Navigation.BackToWordList) {
+                navController.popBackStack()
+            }
+        })
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun ImportWordsDestination(
+    navController: NavHostController
+) {
+    val importWordsViewModel: ImportWordsViewModel = hiltViewModel()
+    val importWordsState = importWordsViewModel.viewState.value
+
+    ImportWordsScreen(
+        context = LocalContext.current,
+        state = importWordsState,
+        effectFlow = importWordsViewModel.effect,
+        onEventSent = { event -> importWordsViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            if (navigationEffect is ImportWordsContract.Effect.Navigation.BackToWordList) {
                 navController.popBackStack()
             }
         })
@@ -354,7 +382,8 @@ private fun WordListDestination(
         onNavigationRequested = { navigationEffect ->
             when (navigationEffect) {
                 is WordListContract.Effect.Navigation.ToAddWord -> {
-                    navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
+//                    navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
+                    navController.navigate(NavigationKeys.Route.SE_IMPORT_WORDS)
                 }
                 is WordListContract.Effect.Navigation.ToAddSentence -> {
                     val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)

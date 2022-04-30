@@ -17,10 +17,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.taptap.stupidenglish.R
-import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
-import io.taptap.stupidenglish.base.logic.groups.GroupListModels
-import io.taptap.stupidenglish.base.logic.groups.NoGroup
-import io.taptap.stupidenglish.base.logic.groups.getTitle
+import io.taptap.stupidenglish.base.logic.sources.groups.GroupItemUI
+import io.taptap.stupidenglish.base.logic.sources.groups.GroupListModels
+import io.taptap.stupidenglish.base.logic.sources.groups.NoGroup
+import io.taptap.stupidenglish.base.logic.sources.groups.getTitle
 import io.taptap.uikit.*
 import io.taptap.uikit.theme.StupidEnglishTheme
 

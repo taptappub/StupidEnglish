@@ -4,13 +4,11 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
-import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
-import io.taptap.stupidenglish.base.logic.groups.GroupListModels
-import io.taptap.stupidenglish.base.logic.groups.NoGroup
+import io.taptap.stupidenglish.base.logic.sources.groups.GroupItemUI
+import io.taptap.stupidenglish.base.logic.sources.groups.GroupListModels
+import io.taptap.stupidenglish.base.logic.sources.groups.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.base.model.Word
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListItemUI
 import io.taptap.stupidenglish.features.words.data.WordListRepository
 import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI

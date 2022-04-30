@@ -1,7 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext {
-//        compose_version = '1.0.1'
+        compileSdkVersion = 31
+        minSdkVersion = 24
+        targetSdkVersion = 31
+        buildToolsVersion = "30.0.3"
+
+        reaction_version = "1.0.3"
+        appcompat_version = "1.4.1"
+        core_ktx_version = "1.7.0"
     }
     repositories {
         google()

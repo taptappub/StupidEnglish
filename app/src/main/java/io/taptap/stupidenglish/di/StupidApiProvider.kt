@@ -12,12 +12,16 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
-import io.taptap.stupidenglish.base.logic.groups.GroupsDataSource
-import io.taptap.stupidenglish.base.logic.groups.IGroupsDataSource
+import io.taptap.stupidenglish.base.logic.sources.groups.GroupsDataSource
+import io.taptap.stupidenglish.base.logic.sources.groups.IGroupsDataSource
 import io.taptap.stupidenglish.base.logic.prefs.Settings
 import io.taptap.stupidenglish.base.logic.randomwords.IRandomWordsDataSource
 import io.taptap.stupidenglish.base.logic.randomwords.RandomWordsDataSource
 import io.taptap.stupidenglish.base.logic.share.ShareUtil
+import io.taptap.stupidenglish.base.logic.sources.keys.IKeysDataSource
+import io.taptap.stupidenglish.base.logic.sources.keys.KeysDataSource
+import io.taptap.stupidenglish.base.logic.sources.words.IWordsDataSource
+import io.taptap.stupidenglish.base.logic.sources.words.WordsDataSource
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.alarm.ui.AlarmScheduler
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -39,8 +43,20 @@ class StupidApiProvider {
 
     @Provides
     @Singleton
+    fun provideKeysDataSource(@ApplicationContext appContext: Context): IKeysDataSource {
+        return KeysDataSource(appContext)
+    }
+
+    @Provides
+    @Singleton
     fun provideGroupsDataSource(wordDao : WordDao): IGroupsDataSource {
         return GroupsDataSource(wordDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideWordsDataSource(wordDao : WordDao): IWordsDataSource {
+        return WordsDataSource(wordDao)
     }
 
     @Provides

@@ -7,9 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ticker
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlin.concurrent.timer
 
 const val LAUNCH_LISTEN_FOR_EFFECTS = "launch-listen-to-effects"
 
@@ -49,6 +52,23 @@ abstract class BaseViewModel<Event : ViewEvent, UiState : ViewState, Effect : Vi
             val newState = viewState.value.reducer()
             Log.d("StupidEnglishState", "state = $newState")
             _viewState.value = newState
+        }
+    }
+
+    protected fun setTemporaryState(
+        tempReducer: UiState.() -> UiState,
+        duration: Long
+    ) {
+        viewModelScope.launch {
+            val oldValue = _viewState.value
+
+            val newState = viewState.value.tempReducer()
+            Log.d("StupidEnglishState", "state = $newState")
+            _viewState.value = newState
+
+            delay(duration)
+
+            _viewState.value = oldValue
         }
     }
 

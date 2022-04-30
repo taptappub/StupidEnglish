@@ -42,10 +42,10 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
-import io.taptap.stupidenglish.base.logic.groups.GroupListModels
-import io.taptap.stupidenglish.base.logic.groups.NoGroup
-import io.taptap.stupidenglish.base.logic.groups.NoGroupItemUI
+import io.taptap.stupidenglish.base.logic.sources.groups.GroupItemUI
+import io.taptap.stupidenglish.base.logic.sources.groups.GroupListModels
+import io.taptap.stupidenglish.base.logic.sources.groups.NoGroup
+import io.taptap.stupidenglish.base.logic.sources.groups.NoGroupItemUI
 import io.taptap.stupidenglish.base.noRippleClickable
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
@@ -203,7 +203,7 @@ fun WordListScreen(
 
                     MainList(
                         wordItems = state.wordList,
-                        deletedSentenceIds = state.deletedWordIds,
+                        deletedWordIds = state.deletedWordIds,
                         group = state.currentGroup,
                         listState = listState,
                         onEventSent = onEventSent
@@ -232,7 +232,7 @@ private fun MainList(
     group: GroupListModels?,
     listState: LazyListState,
     onEventSent: (event: WordListContract.Event) -> Unit,
-    deletedSentenceIds: MutableList<Long>
+    deletedWordIds: MutableList<Long>
 ) {
     LazyColumn(
         state = listState,
@@ -246,7 +246,7 @@ private fun MainList(
             key = { it.id }
         ) { item ->
             val dismissState = rememberDismissState()
-            if (deletedSentenceIds.contains(item.id)) { //todo выделить в отдельный класс с возможностью удалять?
+            if (deletedWordIds.contains(item.id)) { //todo выделить в отдельный класс с возможностью удалять?
                 if (dismissState.currentValue != DismissValue.Default) {
                     LaunchedEffect(Unit) {
                         dismissState.reset()

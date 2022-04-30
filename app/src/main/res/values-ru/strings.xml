@@ -63,4 +63,5 @@
     <string name="stns_recover">Восстановить</string>
     <string name="word_delete_message">Точно удалить?</string>
     <string name="word_recover">Восстановить</string>
+    <string name="impw_get_groups_error">Возникла ошибка в момент получения слов</string>
 </resources>
