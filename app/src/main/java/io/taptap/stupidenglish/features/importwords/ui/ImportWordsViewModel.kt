@@ -9,21 +9,24 @@ import io.taptap.stupidenglish.base.logic.sources.groups.GroupListModels
 import io.taptap.stupidenglish.base.logic.sources.groups.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.base.model.Word
-import io.taptap.stupidenglish.features.importwords.data.ImportWordsRepository
+import io.taptap.stupidenglish.features.importwords.domain.ImportWordsInteractor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import taptap.pub.Reaction
 import taptap.pub.doOnError
 import taptap.pub.doOnSuccess
 import taptap.pub.takeOrReturn
 import javax.inject.Inject
 
-private val linkRegExp = "^https://sheets.googleapis.com/v([45])/spreadsheets/.+".toRegex()
-
 @HiltViewModel
 class ImportWordsViewModel @Inject constructor(
-    private val repository: ImportWordsRepository
+    private val interactor: ImportWordsInteractor
 ) : BaseViewModel<ImportWordsContract.Event, ImportWordsContract.State, ImportWordsContract.Effect>() {
+
+    private var words: List<Word> = mutableListOf()
 
     init {
         viewModelScope.launch(Dispatchers.IO) { getGroupsList() }
@@ -38,17 +41,27 @@ class ImportWordsViewModel @Inject constructor(
         parsingState = ImportWordsContract.ParsingState.None
     )
 
-    override fun handleEvents(event: ImportWordsContract.Event) {
+    override suspend fun handleEvents(event: ImportWordsContract.Event) {
         when (event) {
             is ImportWordsContract.Event.OnLinkChanging -> {
                 setState { copy(link = event.value) }
-
-                if (event.value matches linkRegExp) {
-                    setState {
-                        copy(
-                            isWrongLink = false,
-                            importWordState = ImportWordsContract.ImportWordState.HasLink
-                        )
+                if (interactor.check(event.value)) {
+                    flow<Reaction<List<Word>>> {
+                        interactor.getWordsFromGoogleSheetTable(viewState.value.link)
+                    }.collectLatest {
+                        setState {
+                            copy(
+                                isWrongLink = it.isError(),
+                                importWordState = if (it.isError()) {
+                                    ImportWordsContract.ImportWordState.None
+                                } else {
+                                    ImportWordsContract.ImportWordState.HasLink
+                                }
+                            )
+                        }
+                        it.doOnSuccess { googleSheetList ->
+                            words = googleSheetList
+                        }
                     }
                 } else {
                     setState {
@@ -76,24 +89,6 @@ class ImportWordsViewModel @Inject constructor(
     }
 
     private suspend fun importWords() {
-        setState {
-            copy(
-                parsingState = ImportWordsContract.ParsingState.InProgress,
-            )
-        }
-        val words = repository.getWordsFromGoogleSheetTable(viewState.value.link)
-            .takeOrReturn {
-                setTemporaryState(
-                    tempReducer = {
-                        copy(
-                            parsingState = ImportWordsContract.ParsingState.Failed,
-                        )
-                    },
-                    duration = 2000
-                )
-                return
-            }
-
         val groupsIds = viewState.value.selectedGroups.map {
             it.id
         }
@@ -108,7 +103,7 @@ class ImportWordsViewModel @Inject constructor(
             )
         }
 
-        repository.saveWords(newWords)
+        interactor.saveWords(newWords)
             .doOnSuccess {
                 setState {
                     copy(
@@ -131,7 +126,7 @@ class ImportWordsViewModel @Inject constructor(
     }
 
     private suspend fun getGroupsList() {
-        val groupList = repository.observeGroupList().takeOrReturn {
+        val groupList = interactor.observeGroupList().takeOrReturn {
             setEffect { ImportWordsContract.Effect.GetGroupsError(R.string.impw_get_groups_error) }
             return
         }
@@ -157,3 +152,5 @@ class ImportWordsViewModel @Inject constructor(
         return groupList
     }
 }
+
+fun <T> Reaction<T>.isError(): Boolean = this is Reaction.Error

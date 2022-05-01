@@ -23,11 +23,11 @@ class ImportWordsContract {
 
     enum class ImportWordState {
         None,
+        InProgress,
         HasLink
     }
 
     enum class ParsingState {
-        InProgress,
         Success,
         Failed,
         None

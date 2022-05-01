@@ -20,9 +20,7 @@ class ImportWordsRepository @Inject constructor(
 ) : IGroupsDataSource by groupsDataSource,
     IWordsDataSource by wordsDataSource {
 
-    suspend fun getWordsFromGoogleSheetTable(
-        spreadsheetId: String
-    ): Reaction<List<Word>> = Reaction.on {
+    suspend fun getWordsFromGoogleSheetTable(spreadsheetId: String): Reaction<List<Word>> = Reaction.on {
         googleSheetApi.getTableData(
             spreadsheetId = spreadsheetId,
             apiKey = keysDataSource.googleApiKey
