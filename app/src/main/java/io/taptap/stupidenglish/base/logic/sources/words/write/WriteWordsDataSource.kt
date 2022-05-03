@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.base.logic.sources.words
+package io.taptap.stupidenglish.base.logic.sources.words.write
 
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
 import io.taptap.stupidenglish.base.logic.database.dto.WordDto
@@ -8,9 +8,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WordsDataSource @Inject constructor(
+class WriteWordsDataSource @Inject constructor(
     private val wordDao: WordDao
-) : IWordsDataSource {
+) : IWriteWordsDataSource {
 
     override suspend fun saveWord(
         word: String,
