@@ -479,7 +479,7 @@ private fun WordItemRow(
     SwipeToDismiss(
         state = dismissState,
         dismissThresholds = { direction ->
-            FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
+            FractionalThreshold(0.5f)
         },
         modifier = modifier
             .padding(vertical = 1.dp),
