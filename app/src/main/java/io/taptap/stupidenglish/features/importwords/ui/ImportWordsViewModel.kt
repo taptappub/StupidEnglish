@@ -51,6 +51,12 @@ class ImportWordsViewModel @Inject constructor(
                 val link = event.value
                 setState { copy(link = link) }
                 if (interactor.check(link)) {
+                    setState {
+                        copy(
+                            importWordState = ImportWordsContract.ImportWordState.InProgress
+                        )
+                    }
+
 //                    flow<Reaction<List<Word>>> {
                         val reaction = interactor.getWordsFromGoogleSheetTable(link)
                             .doOnSuccess { googleSheetList ->
@@ -97,6 +103,11 @@ class ImportWordsViewModel @Inject constructor(
     }
 
     private suspend fun importWords() {
+        setState {
+            copy(
+                parsingState = ImportWordsContract.ParsingState.InProgress,
+            )
+        }
         val groupsIds = viewState.value.selectedGroups.map {
             it.id
         }

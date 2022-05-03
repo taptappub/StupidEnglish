@@ -94,17 +94,19 @@ private fun ContentScreen(
                     }
             )
 
-            NextButton(
-                visibility = true,
-                onClick = {
-                    onEventSent(ImportWordsContract.Event.OnImportClick)
-                },
-                modifier = Modifier
-                    .constrainAs(button) {
-                        bottom.linkTo(parent.bottom, 16.dp)
-                        end.linkTo(parent.end, 16.dp)
-                    }
-            )
+            if (!state.isWrongLink && state.importWordState == ImportWordsContract.ImportWordState.HasLink) {
+                NextButton(
+                    visibility = true,
+                    onClick = {
+                        onEventSent(ImportWordsContract.Event.OnImportClick)
+                    },
+                    modifier = Modifier
+                        .constrainAs(button) {
+                            bottom.linkTo(parent.bottom, 16.dp)
+                            end.linkTo(parent.end, 16.dp)
+                        }
+                )
+            }
         }
 
         ResultNotification(
@@ -119,7 +121,6 @@ private fun ImportWordStateScreen(
     modifier: Modifier,
     onEventSent: (event: ImportWordsContract.Event) -> Unit
 ) {
-//    val scrollState = rememberScrollState()
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -137,9 +138,11 @@ private fun ImportWordStateScreen(
 
         if (!state.isWrongLink && state.importWordState == ImportWordsContract.ImportWordState.HasLink) {
             GroupItemHeader(
-                title = "Title",
-                button = "button",
-                onButtonClicked = {}
+                title = stringResource(id = R.string.impw_choose_groups_label),
+                button = stringResource(id = R.string.impw_choose_groups_button),
+                onButtonClicked = {
+
+                }
             )
             GroupsChooserScreen(
                 state = state,
@@ -173,6 +176,7 @@ fun GroupsChooserScreen(
 private fun ImportWordsContract.ParsingState.toResultNotificationState(): ResultNotification.State {
     return when (this) {
         ImportWordsContract.ParsingState.Success -> ResultNotification.State.SUCCESS
+        ImportWordsContract.ParsingState.InProgress -> ResultNotification.State.IN_PROGRESS
         ImportWordsContract.ParsingState.Failed -> ResultNotification.State.FAILED
         ImportWordsContract.ParsingState.None -> ResultNotification.State.IDLE
     }

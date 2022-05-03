@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,21 +29,19 @@ fun BoxScope.ResultNotification(
     resultNotificationState: ResultNotification.State,
     modifier: Modifier = Modifier
         .align(Alignment.Center)
-        .size(104.dp), //должен быть по центру по умолчанию
+        .size(88.dp), //должен быть по центру по умолчанию
 ) {
     if (resultNotificationState == ResultNotification.State.IDLE) return
 
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
+        containerColor = MaterialTheme.colorScheme.surface,
         modifier = modifier
     ) {
         when (resultNotificationState) {
             ResultNotification.State.SUCCESS -> {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_empty_list),
+                    painter = painterResource(id = R.drawable.ic_tick),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
@@ -49,8 +49,9 @@ fun BoxScope.ResultNotification(
                 )
             }
             ResultNotification.State.FAILED -> {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_anger),
+                Icon(
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    imageVector = Icons.Outlined.Close,
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
@@ -60,6 +61,7 @@ fun BoxScope.ResultNotification(
             ResultNotification.State.IN_PROGRESS -> {
                 CircularProgressIndicator(
                     strokeWidth = 6.dp,
+                    color = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp)

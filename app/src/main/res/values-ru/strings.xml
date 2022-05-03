@@ -66,4 +66,6 @@
     <string name="impw_get_groups_error">Возникла ошибка в момент получения слов</string>
     <string name="impw_textfield_label">Ссылка на Google Sheet</string>
     <string name="impw_incorrect_link_error">Неверная ссылка</string>
+    <string name="impw_choose_groups_label">Выбери группы</string>
+    <string name="impw_choose_groups_button">Добавить группу</string>
 </resources>

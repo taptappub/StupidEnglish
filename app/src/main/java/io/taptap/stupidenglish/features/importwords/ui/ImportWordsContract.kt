@@ -29,6 +29,7 @@ class ImportWordsContract {
 
     enum class ParsingState {
         Success,
+        InProgress,
         Failed,
         None
     }
