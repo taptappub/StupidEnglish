@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.importwords.ui
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
@@ -12,9 +13,12 @@ import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.importwords.domain.ImportWordsInteractor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import taptap.pub.Reaction
 import taptap.pub.doOnError
 import taptap.pub.doOnSuccess
@@ -44,25 +48,29 @@ class ImportWordsViewModel @Inject constructor(
     override suspend fun handleEvents(event: ImportWordsContract.Event) {
         when (event) {
             is ImportWordsContract.Event.OnLinkChanging -> {
-                setState { copy(link = event.value) }
-                if (interactor.check(event.value)) {
-                    flow<Reaction<List<Word>>> {
-                        interactor.getWordsFromGoogleSheetTable(viewState.value.link)
-                    }.collectLatest {
+                val link = event.value
+                setState { copy(link = link) }
+                if (interactor.check(link)) {
+//                    flow<Reaction<List<Word>>> {
+                        val reaction = interactor.getWordsFromGoogleSheetTable(link)
+                            .doOnSuccess { googleSheetList ->
+                                words = googleSheetList
+                            }
+                            .doOnError {
+                                Log.e("ImportWordsViewModel", "exception ${it.message}")
+                            }
+//                    }.onEach {
                         setState {
                             copy(
-                                isWrongLink = it.isError(),
-                                importWordState = if (it.isError()) {
+                                isWrongLink = reaction.isError(),
+                                importWordState = if (reaction.isError()) {
                                     ImportWordsContract.ImportWordState.None
                                 } else {
                                     ImportWordsContract.ImportWordState.HasLink
                                 }
                             )
                         }
-                        it.doOnSuccess { googleSheetList ->
-                            words = googleSheetList
-                        }
-                    }
+//                    }.collect()
                 } else {
                     setState {
                         copy(

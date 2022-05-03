@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.importwords.domain
 
+import android.util.Log
 import io.taptap.stupidenglish.base.logic.sources.groups.IGroupsDataSource
 import io.taptap.stupidenglish.base.logic.sources.words.IWordsDataSource
 import io.taptap.stupidenglish.base.model.Word
@@ -14,6 +15,7 @@ class ImportWordsInteractor @Inject constructor(
     private val repository: ImportWordsRepository
 ) : IWordsDataSource by repository,
     IGroupsDataSource by repository {
+
     fun check(value: String): Boolean {
         return value matches linkRegExp
     }
@@ -26,6 +28,8 @@ class ImportWordsInteractor @Inject constructor(
     }
 
     private fun getSpreadSheetId(link: String): Reaction<String> {
-        return Reaction.on { linkRegExp.find(link)!!.groupValues[1] }
+        Log.d("ImportWordsInteractor", "getSpreadSheetId link $link")
+        Log.d("ImportWordsInteractor", "getSpreadSheetId linkRegExp ${linkRegExp.pattern}")
+        return Reaction.on { linkRegExp.find(link)?.groupValues?.get(1) ?: error("getSpreadSheetId null")}
     }
 }
