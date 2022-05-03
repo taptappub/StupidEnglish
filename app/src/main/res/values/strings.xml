@@ -84,6 +84,7 @@
     <string name="impw_incorrect_link_error">Incorrect link</string>
     <string name="impw_choose_groups_label">Choose groups</string>
     <string name="impw_choose_groups_button">Add group</string>
+    <string name="impw_group_add_group_title">New group</string>
 
     <!-- Alarm notification -->
     <string name="alrm_sentence_title">Time to make a sentence!</string>

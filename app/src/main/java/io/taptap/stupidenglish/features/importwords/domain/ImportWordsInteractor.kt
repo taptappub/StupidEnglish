@@ -1,8 +1,9 @@
 package io.taptap.stupidenglish.features.importwords.domain
 
 import android.util.Log
-import io.taptap.stupidenglish.base.logic.sources.groups.IGroupsDataSource
-import io.taptap.stupidenglish.base.logic.sources.words.IWordsDataSource
+import io.taptap.stupidenglish.base.logic.sources.groups.read.IReadGroupsDataSource
+import io.taptap.stupidenglish.base.logic.sources.groups.write.IWriteGroupsDataSource
+import io.taptap.stupidenglish.base.logic.sources.words.write.IWriteWordsDataSource
 import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.importwords.data.ImportWordsRepository
 import taptap.pub.Reaction
@@ -13,8 +14,9 @@ private val linkRegExp = "https://docs\\.google\\.com/spreadsheets/d/(.*?)/(.)+"
 
 class ImportWordsInteractor @Inject constructor(
     private val repository: ImportWordsRepository
-) : IWordsDataSource by repository,
-    IGroupsDataSource by repository {
+) : IWriteWordsDataSource by repository,
+    IReadGroupsDataSource by repository,
+    IWriteGroupsDataSource by repository {
 
     fun check(value: String): Boolean {
         return value matches linkRegExp

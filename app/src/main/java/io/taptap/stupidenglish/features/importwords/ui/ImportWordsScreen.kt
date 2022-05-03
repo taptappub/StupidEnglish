@@ -1,36 +1,51 @@
 package io.taptap.stupidenglish.features.importwords.ui
 
 import android.content.Context
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.base.ui.hideSheet
+import io.taptap.stupidenglish.base.ui.showSheet
+import io.taptap.stupidenglish.features.words.ui.WordListContract
+import io.taptap.stupidenglish.ui.ChooseGroupBottomSheetScreen
 import io.taptap.stupidenglish.ui.ChooseGroupContent
 import io.taptap.stupidenglish.ui.GroupItemHeader
+import io.taptap.uikit.DialogSheetScreen
 import io.taptap.uikit.LoadingBar
+import io.taptap.uikit.ModalBottomSheetLayout
 import io.taptap.uikit.NextButton
 import io.taptap.uikit.ResultNotification
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.TextField
+import io.taptap.uikit.complex.AddGroupBottomSheetScreen
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
+@OptIn(ExperimentalMaterialApi::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 fun ImportWordsScreen(
     context: Context,
@@ -39,32 +54,66 @@ fun ImportWordsScreen(
     onEventSent: (event: ImportWordsContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: ImportWordsContract.Effect.Navigation) -> Unit
 ) {
-    val scaffoldState: ScaffoldState = rememberScaffoldState()
-
     val scope = rememberCoroutineScope()
 
-    // Listen for side effects from the VM
-    LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-        effectFlow?.onEach { effect ->
-            when (effect) {
-                is ImportWordsContract.Effect.GetGroupsError ->
-                    scaffoldState.snackbarHostState.showSnackbar(
-                        message = context.getString(effect.errorRes),
-                        duration = SnackbarDuration.Short
-                    )
-                is ImportWordsContract.Effect.Navigation.BackToWordList -> onNavigationRequested(
-                    effect
-                )
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden
+    )
+
+    if (modalBottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
+        val keyboardController = LocalSoftwareKeyboardController.current
+        DisposableEffect(Unit) {
+            onDispose {
+                onEventSent(ImportWordsContract.Event.OnGroupAddingCancel)
             }
-        }?.collect()
+        }
+        keyboardController?.hide()
     }
-    StupidEnglishScaffold(
-        scaffoldState = scaffoldState
+
+    ModalBottomSheetLayout(
+        sheetState = modalBottomSheetState,
+        sheetContent = {
+            AddGroupBottomSheetScreen(
+                sheetTitle = stringResource(id = R.string.impw_group_add_group_title),
+                group = { state.group },
+                onGroupNameChange = { onEventSent(ImportWordsContract.Event.OnGroupChanging(it)) },
+                onAddGroup = {
+                    if (state.group.isNotEmpty()) {
+                        onEventSent(ImportWordsContract.Event.OnApplyGroup)
+                    }
+                }
+            )
+        }
     ) {
-        ContentScreen(
-            state,
-            onEventSent
-        )
+        val scaffoldState: ScaffoldState = rememberScaffoldState()
+
+        // Listen for side effects from the VM
+        LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+            effectFlow?.onEach { effect ->
+                when (effect) {
+                    is ImportWordsContract.Effect.GetGroupsError ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(effect.errorRes),
+                            duration = SnackbarDuration.Short
+                        )
+                    is ImportWordsContract.Effect.Navigation.BackToWordList -> onNavigationRequested(
+                        effect
+                    )
+                    is ImportWordsContract.Effect.HideBottomSheet ->
+                        modalBottomSheetState.hideSheet(scope)
+                    is ImportWordsContract.Effect.ShowBottomSheet ->
+                        modalBottomSheetState.showSheet(scope)
+                }
+            }?.collect()
+        }
+        StupidEnglishScaffold(
+            scaffoldState = scaffoldState
+        ) {
+            ContentScreen(
+                state,
+                onEventSent
+            )
+        }
     }
 }
 
@@ -141,7 +190,7 @@ private fun ImportWordStateScreen(
                 title = stringResource(id = R.string.impw_choose_groups_label),
                 button = stringResource(id = R.string.impw_choose_groups_button),
                 onButtonClicked = {
-
+                    onEventSent(ImportWordsContract.Event.OnAddGroupClick)
                 }
             )
             GroupsChooserScreen(

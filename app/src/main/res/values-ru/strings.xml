@@ -68,4 +68,5 @@
     <string name="impw_incorrect_link_error">Неверная ссылка</string>
     <string name="impw_choose_groups_label">Выбери группы</string>
     <string name="impw_choose_groups_button">Добавить группу</string>
+    <string name="impw_group_add_group_title">Новая группа</string>
 </resources>

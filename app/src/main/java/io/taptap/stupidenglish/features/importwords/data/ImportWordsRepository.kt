@@ -1,25 +1,27 @@
 package io.taptap.stupidenglish.features.importwords.data
 
-import io.taptap.stupidenglish.base.logic.sources.groups.IGroupsDataSource
-import io.taptap.stupidenglish.base.logic.sources.groups.NoGroup
+import io.taptap.stupidenglish.base.logic.sources.groups.read.IReadGroupsDataSource
+import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
+import io.taptap.stupidenglish.base.logic.sources.groups.write.IWriteGroupsDataSource
 import io.taptap.stupidenglish.base.logic.sources.keys.IKeysDataSource
-import io.taptap.stupidenglish.base.logic.sources.words.IWordsDataSource
+import io.taptap.stupidenglish.base.logic.sources.words.write.IWriteWordsDataSource
 import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.importwords.data.model.GoogleTableModel
 import io.taptap.stupidenglish.features.importwords.data.network.IGoogleSheetApi
 import taptap.pub.Reaction
-import taptap.pub.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ImportWordsRepository @Inject constructor(
-    groupsDataSource: IGroupsDataSource,
-    wordsDataSource: IWordsDataSource,
+    readGroupsDataSource: IReadGroupsDataSource,
+    writeGroupsDataSource: IWriteGroupsDataSource,
+    writeWordsDataSource: IWriteWordsDataSource,
     private val keysDataSource: IKeysDataSource,
     private val googleSheetApi: IGoogleSheetApi
-) : IGroupsDataSource by groupsDataSource,
-    IWordsDataSource by wordsDataSource {
+) : IReadGroupsDataSource by readGroupsDataSource,
+    IWriteWordsDataSource by writeWordsDataSource,
+    IWriteGroupsDataSource by writeGroupsDataSource {
 
     suspend fun getWordsFromGoogleSheetTable(spreadsheetId: String): Reaction<List<Word>> =
         Reaction.on {
