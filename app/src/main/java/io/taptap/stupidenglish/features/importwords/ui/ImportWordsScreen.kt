@@ -6,23 +6,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.ui.ChooseGroupContent
 import io.taptap.stupidenglish.ui.GroupItemHeader
@@ -30,6 +25,7 @@ import io.taptap.uikit.LoadingBar
 import io.taptap.uikit.NextButton
 import io.taptap.uikit.ResultNotification
 import io.taptap.uikit.StupidEnglishScaffold
+import io.taptap.uikit.TextField
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -123,30 +119,20 @@ private fun ImportWordStateScreen(
     modifier: Modifier,
     onEventSent: (event: ImportWordsContract.Event) -> Unit
 ) {
-    val scrollState = rememberScrollState()
+//    val scrollState = rememberScrollState()
     Column(
-        modifier = modifier
-            .verticalScroll(
-                state = scrollState
-            )
+        modifier = modifier.fillMaxSize()
     ) {
         TextField(
             value = state.link,
-            label = { Text("Label") },
+            labelValue = stringResource(id = R.string.impw_textfield_label),
+            hintValue = stringResource(id = R.string.impw_incorrect_link_error),
             onValueChange = { text ->
                 onEventSent(ImportWordsContract.Event.OnLinkChanging(text))
             },
             isError = state.isWrongLink,
-            singleLine = true,
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = MaterialTheme.colorScheme.onSurface,
-                backgroundColor = MaterialTheme.colorScheme.surface,
-                cursorColor = MaterialTheme.colorScheme.onSurface,
-                placeholderColor = MaterialTheme.colorScheme.onSurface
-            ),
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
-                .padding(8.dp)
         )
 
         if (!state.isWrongLink && state.importWordState == ImportWordsContract.ImportWordState.HasLink) {

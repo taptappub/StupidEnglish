@@ -80,6 +80,8 @@
 
     <!-- Import Words -->
     <string name="impw_get_groups_error">Error while getting groups</string>
+    <string name="impw_textfield_label">Link to Google Sheet</string>
+    <string name="impw_incorrect_link_error">Incorrect link</string>
 
     <!-- Alarm notification -->
     <string name="alrm_sentence_title">Time to make a sentence!</string>
