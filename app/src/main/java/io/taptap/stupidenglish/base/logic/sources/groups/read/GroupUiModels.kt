@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.base.logic.sources.groups
+package io.taptap.stupidenglish.base.logic.sources.groups.read
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource

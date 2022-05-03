@@ -45,7 +45,7 @@ class AddSentenceViewModel @Inject constructor(
         words = emptyList()
     )
 
-    override fun handleEvents(event: AddSentenceContract.Event) {
+    override suspend fun handleEvents(event: AddSentenceContract.Event) {
         when (event) {
             is AddSentenceContract.Event.OnSentenceChanging ->
                 setState { copy(sentence = event.value) }

@@ -41,7 +41,7 @@ fun GroupItemHeader(
             textAlign = TextAlign.Left,
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.tertiary,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelSmall,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.clickable {

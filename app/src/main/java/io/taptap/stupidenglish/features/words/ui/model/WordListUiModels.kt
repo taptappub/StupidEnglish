@@ -1,6 +1,6 @@
 package io.taptap.stupidenglish.features.words.ui.model
 
-import io.taptap.stupidenglish.base.logic.sources.groups.GroupListModels
+import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
 
 sealed class WordListListModels(open val id: Long)
 
