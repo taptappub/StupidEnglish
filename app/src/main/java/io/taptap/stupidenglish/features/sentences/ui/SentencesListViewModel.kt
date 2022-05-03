@@ -49,7 +49,7 @@ class SentencesListViewModel @Inject constructor(
         deletedSentenceIds = mutableListOf()
     )
 
-    override fun handleEvents(event: SentencesListContract.Event) {
+    override suspend fun handleEvents(event: SentencesListContract.Event) {
         when (event) {
             is SentencesListContract.Event.OnAddSentenceClick -> {
                 viewModelScope.launch(Dispatchers.IO) {

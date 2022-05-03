@@ -34,7 +34,7 @@ class MainViewModel @Inject constructor(
         )
     )
 
-    override fun handleEvents(event: MainContract.Event) {
+    override suspend fun handleEvents(event: MainContract.Event) {
         when (event) {
             is MainContract.Event.OnGreetingsClose -> {
                 repository.isFirstStart = false

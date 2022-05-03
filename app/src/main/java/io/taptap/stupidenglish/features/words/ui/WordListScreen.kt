@@ -34,10 +34,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.stupidenglish.base.logic.sources.groups.GroupItemUI
-import io.taptap.stupidenglish.base.logic.sources.groups.GroupListModels
-import io.taptap.stupidenglish.base.logic.sources.groups.NoGroup
-import io.taptap.stupidenglish.base.logic.sources.groups.NoGroupItemUI
+import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
+import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
+import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
+import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroupItemUI
 import io.taptap.stupidenglish.base.noRippleClickable
 import io.taptap.uikit.complex.AddGroupBottomSheetScreen
 import io.taptap.stupidenglish.base.ui.hideSheet
@@ -137,78 +137,76 @@ fun WordListScreen(
             }
         },
     ) {
-        StupidEnglishTheme {
-            val scaffoldState: ScaffoldState = rememberScaffoldState()
+        val scaffoldState: ScaffoldState = rememberScaffoldState()
 
-            // Listen for side effects from the VM
-            LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-                effectFlow?.onEach { effect ->
-                    when (effect) {
-                        is WordListContract.Effect.HideBottomSheet ->
-                            modalBottomSheetState.hideSheet(scope)
-                        is WordListContract.Effect.ShowBottomSheet ->
-                            modalBottomSheetState.showSheet(scope)
-                        is WordListContract.Effect.Navigation.ToAddWord ->
-                            onNavigationRequested(effect)
-                        is WordListContract.Effect.GetRandomWordsError ->
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.getString(effect.errorRes),
-                                duration = SnackbarDuration.Short
-                            )
-                        is WordListContract.Effect.GetWordsError ->
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.getString(effect.errorRes),
-                                duration = SnackbarDuration.Short
-                            )
-                        is WordListContract.Effect.Navigation.ToAddSentence ->
-                            onNavigationRequested(effect)
-                        is WordListContract.Effect.ShowUnderConstruction ->
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.getString(R.string.under_construction),
-                                duration = SnackbarDuration.Short
-                            )
-                        is WordListContract.Effect.ChangeBottomBarVisibility -> {
-                            onChangeBottomSheetVisibility(effect.isShown)
-                        }
-                        is WordListContract.Effect.ShowRecover -> {
-                            val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.getString(R.string.word_delete_message),
-                                duration = SnackbarDuration.Short,
-                                actionLabel = context.getString(R.string.word_recover)
-                            )
-                            when (snackbarResult) {
-                                SnackbarResult.Dismissed -> onEventSent(WordListContract.Event.OnApplySentenceDismiss)
-                                SnackbarResult.ActionPerformed -> onEventSent(WordListContract.Event.OnRecover)
-                            }
+        // Listen for side effects from the VM
+        LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+            effectFlow?.onEach { effect ->
+                when (effect) {
+                    is WordListContract.Effect.HideBottomSheet ->
+                        modalBottomSheetState.hideSheet(scope)
+                    is WordListContract.Effect.ShowBottomSheet ->
+                        modalBottomSheetState.showSheet(scope)
+                    is WordListContract.Effect.Navigation.ToAddWord ->
+                        onNavigationRequested(effect)
+                    is WordListContract.Effect.GetRandomWordsError ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(effect.errorRes),
+                            duration = SnackbarDuration.Short
+                        )
+                    is WordListContract.Effect.GetWordsError ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(effect.errorRes),
+                            duration = SnackbarDuration.Short
+                        )
+                    is WordListContract.Effect.Navigation.ToAddSentence ->
+                        onNavigationRequested(effect)
+                    is WordListContract.Effect.ShowUnderConstruction ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(R.string.under_construction),
+                            duration = SnackbarDuration.Short
+                        )
+                    is WordListContract.Effect.ChangeBottomBarVisibility -> {
+                        onChangeBottomSheetVisibility(effect.isShown)
+                    }
+                    is WordListContract.Effect.ShowRecover -> {
+                        val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(R.string.word_delete_message),
+                            duration = SnackbarDuration.Short,
+                            actionLabel = context.getString(R.string.word_recover)
+                        )
+                        when (snackbarResult) {
+                            SnackbarResult.Dismissed -> onEventSent(WordListContract.Event.OnApplySentenceDismiss)
+                            SnackbarResult.ActionPerformed -> onEventSent(WordListContract.Event.OnRecover)
                         }
                     }
-                }?.collect()
-            }
-
-            StupidEnglishScaffold(
-                scaffoldState = scaffoldState
-            ) {
-                StupidLanguageBackgroundBox {
-                    val listState = rememberLazyListState()
-
-                    MainList(
-                        wordItems = state.wordList,
-                        deletedWordIds = state.deletedWordIds,
-                        group = state.currentGroup,
-                        listState = listState,
-                        onEventSent = onEventSent
-                    )
-                    if (state.isLoading) {
-                        LoadingBar()
-                    }
-                    Fab(
-                        extended = listState.firstVisibleItemIndex == 0,
-                        modifier = Modifier.align(Alignment.BottomEnd),
-                        iconRes = R.drawable.ic_plus,
-                        text = stringResource(id = R.string.word_fab_text),
-                        onFabClicked = { onEventSent(WordListContract.Event.OnAddWordClick) }
-                    )
                 }
+            }?.collect()
+        }
+
+        StupidEnglishScaffold(
+            scaffoldState = scaffoldState
+        ) {
+            StupidLanguageBackgroundBox {
+                val listState = rememberLazyListState()
+
+                MainList(
+                    wordItems = state.wordList,
+                    deletedWordIds = state.deletedWordIds,
+                    group = state.currentGroup,
+                    listState = listState,
+                    onEventSent = onEventSent
+                )
+                if (state.isLoading) {
+                    LoadingBar()
+                }
+                Fab(
+                    extended = listState.firstVisibleItemIndex == 0,
+                    modifier = Modifier.align(Alignment.BottomEnd),
+                    iconRes = R.drawable.ic_plus,
+                    text = stringResource(id = R.string.word_fab_text),
+                    onFabClicked = { onEventSent(WordListContract.Event.OnAddWordClick) }
+                )
             }
         }
     }
@@ -379,7 +377,8 @@ private fun GroupItem(
             letter = title[0].uppercaseChar(),
             selected = selected,
             fontSize = 28.sp,
-            modifier = Modifier.size(56.dp)
+            modifier = Modifier
+                .size(56.dp)
                 .then(
                     if (group == NoGroup) {
                         Modifier.clickable { onGroupClicked(group) }
@@ -427,8 +426,9 @@ private fun OnboardingItemRow(
             .noRippleClickable(onClick = onClicked)
             .height(height = 140.dp)
     ) {
-        Row(modifier = Modifier
-            .background(getStupidLanguageBackgroundRow())
+        Row(
+            modifier = Modifier
+                .background(getStupidLanguageBackgroundRow())
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_main_onboarding),
