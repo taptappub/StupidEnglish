@@ -69,4 +69,7 @@
     <string name="impw_choose_groups_label">Выбери группы</string>
     <string name="impw_choose_groups_button">Добавить группу</string>
     <string name="impw_group_add_group_title">Новая группа</string>
+    <string name="impw_network_error">Возникла ошибка при получении данных</string>
+    <string name="impw_tutorial_header">Не забудьте открыть доступ к вашей таблице</string>
+    <string name="impw_tutorial_link">Как мне это сделать?</string>
 </resources>

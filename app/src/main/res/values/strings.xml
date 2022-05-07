@@ -85,6 +85,9 @@
     <string name="impw_choose_groups_label">Choose groups</string>
     <string name="impw_choose_groups_button">Add group</string>
     <string name="impw_group_add_group_title">New group</string>
+    <string name="impw_network_error">Server connection error</string>
+    <string name="impw_tutorial_header">Do not forget to share your spreadsheet</string>
+    <string name="impw_tutorial_link">Help me with it</string>
 
     <!-- Alarm notification -->
     <string name="alrm_sentence_title">Time to make a sentence!</string>

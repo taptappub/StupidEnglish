@@ -1,6 +1,5 @@
 package io.taptap.stupidenglish.features.importwords.ui
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
@@ -11,14 +10,16 @@ import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.importwords.domain.ImportWordsInteractor
-import io.taptap.stupidenglish.features.words.ui.WordListContract
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import taptap.pub.Reaction
 import taptap.pub.doOnComplete
 import taptap.pub.doOnError
 import taptap.pub.doOnSuccess
+import taptap.pub.fold
 import taptap.pub.takeOrReturn
 import javax.inject.Inject
 
@@ -30,14 +31,18 @@ class ImportWordsViewModel @Inject constructor(
     private var words: List<Word> = mutableListOf()
 
     init {
+        if (!interactor.isImportTutorialShown) {
+            setEffect { ImportWordsContract.Effect.Navigation.GoToImportTutorial }
+            interactor.isImportTutorialShown = true
+        }
         viewModelScope.launch(Dispatchers.IO) { getGroupsList() }
     }
 
     override fun setInitialState() = ImportWordsContract.State(
         link = "",
-        isWrongLink = false,
         selectedGroups = listOf(NoGroup),
         group = "",
+        isAddGroup = false,
         groups = emptyList(),
         importWordState = ImportWordsContract.ImportWordState.None,
         parsingState = ImportWordsContract.ParsingState.None
@@ -48,41 +53,7 @@ class ImportWordsViewModel @Inject constructor(
             is ImportWordsContract.Event.OnLinkChanging -> {
                 val link = event.value
                 setState { copy(link = link) }
-                if (interactor.check(link)) {
-                    setState {
-                        copy(
-                            importWordState = ImportWordsContract.ImportWordState.InProgress
-                        )
-                    }
-
-//                    flow<Reaction<List<Word>>> {
-                    val reaction = interactor.getWordsFromGoogleSheetTable(link)
-                        .doOnSuccess { googleSheetList ->
-                            words = googleSheetList
-                        }
-                        .doOnError {
-                            Log.e("ImportWordsViewModel", "exception ${it.message}")
-                        }
-//                    }.onEach {
-                    setState {
-                        copy(
-                            isWrongLink = reaction.isError(),
-                            importWordState = if (reaction.isError()) {
-                                ImportWordsContract.ImportWordState.None
-                            } else {
-                                ImportWordsContract.ImportWordState.HasLink
-                            }
-                        )
-                    }
-//                    }.collect()
-                } else {
-                    setState {
-                        copy(
-                            isWrongLink = true,
-                            importWordState = ImportWordsContract.ImportWordState.None
-                        )
-                    }
-                }
+                handleLinkChanging(link)
             }
             is ImportWordsContract.Event.OnGroupSelect -> {
                 val selectedGroups = ArrayList(viewState.value.selectedGroups)
@@ -98,18 +69,53 @@ class ImportWordsViewModel @Inject constructor(
                     importWords()
                 }
             is ImportWordsContract.Event.OnAddGroupClick -> {
+                setState { copy(isAddGroup = true) }
                 setEffect { ImportWordsContract.Effect.ShowBottomSheet }
             }
             is ImportWordsContract.Event.OnApplyGroup -> {
                 saveGroup(viewState.value.group)
             }
             is ImportWordsContract.Event.OnGroupAddingCancel -> {
-                setState { copy(group = "") }
+                setState { copy(group = "", isAddGroup = false) }
             }
             is ImportWordsContract.Event.OnGroupChanging -> {
                 setState { copy(group = event.value) }
             }
+            is ImportWordsContract.Event.OnTutorialClick -> {
+                setEffect { ImportWordsContract.Effect.Navigation.GoToImportTutorial }
+            }
         }
+    }
+
+    private suspend fun handleLinkChanging(link: String) {
+        when {
+            link.isEmpty() -> setImportWordState(ImportWordsContract.ImportWordState.None)
+            interactor.check(link) -> {
+                setImportWordState(ImportWordsContract.ImportWordState.InProgress)
+
+                //   coroutineScope {
+                //       debounce<Reaction<List<Word>>> { interactor.getWordsFromGoogleSheetTable(link) }
+                //   } раскоментируй. Остановился тут. Пытаешься сделать debounce
+
+                interactor.getWordsFromGoogleSheetTable(link)
+                    .doOnSuccess { words = it }
+                    .fold(
+                        success = {
+                            ImportWordsContract.ImportWordState.HasLink
+                        },
+                        error = { ImportWordsContract.ImportWordState.Error(R.string.impw_network_error) }
+                    )
+                    .let { state -> setImportWordState(state) }
+            }
+            else -> {
+                setImportWordState(ImportWordsContract.ImportWordState.Error(R.string.impw_incorrect_link_error))
+            }
+        }
+    }
+
+
+    private fun setImportWordState(state: ImportWordsContract.ImportWordState) {
+        setState { copy( importWordState = state) }
     }
 
     private suspend fun importWords() {
@@ -158,7 +164,7 @@ class ImportWordsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             interactor.saveGroup(group)
                 .doOnComplete {
-                    setState { copy(group = "") }
+                    setState { copy(group = "", isAddGroup = false) }
                     setEffect { ImportWordsContract.Effect.HideBottomSheet }
                 }
         }
@@ -192,4 +198,18 @@ class ImportWordsViewModel @Inject constructor(
     }
 }
 
-fun <T> Reaction<T>.isError(): Boolean = this is Reaction.Error
+suspend fun <T> CoroutineScope.debounce(
+    waitMs: Long = 300L,
+    destinationFunction: (T) -> Unit
+): suspend (T) -> Unit {
+    var debounceJob: Job? = null
+    return { param: T ->
+        debounceJob?.cancel()
+        debounceJob = coroutineScope {
+            launch {
+                delay(waitMs)
+                destinationFunction(param)
+            }
+        }
+    }
+}
