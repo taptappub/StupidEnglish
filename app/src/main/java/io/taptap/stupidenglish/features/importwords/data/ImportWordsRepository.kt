@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.importwords.data
 
+import io.taptap.stupidenglish.base.logic.prefs.Settings
 import io.taptap.stupidenglish.base.logic.sources.groups.read.IReadGroupsDataSource
 import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
 import io.taptap.stupidenglish.base.logic.sources.groups.write.IWriteGroupsDataSource
@@ -17,6 +18,7 @@ class ImportWordsRepository @Inject constructor(
     readGroupsDataSource: IReadGroupsDataSource,
     writeGroupsDataSource: IWriteGroupsDataSource,
     writeWordsDataSource: IWriteWordsDataSource,
+    private val settings: Settings,
     private val keysDataSource: IKeysDataSource,
     private val googleSheetApi: IGoogleSheetApi
 ) : IReadGroupsDataSource by readGroupsDataSource,
@@ -31,6 +33,14 @@ class ImportWordsRepository @Inject constructor(
                     apiKey = keysDataSource.googleApiKey
                 )
                 .toWordList()
+        }
+
+    var isImportTutorialShown: Boolean
+        get() {
+            return settings.isImportTutorialShown
+        }
+        set(value) {
+            settings.isImportTutorialShown = value
         }
 }
 

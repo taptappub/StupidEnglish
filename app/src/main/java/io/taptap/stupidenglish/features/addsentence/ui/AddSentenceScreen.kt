@@ -156,9 +156,8 @@ private fun ContentScreen(
                     }
             )
 
-            DisposableEffect(Unit) {
+            LaunchedEffect("") {
                 focusRequester.requestFocus()
-                onDispose { }
             }
 
             AddSentenceWordList(

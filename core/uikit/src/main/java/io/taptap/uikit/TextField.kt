@@ -10,7 +10,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -26,11 +31,14 @@ fun TextField(
     modifier: Modifier = Modifier
         .fillMaxWidth(),
     labelColor: Color = MaterialTheme.colorScheme.secondary,
-    isError: Boolean = false
+    isError: Boolean = false,
+    isOnFocus: Boolean
 ) {
     Column(
         modifier = modifier
     ) {
+        val focusRequester = remember { FocusRequester() }
+
         OutlinedTextField(
             value = value,
             label = { Text(text = labelValue) },
@@ -68,7 +76,15 @@ fun TextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
+                .then(
+                    if (isOnFocus) Modifier.focusRequester(focusRequester) else Modifier
+                )
         )
+        if (isOnFocus) {
+            LaunchedEffect("") {
+                focusRequester.requestFocus()
+            }
+        }
         if (isError) {
             Text(
                 text = hintValue,

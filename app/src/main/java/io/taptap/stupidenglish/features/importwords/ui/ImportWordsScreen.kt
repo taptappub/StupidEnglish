@@ -1,26 +1,30 @@
 package io.taptap.stupidenglish.features.importwords.ui
 
 import android.content.Context
-import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -28,11 +32,8 @@ import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
-import io.taptap.stupidenglish.features.words.ui.WordListContract
-import io.taptap.stupidenglish.ui.ChooseGroupBottomSheetScreen
 import io.taptap.stupidenglish.ui.ChooseGroupContent
 import io.taptap.stupidenglish.ui.GroupItemHeader
-import io.taptap.uikit.DialogSheetScreen
 import io.taptap.uikit.LoadingBar
 import io.taptap.uikit.ModalBottomSheetLayout
 import io.taptap.uikit.NextButton
@@ -45,7 +46,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
-@OptIn(ExperimentalMaterialApi::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ImportWordsScreen(
     context: Context,
@@ -65,9 +66,9 @@ fun ImportWordsScreen(
         DisposableEffect(Unit) {
             onDispose {
                 onEventSent(ImportWordsContract.Event.OnGroupAddingCancel)
+                keyboardController?.hide()
             }
         }
-        keyboardController?.hide()
     }
 
     ModalBottomSheetLayout(
@@ -96,13 +97,16 @@ fun ImportWordsScreen(
                             message = context.getString(effect.errorRes),
                             duration = SnackbarDuration.Short
                         )
-                    is ImportWordsContract.Effect.Navigation.BackToWordList -> onNavigationRequested(
-                        effect
-                    )
                     is ImportWordsContract.Effect.HideBottomSheet ->
                         modalBottomSheetState.hideSheet(scope)
                     is ImportWordsContract.Effect.ShowBottomSheet ->
                         modalBottomSheetState.showSheet(scope)
+                    is ImportWordsContract.Effect.Navigation.BackToWordList -> onNavigationRequested(
+                        effect
+                    )
+                    is ImportWordsContract.Effect.Navigation.GoToImportTutorial -> onNavigationRequested(
+                        effect
+                    )
                 }
             }?.collect()
         }
@@ -143,10 +147,13 @@ private fun ContentScreen(
                     }
             )
 
-            if (!state.isWrongLink && state.importWordState == ImportWordsContract.ImportWordState.HasLink) {
+            if (state.importWordState == ImportWordsContract.ImportWordState.HasLink) {
+                val focusManager = LocalFocusManager.current
+
                 NextButton(
                     visibility = true,
                     onClick = {
+                        focusManager.clearFocus()
                         onEventSent(ImportWordsContract.Event.OnImportClick)
                     },
                     modifier = Modifier
@@ -164,6 +171,7 @@ private fun ContentScreen(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ImportWordStateScreen(
     state: ImportWordsContract.State,
@@ -175,17 +183,46 @@ private fun ImportWordStateScreen(
     ) {
         TextField(
             value = state.link,
+            isOnFocus = false,
             labelValue = stringResource(id = R.string.impw_textfield_label),
-            hintValue = stringResource(id = R.string.impw_incorrect_link_error),
+            hintValue = if (state.importWordState is ImportWordsContract.ImportWordState.Error) {
+                stringResource(id = state.importWordState.messageId)
+            } else {
+                ""
+            },
             onValueChange = { text ->
                 onEventSent(ImportWordsContract.Event.OnLinkChanging(text))
             },
-            isError = state.isWrongLink,
+            isError = state.importWordState is ImportWordsContract.ImportWordState.Error,
             modifier = modifier
                 .fillMaxWidth()
         )
+        if (state.importWordState == ImportWordsContract.ImportWordState.None) {
+            Text(
+                text = stringResource(id = R.string.impw_tutorial_header),
+                color = MaterialTheme.colorScheme.secondary,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            )
+            Text(
+                text = stringResource(id = R.string.impw_tutorial_link),
+                color = MaterialTheme.colorScheme.tertiary,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .clickable { onEventSent(ImportWordsContract.Event.OnTutorialClick) }
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            )
+        } else if (state.importWordState == ImportWordsContract.ImportWordState.HasLink) {
+            if (!state.isAddGroup) {
+                val keyboardController = LocalSoftwareKeyboardController.current
+                keyboardController?.hide()
+                val focusManager = LocalFocusManager.current
+                focusManager.clearFocus()
+            }
 
-        if (!state.isWrongLink && state.importWordState == ImportWordsContract.ImportWordState.HasLink) {
             GroupItemHeader(
                 title = stringResource(id = R.string.impw_choose_groups_label),
                 button = stringResource(id = R.string.impw_choose_groups_button),
@@ -231,9 +268,13 @@ private fun ImportWordsContract.ParsingState.toResultNotificationState(): Result
     }
 }
 
-//1) Сделать multifab
-/**
- * Поле ввода
- * Если верное, то показываю список групп, где сверху есть кнопка добавить как на главном экране, а снизу группы как в AddWord
- * Вместе с этим появляется кнопка с надписью Import
- */
+//Сделать multifab
+//3) import https://rmmbr.io/import/
+//https://medium.com/@kamranramzan098/styling-custom-textfield-in-jectpack-compose-ui-7050bd82d019 border на поле ввода
+//Лонгрид для квизлета, google sheet, google translater в виде табов https://johncodeos.com/how-to-create-tabs-with-jetpack-compose/
+//Можно импортировать из таблиц из 2 столбцов (слово - значение), и из 4 - как импортирует google translater
+//Темная тема - поле ввода
+//фокус не ставится на поле при добавлении группы, а на WLS ставится
+//debounce
+//анимация появлкния элементов на экране
+//при первом разе сразу открывать туториал: хранить в settings подсчет

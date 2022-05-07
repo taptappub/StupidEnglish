@@ -3,8 +3,12 @@ package io.taptap.stupidenglish.di
 import android.app.AlarmManager
 import android.content.Context
 import android.content.Context.ALARM_SERVICE
+import android.os.Build.VERSION.SDK_INT
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
+import coil.ImageLoader
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import dagger.Module
 import dagger.Provides
@@ -30,6 +34,20 @@ class StupidApiProvider {
     @Singleton
     fun provideShareUtil(@ApplicationContext appContext: Context): ShareUtil {
         return ShareUtil(appContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideImageLoader(@ApplicationContext appContext: Context): ImageLoader {
+        return ImageLoader.Builder(appContext)
+            .components {
+                if (SDK_INT >= 28) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+            }
+            .build()
     }
 
     @Provides

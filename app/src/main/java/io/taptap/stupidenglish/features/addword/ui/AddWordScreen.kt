@@ -377,7 +377,7 @@ private fun NoneScreen(
             placeholder = stringResource(id = R.string.addw_word_placeholder),
             keyboardOptions = KeyboardOptions.Default.copy(
                 capitalization = KeyboardCapitalization.Sentences,
-                autoCorrect = false,
+                autoCorrect = true,
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
             ),
@@ -393,9 +393,8 @@ private fun NoneScreen(
                 .align(Alignment.Center)
         )
 
-        DisposableEffect(Unit) {
+        LaunchedEffect("") {
             focusRequester.requestFocus()
-            onDispose { }
         }
     }
 }
@@ -464,9 +463,8 @@ private fun HasWordScreen(
                 }
         )
 
-        DisposableEffect(Unit) {
+        LaunchedEffect("") {
             focusRequester.requestFocus()
-            onDispose { }
         }
     }
 }

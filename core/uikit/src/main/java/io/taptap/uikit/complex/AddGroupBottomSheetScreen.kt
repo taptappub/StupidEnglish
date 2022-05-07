@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -79,9 +80,8 @@ fun AddGroupBottomSheetScreen(
                         .align(Alignment.Center)
                 )
 
-                DisposableEffect(Unit) {
+                LaunchedEffect("") {
                     focusRequester.requestFocus()
-                    onDispose { }
                 }
             }
             AverageTitle(

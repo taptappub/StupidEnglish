@@ -1,10 +1,10 @@
 package io.taptap.stupidenglish.features.importwords.ui
 
+import androidx.annotation.StringRes
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
 import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
-import io.taptap.stupidenglish.features.words.ui.WordListContract
 
 class ImportWordsContract {
     sealed class Event : ViewEvent {
@@ -16,22 +16,25 @@ class ImportWordsContract {
         data class OnGroupChanging(val value: String) : Event()
         object OnApplyGroup : Event()
         object OnGroupAddingCancel : Event()
+
+        object OnTutorialClick : Event()
     }
 
     data class State(
         val link: String,
         val group: String,
-        val isWrongLink: Boolean,
         val groups: List<GroupListModels>,
+        val isAddGroup: Boolean,
         val importWordState: ImportWordState,
         val selectedGroups: List<GroupListModels>,
         val parsingState: ParsingState
     ) : ViewState
 
-    enum class ImportWordState {
-        None,
-        InProgress,
-        HasLink
+    sealed class ImportWordState {
+        object None: ImportWordState()
+        object InProgress: ImportWordState()
+        object HasLink: ImportWordState()
+        data class Error(@StringRes val messageId: Int): ImportWordState()
     }
 
     enum class ParsingState {
@@ -48,6 +51,7 @@ class ImportWordsContract {
         data class GetGroupsError(val errorRes: Int) : Effect()
 
         sealed class Navigation : Effect() {
+            object GoToImportTutorial : Navigation()
             object BackToWordList : Navigation()
         }
     }

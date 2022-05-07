@@ -45,6 +45,9 @@ import io.taptap.stupidenglish.features.alarm.ui.AlarmScheduler
 import io.taptap.stupidenglish.features.importwords.ui.ImportWordsContract
 import io.taptap.stupidenglish.features.importwords.ui.ImportWordsScreen
 import io.taptap.stupidenglish.features.importwords.ui.ImportWordsViewModel
+import io.taptap.stupidenglish.features.importwordstutorial.ui.ImportWordsTutorialContract
+import io.taptap.stupidenglish.features.importwordstutorial.ui.ImportWordsTutorialScreen
+import io.taptap.stupidenglish.features.importwordstutorial.ui.ImportWordsTutorialViewModel
 import io.taptap.stupidenglish.features.main.ui.MainContract
 import io.taptap.stupidenglish.features.main.ui.MainViewModel
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
@@ -94,7 +97,7 @@ class MainActivity : ComponentActivity() {
 
     @ExperimentalMaterialApi
     @OptIn(InternalCoroutinesApi::class,
-        androidx.compose.foundation.ExperimentalFoundationApi::class
+        ExperimentalFoundationApi::class
     )
     @ExperimentalAnimationApi
     @ExperimentalMaterialNavigationApi
@@ -198,6 +201,11 @@ class MainActivity : ComponentActivity() {
                     ImportWordsDestination(navController)
                 }
                 composable(
+                    route = NavigationKeys.Route.SE_IMPORT_WORDS_TUTORIAL
+                ) {
+                    ImportWordsTutorialDestination(navController)
+                }
+                composable(
                     route = NavigationKeys.Route.SE_REMEMBER,
                     deepLinks = listOf(navDeepLink {
                         uriPattern =
@@ -295,7 +303,32 @@ private fun ImportWordsDestination(
         effectFlow = importWordsViewModel.effect,
         onEventSent = { event -> importWordsViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
-            if (navigationEffect is ImportWordsContract.Effect.Navigation.BackToWordList) {
+            when (navigationEffect) {
+                is ImportWordsContract.Effect.Navigation.BackToWordList -> {
+                    navController.popBackStack()
+                }
+                is ImportWordsContract.Effect.Navigation.GoToImportTutorial -> {
+                    navController.navigate(NavigationKeys.Route.SE_IMPORT_WORDS_TUTORIAL)
+                }
+            }
+        })
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun ImportWordsTutorialDestination(
+    navController: NavHostController
+) {
+    val importWordsTutorialViewModel: ImportWordsTutorialViewModel = hiltViewModel()
+    val importWordsTutorialState = importWordsTutorialViewModel.viewState.value
+
+    ImportWordsTutorialScreen(
+        context = LocalContext.current,
+        state = importWordsTutorialState,
+        effectFlow = importWordsTutorialViewModel.effect,
+        onEventSent = { event -> importWordsTutorialViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            if (navigationEffect is ImportWordsTutorialContract.Effect.Navigation.BackToImportWords) {
                 navController.popBackStack()
             }
         })
@@ -480,7 +513,6 @@ private fun NavController.navigateToTab(
 //5) Сохранения слова без подсказки
 //6) Добавление картинки, как подсказки
 //7) Редактирование
-//8) импорт
 //9) ОНБОРДИНГ (+состояния пустых списков)
 //10) A/b тестирование
 //11) Перетаскивание в папку слов драг энд дропом. Список групп вылезает сбоку, с анимацией волны, и ты перетягиваешь слово в нужную папку
@@ -490,12 +522,10 @@ private fun NavController.navigateToTab(
 
 //FIXME БАГИ
 // - если кучу раз нажать на слово, то блокируется UI
-// - по клику на банне рне всегда начинается сценарий добавления предложения
+// - по клику на баннер не всегда начинается сценарий добавления предложения
 // - при удалении, при лонг тапе, карточка слова поднимается и там и остается
 // - нотификации не показываются
 
 //Следующий билд
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
 //2) Верхняя навигация
-//3) import https://rmmbr.io/import/
-//4) обернуть handleEvents в io thread

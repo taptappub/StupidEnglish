@@ -18,6 +18,14 @@ class ImportWordsInteractor @Inject constructor(
     IReadGroupsDataSource by repository,
     IWriteGroupsDataSource by repository {
 
+    var isImportTutorialShown: Boolean
+        get() {
+            return repository.isImportTutorialShown
+        }
+        set(value) {
+            repository.isImportTutorialShown = value
+        }
+
     fun check(value: String): Boolean {
         return value matches linkRegExp
     }
