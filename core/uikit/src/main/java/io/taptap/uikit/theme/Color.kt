@@ -20,6 +20,6 @@ val Red = Color(0xFFFF0000)
 @Stable
 val Esspresso = Color(0xFF322419)
 @Stable
-val FaintRed = Color(0xFFFFF5F4)
+val FaintRed = Color(0xFFFFe3e3)
 
 

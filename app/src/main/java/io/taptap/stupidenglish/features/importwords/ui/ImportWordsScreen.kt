@@ -271,7 +271,6 @@ private fun ImportWordsContract.ParsingState.toResultNotificationState(): Result
 //Сделать multifab
 //3) import https://rmmbr.io/import/
 //Лонгрид для квизлета, google sheet, google translater в виде табов https://johncodeos.com/how-to-create-tabs-with-jetpack-compose/
-//Темная тема - поле ввода
 //фокус не ставится на поле при добавлении группы, а на WLS ставится
 //запрос не отменяется при debounce
 //анимация появлкния элементов на экране

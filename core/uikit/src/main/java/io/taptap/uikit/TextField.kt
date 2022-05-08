@@ -1,5 +1,6 @@
 package io.taptap.uikit
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -54,11 +55,7 @@ fun TextField(
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 textColor = MaterialTheme.colorScheme.onSurface,
-                backgroundColor = if (isError) {
-                    MaterialTheme.colorScheme.errorContainer
-                } else {
-                    MaterialTheme.colorScheme.surface
-                },
+                backgroundColor = getBackgroundColor(isError),
                 cursorColor = MaterialTheme.colorScheme.onSurface,
                 placeholderColor = MaterialTheme.colorScheme.onSurface,
 
@@ -95,5 +92,17 @@ fun TextField(
                     .padding(8.dp)
             )
         }
+    }
+}
+
+@Composable
+fun getBackgroundColor(
+    isError: Boolean,
+    darkTheme: Boolean = isSystemInDarkTheme()
+): Color {
+    return if (isError && !darkTheme) {
+        MaterialTheme.colorScheme.errorContainer
+    } else {
+        MaterialTheme.colorScheme.surface
     }
 }
