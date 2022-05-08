@@ -1,5 +1,6 @@
 package io.taptap.uikit.theme
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -58,17 +59,6 @@ fun StupidEnglishTheme(
 //        darkIcons = !darkTheme
 //    )
 
-    systemUiController.setNavigationBarColor(
-        color = MaterialTheme.colorScheme.background.copy(alpha = 0.77f),
-        darkIcons = !darkTheme,
-        navigationBarContrastEnforced = false
-    )
-
-    systemUiController.setStatusBarColor(
-        color = Color.Transparent,
-        darkIcons = !darkTheme
-    )
-
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {
@@ -79,6 +69,20 @@ fun StupidEnglishTheme(
         colorScheme = colors,
         typography = StupidEnglishTypography,
         content = content
+    )
+
+    Log.d("Theme", "MaterialTheme.colorScheme.background = ${MaterialTheme.colorScheme.background}")
+
+    systemUiController.setNavigationBarColor(
+        color = if (darkTheme) { Black } else { White }
+            .copy(alpha = 0.77f),
+        darkIcons = !darkTheme,
+        navigationBarContrastEnforced = false
+    )
+
+    systemUiController.setStatusBarColor(
+        color = Color.Transparent,
+        darkIcons = !darkTheme
     )
 }
 
