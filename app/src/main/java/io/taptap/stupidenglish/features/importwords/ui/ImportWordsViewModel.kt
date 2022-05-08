@@ -14,14 +14,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import taptap.pub.Reaction
 import taptap.pub.doOnComplete
 import taptap.pub.doOnError
 import taptap.pub.doOnSuccess
 import taptap.pub.fold
 import taptap.pub.takeOrReturn
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 @HiltViewModel
 class ImportWordsViewModel @Inject constructor(
@@ -87,25 +90,28 @@ class ImportWordsViewModel @Inject constructor(
         }
     }
 
+    var debounceJob: Job? = null
+
     private suspend fun handleLinkChanging(link: String) {
         when {
-            link.isEmpty() -> setImportWordState(ImportWordsContract.ImportWordState.None)
+            link.isEmpty() -> {
+                setImportWordState(ImportWordsContract.ImportWordState.None)
+                debounceJob?.cancel()
+            }
             interactor.check(link) -> {
                 setImportWordState(ImportWordsContract.ImportWordState.InProgress)
 
-                //   coroutineScope {
-                //       debounce<Reaction<List<Word>>> { interactor.getWordsFromGoogleSheetTable(link) }
-                //   } раскоментируй. Остановился тут. Пытаешься сделать debounce
-
-                interactor.getWordsFromGoogleSheetTable(link)
-                    .doOnSuccess { words = it }
-                    .fold(
-                        success = {
-                            ImportWordsContract.ImportWordState.HasLink
-                        },
-                        error = { ImportWordsContract.ImportWordState.Error(R.string.impw_network_error) }
-                    )
-                    .let { state -> setImportWordState(state) }
+                debounceJob?.cancel()
+                debounceJob = CoroutineScope(currentCoroutineContext()).launch {
+                    delay(5000)
+                    interactor.getWordsFromGoogleSheetTable(link)
+                        .doOnSuccess { words = it }
+                        .fold(
+                            success = { ImportWordsContract.ImportWordState.HasLink },
+                            error = { ImportWordsContract.ImportWordState.Error(R.string.impw_network_error) }
+                        )
+                        .let { state -> setImportWordState(state) }
+                }
             }
             else -> {
                 setImportWordState(ImportWordsContract.ImportWordState.Error(R.string.impw_incorrect_link_error))
@@ -115,7 +121,7 @@ class ImportWordsViewModel @Inject constructor(
 
 
     private fun setImportWordState(state: ImportWordsContract.ImportWordState) {
-        setState { copy( importWordState = state) }
+        setState { copy(importWordState = state) }
     }
 
     private suspend fun importWords() {

@@ -45,10 +45,13 @@ class ImportWordsRepository @Inject constructor(
 }
 
 private fun GoogleTableModel.toWordList(): List<Word> = this.values.map {
+    val word = if (it.size == 2) it[0] else it[2]
+    val description = if (it.size == 2) it[1] else it[3]
+
     Word(
         id = -1,
-        word = it[2],
-        description = it[3],
+        word = word,
+        description = description,
         groupsIds = listOf(NoGroup.id),
         points = 0
     )

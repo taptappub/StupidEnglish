@@ -270,11 +270,8 @@ private fun ImportWordsContract.ParsingState.toResultNotificationState(): Result
 
 //Сделать multifab
 //3) import https://rmmbr.io/import/
-//https://medium.com/@kamranramzan098/styling-custom-textfield-in-jectpack-compose-ui-7050bd82d019 border на поле ввода
 //Лонгрид для квизлета, google sheet, google translater в виде табов https://johncodeos.com/how-to-create-tabs-with-jetpack-compose/
-//Можно импортировать из таблиц из 2 столбцов (слово - значение), и из 4 - как импортирует google translater
 //Темная тема - поле ввода
 //фокус не ставится на поле при добавлении группы, а на WLS ставится
-//debounce
+//запрос не отменяется при debounce
 //анимация появлкния элементов на экране
-//при первом разе сразу открывать туториал: хранить в settings подсчет
