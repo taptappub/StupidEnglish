@@ -12,11 +12,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -36,6 +40,7 @@ fun AddGroupBottomSheetScreen(
         .fillMaxWidth()
         .navigationBarsPadding()
         .imePadding()
+        .focusTarget()
         .height(300.dp),
     onGroupNameChange: (String) -> Unit,
     onAddGroup: () -> Unit,
@@ -57,7 +62,10 @@ fun AddGroupBottomSheetScreen(
                     bottom.linkTo(parent.bottom)
                 }
             ) {
-                val focusRequester = FocusRequester()
+                val focusRequester by remember {
+                    mutableStateOf(FocusRequester())
+                }
+//                val focusRequester = FocusRequester()
 
                 AddTextField(
                     value = group(),
@@ -80,7 +88,7 @@ fun AddGroupBottomSheetScreen(
                         .align(Alignment.Center)
                 )
 
-                LaunchedEffect("") {
+                LaunchedEffect("123") {
                     focusRequester.requestFocus()
                 }
             }

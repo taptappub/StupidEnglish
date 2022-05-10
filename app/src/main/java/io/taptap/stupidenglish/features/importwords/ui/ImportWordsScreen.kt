@@ -99,8 +99,10 @@ fun ImportWordsScreen(
                         )
                     is ImportWordsContract.Effect.HideBottomSheet ->
                         modalBottomSheetState.hideSheet(scope)
-                    is ImportWordsContract.Effect.ShowBottomSheet ->
+                    is ImportWordsContract.Effect.ShowBottomSheet -> {
                         modalBottomSheetState.showSheet(scope)
+//                        sss
+                    }
                     is ImportWordsContract.Effect.Navigation.BackToWordList -> onNavigationRequested(
                         effect
                     )
@@ -113,10 +115,12 @@ fun ImportWordsScreen(
         StupidEnglishScaffold(
             scaffoldState = scaffoldState
         ) {
-            ContentScreen(
-                state,
-                onEventSent
-            )
+            StupidLanguageBackgroundBox {
+                ContentScreen(
+                    state,
+                    onEventSent
+                )
+            }
         }
     }
 }
@@ -217,8 +221,6 @@ private fun ImportWordStateScreen(
             )
         } else if (state.importWordState == ImportWordsContract.ImportWordState.HasLink) {
             if (!state.isAddGroup) {
-                val keyboardController = LocalSoftwareKeyboardController.current
-                keyboardController?.hide()
                 val focusManager = LocalFocusManager.current
                 focusManager.clearFocus()
             }
@@ -271,6 +273,4 @@ private fun ImportWordsContract.ParsingState.toResultNotificationState(): Result
 //Сделать multifab
 //3) import https://rmmbr.io/import/
 //Лонгрид для квизлета, google sheet, google translater в виде табов https://johncodeos.com/how-to-create-tabs-with-jetpack-compose/
-//фокус не ставится на поле при добавлении группы, а на WLS ставится
-//запрос не отменяется при debounce
 //анимация появлкния элементов на экране

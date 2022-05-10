@@ -89,6 +89,11 @@
     <string name="impw_tutorial_header">Do not forget to share your spreadsheet</string>
     <string name="impw_tutorial_link">Help me with it</string>
 
+    <!-- Import Words -->
+    <string name="imwt_google_sheet_title" translatable="false">Google Sheets</string>
+    <string name="imwt_google_translater_title" translatable="false">Google Translater</string>
+    <string name="imwt_quizlet_title" translatable="false">Quizlet</string>
+
     <!-- Alarm notification -->
     <string name="alrm_sentence_title">Time to make a sentence!</string>
     <string name="alrm_sentence_message">Challenge yourself with words %1$s</string>

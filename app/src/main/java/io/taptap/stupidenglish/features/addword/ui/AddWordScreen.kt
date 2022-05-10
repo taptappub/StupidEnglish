@@ -32,6 +32,9 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -369,7 +372,10 @@ private fun NoneScreen(
     modifier: Modifier
 ) {
     Box(modifier = modifier) {
-        val focusRequester = FocusRequester()
+        val focusRequester by remember {
+            mutableStateOf(FocusRequester())
+        }
+//        val focusRequester = FocusRequester()
 
         AddTextField(
             value = state.word,
@@ -431,7 +437,10 @@ private fun HasWordScreen(
                 }
         )
 
-        val focusRequester = FocusRequester()
+//        val focusRequester = FocusRequester()
+        val focusRequester by remember {
+            mutableStateOf(FocusRequester())
+        }
         val focusManager = LocalFocusManager.current
         AddTextField(
             value = state.description,

@@ -95,6 +95,7 @@ fun StupidEnglishBottomBar(
                         Text(
                             text = stringResource(id = item.title),
                             color = tint,
+                            style = MaterialTheme.typography.headlineSmall,
                             maxLines = 1,
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)

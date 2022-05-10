@@ -103,7 +103,7 @@ class ImportWordsViewModel @Inject constructor(
 
                 debounceJob?.cancel()
                 debounceJob = CoroutineScope(currentCoroutineContext()).launch {
-                    delay(5000)
+                    delay(500)
                     interactor.getWordsFromGoogleSheetTable(link)
                         .doOnSuccess { words = it }
                         .fold(

@@ -29,12 +29,37 @@ class ImportWordsTutorialViewModel @Inject constructor(
 ) : BaseViewModel<ImportWordsTutorialContract.Event, ImportWordsTutorialContract.State, ImportWordsTutorialContract.Effect>() {
 
     override fun setInitialState() = ImportWordsTutorialContract.State(
-        link = ""
+        pages = listOf(
+            ImportWordsTutorialContract.Page.GOOGLE_SHEET.apply {
+                isSelected = true
+            },
+            ImportWordsTutorialContract.Page.GOOGLE_TRANSLATER,
+            ImportWordsTutorialContract.Page.QUIZLET
+        )
     )
 
     override suspend fun handleEvents(event: ImportWordsTutorialContract.Event) {
-//        when (this) {
-//            это вроде можно вообще дулаить
-//        }
+        when (event) {
+            is ImportWordsTutorialContract.Event.OnPageChosen -> {
+                val page = ImportWordsTutorialContract.Page.getByIndex(event.index)
+                if (page.isSelected) return
+
+                val pages = ArrayList(viewState.value.pages)
+                pages
+                    .clearSelectedPages()
+                    .select(page)
+                setState { copy(pages = pages) }
+
+            }
+        }
     }
+}
+
+private fun List<ImportWordsTutorialContract.Page>.select(page: ImportWordsTutorialContract.Page) {
+    this.find { it == page }?.isSelected = true
+}
+
+private fun List<ImportWordsTutorialContract.Page>.clearSelectedPages(): List<ImportWordsTutorialContract.Page> {
+    this.forEach { it.isSelected = false }
+    return this
 }
