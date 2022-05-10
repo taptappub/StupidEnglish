@@ -3,10 +3,13 @@ package io.taptap.stupidenglish.features.importwordstutorial.ui
 import android.content.Context
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ScaffoldState
@@ -24,7 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +40,7 @@ import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.uikit.AverageText
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
@@ -154,101 +160,68 @@ private fun GoogleSheetTutorial() {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
+            .padding(16.dp)
     ) {
-        Text(text = "Title")
-//        Image(
-//            painter = rememberImagePainter(data = )
-//            //painter = rememberImagePainter(data = R.drawable.YOURBESTGIF, imageLoader = imgLoader),
-//        )
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
+        AverageText(
+            text = "1. Firstly, you'll need to open Google Spreadsheets and create a blank document",
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
-
-        Text(text = "Number1")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
+        ImportImage(
+            painter = painterResource(R.drawable.googlesheet1)
         )
-
-        Text(text = "Number2")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
+        AverageText(
+            text = "2. Add 'word' to A1 cell and 'hint' to B1 cell",
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
-
-        Text(text = "Number3")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
+        ImportImage(
+            painter = painterResource(R.drawable.googlesheet2)
         )
-
-        Text(text = "Number4")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
+        AverageText(
+            text = "3. You'll need to generate a public link to this spreasheet. Please click on the share button in the top right corner",
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
-
-        Text(text = "Number5")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
+        ImportImage(
+            painter = painterResource(R.drawable.googlesheet3)
         )
-
-        Text(text = "Number6")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
+        AverageText(
+            text = "4. Give your list a name",
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
-
-        Text(text = "Number7")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
+        ImportImage(
+            painter = painterResource(R.drawable.googlesheet4)
         )
-
-        Text(text = "Number8")
-
-
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
+        AverageText(
+            text = "5. Change privacy to 'Public'",
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
+        ImportImage(
+            painter = painterResource(R.drawable.googlesheet5)
         )
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
+        AverageText(
+            text = "6. Copy the link",
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
+        ImportImage(
+            painter = painterResource(R.drawable.googlesheet6)
+        )
+        AverageText(
+            text = "7. Paste the link",
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        ImportImage(
+            painter = painterResource(R.drawable.sl_import)
+        )
+        AverageText(
+            text = "8. Done",
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
     }
 }
@@ -465,4 +438,25 @@ private fun QuizletTutorial() {
             text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
         )
     }
+}
+
+@Composable
+private fun ColumnScope.ImportImage(
+    painter: Painter,
+    modifier: Modifier = Modifier
+        .align(CenterHorizontally)
+        .padding(bottom = 8.dp)
+        .clip(RoundedCornerShape(12.dp))
+        .border(
+            width = 1.dp,
+            color = Color.Gray,
+            shape = RoundedCornerShape(12.dp)
+        )
+) {
+    Image(
+        painter = painter,
+        contentDescription = null,
+        modifier = modifier
+
+    )
 }
