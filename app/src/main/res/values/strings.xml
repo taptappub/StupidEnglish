@@ -89,10 +89,23 @@
     <string name="impw_tutorial_header">Do not forget to share your spreadsheet</string>
     <string name="impw_tutorial_link">Help me with it</string>
 
-    <!-- Import Words -->
+    <!-- Import Words Tutorial-->
     <string name="imwt_google_sheet_title" translatable="false">Google Sheets</string>
     <string name="imwt_google_translater_title" translatable="false">Google Translater</string>
     <string name="imwt_quizlet_title" translatable="false">Quizlet</string>
+    <string name="imwt_google_sheet_1">1. Firstly, you\'ll need to open Google Spreadsheets and create a blank document</string>
+    <string name="imwt_google_sheet_2">2. Add \'word\' to A1 cell and \'hint\' to B1 cell</string>
+    <string name="imwt_google_sheet_3">3. You\'ll need to generate a public link to this spreasheet. Please click on the share button in the top right corner</string>
+    <string name="imwt_google_sheet_4">4. Give your list a name</string>
+    <string name="imwt_google_sheet_5">5. Change privacy to \'Public\'</string>
+    <string name="imwt_google_sheet_6">6. Copy the link</string>
+    <string name="imwt_google_sheet_7">7. Paste the link</string>
+    <string name="imwt_google_sheet_8">8. Done</string>
+    <string name="imwt_google_translater_1">1. Translate words and add them to favourites</string>
+    <string name="imwt_google_translater_2">2. Click on saved at the bottom of the screen</string>
+    <string name="imwt_google_translater_3">3. Click on Google Spreadseet icon to generate the list of imported words</string>
+    <string name="imwt_google_translater_41">"4. Do not change the document, we'll do it for you! Just import from "</string>
+    <string name="imwt_google_translater_42">GoogleSheet page</string>
 
     <!-- Alarm notification -->
     <string name="alrm_sentence_title">Time to make a sentence!</string>

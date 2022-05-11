@@ -182,6 +182,8 @@ private fun ImportWordStateScreen(
     modifier: Modifier,
     onEventSent: (event: ImportWordsContract.Event) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -215,13 +217,15 @@ private fun ImportWordStateScreen(
                 color = MaterialTheme.colorScheme.tertiary,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
-                    .clickable { onEventSent(ImportWordsContract.Event.OnTutorialClick) }
+                    .clickable {
+                        focusManager.clearFocus()
+                        onEventSent(ImportWordsContract.Event.OnTutorialClick)
+                    }
                     .fillMaxWidth()
                     .padding(8.dp)
             )
         } else if (state.importWordState == ImportWordsContract.ImportWordState.HasLink) {
             if (!state.isAddGroup) {
-                val focusManager = LocalFocusManager.current
                 focusManager.clearFocus()
             }
 
@@ -271,6 +275,4 @@ private fun ImportWordsContract.ParsingState.toResultNotificationState(): Result
 }
 
 //Сделать multifab
-//3) import https://rmmbr.io/import/
-//Лонгрид для квизлета, google sheet, google translater в виде табов https://johncodeos.com/how-to-create-tabs-with-jetpack-compose/
 //анимация появлкния элементов на экране

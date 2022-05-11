@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -32,10 +33,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import io.taptap.stupidenglish.R
@@ -43,6 +48,7 @@ import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.uikit.AverageText
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -61,6 +67,8 @@ fun ImportWordsTutorialScreen(
     onNavigationRequested: (navigationEffect: ImportWordsTutorialContract.Effect.Navigation) -> Unit
 ) {
     val scaffoldState: ScaffoldState = rememberScaffoldState()
+    val pagerState = rememberPagerState()
+    val scope = rememberCoroutineScope()
 
     // Listen for side effects from the VM
     LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
@@ -69,6 +77,11 @@ fun ImportWordsTutorialScreen(
                 is ImportWordsTutorialContract.Effect.Navigation.BackToImportWords -> onNavigationRequested(
                     effect
                 )
+                is ImportWordsTutorialContract.Effect.ScrollToPage -> {
+                    scope.launch {
+                        pagerState.scrollToPage(effect.index)
+                    }
+                }
             }
         }?.collect()
     }
@@ -78,8 +91,10 @@ fun ImportWordsTutorialScreen(
     ) {
         StupidLanguageBackgroundBox { //todo стоит убрать в StupidEnglishScaffold?
             ContentScreen(
-                state,
-                onEventSent
+                state = state,
+                pagerState = pagerState,
+                scope = scope,
+                onEventSent = onEventSent
             )
         }
     }
@@ -89,17 +104,21 @@ fun ImportWordsTutorialScreen(
 @Composable
 private fun ContentScreen(
     state: ImportWordsTutorialContract.State,
+    pagerState: PagerState,
+    scope: CoroutineScope,
     onEventSent: (event: ImportWordsTutorialContract.Event) -> Unit
 ) {
-    val pagerState = rememberPagerState()
-    val scope = rememberCoroutineScope()
+    LaunchedEffect(pagerState) {
+        // Collect from the pager state a snapshotFlow reading the currentPage
+        snapshotFlow { pagerState.currentPage }.collect { pageIndex ->
+            onEventSent(ImportWordsTutorialContract.Event.OnPageChosen(pageIndex))
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(
             backgroundColor = Color.Transparent,
-            // Our selected tab is our current page
             selectedTabIndex = pagerState.currentPage,
-            // Override the indicator, using the provided pagerTabIndicatorOffset modifier
             indicator = { tabPositions ->
                 TabRowDefaults.Indicator(
                     Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
@@ -130,10 +149,7 @@ private fun ContentScreen(
                     },
                     selected = pagerState.currentPage == index,
                     onClick = {
-                        onEventSent(ImportWordsTutorialContract.Event.OnPageChosen(index))
-                        scope.launch {
-                            pagerState.scrollToPage(index)
-                        }
+                        onEventSent(ImportWordsTutorialContract.Event.ScrollToPage(index))
                     }
                 )
             }
@@ -145,8 +161,10 @@ private fun ContentScreen(
         ) { pageIndex ->
             when (ImportWordsTutorialContract.Page.getByIndex(pageIndex)) {
                 ImportWordsTutorialContract.Page.GOOGLE_SHEET -> GoogleSheetTutorial()
-                ImportWordsTutorialContract.Page.GOOGLE_TRANSLATER -> GoogleTranslaterTutorial()
-                ImportWordsTutorialContract.Page.QUIZLET -> QuizletTutorial()
+                ImportWordsTutorialContract.Page.GOOGLE_TRANSLATER -> GoogleTranslaterTutorial(
+                    onEventSent = onEventSent
+                )
+                //ImportWordsTutorialContract.Page.QUIZLET -> QuizletTutorial()
             }
         }
     }
@@ -162,280 +180,81 @@ private fun GoogleSheetTutorial() {
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        AverageText(
-            text = "1. Firstly, you'll need to open Google Spreadsheets and create a blank document",
-            textAlign = TextAlign.Start,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        ImportText(text = stringResource(id = R.string.imwt_google_sheet_1))
         ImportImage(
             painter = painterResource(R.drawable.googlesheet1)
         )
-        AverageText(
-            text = "2. Add 'word' to A1 cell and 'hint' to B1 cell",
-            textAlign = TextAlign.Start,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        ImportText(text = stringResource(id = R.string.imwt_google_sheet_2))
         ImportImage(
             painter = painterResource(R.drawable.googlesheet2)
         )
-        AverageText(
-            text = "3. You'll need to generate a public link to this spreasheet. Please click on the share button in the top right corner",
-            textAlign = TextAlign.Start,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        ImportText(text = stringResource(id = R.string.imwt_google_sheet_3))
         ImportImage(
             painter = painterResource(R.drawable.googlesheet3)
         )
-        AverageText(
-            text = "4. Give your list a name",
-            textAlign = TextAlign.Start,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        ImportText(text = stringResource(id = R.string.imwt_google_sheet_4))
         ImportImage(
             painter = painterResource(R.drawable.googlesheet4)
         )
-        AverageText(
-            text = "5. Change privacy to 'Public'",
-            textAlign = TextAlign.Start,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        ImportText(text = stringResource(id = R.string.imwt_google_sheet_5))
         ImportImage(
             painter = painterResource(R.drawable.googlesheet5)
         )
-        AverageText(
-            text = "6. Copy the link",
-            textAlign = TextAlign.Start,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        ImportText(text = stringResource(id = R.string.imwt_google_sheet_6))
         ImportImage(
             painter = painterResource(R.drawable.googlesheet6)
         )
-        AverageText(
-            text = "7. Paste the link",
-            textAlign = TextAlign.Start,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        ImportText(text = stringResource(id = R.string.imwt_google_sheet_7))
         ImportImage(
             painter = painterResource(R.drawable.sl_import)
         )
+        ImportText(text = stringResource(id = R.string.imwt_google_sheet_8))
+    }
+}
+
+@Composable
+private fun GoogleTranslaterTutorial(
+    onEventSent: (event: ImportWordsTutorialContract.Event) -> Unit,
+) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(16.dp)
+    ) {
+        ImportText(text = stringResource(id = R.string.imwt_google_translater_1))
+        ImportImage(
+            painter = painterResource(R.drawable.gt1)
+        )
+        ImportText(text = stringResource(id = R.string.imwt_google_translater_2))
+        ImportImage(
+            painter = painterResource(R.drawable.gt2)
+        )
+        ImportText(text = stringResource(id = R.string.imwt_google_translater_3))
+        ImportImage(
+            painter = painterResource(R.drawable.gt3)
+        )
         AverageText(
-            text = "8. Done",
+            text = buildAnnotatedString {
+                append(stringResource(id = R.string.imwt_google_translater_41))
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                ) {
+                    append(stringResource(id = R.string.imwt_google_translater_42))
+                }
+            },
+            maxLines = 5,
             textAlign = TextAlign.Start,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-    }
-}
-
-@Composable
-private fun GoogleTranslaterTutorial() {
-    val scrollState = rememberScrollState()
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-    ) {
-        Text(text = "Title")
-//        Image(
-//            painter = rememberImagePainter(data = )
-//            //painter = rememberImagePainter(data = R.drawable.YOURBESTGIF, imageLoader = imgLoader),
-//        )
-        Text(
-            color = Color.Green,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
-        )
-
-        Text(text = "Number1")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
             modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number2")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number3")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number4")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number5")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number6")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number7")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number8")
-
-
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
-        )
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
-        )
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
-        )
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
-        )
-    }
-}
-
-@Composable
-private fun QuizletTutorial() {
-    val scrollState = rememberScrollState()
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-    ) {
-        Text(text = "Title")
-//        Image(
-//            painter = rememberImagePainter(data = )
-//            //painter = rememberImagePainter(data = R.drawable.YOURBESTGIF, imageLoader = imgLoader),
-//        )
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
-        )
-
-        Text(text = "Number1")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number2")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number3")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number4")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number5")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number6")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number7")
-        Image(
-            painter = painterResource(R.drawable.ic_arrow),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-        )
-
-        Text(text = "Number8")
-
-
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
-        )
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
-        )
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
-        )
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText")
-        Text(
-            color = Color.Red,
-            text = "TextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextTextText"
+                .padding(bottom = 8.dp)
+                .clickable {
+                    val pageIndex = ImportWordsTutorialContract.Page.GOOGLE_SHEET.index
+                    onEventSent(ImportWordsTutorialContract.Event.ScrollToPage(pageIndex))
+                }
         )
     }
 }
@@ -457,6 +276,17 @@ private fun ColumnScope.ImportImage(
         painter = painter,
         contentDescription = null,
         modifier = modifier
+    )
+}
 
+@Composable
+private fun ImportText(
+    text: String
+) {
+    AverageText(
+        text = text,
+        textAlign = TextAlign.Start,
+        maxLines = 5,
+        modifier = Modifier.padding(bottom = 8.dp)
     )
 }

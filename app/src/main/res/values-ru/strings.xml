@@ -72,4 +72,17 @@
     <string name="impw_network_error">Возникла ошибка при получении данных</string>
     <string name="impw_tutorial_header">Не забудьте открыть доступ к вашей таблице</string>
     <string name="impw_tutorial_link">Как мне это сделать?</string>
+    <string name="imwt_google_sheet_1">1. Сначала, открой Google Spreadsheets и создай новый документ</string>
+    <string name="imwt_google_sheet_2">2. Добавь \'слово\' в ячейку A1 и \'подсказку\' в ячейку B1</string>
+    <string name="imwt_google_sheet_3">3. Теперь создадим публичную ссылку на этот документ и нажми на кнопку Share в правом верхнем углу экрана</string>
+    <string name="imwt_google_sheet_4">4. Дай имя таблице</string>
+    <string name="imwt_google_sheet_5">5. Сделай доступ по ссылке открытым для всех</string>
+    <string name="imwt_google_sheet_6">6. Скопируй ссылку</string>
+    <string name="imwt_google_sheet_7">7. Вставь ссылку</string>
+    <string name="imwt_google_sheet_8">8. Конец</string>
+    <string name="imwt_google_translater_1">1. Переведи слово и добавь его в избранные</string>
+    <string name="imwt_google_translater_2">2. Нажми кнопку сохранить в самом низу экрана</string>
+    <string name="imwt_google_translater_3">3. Нажми на иконку Google Spreadseet, чтобы создать список избраннных слов</string>
+    <string name="imwt_google_translater_41">4. Менять получившийся документ не надо! Мы сделаем все за тебя! Просто сделай импорт из</string>
+    <string name="imwt_google_translater_42">GoogleSheet</string>
 </resources>

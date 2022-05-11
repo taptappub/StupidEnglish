@@ -6,6 +6,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,6 +53,27 @@ fun AverageTitle(
 @Composable
 fun AverageText(
     text: String,
+    maxLines: Int = 2,
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Center,
+    color: Color = MaterialTheme.colorScheme.onSurface,
+    style: TextStyle = MaterialTheme.typography.titleSmall
+) {
+    SelectionContainer(modifier = modifier) {
+        Text(
+            text = text,
+            textAlign = textAlign,
+            color = color,
+            style = style,
+            maxLines = maxLines,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+fun AverageText(
+    text: AnnotatedString,
     maxLines: Int = 2,
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Center,
