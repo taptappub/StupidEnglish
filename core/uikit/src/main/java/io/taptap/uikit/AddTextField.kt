@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.taptap.uikit.theme.NunitoFontFamily
 
 @Composable
 fun AddTextField(
@@ -32,6 +33,7 @@ fun AddTextField(
         onValueChange = onValueChange,
         textStyle = LocalTextStyle.current.copy(
             color = MaterialTheme.colorScheme.onSurface,
+            fontFamily = NunitoFontFamily,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             textAlign = if (value.isEmpty()) {

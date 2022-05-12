@@ -7,7 +7,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import io.taptap.uikit.R
 
-private val NunitoFontFamily = FontFamily(
+val NunitoFontFamily = FontFamily(
     Font(R.font.nunito_regular),
     Font(R.font.nunito_bold, FontWeight.Bold),
     Font(R.font.nunito_extrabold, FontWeight.ExtraBold),
@@ -27,6 +27,13 @@ val StupidEnglishTypography = androidx.compose.material3.Typography(
         fontWeight = FontWeight.ExtraBold,
         fontSize = 14.sp,
         lineHeight = 20.sp,
+        letterSpacing = 0.2.sp
+    ),
+    headlineSmall = TextStyle(
+        fontFamily = NunitoFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp,
+        lineHeight = 16.sp,
         letterSpacing = 0.2.sp
     ),
     titleLarge = TextStyle(
@@ -50,14 +57,14 @@ val StupidEnglishTypography = androidx.compose.material3.Typography(
         lineHeight = 20.sp,
         letterSpacing = 0.2.sp
     ),
-    bodyLarge = TextStyle(
+    bodyMedium = TextStyle(
         fontFamily = NunitoFontFamily,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         lineHeight = 14.sp,
-        letterSpacing = 0.2.sp
+        letterSpacing = 0.sp
     ),
-    bodyMedium = TextStyle(
+    bodySmall = TextStyle(
         fontFamily = NunitoFontFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
@@ -71,7 +78,7 @@ val StupidEnglishTypography = androidx.compose.material3.Typography(
         lineHeight = 20.sp,
         letterSpacing = 0.2.sp
     ),
-    labelMedium = TextStyle(
+    labelSmall = TextStyle(
         fontFamily = NunitoFontFamily,
         fontWeight = FontWeight.ExtraBold,
         fontSize = 12.sp,

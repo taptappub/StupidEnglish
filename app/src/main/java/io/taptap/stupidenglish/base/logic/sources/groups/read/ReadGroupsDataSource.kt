@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.base.logic.groups
+package io.taptap.stupidenglish.base.logic.sources.groups.read
 
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
 import io.taptap.stupidenglish.base.logic.mapper.toGroup
@@ -11,9 +11,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GroupsDataSource @Inject constructor(
+class ReadGroupsDataSource @Inject constructor(
     private val wordDao: WordDao
-) : IGroupsDataSource {
+) : IReadGroupsDataSource {
 
     override suspend fun observeGroupList(): Reaction<Flow<List<Group>>> = Reaction.on {
         wordDao.observeGroups()

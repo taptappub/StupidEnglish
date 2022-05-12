@@ -4,9 +4,9 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
-import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
-import io.taptap.stupidenglish.base.logic.groups.GroupListModels
-import io.taptap.stupidenglish.base.logic.groups.NoGroup
+import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
+import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
+import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.features.addword.data.AddWordRepository
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +22,7 @@ class AddWordViewModel @Inject constructor(
 ) : BaseViewModel<AddWordContract.Event, AddWordContract.State, AddWordContract.Effect>() {
 
     init {
-        viewModelScope.launch(Dispatchers.Main) { getGroupsList() }
+        viewModelScope.launch(Dispatchers.IO) { getGroupsList() }
     }
 
     override fun setInitialState() = AddWordContract.State(
@@ -34,7 +34,7 @@ class AddWordViewModel @Inject constructor(
         addWordState = AddWordContract.AddWordState.None
     )
 
-    override fun handleEvents(event: AddWordContract.Event) {
+    override suspend fun handleEvents(event: AddWordContract.Event) {
         when (event) {
             is AddWordContract.Event.OnWord ->
                 setState { copy(addWordState = AddWordContract.AddWordState.HasWord) }

@@ -2,11 +2,12 @@ package io.taptap.stupidenglish.features.words.data
 
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
 import io.taptap.stupidenglish.base.logic.database.dto.GroupDto
-import io.taptap.stupidenglish.base.logic.groups.IGroupsDataSource
+import io.taptap.stupidenglish.base.logic.sources.groups.read.IReadGroupsDataSource
 import io.taptap.stupidenglish.base.logic.mapper.toWord
 import io.taptap.stupidenglish.base.logic.mapper.toWords
 import io.taptap.stupidenglish.base.logic.prefs.Settings
 import io.taptap.stupidenglish.base.logic.randomwords.IRandomWordsDataSource
+import io.taptap.stupidenglish.base.logic.sources.groups.write.IWriteGroupsDataSource
 import io.taptap.stupidenglish.base.model.Word
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,11 +18,13 @@ import javax.inject.Singleton
 @Singleton
 class WordListRepository @Inject constructor(
     randomWordsDataSource: IRandomWordsDataSource,
-    groupsDataSource: IGroupsDataSource,
+    readGroupsDataSource: IReadGroupsDataSource,
+    writeGroupsDataSource: IWriteGroupsDataSource,
     private val wordDao: WordDao,
     private val settings: Settings
 ) : IRandomWordsDataSource by randomWordsDataSource,
-    IGroupsDataSource by groupsDataSource {
+    IReadGroupsDataSource by readGroupsDataSource,
+    IWriteGroupsDataSource by writeGroupsDataSource {
 
     var isSentenceMotivationShown: Boolean
         get() {
@@ -47,10 +50,6 @@ class WordListRepository @Inject constructor(
 
     suspend fun deleteWord(id: Long): Reaction<Unit> = Reaction.on {
         wordDao.deleteWord(id)
-    }
-
-    suspend fun saveGroup(group: String): Reaction<Long> = Reaction.on {
-        wordDao.insertGroup(GroupDto(name = group))
     }
 
     suspend fun removeGroups(groups: List<Long>): Reaction<Unit> = Reaction.on {

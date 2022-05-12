@@ -13,14 +13,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
-import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -38,7 +39,7 @@ import io.taptap.stupidenglish.base.model.Word
 import io.taptap.uikit.AddTextField
 import io.taptap.uikit.AverageText
 import io.taptap.uikit.AverageTitle
-import io.taptap.uikit.NextButton
+import io.taptap.uikit.fab.NextButton
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
@@ -123,7 +124,10 @@ private fun ContentScreen(
                     }
             )
 
-            val focusRequester = FocusRequester()
+//            val focusRequester = FocusRequester()
+            val focusRequester by remember {
+                mutableStateOf(FocusRequester())
+            }
             val focusManager = LocalFocusManager.current
             AddTextField(
                 value = state.sentence,
@@ -157,9 +161,8 @@ private fun ContentScreen(
                     }
             )
 
-            DisposableEffect(Unit) {
+            LaunchedEffect("") {
                 focusRequester.requestFocus()
-                onDispose { }
             }
 
             AddSentenceWordList(

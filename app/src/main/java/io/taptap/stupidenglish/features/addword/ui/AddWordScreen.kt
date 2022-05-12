@@ -25,7 +25,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.rememberModalBottomSheetState
@@ -33,6 +32,9 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -54,14 +56,20 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
-import io.taptap.stupidenglish.base.logic.groups.GroupListModels
-import io.taptap.stupidenglish.base.logic.groups.NoGroup
-import io.taptap.stupidenglish.base.logic.groups.getTitle
+import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
+import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
+import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
+import io.taptap.stupidenglish.base.logic.sources.groups.read.getTitle
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.ui.ChooseGroupBottomSheetScreen
-import io.taptap.uikit.*
+import io.taptap.uikit.AddTextField
+import io.taptap.uikit.AverageTitle
+import io.taptap.uikit.Divider
+import io.taptap.uikit.LetterRoundView
+import io.taptap.uikit.ModalBottomSheetLayout
+import io.taptap.uikit.fab.NextButton
+import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
@@ -364,7 +372,10 @@ private fun NoneScreen(
     modifier: Modifier
 ) {
     Box(modifier = modifier) {
-        val focusRequester = FocusRequester()
+        val focusRequester by remember {
+            mutableStateOf(FocusRequester())
+        }
+//        val focusRequester = FocusRequester()
 
         AddTextField(
             value = state.word,
@@ -372,7 +383,7 @@ private fun NoneScreen(
             placeholder = stringResource(id = R.string.addw_word_placeholder),
             keyboardOptions = KeyboardOptions.Default.copy(
                 capitalization = KeyboardCapitalization.Sentences,
-                autoCorrect = false,
+                autoCorrect = true,
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
             ),
@@ -388,9 +399,8 @@ private fun NoneScreen(
                 .align(Alignment.Center)
         )
 
-        DisposableEffect(Unit) {
+        LaunchedEffect("") {
             focusRequester.requestFocus()
-            onDispose { }
         }
     }
 }
@@ -427,7 +437,10 @@ private fun HasWordScreen(
                 }
         )
 
-        val focusRequester = FocusRequester()
+//        val focusRequester = FocusRequester()
+        val focusRequester by remember {
+            mutableStateOf(FocusRequester())
+        }
         val focusManager = LocalFocusManager.current
         AddTextField(
             value = state.description,
@@ -459,9 +472,8 @@ private fun HasWordScreen(
                 }
         )
 
-        DisposableEffect(Unit) {
+        LaunchedEffect("") {
             focusRequester.requestFocus()
-            onDispose { }
         }
     }
 }

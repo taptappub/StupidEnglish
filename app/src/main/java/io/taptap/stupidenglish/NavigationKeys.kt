@@ -21,6 +21,9 @@ object NavigationKeys {
         const val SE_ADD_SENTENCE = "$ADD_SENTENCE/{${Arg.SENTENCE_WORDS_ID}}"
         const val REMEMBER = "stupid_english_remember"
         const val SE_REMEMBER = "$REMEMBER/{${Arg.WORDS_ID}}"
+
+        const val SE_IMPORT_WORDS = "stupid_english_import_words"
+        const val SE_IMPORT_WORDS_TUTORIAL = "stupid_english_import_words_tutorial"
     }
 
     enum class BottomNavigationScreen(

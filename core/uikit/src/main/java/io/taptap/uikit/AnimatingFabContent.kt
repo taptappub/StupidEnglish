@@ -39,9 +39,9 @@ fun AnimatingFabContent(
     icon: @Composable () -> Unit,
     text: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    extended: Boolean = true
+    enlarged: Boolean = true
 ) {
-    val currentState = if (extended) ExpandableFabStates.Extended else ExpandableFabStates.Collapsed
+    val currentState = if (enlarged) ExpandableFabStates.Extended else ExpandableFabStates.Collapsed
     val transition = updateTransition(currentState, label = "")
 
     val textOpacity by transition.animateFloat(

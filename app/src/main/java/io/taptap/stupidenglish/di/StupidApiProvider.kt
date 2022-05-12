@@ -3,20 +3,19 @@ package io.taptap.stupidenglish.di
 import android.app.AlarmManager
 import android.content.Context
 import android.content.Context.ALARM_SERVICE
+import android.os.Build.VERSION.SDK_INT
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
+import coil.ImageLoader
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.taptap.stupidenglish.base.logic.database.dao.WordDao
-import io.taptap.stupidenglish.base.logic.groups.GroupsDataSource
-import io.taptap.stupidenglish.base.logic.groups.IGroupsDataSource
 import io.taptap.stupidenglish.base.logic.prefs.Settings
-import io.taptap.stupidenglish.base.logic.randomwords.IRandomWordsDataSource
-import io.taptap.stupidenglish.base.logic.randomwords.RandomWordsDataSource
 import io.taptap.stupidenglish.base.logic.share.ShareUtil
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.alarm.ui.AlarmScheduler
@@ -33,20 +32,22 @@ class StupidApiProvider {
 
     @Provides
     @Singleton
-    fun provideRandomWordsDataSource(wordDao : WordDao): IRandomWordsDataSource {
-        return RandomWordsDataSource(wordDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideGroupsDataSource(wordDao : WordDao): IGroupsDataSource {
-        return GroupsDataSource(wordDao)
-    }
-
-    @Provides
-    @Singleton
     fun provideShareUtil(@ApplicationContext appContext: Context): ShareUtil {
         return ShareUtil(appContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideImageLoader(@ApplicationContext appContext: Context): ImageLoader {
+        return ImageLoader.Builder(appContext)
+            .components {
+                if (SDK_INT >= 28) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+            }
+            .build()
     }
 
     @Provides

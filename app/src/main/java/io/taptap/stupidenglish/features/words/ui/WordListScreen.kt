@@ -8,8 +8,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.DismissValue.Default
 import androidx.compose.material.icons.Icons
@@ -20,34 +18,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
-import io.taptap.stupidenglish.base.logic.groups.GroupListModels
-import io.taptap.stupidenglish.base.logic.groups.NoGroup
-import io.taptap.stupidenglish.base.logic.groups.NoGroupItemUI
+import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
+import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
+import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
+import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroupItemUI
 import io.taptap.stupidenglish.base.noRippleClickable
+import io.taptap.uikit.complex.AddGroupBottomSheetScreen
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.features.words.ui.model.*
 import io.taptap.stupidenglish.ui.ChooseGroupBottomSheetScreen
+import io.taptap.stupidenglish.ui.GroupItemHeader
 import io.taptap.uikit.*
+import io.taptap.uikit.fab.BOTTOM_BAR_MARGIN
+import io.taptap.uikit.fab.FabIcon
+import io.taptap.uikit.fab.FabOption
+import io.taptap.uikit.fab.MultiFabItem
+import io.taptap.uikit.fab.MultiFloatingActionButton
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
@@ -96,18 +95,14 @@ fun WordListScreen(
             when (state.sheetContentType) {
                 WordListContract.SheetContentType.AddGroup ->
                     AddGroupBottomSheetScreen(
-                        state = state,
-                        onEventSent = onEventSent,
+                        sheetTitle = stringResource(id = R.string.word_group_add_group_title),
+                        group = { state.group },
+                        onGroupNameChange = { onEventSent(WordListContract.Event.OnGroupChanging(it)) },
                         onAddGroup = {
                             if (state.group.isNotEmpty()) {
                                 onEventSent(WordListContract.Event.OnApplyGroup)
                             }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .navigationBarsPadding()
-                            .imePadding()
-                            .height(300.dp)
+                        }
                     )
                 WordListContract.SheetContentType.Motivation ->
                     DialogSheetScreen(
@@ -143,78 +138,97 @@ fun WordListScreen(
             }
         },
     ) {
-        StupidEnglishTheme {
-            val scaffoldState: ScaffoldState = rememberScaffoldState()
+        val scaffoldState: ScaffoldState = rememberScaffoldState()
 
-            // Listen for side effects from the VM
-            LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-                effectFlow?.onEach { effect ->
-                    when (effect) {
-                        is WordListContract.Effect.HideBottomSheet ->
-                            modalBottomSheetState.hideSheet(scope)
-                        is WordListContract.Effect.ShowBottomSheet ->
-                            modalBottomSheetState.showSheet(scope)
-                        is WordListContract.Effect.Navigation.ToAddWord ->
-                            onNavigationRequested(effect)
-                        is WordListContract.Effect.GetRandomWordsError ->
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.getString(effect.errorRes),
-                                duration = SnackbarDuration.Short
-                            )
-                        is WordListContract.Effect.GetWordsError ->
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.getString(effect.errorRes),
-                                duration = SnackbarDuration.Short
-                            )
-                        is WordListContract.Effect.Navigation.ToAddSentence ->
-                            onNavigationRequested(effect)
-                        is WordListContract.Effect.ShowUnderConstruction ->
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.getString(R.string.under_construction),
-                                duration = SnackbarDuration.Short
-                            )
-                        is WordListContract.Effect.ChangeBottomBarVisibility -> {
-                            onChangeBottomSheetVisibility(effect.isShown)
-                        }
-                        is WordListContract.Effect.ShowRecover -> {
-                            val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
-                                message = context.getString(R.string.word_delete_message),
-                                duration = SnackbarDuration.Short,
-                                actionLabel = context.getString(R.string.word_recover)
-                            )
-                            when (snackbarResult) {
-                                SnackbarResult.Dismissed -> onEventSent(WordListContract.Event.OnApplySentenceDismiss)
-                                SnackbarResult.ActionPerformed -> onEventSent(WordListContract.Event.OnRecover)
-                            }
+        // Listen for side effects from the VM
+        LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+            effectFlow?.onEach { effect ->
+                when (effect) {
+                    is WordListContract.Effect.HideBottomSheet ->
+                        modalBottomSheetState.hideSheet(scope)
+                    is WordListContract.Effect.ShowBottomSheet ->
+                        modalBottomSheetState.showSheet(scope)
+                    is WordListContract.Effect.Navigation.ToAddWord ->
+                        onNavigationRequested(effect)
+                    is WordListContract.Effect.Navigation.ToImportWords ->
+                        onNavigationRequested(effect)
+                    is WordListContract.Effect.GetRandomWordsError ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(effect.errorRes),
+                            duration = SnackbarDuration.Short
+                        )
+                    is WordListContract.Effect.GetWordsError ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(effect.errorRes),
+                            duration = SnackbarDuration.Short
+                        )
+                    is WordListContract.Effect.Navigation.ToAddSentence ->
+                        onNavigationRequested(effect)
+                    is WordListContract.Effect.ShowUnderConstruction ->
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(R.string.under_construction),
+                            duration = SnackbarDuration.Short
+                        )
+                    is WordListContract.Effect.ChangeBottomBarVisibility -> {
+                        onChangeBottomSheetVisibility(effect.isShown)
+                    }
+                    is WordListContract.Effect.ShowRecover -> {
+                        val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
+                            message = context.getString(R.string.word_delete_message),
+                            duration = SnackbarDuration.Short,
+                            actionLabel = context.getString(R.string.word_recover)
+                        )
+                        when (snackbarResult) {
+                            SnackbarResult.Dismissed -> onEventSent(WordListContract.Event.OnApplySentenceDismiss)
+                            SnackbarResult.ActionPerformed -> onEventSent(WordListContract.Event.OnRecover)
                         }
                     }
-                }?.collect()
-            }
-
-            StupidEnglishScaffold(
-                scaffoldState = scaffoldState
-            ) {
-                StupidLanguageBackgroundBox {
-                    val listState = rememberLazyListState()
-
-                    MainList(
-                        wordItems = state.wordList,
-                        deletedWordIds = state.deletedWordIds,
-                        group = state.currentGroup,
-                        listState = listState,
-                        onEventSent = onEventSent
-                    )
-                    if (state.isLoading) {
-                        LoadingBar()
-                    }
-                    Fab(
-                        extended = listState.firstVisibleItemIndex == 0,
-                        modifier = Modifier.align(Alignment.BottomEnd),
-                        iconRes = R.drawable.ic_plus,
-                        text = stringResource(id = R.string.word_fab_text),
-                        onFabClicked = { onEventSent(WordListContract.Event.OnAddWordClick) }
-                    )
                 }
+            }?.collect()
+        }
+
+        StupidEnglishScaffold(
+            scaffoldState = scaffoldState
+        ) {
+            StupidLanguageBackgroundBox {
+                val listState = rememberLazyListState()
+
+                MainList(
+                    wordItems = state.wordList,
+                    deletedWordIds = state.deletedWordIds,
+                    group = state.currentGroup,
+                    listState = listState,
+                    onEventSent = onEventSent
+                )
+                if (state.isLoading) {
+                    LoadingBar()
+                }
+                MultiFloatingActionButton(
+                    enlarged = listState.firstVisibleItemIndex == 0,
+                    fabIcon = FabIcon(
+                        iconRes = R.drawable.ic_plus,
+                        iconRotate = 45f,
+                        text = stringResource(id = R.string.word_fab_text)
+                    ),
+                    fabOption = FabOption(showLabels = true),
+                    items = listOf(
+                        MultiFabItem(
+                            id = 1,
+                            label = stringResource(id = R.string.word_minifab_manual),
+                            onClicked = {
+                                onEventSent(WordListContract.Event.OnAddWordClick)
+                            }
+                        ),
+                        MultiFabItem(
+                            id = 2,
+                            label = stringResource(id = R.string.word_minifab_import),
+                            onClicked = {
+                                onEventSent(WordListContract.Event.OnImportWordsClick)
+                            }
+                        )
+                    ),
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                )
             }
         }
     }
@@ -408,44 +422,15 @@ private fun GroupItem(
                 MaterialTheme.colorScheme.secondary
             },
             style = if (selected) {
-                MaterialTheme.typography.bodyLarge
-            } else {
                 MaterialTheme.typography.bodyMedium
+            } else {
+                MaterialTheme.typography.bodySmall
             },
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(2.dp)
-        )
-    }
-}
-
-@Composable
-private fun GroupItemHeader(title: String, button: String, onButtonClicked: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        AverageTitle(
-            text = title,
-            maxLines = 1,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
-        Text(
-            text = button,
-            textAlign = TextAlign.Left,
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.tertiary,
-            style = MaterialTheme.typography.labelMedium,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.clickable {
-                onButtonClicked()
-            }
         )
     }
 }
@@ -463,8 +448,9 @@ private fun OnboardingItemRow(
             .noRippleClickable(onClick = onClicked)
             .height(height = 140.dp)
     ) {
-        Row(modifier = Modifier
-            .background(getStupidLanguageBackgroundRow())
+        Row(
+            modifier = Modifier
+                .background(getStupidLanguageBackgroundRow())
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_main_onboarding),
@@ -495,7 +481,7 @@ private fun OnboardingItemRow(
                 Text(
                     text = stringResource(id = R.string.word_onboarding_text),
                     textAlign = TextAlign.Left,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -515,7 +501,7 @@ private fun WordItemRow(
     SwipeToDismiss(
         state = dismissState,
         dismissThresholds = { direction ->
-            FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
+            FractionalThreshold(0.5f)
         },
         modifier = modifier
             .padding(vertical = 1.dp),
@@ -584,108 +570,9 @@ private fun WordItem(
             text = item.description,
             textAlign = TextAlign.Left,
             color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
-        )
-    }
-}
-
-@Composable
-fun LoadingBar() {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun AddGroupBottomSheetScreen(
-    modifier: Modifier,
-    onAddGroup: () -> Unit,
-    onEventSent: (event: WordListContract.Event) -> Unit,
-    state: WordListContract.State
-) {
-    BottomSheetScreen(
-        modifier = modifier
-    ) {
-        ConstraintLayout(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            val (title, content, button) = createRefs()
-            val keyboardController = LocalSoftwareKeyboardController.current
-
-            Box(
-                modifier = modifier.constrainAs(content) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                }
-            ) {
-                val focusRequester = FocusRequester()
-
-                AddTextField(
-                    value = state.group,
-                    onValueChange = { onEventSent(WordListContract.Event.OnGroupChanging(it)) },
-                    placeholder = "",
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        capitalization = KeyboardCapitalization.Sentences,
-                        autoCorrect = false,
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            keyboardController?.hide()
-                            onAddGroup()
-                        }
-                    ),
-                    modifier = Modifier
-                        .focusRequester(focusRequester)
-                        .align(Alignment.Center)
-                )
-
-                DisposableEffect(Unit) {
-                    focusRequester.requestFocus()
-                    onDispose { }
-                }
-            }
-            AverageTitle(
-                text = stringResource(id = R.string.word_group_add_group_title),
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp)
-                    .constrainAs(title) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                    }
-            )
-
-            NextButton(
-                visibility = state.group.isNotEmpty(),
-                onClick = {
-                    keyboardController?.hide()
-                    onAddGroup()
-                },
-                modifier = Modifier.constrainAs(button) {
-                    bottom.linkTo(parent.bottom, 16.dp)
-                    end.linkTo(parent.end, 16.dp)
-                }
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GroupItemHeader() {
-    StupidEnglishTheme {
-        GroupItemHeader(
-            title = "Groups",
-            button = "Add",
-            onButtonClicked = {}
         )
     }
 }

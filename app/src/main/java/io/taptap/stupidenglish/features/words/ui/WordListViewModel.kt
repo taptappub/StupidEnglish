@@ -4,13 +4,11 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
-import io.taptap.stupidenglish.base.logic.groups.GroupItemUI
-import io.taptap.stupidenglish.base.logic.groups.GroupListModels
-import io.taptap.stupidenglish.base.logic.groups.NoGroup
+import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
+import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
+import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.base.model.Word
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListItemUI
 import io.taptap.stupidenglish.features.words.data.WordListRepository
 import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
@@ -23,6 +21,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import taptap.pub.doOnComplete
 import taptap.pub.handle
 import taptap.pub.map
 import taptap.pub.takeOrNull
@@ -55,12 +54,15 @@ class WordListViewModel @Inject constructor(
         deletedWordIds = mutableListOf()
     )
 
-    override fun handleEvents(event: WordListContract.Event) {
+    override suspend fun handleEvents(event: WordListContract.Event) {
         when (event) {
-            WordListContract.Event.OnAddWordClick -> {
+            is WordListContract.Event.OnAddWordClick -> {
                 setEffect { WordListContract.Effect.Navigation.ToAddWord }
             }
-            WordListContract.Event.OnOnboardingClick -> {
+            is WordListContract.Event.OnImportWordsClick -> {
+                setEffect { WordListContract.Effect.Navigation.ToImportWords }
+            }
+            is WordListContract.Event.OnOnboardingClick -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     val randomWords = getRandomWords()
                     withContext(Dispatchers.Main) {
@@ -358,30 +360,15 @@ class WordListViewModel @Inject constructor(
     private fun saveGroup(group: String) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.saveGroup(group)
-                .handle(
-                    success = {
-                        withContext(Dispatchers.Main) {
-                            setState {
-                                copy(
-                                    sheetContentType = WordListContract.SheetContentType.Motivation,
-                                    group = ""
-                                )
-                            }
-                            setEffect { WordListContract.Effect.HideBottomSheet }
-                        }
-                    },
-                    error = {
-                        withContext(Dispatchers.Main) {
-                            setState {
-                                copy(
-                                    sheetContentType = WordListContract.SheetContentType.Motivation,
-                                    group = ""
-                                )
-                            }
-                            setEffect { WordListContract.Effect.HideBottomSheet }
-                        }
+                .doOnComplete {
+                    setState {
+                        copy(
+                            sheetContentType = WordListContract.SheetContentType.Motivation,
+                            group = ""
+                        )
                     }
-                )
+                    setEffect { WordListContract.Effect.HideBottomSheet }
+                }
         }
     }
 

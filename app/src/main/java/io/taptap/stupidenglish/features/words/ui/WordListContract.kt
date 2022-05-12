@@ -3,9 +3,7 @@ package io.taptap.stupidenglish.features.words.ui
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewState
-import io.taptap.stupidenglish.base.logic.groups.GroupListModels
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListListModels
+import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 
@@ -18,6 +16,7 @@ class WordListContract {
         object OnApplySentenceDismiss : Event()
 
         object OnAddWordClick : Event()
+        object OnImportWordsClick : Event()
         object OnOnboardingClick : Event()
         object OnWordClick : Event()
 
@@ -66,6 +65,7 @@ class WordListContract {
 
         sealed class Navigation : Effect() {
             object ToAddWord : Navigation()
+            object ToImportWords : Navigation()
             data class ToAddSentence(val wordIds: List<Long>) : Navigation()
         }
     }

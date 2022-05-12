@@ -19,7 +19,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,8 +26,8 @@ import androidx.compose.ui.unit.dp
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.features.main.ui.MainContract
-import io.taptap.uikit.BOTTOM_BAR_HEIGHT
-import io.taptap.uikit.BOTTOM_BAR_VERTICAL_PADDING
+import io.taptap.uikit.fab.BOTTOM_BAR_HEIGHT
+import io.taptap.uikit.fab.BOTTOM_BAR_VERTICAL_PADDING
 import io.taptap.uikit.theme.StupidEnglishTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -96,6 +95,7 @@ fun StupidEnglishBottomBar(
                         Text(
                             text = stringResource(id = item.title),
                             color = tint,
+                            style = MaterialTheme.typography.headlineSmall,
                             maxLines = 1,
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)

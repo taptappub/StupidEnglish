@@ -48,7 +48,7 @@ class StackViewModel @Inject constructor(
             topWordId = 0
         )
 
-    override fun handleEvents(event: StackContract.Event) {
+    override suspend fun handleEvents(event: StackContract.Event) {
         when (event) {
             is StackContract.Event.Swipe -> {
                 setState { copy(swipeState = StackContract.SwipeState.WasSwiped) }

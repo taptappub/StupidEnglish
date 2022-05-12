@@ -6,7 +6,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -45,15 +47,32 @@ abstract class BaseViewModel<Event : ViewEvent, UiState : ViewState, Effect : Vi
     }
 
     protected fun setState(reducer: UiState.() -> UiState) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             val newState = viewState.value.reducer()
             Log.d("StupidEnglishState", "state = $newState")
             _viewState.value = newState
         }
     }
 
+    protected fun setTemporaryState(
+        tempReducer: UiState.() -> UiState,
+        duration: Long
+    ) {
+        viewModelScope.launch(Dispatchers.Main) {
+            val oldValue = _viewState.value
+
+            val newState = viewState.value.tempReducer()
+            Log.d("StupidEnglishState", "state = $newState")
+            _viewState.value = newState
+
+            delay(duration)
+
+            _viewState.value = oldValue
+        }
+    }
+
     private fun subscribeToEvents() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _event.collect {
                 Log.d("StupidEnglishState", "handleEvents = $it")
                 handleEvents(it)
@@ -61,7 +80,7 @@ abstract class BaseViewModel<Event : ViewEvent, UiState : ViewState, Effect : Vi
         }
     }
 
-    abstract fun handleEvents(event: Event)
+    abstract suspend fun handleEvents(event: Event)
 
     protected fun setEffect(builder: () -> Effect) {
         val effectValue = builder()

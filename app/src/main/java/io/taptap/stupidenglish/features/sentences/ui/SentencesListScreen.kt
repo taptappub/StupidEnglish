@@ -37,10 +37,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Icon
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
@@ -73,13 +71,14 @@ import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.uikit.*
+import io.taptap.uikit.fab.BOTTOM_BAR_MARGIN
+import io.taptap.uikit.fab.Fab
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -209,7 +208,7 @@ private fun ContentScreen(
             LoadingBar()
         }
         Fab(
-            extended = listState.firstVisibleItemIndex == 0,
+            enlarged = listState.firstVisibleItemIndex == 0,
             modifier = Modifier.align(Alignment.BottomEnd),
             iconRes = R.drawable.ic_plus,
             text = stringResource(id = R.string.stns_fab_text),
@@ -292,7 +291,7 @@ private fun SentenceItemRow(
     SwipeToDismiss(
         state = dismissState,
         dismissThresholds = { direction ->
-            FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
+            FractionalThreshold(0.5f)
         },
         modifier = modifier
             .padding(vertical = 1.dp),
