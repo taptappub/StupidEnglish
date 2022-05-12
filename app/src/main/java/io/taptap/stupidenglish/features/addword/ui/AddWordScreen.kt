@@ -150,7 +150,7 @@ fun AddWordScreen(
             )
         }
     ) {
-        Scaffold(
+        StupidEnglishScaffold(
             scaffoldState = scaffoldState
         ) {
             ContentScreen(

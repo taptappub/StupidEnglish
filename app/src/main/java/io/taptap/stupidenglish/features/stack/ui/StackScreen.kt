@@ -55,7 +55,7 @@ fun StackScreen(
 
     //todo manager и adapter объединить в recyclerState по типу scafoldState
     val manager: CardStackLayoutManager = remember {
-        initCardStackLayoutManager(context, state, onEventSent).init()
+        initCardStackLayoutManager(context, onEventSent).init()
     }
     val adapter: CardStackAdapter = remember {
         CardStackAdapter(
@@ -154,9 +154,8 @@ private fun ContentScreen(
     }
 }
 
-fun initCardStackLayoutManager(
+private fun initCardStackLayoutManager(
     context: Context,
-    state: StackContract.State,
     onEventSent: (event: StackContract.Event) -> Unit
 ): CardStackLayoutManager {
     return CardStackLayoutManager(context, object : CardStackListener {
@@ -197,9 +196,9 @@ fun initCardStackLayoutManager(
 
 private fun CardStackLayoutManager.init(): CardStackLayoutManager {
     return apply {
-        setStackFrom(StackFrom.Bottom)
-        setTranslationInterval(8.0f)
-        setScaleInterval(0.95f)
+        setStackFrom(StackFrom.Right)
+        setTranslationInterval(16.0f)
+        setScaleInterval(0.8f)
         setSwipeThreshold(0.3f)
         setVisibleCount(3)
         setMaxDegree(20.0f)

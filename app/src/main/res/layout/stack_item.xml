@@ -5,11 +5,11 @@
     android:id="@+id/mcv_card"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:elevation="4dp"
+    android:elevation="8dp"
     android:layout_margin="8dp"
     app:cardBackgroundColor="?attr/colorSurface"
     app:cardCornerRadius="12dp"
-    app:cardElevation="4dp"
+    app:cardElevation="8dp"
     app:cardPreventCornerOverlap="false"
     app:cardUseCompatPadding="true">
 

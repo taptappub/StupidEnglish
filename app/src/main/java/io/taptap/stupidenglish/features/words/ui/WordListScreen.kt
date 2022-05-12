@@ -15,11 +15,7 @@ import androidx.compose.material.DismissValue.Default
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -203,7 +199,7 @@ fun WordListScreen(
 
                     MainList(
                         wordItems = state.wordList,
-                        deletedSentenceIds = state.deletedWordIds,
+                        deletedWordIds = state.deletedWordIds,
                         group = state.currentGroup,
                         listState = listState,
                         onEventSent = onEventSent
@@ -232,7 +228,7 @@ private fun MainList(
     group: GroupListModels?,
     listState: LazyListState,
     onEventSent: (event: WordListContract.Event) -> Unit,
-    deletedSentenceIds: MutableList<Long>
+    deletedWordIds: MutableList<Long>
 ) {
     LazyColumn(
         state = listState,
@@ -246,7 +242,7 @@ private fun MainList(
             key = { it.id }
         ) { item ->
             val dismissState = rememberDismissState()
-            if (deletedSentenceIds.contains(item.id)) { //todo выделить в отдельный класс с возможностью удалять?
+            if (deletedWordIds.contains(item.id)) { //todo выделить в отдельный класс с возможностью удалять?
                 if (dismissState.currentValue != DismissValue.Default) {
                     LaunchedEffect(Unit) {
                         dismissState.reset()
@@ -389,7 +385,8 @@ private fun GroupItem(
             letter = title[0].uppercaseChar(),
             selected = selected,
             fontSize = 28.sp,
-            modifier = Modifier.size(56.dp)
+            modifier = Modifier
+                .size(56.dp)
                 .then(
                     if (group == NoGroup) {
                         Modifier.clickable { onGroupClicked(group) }

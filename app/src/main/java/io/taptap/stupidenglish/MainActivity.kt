@@ -455,6 +455,9 @@ private fun NavController.navigateToTab(
 //9) ОНБОРДИНГ (+состояния пустых списков)
 //10) A/b тестирование
 //11) Перетаскивание в папку слов драг энд дропом. Список групп вылезает сбоку, с анимацией волны, и ты перетягиваешь слово в нужную папку
+//2) Верхняя навигация
+//10) https://joebirch.co/android/building-an-exploding-fab-transition-in-jetpack-compose/
+//11) https://sanskar10100.hashnode.dev/implementing-periodic-notifications-with-workmanager
 
 //Гугл аналитика без play service'ов
 //https://developers.google.com/analytics/devguides/collection/android/v4?hl=ru
@@ -463,10 +466,9 @@ private fun NavController.navigateToTab(
 // - если кучу раз нажать на слово, то блокируется UI
 // - по клику на банне рне всегда начинается сценарий добавления предложения
 // - при удалении, при лонг тапе, карточка слова поднимается и там и остается
-// - нотификации не показываются
 
 //Следующий билд
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
-//2) Верхняя навигация
 //3) import https://rmmbr.io/import/
 //4) обернуть handleEvents в io thread
+//5) Авторизация и сохранение слов в firebase storage
