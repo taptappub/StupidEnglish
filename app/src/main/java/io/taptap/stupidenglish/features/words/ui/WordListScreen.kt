@@ -415,7 +415,7 @@ private fun GroupItem(
         Text(
             text = title,
             textAlign = TextAlign.Center,
-            fontSize = 12.sp,
+            fontSize = 10.sp,
             color = if (selected) {
                 MaterialTheme.colorScheme.onSurface
             } else {

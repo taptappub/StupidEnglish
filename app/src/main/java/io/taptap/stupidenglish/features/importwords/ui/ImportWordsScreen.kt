@@ -56,8 +56,8 @@ fun ImportWordsScreen(
     onEventSent: (event: ImportWordsContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: ImportWordsContract.Effect.Navigation) -> Unit
 ) {
-    Log.d("ImportWordsScreen", "start")
     val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
 
     val modalBottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -104,12 +104,12 @@ fun ImportWordsScreen(
                     is ImportWordsContract.Effect.ShowBottomSheet -> {
                         modalBottomSheetState.showSheet(scope)
                     }
-                    is ImportWordsContract.Effect.Navigation.BackToWordList -> onNavigationRequested(
-                        effect
-                    )
-                    is ImportWordsContract.Effect.Navigation.GoToImportTutorial -> onNavigationRequested(
-                        effect
-                    )
+                    is ImportWordsContract.Effect.Navigation.BackToWordList ->
+                        onNavigationRequested(effect)
+                    is ImportWordsContract.Effect.Navigation.GoToImportTutorial -> {
+                        focusManager.clearFocus()
+                        onNavigationRequested(effect)
+                    }
                 }
             }?.collect()
         }
