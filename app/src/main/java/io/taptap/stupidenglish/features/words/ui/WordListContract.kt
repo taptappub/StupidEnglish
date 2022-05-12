@@ -16,6 +16,7 @@ class WordListContract {
         object OnApplySentenceDismiss : Event()
 
         object OnAddWordClick : Event()
+        object OnImportWordsClick : Event()
         object OnOnboardingClick : Event()
         object OnWordClick : Event()
 
@@ -64,6 +65,7 @@ class WordListContract {
 
         sealed class Navigation : Effect() {
             object ToAddWord : Navigation()
+            object ToImportWords : Navigation()
             data class ToAddSentence(val wordIds: List<Long>) : Navigation()
         }
     }

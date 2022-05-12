@@ -68,7 +68,7 @@ import io.taptap.uikit.AverageTitle
 import io.taptap.uikit.Divider
 import io.taptap.uikit.LetterRoundView
 import io.taptap.uikit.ModalBottomSheetLayout
-import io.taptap.uikit.NextButton
+import io.taptap.uikit.fab.NextButton
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox

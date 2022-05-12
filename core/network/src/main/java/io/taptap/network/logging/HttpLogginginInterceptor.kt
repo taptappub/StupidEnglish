@@ -1,15 +1,16 @@
 package io.taptap.network.logging
 
 import android.util.Log
+import io.taptap.network.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
 private const val HTTP_LOG_NAME = "UnlimintBackendApi"
 
 fun OkHttpClient.Builder.addHttpLoggingInterceptor() {
-//    if (BuildConfig.DEBUG) {
+    if (BuildConfig.DEBUG) {
         addInterceptor(getHttpLoggingInterceptor())
-//    }
+    }
 }
 
 private fun getHttpLoggingInterceptor() = HttpLoggingInterceptor { message ->

@@ -415,14 +415,16 @@ private fun WordListDestination(
         onNavigationRequested = { navigationEffect ->
             when (navigationEffect) {
                 is WordListContract.Effect.Navigation.ToAddWord -> {
-//                    navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
-                    navController.navigate(NavigationKeys.Route.SE_IMPORT_WORDS)
+                    navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
                 }
                 is WordListContract.Effect.Navigation.ToAddSentence -> {
                     val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
                     navController.navigateToTab(
                         route = "$SENTENCES?${NavigationKeys.Arg.WORDS_ID}=$ids"
                     )
+                }
+                is WordListContract.Effect.Navigation.ToImportWords -> {
+                    navController.navigate(NavigationKeys.Route.SE_IMPORT_WORDS)
                 }
             }
         })

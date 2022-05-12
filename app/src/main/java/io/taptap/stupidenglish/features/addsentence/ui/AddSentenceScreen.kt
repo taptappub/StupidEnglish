@@ -18,7 +18,6 @@ import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +39,7 @@ import io.taptap.stupidenglish.base.model.Word
 import io.taptap.uikit.AddTextField
 import io.taptap.uikit.AverageText
 import io.taptap.uikit.AverageTitle
-import io.taptap.uikit.NextButton
+import io.taptap.uikit.fab.NextButton
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow

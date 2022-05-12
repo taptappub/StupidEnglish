@@ -46,6 +46,11 @@ import io.taptap.stupidenglish.features.words.ui.model.*
 import io.taptap.stupidenglish.ui.ChooseGroupBottomSheetScreen
 import io.taptap.stupidenglish.ui.GroupItemHeader
 import io.taptap.uikit.*
+import io.taptap.uikit.fab.BOTTOM_BAR_MARGIN
+import io.taptap.uikit.fab.FabIcon
+import io.taptap.uikit.fab.FabOption
+import io.taptap.uikit.fab.MultiFabItem
+import io.taptap.uikit.fab.MultiFloatingActionButton
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
@@ -149,6 +154,8 @@ fun WordListScreen(
                         modalBottomSheetState.showSheet(scope)
                     is WordListContract.Effect.Navigation.ToAddWord ->
                         onNavigationRequested(effect)
+                    is WordListContract.Effect.Navigation.ToImportWords ->
+                        onNavigationRequested(effect)
                     is WordListContract.Effect.GetRandomWordsError ->
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(effect.errorRes),
@@ -200,12 +207,31 @@ fun WordListScreen(
                 if (state.isLoading) {
                     LoadingBar()
                 }
-                Fab(
-                    extended = listState.firstVisibleItemIndex == 0,
-                    modifier = Modifier.align(Alignment.BottomEnd),
-                    iconRes = R.drawable.ic_plus,
-                    text = stringResource(id = R.string.word_fab_text),
-                    onFabClicked = { onEventSent(WordListContract.Event.OnAddWordClick) }
+                MultiFloatingActionButton(
+                    enlarged = listState.firstVisibleItemIndex == 0,
+                    fabIcon = FabIcon(
+                        iconRes = R.drawable.ic_plus,
+                        iconRotate = 45f,
+                        text = stringResource(id = R.string.word_fab_text)
+                    ),
+                    fabOption = FabOption(showLabels = true),
+                    items = listOf(
+                        MultiFabItem(
+                            id = 1,
+                            label = stringResource(id = R.string.word_minifab_manual),
+                            onClicked = {
+                                onEventSent(WordListContract.Event.OnAddWordClick)
+                            }
+                        ),
+                        MultiFabItem(
+                            id = 2,
+                            label = stringResource(id = R.string.word_minifab_import),
+                            onClicked = {
+                                onEventSent(WordListContract.Event.OnImportWordsClick)
+                            }
+                        )
+                    ),
+                    modifier = Modifier.align(Alignment.BottomEnd)
                 )
             }
         }

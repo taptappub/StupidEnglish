@@ -71,6 +71,8 @@ import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.uikit.*
+import io.taptap.uikit.fab.BOTTOM_BAR_MARGIN
+import io.taptap.uikit.fab.Fab
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
@@ -206,7 +208,7 @@ private fun ContentScreen(
             LoadingBar()
         }
         Fab(
-            extended = listState.firstVisibleItemIndex == 0,
+            enlarged = listState.firstVisibleItemIndex == 0,
             modifier = Modifier.align(Alignment.BottomEnd),
             iconRes = R.drawable.ic_plus,
             text = stringResource(id = R.string.stns_fab_text),

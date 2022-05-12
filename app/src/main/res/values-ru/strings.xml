@@ -44,7 +44,7 @@
     <string name="word_get_groups_error">Возникла ошибка в момент получения групп</string>
     <string name="word_group_title">Группы</string>
     <string name="word_group_button">Добавить</string>
-    <string name="word_group_no_group_name">Мой словарь</string>
+    <string name="word_group_no_group_name">Все слова</string>
     <string name="word_group_add_group_title">Новая группа</string>
     <string name="word_empty_list_title">Список пуст</string>
     <string name="word_empty_list_description">Добавь слова в эту группу</string>
@@ -85,4 +85,6 @@
     <string name="imwt_google_translater_3">3. Нажми на иконку Google Spreadseet, чтобы создать список избраннных слов</string>
     <string name="imwt_google_translater_41">4. Менять получившийся документ не надо! Мы сделаем все за тебя! Просто сделай импорт из</string>
     <string name="imwt_google_translater_42">GoogleSheet</string>
+    <string name="word_minifab_import">Импорт</string>
+    <string name="word_minifab_manual">Вручную</string>
 </resources>

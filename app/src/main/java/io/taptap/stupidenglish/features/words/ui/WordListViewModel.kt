@@ -56,10 +56,13 @@ class WordListViewModel @Inject constructor(
 
     override suspend fun handleEvents(event: WordListContract.Event) {
         when (event) {
-            WordListContract.Event.OnAddWordClick -> {
+            is WordListContract.Event.OnAddWordClick -> {
                 setEffect { WordListContract.Effect.Navigation.ToAddWord }
             }
-            WordListContract.Event.OnOnboardingClick -> {
+            is WordListContract.Event.OnImportWordsClick -> {
+                setEffect { WordListContract.Effect.Navigation.ToImportWords }
+            }
+            is WordListContract.Event.OnOnboardingClick -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     val randomWords = getRandomWords()
                     withContext(Dispatchers.Main) {

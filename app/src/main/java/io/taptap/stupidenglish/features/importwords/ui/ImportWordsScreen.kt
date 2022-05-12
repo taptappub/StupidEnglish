@@ -1,6 +1,7 @@
 package io.taptap.stupidenglish.features.importwords.ui
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +37,7 @@ import io.taptap.stupidenglish.ui.ChooseGroupContent
 import io.taptap.stupidenglish.ui.GroupItemHeader
 import io.taptap.uikit.LoadingBar
 import io.taptap.uikit.ModalBottomSheetLayout
-import io.taptap.uikit.NextButton
+import io.taptap.uikit.fab.NextButton
 import io.taptap.uikit.ResultNotification
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.TextField
@@ -55,6 +56,7 @@ fun ImportWordsScreen(
     onEventSent: (event: ImportWordsContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: ImportWordsContract.Effect.Navigation) -> Unit
 ) {
+    Log.d("ImportWordsScreen", "start")
     val scope = rememberCoroutineScope()
 
     val modalBottomSheetState = rememberModalBottomSheetState(
@@ -101,7 +103,6 @@ fun ImportWordsScreen(
                         modalBottomSheetState.hideSheet(scope)
                     is ImportWordsContract.Effect.ShowBottomSheet -> {
                         modalBottomSheetState.showSheet(scope)
-//                        sss
                     }
                     is ImportWordsContract.Effect.Navigation.BackToWordList -> onNavigationRequested(
                         effect
@@ -273,6 +274,3 @@ private fun ImportWordsContract.ParsingState.toResultNotificationState(): Result
         ImportWordsContract.ParsingState.None -> ResultNotification.State.IDLE
     }
 }
-
-//Сделать multifab
-//анимация появлкния элементов на экране
