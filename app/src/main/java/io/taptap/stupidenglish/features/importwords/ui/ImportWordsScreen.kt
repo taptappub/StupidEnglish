@@ -27,12 +27,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
+import io.taptap.stupidenglish.features.importwordstutorial.ui.ImportWordsTutorialContract
 import io.taptap.stupidenglish.ui.ChooseGroupContent
 import io.taptap.stupidenglish.ui.GroupItemHeader
 import io.taptap.uikit.LoadingBar
@@ -206,17 +211,26 @@ private fun ImportWordStateScreen(
         )
         if (state.importWordState == ImportWordsContract.ImportWordState.None) {
             Text(
-                text = stringResource(id = R.string.impw_tutorial_header),
-                color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            )
-            Text(
-                text = stringResource(id = R.string.impw_tutorial_link),
-                color = MaterialTheme.colorScheme.tertiary,
-                style = MaterialTheme.typography.bodyMedium,
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.secondary,
+
+                        )
+                    ) {
+                        append(stringResource(id = R.string.impw_tutorial_header) + "\n")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    ) {
+                        append(stringResource(id = R.string.impw_tutorial_link))
+                    }
+                },
+                maxLines = 5,
+                textAlign = TextAlign.Start,
                 modifier = Modifier
                     .clickable {
                         focusManager.clearFocus()

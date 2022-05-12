@@ -43,7 +43,6 @@ fun TextField(
         val focusRequester by remember {
             mutableStateOf(FocusRequester())
         }
-//        val focusRequester = FocusRequester()
 
         OutlinedTextField(
             value = value,
