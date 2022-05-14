@@ -371,11 +371,6 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
         onEventSent = { event -> addSentenceViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
-//                navController.navigate(route = SENTENCES) {
-//                    popUpTo(findStartDestination(navController.graph).id) {
-//                        saveState = true
-//                    }
-//                }
                 navController.backQueue.removeIf {
                     it.destination.route == NavigationKeys.Route.SE_ADD_SENTENCE
                             || it.destination.route == NavigationKeys.Route.SE_REMEMBER
@@ -384,12 +379,7 @@ private fun AddSentenceDialogDestination(navController: NavHostController) {
                     popUpTo(route = NavigationKeys.Route.SE_ADD_SENTENCE) {
                         inclusive = true
                     }
-//                    popUpTo(route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route)
                 }
-//                navController.popBackStack(
-//                    route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route,
-//                    inclusive = false
-//                )
             }
         })
 }
@@ -520,6 +510,7 @@ private fun NavController.navigateToTab(
 //11) Перетаскивание в папку слов драг энд дропом. Список групп вылезает сбоку, с анимацией волны, и ты перетягиваешь слово в нужную папку
 //12) импорт из Quizlet по ссылке модуля
 //13) Можно создавать имя группы при импорте из названия страницы
+//5) Авторизация и сохранение слов в firebase storage
 
 //Гугл аналитика без play service'ов
 //https://developers.google.com/analytics/devguides/collection/android/v4?hl=ru
@@ -534,4 +525,4 @@ private fun NavController.navigateToTab(
 //Следующий билд
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
 //2) Верхняя навигация
-//5) Авторизация и сохранение слов в firebase storage
+//3) В первом диалоге едет верстка

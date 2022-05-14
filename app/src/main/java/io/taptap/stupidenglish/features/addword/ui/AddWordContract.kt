@@ -8,6 +8,7 @@ import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
 class AddWordContract {
     sealed class Event : ViewEvent {
         object OnWord : Event()
+        object OnBackClick: Event()
 
         data class OnWordChanging(val value: String) : Event()
         data class OnDescriptionChanging(val value: String) : Event()

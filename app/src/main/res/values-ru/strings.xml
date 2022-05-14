@@ -87,4 +87,5 @@
     <string name="imwt_google_translater_42">GoogleSheet</string>
     <string name="word_minifab_import">Импорт</string>
     <string name="word_minifab_manual">Вручную</string>
+    <string name="addw_topbar_title">Новое слово</string>
 </resources>

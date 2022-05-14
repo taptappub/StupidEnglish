@@ -68,8 +68,9 @@ import io.taptap.uikit.AverageTitle
 import io.taptap.uikit.Divider
 import io.taptap.uikit.LetterRoundView
 import io.taptap.uikit.ModalBottomSheetLayout
-import io.taptap.uikit.fab.NextButton
 import io.taptap.uikit.StupidEnglishScaffold
+import io.taptap.uikit.StupidEnglishTopAppBar
+import io.taptap.uikit.fab.NextButton
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
@@ -159,6 +160,12 @@ fun AddWordScreen(
         }
     ) {
         StupidEnglishScaffold(
+            topBar = {
+                StupidEnglishTopAppBar(
+                    text = stringResource(id = R.string.addw_topbar_title),
+                    onNavigationClick = { onEventSent(AddWordContract.Event.OnBackClick) }
+                )
+            },
             scaffoldState = scaffoldState
         ) {
             ContentScreen(

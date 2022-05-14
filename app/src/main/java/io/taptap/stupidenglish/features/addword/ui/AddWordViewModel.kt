@@ -36,6 +36,8 @@ class AddWordViewModel @Inject constructor(
 
     override suspend fun handleEvents(event: AddWordContract.Event) {
         when (event) {
+            is AddWordContract.Event.OnBackClick ->
+                setEffect { AddWordContract.Effect.Navigation.BackToWordList }
             is AddWordContract.Event.OnWord ->
                 setState { copy(addWordState = AddWordContract.AddWordState.HasWord) }
 
