@@ -36,11 +36,13 @@ import com.google.accompanist.flowlayout.FlowRow
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.uikit.AddTextField
 import io.taptap.uikit.AverageText
 import io.taptap.uikit.AverageTitle
 import io.taptap.uikit.fab.NextButton
 import io.taptap.uikit.StupidEnglishScaffold
+import io.taptap.uikit.StupidEnglishTopAppBar
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -103,7 +105,14 @@ private fun ContentScreen(
     state: AddSentenceContract.State,
     onEventSent: (event: AddSentenceContract.Event) -> Unit
 ) {
-    StupidLanguageBackgroundBox {
+    StupidLanguageBackgroundBox(
+        topbar = {
+            StupidEnglishTopAppBar(
+                text = stringResource(id = R.string.addw_topbar_title),
+                onNavigationClick = { onEventSent(AddSentenceContract.Event.OnBackClick) },
+            )
+        }
+    ) {
         ConstraintLayout(
             modifier = Modifier
                 .navigationBarsPadding()

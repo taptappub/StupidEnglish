@@ -160,12 +160,6 @@ fun AddWordScreen(
         }
     ) {
         StupidEnglishScaffold(
-            topBar = {
-                StupidEnglishTopAppBar(
-                    text = stringResource(id = R.string.addw_topbar_title),
-                    onNavigationClick = { onEventSent(AddWordContract.Event.OnBackClick) }
-                )
-            },
             scaffoldState = scaffoldState
         ) {
             ContentScreen(
@@ -181,7 +175,14 @@ private fun ContentScreen(
     state: AddWordContract.State,
     onEventSent: (event: AddWordContract.Event) -> Unit
 ) {
-    StupidLanguageBackgroundBox {
+    StupidLanguageBackgroundBox(
+        topbar = {
+            StupidEnglishTopAppBar(
+                text = stringResource(id = R.string.adds_topbar_title),
+                onNavigationClick = { onEventSent(AddWordContract.Event.OnBackClick) },
+            )
+        }
+    ) {
         ConstraintLayout(
             modifier = Modifier
                 .navigationBarsPadding()

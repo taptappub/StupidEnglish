@@ -11,6 +11,7 @@ class AddSentenceContract {
         data class OnSentenceChanging(val value: String) : AddSentenceContract.Event()
         object OnSaveSentence : Event()
         object OnChipClick : Event()
+        object OnBackClick : Event()
     }
 
     data class State(
