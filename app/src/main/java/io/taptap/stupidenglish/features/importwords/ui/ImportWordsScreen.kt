@@ -36,12 +36,14 @@ import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
+import io.taptap.stupidenglish.features.stack.ui.StackContract
 import io.taptap.stupidenglish.ui.ChooseGroupContent
 import io.taptap.stupidenglish.ui.GroupItemHeader
 import io.taptap.uikit.LoadingBar
 import io.taptap.uikit.ModalBottomSheetLayout
 import io.taptap.uikit.ResultNotification
 import io.taptap.uikit.StupidEnglishScaffold
+import io.taptap.uikit.StupidEnglishTopAppBar
 import io.taptap.uikit.TextField
 import io.taptap.uikit.complex.AddGroupBottomSheetScreen
 import io.taptap.uikit.fab.NextButton
@@ -134,7 +136,14 @@ private fun ContentScreen(
     state: ImportWordsContract.State,
     onEventSent: (event: ImportWordsContract.Event) -> Unit
 ) {
-    StupidLanguageBackgroundBox {
+    StupidLanguageBackgroundBox(
+        topbar = {
+            StupidEnglishTopAppBar(
+                text = stringResource(id = R.string.impw_topbar_title),
+                onNavigationClick = { onEventSent(ImportWordsContract.Event.OnBackClick) },
+            )
+        }
+    ) {
         ConstraintLayout(
             modifier = Modifier
                 .navigationBarsPadding()

@@ -108,7 +108,7 @@ private fun ContentScreen(
     StupidLanguageBackgroundBox(
         topbar = {
             StupidEnglishTopAppBar(
-                text = stringResource(id = R.string.addw_topbar_title),
+                text = stringResource(id = R.string.adds_topbar_title),
                 onNavigationClick = { onEventSent(AddSentenceContract.Event.OnBackClick) },
             )
         }

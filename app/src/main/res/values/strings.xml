@@ -92,6 +92,7 @@
     <string name="impw_network_error">Server connection error</string>
     <string name="impw_tutorial_header">Do not forget to share your spreadsheet</string>
     <string name="impw_tutorial_link">Help me with it</string>
+    <string name="impw_topbar_title">Words import</string>
 
     <!-- Import Words Tutorial-->
     <string name="imwt_google_sheet_title" translatable="false">Google Sheets</string>
@@ -110,6 +111,7 @@
     <string name="imwt_google_translater_3">3. Click on Google Spreadseet icon to generate the list of imported words</string>
     <string name="imwt_google_translater_41">"4. Do not change the document, we'll do it for you! Just import from "</string>
     <string name="imwt_google_translater_42">GoogleSheet page</string>
+    <string name="imwt_topbar_title">Import tutorial</string>
 
     <!-- Alarm notification -->
     <string name="alrm_sentence_title">Time to make a sentence!</string>
@@ -123,7 +125,9 @@
     <string name="stck_back_label">Your hint</string>
     <string name="stck_hint_button_text">I don\'t remember!</string>
     <string name="stck_button_remember">I remember!</string>
+    <string name="stck_topbar_title">Memorization</string>
 
     <!-- Delete this block -->
     <string name="under_construction">Work in progress</string>
+
 </resources>

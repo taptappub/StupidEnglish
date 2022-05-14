@@ -31,11 +31,13 @@ import com.yuyakaido.android.cardstackview.SwipeAnimationSetting
 import com.yuyakaido.android.cardstackview.SwipeableMethod
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackAdapter
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackDiffUtils
 import io.taptap.stupidenglish.features.stack.ui.adapter.randomDirection
 import io.taptap.uikit.SecondaryButton
 import io.taptap.uikit.StupidEnglishScaffold
+import io.taptap.uikit.StupidEnglishTopAppBar
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -106,7 +108,14 @@ private fun ContentScreen(
     adapter: CardStackAdapter,
     onEventSent: (event: StackContract.Event) -> Unit
 ) {
-    StupidLanguageBackgroundBox {
+    StupidLanguageBackgroundBox(
+        topbar = {
+            StupidEnglishTopAppBar(
+                text = stringResource(id = R.string.stck_topbar_title),
+                onNavigationClick = { onEventSent(StackContract.Event.OnBackClick) },
+            )
+        }
+    ) {
         Column(modifier = Modifier.fillMaxWidth()) {
 
             AndroidView(

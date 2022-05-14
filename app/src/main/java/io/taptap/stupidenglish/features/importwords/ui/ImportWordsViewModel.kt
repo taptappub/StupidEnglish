@@ -88,6 +88,8 @@ class ImportWordsViewModel @Inject constructor(
             is ImportWordsContract.Event.OnTutorialClick -> {
                 setEffect { ImportWordsContract.Effect.Navigation.GoToImportTutorial }
             }
+            is ImportWordsContract.Event.OnBackClick ->
+                setEffect { ImportWordsContract.Effect.Navigation.BackToWordList }
         }
     }
 

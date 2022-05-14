@@ -16,6 +16,8 @@ class StackContract {
 
         object OnNo : Event()
         object OnYes : Event()
+
+        object OnBackClick : Event()
     }
 
     data class State(

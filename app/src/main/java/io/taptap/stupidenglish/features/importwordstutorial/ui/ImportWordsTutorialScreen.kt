@@ -46,8 +46,10 @@ import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.features.importwords.ui.ImportWordsContract
 import io.taptap.uikit.AverageText
 import io.taptap.uikit.StupidEnglishScaffold
+import io.taptap.uikit.StupidEnglishTopAppBar
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -92,7 +94,14 @@ fun ImportWordsTutorialScreen(
     StupidEnglishScaffold(
         scaffoldState = scaffoldState
     ) {
-        StupidLanguageBackgroundBox { //todo стоит убрать в StupidEnglishScaffold?
+        StupidLanguageBackgroundBox(
+            topbar = {
+                StupidEnglishTopAppBar(
+                    text = stringResource(id = R.string.imwt_topbar_title),
+                    onNavigationClick = { onEventSent(ImportWordsTutorialContract.Event.OnBackClick) },
+                )
+            }
+        ) { //todo стоит убрать в StupidEnglishScaffold?
             ContentScreen(
                 state = state,
                 pagerState = pagerState,

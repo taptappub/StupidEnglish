@@ -18,6 +18,7 @@ class ImportWordsContract {
         object OnGroupAddingCancel : Event()
 
         object OnTutorialClick : Event()
+        object OnBackClick : Event()
     }
 
     data class State(

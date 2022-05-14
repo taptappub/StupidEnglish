@@ -83,10 +83,13 @@
     <string name="imwt_google_translater_1">1. Переведи слово и добавь его в избранные</string>
     <string name="imwt_google_translater_2">2. Нажми кнопку сохранить в самом низу экрана</string>
     <string name="imwt_google_translater_3">3. Нажми на иконку Google Spreadseet, чтобы создать список избраннных слов</string>
-    <string name="imwt_google_translater_41">4. Менять получившийся документ не надо! Мы сделаем все за тебя! Просто сделай импорт из</string>
+    <string name="imwt_google_translater_41">4. Менять получившийся документ не надо! Мы сделаем все за тебя! Просто сделай импорт из </string>
     <string name="imwt_google_translater_42">GoogleSheet</string>
     <string name="word_minifab_import">Импорт</string>
     <string name="word_minifab_manual">Вручную</string>
     <string name="addw_topbar_title">Новое слово</string>
     <string name="adds_topbar_title">Новое предложение</string>
+    <string name="stck_topbar_title">Повторение</string>
+    <string name="impw_topbar_title">Импорт слов</string>
+    <string name="imwt_topbar_title">Импорт слов</string>
 </resources>

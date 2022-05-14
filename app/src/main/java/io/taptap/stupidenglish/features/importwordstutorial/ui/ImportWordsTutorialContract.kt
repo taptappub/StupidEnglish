@@ -8,6 +8,8 @@ import io.taptap.stupidenglish.base.ViewState
 
 class ImportWordsTutorialContract {
     sealed class Event : ViewEvent {
+        object OnBackClick : Event()
+
         data class OnPageChosen(val index: Int) : Event()
         data class ScrollToPage(val index: Int) : Event()
     }

@@ -72,6 +72,8 @@ class StackViewModel @Inject constructor(
                     setEffect { StackContract.Effect.Navigation.ToAddSentence(wordsIds) }
                 }
             }
+            is StackContract.Event.OnBackClick ->
+                setEffect { StackContract.Effect.Navigation.BackToSentenceList }
         }
     }
 

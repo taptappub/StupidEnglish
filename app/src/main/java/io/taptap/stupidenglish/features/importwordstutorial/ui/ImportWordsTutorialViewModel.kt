@@ -27,9 +27,10 @@ class ImportWordsTutorialViewModel @Inject constructor() : BaseViewModel<ImportW
                     .select(page)
                 setState { copy(pages = pages) }
             }
-            is ImportWordsTutorialContract.Event.ScrollToPage -> {
+            is ImportWordsTutorialContract.Event.ScrollToPage ->
                 setEffect { ImportWordsTutorialContract.Effect.ScrollToPage(event.index) }
-            }
+            is ImportWordsTutorialContract.Event.OnBackClick ->
+                setEffect { ImportWordsTutorialContract.Effect.Navigation.BackToImportWords }
         }
     }
 }
