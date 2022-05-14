@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -117,12 +118,13 @@ class MainActivity : ComponentActivity() {
                 text = {
                     AverageText(
                         text = stringResource(id = R.string.main_dialog_message),
-                        maxLines = 10
+                        maxLines = 100
                     )
                 },
                 confirmButton = {
                     PrimaryButton(
-                        text = stringResource(id = R.string.main_dialog_ok)
+                        text = stringResource(id = R.string.main_dialog_ok),
+                        modifier = Modifier.padding(8.dp)
                     ) {
                         mainViewModel.setEvent(MainContract.Event.OnGreetingsClose)
                     }
@@ -524,5 +526,5 @@ private fun NavController.navigateToTab(
 
 //Следующий билд
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
-//2) Верхняя навигация
-//3) В первом диалоге едет верстка
+//2) авторизация
+//3) профиль
