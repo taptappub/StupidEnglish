@@ -1,6 +1,9 @@
 package io.taptap.stupidenglish.features.words.ui
 
 import android.content.Context
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -28,6 +31,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
+import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
@@ -53,7 +59,6 @@ import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
-
 
 @OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalFoundationApi
@@ -140,6 +145,21 @@ fun WordListScreen(
     ) {
         val scaffoldState: ScaffoldState = rememberScaffoldState()
 
+        val authIntent = rememberAuthIntent()
+        val result = remember { mutableStateOf<FirebaseAuthUIAuthenticationResult?>(null) }
+        val launcher = rememberLauncherForActivityResult(FirebaseAuthUIActivityResultContract()) {
+            result.value = it
+        }
+
+        result.value?.let { res ->
+            LaunchedEffect("dfgsg") {
+                scaffoldState.snackbarHostState.showSnackbar(
+                    message = "SUCCESS ASS ASS ${res.idpResponse?.email ?: "Tits"}",
+                    duration = SnackbarDuration.Long
+                ) попробуй подписанную поставить
+            }
+        }
+
         // Listen for side effects from the VM
         LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
             effectFlow?.onEach { effect ->
@@ -148,8 +168,10 @@ fun WordListScreen(
                         modalBottomSheetState.hideSheet(scope)
                     is WordListContract.Effect.ShowBottomSheet ->
                         modalBottomSheetState.showSheet(scope)
-                    is WordListContract.Effect.Navigation.ToAddWord ->
-                        onNavigationRequested(effect)
+                    is WordListContract.Effect.Navigation.ToAddWord -> {
+                        launcher.launch(authIntent)
+//                        onNavigationRequested(effect)
+                    }
                     is WordListContract.Effect.Navigation.ToImportWords ->
                         onNavigationRequested(effect)
                     is WordListContract.Effect.GetRandomWordsError ->
@@ -231,6 +253,25 @@ fun WordListScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun rememberAuthIntent(): Intent {
+    return remember { // Choose authentication providers
+        val providers = arrayListOf(
+//            AuthUI.IdpConfig.EmailBuilder().build(),
+//            AuthUI.IdpConfig.PhoneBuilder().build(),
+            AuthUI.IdpConfig.GoogleBuilder().build(),
+//            AuthUI.IdpConfig.FacebookBuilder().build(),
+//            AuthUI.IdpConfig.TwitterBuilder().build()
+        )
+
+        // Create and launch sign-in intent
+        AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setAvailableProviders(providers)
+            .build()
     }
 }
 
