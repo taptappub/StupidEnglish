@@ -121,12 +121,10 @@ fun ImportWordsScreen(
         StupidEnglishScaffold(
             scaffoldState = scaffoldState
         ) {
-            StupidLanguageBackgroundBox {
-                ContentScreen(
-                    state,
-                    onEventSent
-                )
-            }
+            ContentScreen(
+                state,
+                onEventSent
+            )
         }
     }
 }
@@ -188,7 +186,6 @@ private fun ContentScreen(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ImportWordStateScreen(
     state: ImportWordsContract.State,

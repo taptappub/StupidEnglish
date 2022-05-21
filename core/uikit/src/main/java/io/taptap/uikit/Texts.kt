@@ -57,16 +57,29 @@ fun AverageText(
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Center,
     color: Color = MaterialTheme.colorScheme.onSurface,
-    style: TextStyle = MaterialTheme.typography.titleSmall
+    style: TextStyle = MaterialTheme.typography.titleSmall,
+    selectable: Boolean = true
 ) {
-    SelectionContainer(modifier = modifier) {
+    if (selectable) {
+        SelectionContainer(modifier = modifier) {
+            Text(
+                text = text,
+                textAlign = textAlign,
+                color = color,
+                style = style,
+                maxLines = maxLines,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    } else {
         Text(
             text = text,
             textAlign = textAlign,
             color = color,
             style = style,
             maxLines = maxLines,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            modifier = modifier
         )
     }
 }
@@ -78,16 +91,29 @@ fun AverageText(
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Center,
     color: Color = MaterialTheme.colorScheme.onSurface,
-    style: TextStyle = MaterialTheme.typography.titleSmall
+    style: TextStyle = MaterialTheme.typography.titleSmall,
+    selectable: Boolean = true
 ) {
-    SelectionContainer(modifier = modifier) {
+    if (selectable) {
+        SelectionContainer(modifier = modifier) {
+            Text(
+                text = text,
+                textAlign = textAlign,
+                color = color,
+                style = style,
+                maxLines = maxLines,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    } else {
         Text(
             text = text,
             textAlign = textAlign,
             color = color,
             style = style,
             maxLines = maxLines,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            modifier = modifier
         )
     }
 }

@@ -9,6 +9,7 @@ import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
 import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.features.profile.ui.ProfileContract
 import io.taptap.stupidenglish.features.words.data.WordListRepository
 import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
@@ -41,6 +42,7 @@ class WordListViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) { getMainList() }
         viewModelScope.launch(Dispatchers.IO) { showMotivation() }
+        viewModelScope.launch(Dispatchers.IO) { getSavedUser() }
     }
 
     override fun setInitialState() = WordListContract.State(
@@ -51,7 +53,8 @@ class WordListViewModel @Inject constructor(
         removedGroups = listOf(),
         currentGroup = NoGroup,
         sheetContentType = WordListContract.SheetContentType.Motivation,
-        deletedWordIds = mutableListOf()
+        deletedWordIds = mutableListOf(),
+        avatar = null
     )
 
     override suspend fun handleEvents(event: WordListContract.Event) {
@@ -126,7 +129,7 @@ class WordListViewModel @Inject constructor(
             }
             is WordListContract.Event.OnWordDismiss -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    predeleteSentence(event.item)
+                    predeleteWord(event.item)
                 }
             }
             is WordListContract.Event.OnGroupClick -> {
@@ -208,10 +211,12 @@ class WordListViewModel @Inject constructor(
             is WordListContract.Event.OnRecovered -> {
                 setState { copy(deletedWordIds = mutableListOf()) }
             }
+            is WordListContract.Event.OnProfileClick ->
+                setEffect { WordListContract.Effect.Navigation.ToProfile }
         }
     }
 
-    private suspend fun predeleteSentence(item: WordListItemUI) {
+    private suspend fun predeleteWord(item: WordListItemUI) {
         val mutableDeletedWordIds = viewState.value.deletedWordIds.toMutableList()
         mutableDeletedWordIds.add(item.id)
         val list = viewState.value.wordList.toMutableList()
@@ -400,5 +405,21 @@ class WordListViewModel @Inject constructor(
                     }
                 )
         }
+    }
+
+    private suspend fun getSavedUser() {
+        repository.getSavedUser()
+            .handle(
+                success = { user ->
+                    if (user != null) {
+                        setState { copy(avatar = user.avatar) }
+                    } else {
+                        setState { copy(avatar = null) }
+                    }
+                },
+                error = {
+                    setEffect { WordListContract.Effect.GetUserError(R.string.word_get_user_error) }
+                }
+            )
     }
 }

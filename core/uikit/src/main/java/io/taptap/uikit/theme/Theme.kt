@@ -56,11 +56,6 @@ fun StupidEnglishTheme(
 ) {
     val systemUiController = rememberSystemUiController()
 
-//    systemUiController.setSystemBarsColor(
-//        color = Color.Transparent,
-//        darkIcons = !darkTheme
-//    )
-
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {

@@ -1,9 +1,11 @@
 package io.taptap.stupidenglish.features.words.ui
 
+import androidx.annotation.StringRes
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewState
 import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
+import io.taptap.stupidenglish.features.profile.ui.ProfileContract
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 
@@ -19,6 +21,7 @@ class WordListContract {
         object OnImportWordsClick : Event()
         object OnOnboardingClick : Event()
         object OnWordClick : Event()
+        object OnProfileClick : Event()
 
         object OnMotivationConfirmClick : Event()
         object OnMotivationDeclineClick : Event()
@@ -44,7 +47,8 @@ class WordListContract {
         val currentGroup: GroupListModels,
         val sheetContentType: SheetContentType,
         val group: String,
-        val deletedWordIds: MutableList<Long>
+        val deletedWordIds: MutableList<Long>,
+        val avatar: String?
     ) : ViewState
 
     enum class SheetContentType {
@@ -54,8 +58,9 @@ class WordListContract {
     }
 
     sealed class Effect : ViewSideEffect {
-        data class GetRandomWordsError(val errorRes: Int) : Effect()
-        data class GetWordsError(val errorRes: Int) : Effect()
+        data class GetRandomWordsError(@StringRes val errorRes: Int) : Effect()
+        data class GetWordsError(@StringRes val errorRes: Int) : Effect()
+        data class GetUserError(@StringRes val errorRes: Int) : Effect()
 
         object HideBottomSheet : Effect()
         object ShowBottomSheet : Effect()
@@ -66,6 +71,7 @@ class WordListContract {
         sealed class Navigation : Effect() {
             object ToAddWord : Navigation()
             object ToImportWords : Navigation()
+            object ToProfile : Navigation()
             data class ToAddSentence(val wordIds: List<Long>) : Navigation()
         }
     }

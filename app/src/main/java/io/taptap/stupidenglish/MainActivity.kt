@@ -51,6 +51,9 @@ import io.taptap.stupidenglish.features.importwordstutorial.ui.ImportWordsTutori
 import io.taptap.stupidenglish.features.importwordstutorial.ui.ImportWordsTutorialViewModel
 import io.taptap.stupidenglish.features.main.ui.MainContract
 import io.taptap.stupidenglish.features.main.ui.MainViewModel
+import io.taptap.stupidenglish.features.profile.ui.ProfileContract
+import io.taptap.stupidenglish.features.profile.ui.ProfileScreen
+import io.taptap.stupidenglish.features.profile.ui.ProfileViewModel
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListScreen
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
@@ -208,6 +211,11 @@ class MainActivity : ComponentActivity() {
                     ImportWordsTutorialDestination(navController)
                 }
                 composable(
+                    route = NavigationKeys.Route.SE_PROFILE
+                ) {
+                    ProfileDestination(navController)
+                }
+                composable(
                     route = NavigationKeys.Route.SE_REMEMBER,
                     deepLinks = listOf(navDeepLink {
                         uriPattern =
@@ -336,6 +344,27 @@ private fun ImportWordsTutorialDestination(
         })
 }
 
+@ExperimentalMaterialApi
+@Composable
+private fun ProfileDestination(
+    navController: NavHostController
+) {
+    val profileViewModel: ProfileViewModel = hiltViewModel()
+    val profileState = profileViewModel.viewState.value
+
+    ProfileScreen(
+        context = LocalContext.current,
+        state = profileState,
+        effectFlow = profileViewModel.effect,
+        onEventSent = { event -> profileViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            if (navigationEffect is ProfileContract.Effect.Navigation.BackToWordsList) {
+                navController.popBackStack()
+            }
+        }
+    )
+}
+
 @Composable
 private fun StackDestination(navController: NavHostController) {
     val stackViewModel: StackViewModel = hiltViewModel()
@@ -417,6 +446,9 @@ private fun WordListDestination(
                 }
                 is WordListContract.Effect.Navigation.ToImportWords -> {
                     navController.navigate(NavigationKeys.Route.SE_IMPORT_WORDS)
+                }
+                is WordListContract.Effect.Navigation.ToProfile -> {
+                    navController.navigate(NavigationKeys.Route.SE_PROFILE)
                 }
             }
         })

@@ -45,6 +45,7 @@
     <string name="word_recover">Recover</string>
     <string name="word_minifab_manual">Manual</string>
     <string name="word_minifab_import">Import</string>
+    <string name="word_get_user_error">Error while getting user</string>
 
     <!-- Sentences List -->
     <string name="stns_list_list_title">Stupid sentences</string>
@@ -126,6 +127,14 @@
     <string name="stck_hint_button_text">I don\'t remember!</string>
     <string name="stck_button_remember">I remember!</string>
     <string name="stck_topbar_title">Memorization</string>
+
+    <!-- Profile -->
+    <string name="prof_topbar_title">Profile</string>
+    <string name="prof_sign_in">Sign in</string>
+    <string name="prof_terms">Terms and conditions</string>
+    <string name="prof_dark_mode">Dark mode</string>
+    <string name="prof_logout">Logout from account</string>
+    <string name="prod_get_user_error">Error while getting user</string>
 
     <!-- Delete this block -->
     <string name="under_construction">Work in progress</string>

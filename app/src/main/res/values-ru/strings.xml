@@ -92,4 +92,11 @@
     <string name="stck_topbar_title">Повторение</string>
     <string name="impw_topbar_title">Импорт слов</string>
     <string name="imwt_topbar_title">Импорт слов</string>
+    <string name="prof_topbar_title">Профиль</string>
+    <string name="prof_sign_in">Войти</string>
+    <string name="prof_terms">Условия и положения</string>
+    <string name="prof_dark_mode">Темная тема</string>
+    <string name="prof_logout">Выйти из аккаунта</string>
+    <string name="prod_get_user_error">Произошла ошибка во время запроса сохраненного пользователя</string>
+    <string name="word_get_user_error">Произошла ошибка во время запроса сохраненного пользователя</string>
 </resources>

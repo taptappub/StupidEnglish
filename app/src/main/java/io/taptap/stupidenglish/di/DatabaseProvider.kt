@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.taptap.stupidenglish.base.logic.database.WordDatabase
+import io.taptap.stupidenglish.base.logic.database.dao.UserDao
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
 import io.taptap.stupidenglish.base.logic.database.dto.SentenceDto
 import io.taptap.stupidenglish.base.logic.database.dto.WordDto
@@ -32,7 +33,9 @@ class DatabaseProvider {
 
     @Provides
     @Singleton
-    fun provideChannelDao(appDatabase: WordDatabase): WordDao {
-        return appDatabase.wordDao()
-    }
+    fun provideWordDao(appDatabase: WordDatabase): WordDao = appDatabase.wordDao()
+
+    @Provides
+    @Singleton
+    fun provideUserDao(appDatabase: WordDatabase): UserDao = appDatabase.userDao()
 }

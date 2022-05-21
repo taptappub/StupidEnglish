@@ -37,8 +37,8 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion "1.0.1"
-        kotlinCompilerVersion '1.5.21'
+        kotlinCompilerExtensionVersion rootProject.ext.kotlin_compilet_extension_version
+        kotlinCompilerVersion rootProject.ext.kotlin_compilet_version
     }
 }
 
@@ -60,7 +60,7 @@ dependencies {
     api "androidx.constraintlayout:constraintlayout-compose:1.0.0"
     api 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
     api 'androidx.activity:activity-compose:1.4.0'
-    api "androidx.compose.material3:material3:1.0.0-alpha11"
+    api "androidx.compose.material3:material3:1.0.0-alpha12"
 
     //accompanist
     api "com.google.accompanist:accompanist-systemuicontroller:0.24.7-alpha"
