@@ -20,17 +20,15 @@ interface UserDao {
 
     @Query(
         """
-        DELETE FROM UserTable 
-        WHERE UserTable.id = :userId
+        DELETE FROM UserTable
         """
     )
-    suspend fun deleteUser(userId: Long): Int
+    suspend fun deleteUser()
 
     @Query(
         """
         SELECT *
         FROM UserTable
-        LIMIT 1
         """
     )
     suspend fun getUserDto(): UserDto?
@@ -41,5 +39,5 @@ interface UserDao {
         FROM UserTable
         """
     )
-    fun observeUser(): Flow<List<UserDto>>
+    fun observeUser(): Flow<UserDto?>
 }

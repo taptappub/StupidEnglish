@@ -9,7 +9,6 @@ import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
 import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.base.model.Word
-import io.taptap.stupidenglish.features.profile.ui.ProfileContract
 import io.taptap.stupidenglish.features.words.data.WordListRepository
 import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
@@ -19,6 +18,7 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -408,13 +408,15 @@ class WordListViewModel @Inject constructor(
     }
 
     private suspend fun getSavedUser() {
-        repository.getSavedUser()
+        repository.observeSavedUser()
             .handle(
-                success = { user ->
-                    if (user != null) {
-                        setState { copy(avatar = user.avatar) }
-                    } else {
-                        setState { copy(avatar = null) }
+                success = { userFlow ->
+                    userFlow.collect { user ->
+                        if (user != null) {
+                            setState { copy(avatar = user.avatar) }
+                        } else {
+                            setState { copy(avatar = null) }
+                        }
                     }
                 },
                 error = {

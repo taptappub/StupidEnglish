@@ -130,7 +130,7 @@ private fun ColumnScope.RegisteredContentScreen(
         painter = rememberAsyncImagePainter(state.avatar),
         contentDescription = null,
         modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(30.dp))
             .size(100.dp)
     )
 
@@ -158,6 +158,7 @@ private fun ColumnScope.NotRegisteredContentScreen(
         contentDescription = null,
         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
         modifier = Modifier
+            .clip(RoundedCornerShape(30.dp))
             .size(100.dp)
             .clickable { onEventSent(ProfileContract.Event.OnSignInClick) }
     )
@@ -188,9 +189,9 @@ fun MenuScreen(
             .padding(vertical = 36.dp, horizontal = 8.dp)
             .background(
                 color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(30.dp)
             )
-            .clip(shape = RoundedCornerShape(12.dp))
+            .clip(shape = RoundedCornerShape(30.dp))
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

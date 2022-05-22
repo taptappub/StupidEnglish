@@ -264,7 +264,7 @@ fun WordListScreen(
                                         painter = rememberAsyncImagePainter(state.avatar),
                                         contentDescription = null,
                                         modifier = Modifier
-                                            .clip(RoundedCornerShape(20.dp))
+                                            .clip(RoundedCornerShape(8.dp))
                                             .clickable { onEventSent(WordListContract.Event.OnProfileClick) }
                                     )
                                 } else {

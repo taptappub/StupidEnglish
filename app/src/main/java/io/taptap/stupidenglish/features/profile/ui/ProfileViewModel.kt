@@ -6,7 +6,6 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
-import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
 import io.taptap.stupidenglish.features.profile.data.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,9 +53,17 @@ class ProfileViewModel @Inject constructor(
 
             is ProfileContract.Event.OnTermAndConditionsClick -> TODO()
             is ProfileContract.Event.OnLogout -> {
-                setState { copy(name = "", avatar = "", isRegistered = false) }
+                logout()
             }
         }
+    }
+
+    private suspend fun logout() {
+        repository.clearUser()
+            .doOnError {
+                Log.e("ProfileViewModel", "logout Can't clear user")
+            }
+        setState { copy(name = "", avatar = "", isRegistered = false) }
     }
 
     private suspend fun signIn(email: String?) {
@@ -82,13 +89,21 @@ class ProfileViewModel @Inject constructor(
     }
 
     private suspend fun getSavedUser() {
-        repository.getSavedUser()
+        repository.observeSavedUser()
             .handle(
-                success = { user ->
-                    if (user != null) {
-                        setState { copy(name = user.name, avatar = user.avatar, isRegistered = true) }
-                    } else {
-                        setState { copy(name = "", avatar = "", isRegistered = false) }
+                success = { userFlow ->
+                    userFlow.collect { user ->
+                        if (user != null) {
+                            setState {
+                                copy(
+                                    name = user.name,
+                                    avatar = user.avatar,
+                                    isRegistered = true
+                                )
+                            }
+                        } else {
+                            setState { copy(name = "", avatar = "", isRegistered = false) }
+                        }
                     }
                 },
                 error = {
