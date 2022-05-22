@@ -14,6 +14,10 @@ val Black = Color(0xFF151515)
 @Stable
 val Grey = Color(0xFF92928D)
 @Stable
+val HardGrey = Color(0xFF383636)
+@Stable
+val SoftGrey = Color(0xFFDCDCDC)
+@Stable
 val White = Color(0xFFFFFFFF)
 @Stable
 val Red = Color(0xFFFF0000)

@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun Divider(
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.secondary,
+    color: Color = MaterialTheme.colorScheme.surfaceVariant,
     thickness: Dp = 1.dp
 ) {
     Divider(modifier = modifier, color = color, thickness = thickness)
