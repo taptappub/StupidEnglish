@@ -42,7 +42,6 @@ class SentencesListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) { motivationShare() }
     }
 
-    @OptIn(ExperimentalMaterialApi::class)
     override fun setInitialState() = SentencesListContract.State(
         sentenceList = listOf(),
         isLoading = true,

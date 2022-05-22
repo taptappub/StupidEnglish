@@ -1,5 +1,6 @@
 package io.taptap.uikit.theme
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -8,15 +9,20 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import io.taptap.uikit.prefs.ThemeType
+import io.taptap.uikit.prefs.UiKitSettings
 
 private val DarkColorPalette = darkColorScheme(
     surface = Esspresso,
@@ -55,11 +61,7 @@ fun StupidEnglishTheme(
 ) {
     val systemUiController = rememberSystemUiController()
 
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
+    val colors = getColors(darkTheme)
 
     MaterialTheme(
         colorScheme = colors,
@@ -80,6 +82,28 @@ fun StupidEnglishTheme(
         color = Color.Transparent,
         darkIcons = !darkTheme
     )
+}
+
+@Composable
+private fun getColors(darkTheme: Boolean): ColorScheme {
+    return if (darkTheme) {
+        DarkColorPalette
+    } else {
+        LightColorPalette
+    }
+//    val context: Context = LocalContext.current
+//    val theme = remember {
+//        val uiKitSettings = UiKitSettings(context)
+//        ThemeType.getByValue(uiKitSettings.theme)
+//    }
+//    return when(theme) {
+//        ThemeType.LIGHT -> if (darkTheme) {
+//            DarkColorPalette
+//        } else {
+//            LightColorPalette
+//        }
+//        ThemeType.DARK -> DarkColorPalette
+//    }
 }
 
 @Composable

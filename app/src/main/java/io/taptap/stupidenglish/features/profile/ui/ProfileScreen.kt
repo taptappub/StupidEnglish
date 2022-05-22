@@ -1,6 +1,8 @@
 package io.taptap.stupidenglish.features.profile.ui
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import coil.compose.rememberAsyncImagePainter
 import io.taptap.authorisation.rememberAuthenticator
 import io.taptap.stupidenglish.R
@@ -77,6 +80,12 @@ fun ProfileScreen(
                     )
                 is ProfileContract.Effect.Navigation.GoToTermsAndConditions ->
                     onNavigationRequested(effect)
+                is ProfileContract.Effect.RateUs -> {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(effect.url))
+                    startActivity(context, intent, null)
+                }
+                is ProfileContract.Effect.FeedBack ->
+                    startActivity(context, effect.intent, null)
             }
         }?.collect()
     }
@@ -219,22 +228,87 @@ fun MenuScreen(
         Divider(modifier = Modifier.padding(horizontal = 12.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clickable { onEventSent(ProfileContract.Event.OnRateUsClick) }
         ) {
             AverageText(
-                text = stringResource(id = R.string.prof_dark_mode),
+                text = stringResource(id = R.string.prof_rate_us),
                 textAlign = TextAlign.Start,
                 selectable = false,
                 modifier = Modifier
                     .padding(horizontal = 12.dp, vertical = 14.dp)
                     .weight(1f)
             )
-            Switch(
-                checked = state.isDarkMode,
-                onCheckedChange = { onEventSent(ProfileContract.Event.OnSwitchModeClick) },
+            Image(
+                painter = painterResource(R.drawable.ic_arrow),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
                 modifier = Modifier
-                    .padding(horizontal = 12.dp)
+                    .padding(horizontal = 20.dp)
             )
         }
+        Divider(modifier = Modifier.padding(horizontal = 12.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clickable { onEventSent(ProfileContract.Event.OnShareUsClick) }
+        ) {
+            AverageText(
+                text = stringResource(id = R.string.prof_share_us),
+                textAlign = TextAlign.Start,
+                selectable = false,
+                modifier = Modifier
+                    .padding(horizontal = 12.dp, vertical = 14.dp)
+                    .weight(1f)
+            )
+            Image(
+                painter = painterResource(R.drawable.ic_arrow),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+            )
+        }
+        Divider(modifier = Modifier.padding(horizontal = 12.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clickable { onEventSent(ProfileContract.Event.OnFeedBackClick) }
+        ) {
+            AverageText(
+                text = stringResource(id = R.string.prof_feedback),
+                textAlign = TextAlign.Start,
+                selectable = false,
+                modifier = Modifier
+                    .padding(horizontal = 12.dp, vertical = 14.dp)
+                    .weight(1f)
+            )
+            Image(
+                painter = painterResource(R.drawable.ic_arrow),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+            )
+        }
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically,
+//        ) {
+//            AverageText(
+//                text = stringResource(id = R.string.prof_dark_mode),
+//                textAlign = TextAlign.Start,
+//                selectable = false,
+//                modifier = Modifier
+//                    .padding(horizontal = 12.dp, vertical = 14.dp)
+//                    .weight(1f)
+//            )
+//            Switch(
+//                checked = state.isDarkMode,
+//                onCheckedChange = { onEventSent(ProfileContract.Event.OnSwitchModeClick) },
+//                modifier = Modifier
+//                    .padding(horizontal = 12.dp)
+//            )
+//        }
 
         if (state.isRegistered) {
             Divider(modifier = Modifier.padding(horizontal = 12.dp))
@@ -260,6 +334,5 @@ fun MenuScreen(
 /**
  * заменить storage на новую штуку
  * механизм переключения темы (темная, светлая или системная)
- * OnTermAndConditionsClick
  * Надо после этого протестировать
  */

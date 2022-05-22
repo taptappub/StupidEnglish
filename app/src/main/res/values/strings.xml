@@ -135,6 +135,9 @@
     <string name="prof_dark_mode">Dark mode</string>
     <string name="prof_logout">Logout from account</string>
     <string name="prod_get_user_error">Error while getting user</string>
+    <string name="prof_rate_us">Rate the app</string>
+    <string name="prof_share_us">Share the app</string>
+    <string name="prof_feedback">Give feedback to "taptap4pub@gmail.com"</string>
 
     <!-- Authorisation -->
     <string name="auth_skip_button">Continue without</string>

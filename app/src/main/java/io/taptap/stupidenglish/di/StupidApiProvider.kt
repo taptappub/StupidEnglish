@@ -19,6 +19,7 @@ import io.taptap.stupidenglish.base.logic.prefs.Settings
 import io.taptap.stupidenglish.base.logic.share.ShareUtil
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.alarm.ui.AlarmScheduler
+import io.taptap.uikit.prefs.UiKitSettings
 import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Singleton
 
@@ -54,6 +55,12 @@ class StupidApiProvider {
     @Singleton
     fun provideSettings(@ApplicationContext appContext: Context): Settings {
         return Settings(appContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUiKitSettings(@ApplicationContext appContext: Context): UiKitSettings {
+        return UiKitSettings(appContext)
     }
 
     @Provides

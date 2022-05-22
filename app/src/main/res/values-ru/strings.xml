@@ -94,7 +94,7 @@
     <string name="imwt_topbar_title">Импорт слов</string>
     <string name="prof_topbar_title">Профиль</string>
     <string name="prof_sign_in">Войти</string>
-    <string name="prof_terms">Условия и положения</string>
+    <string name="prof_terms">О приложении</string>
     <string name="prof_dark_mode">Темная тема</string>
     <string name="prof_logout">Выйти из аккаунта</string>
     <string name="prod_get_user_error">Произошла ошибка во время запроса сохраненного пользователя</string>
@@ -102,5 +102,8 @@
     <string name="auth_skip_button">Продолжить без регистрации</string>
     <string name="auth_sign_in_button">Войти через Google</string>
     <string name="auth_sub_title_text">Составьте абсурдное предложение из слов, которые вы изучаете</string>
-    <string name="term_topbar_title">Условия и положения</string>
+    <string name="term_topbar_title">О приложении</string>
+    <string name="prof_rate_us">Оценить приложение</string>
+    <string name="prof_share_us">Поделиться приложением</string>
+    <string name="prof_feedback">Написать нам на "taptap4pub@gmail.com"</string>
 </resources>
