@@ -63,6 +63,9 @@ import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
 import io.taptap.stupidenglish.features.stack.ui.StackContract
 import io.taptap.stupidenglish.features.stack.ui.StackScreen
 import io.taptap.stupidenglish.features.stack.ui.StackViewModel
+import io.taptap.stupidenglish.features.termsandconditions.ui.TermsContract
+import io.taptap.stupidenglish.features.termsandconditions.ui.TermsScreen
+import io.taptap.stupidenglish.features.termsandconditions.ui.TermsViewModel
 import io.taptap.stupidenglish.features.words.ui.WordListContract
 import io.taptap.stupidenglish.features.words.ui.WordListScreen
 import io.taptap.stupidenglish.features.words.ui.WordListViewModel
@@ -103,7 +106,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @ExperimentalMaterialApi
-    @OptIn(InternalCoroutinesApi::class,
+    @OptIn(
         ExperimentalFoundationApi::class
     )
     @ExperimentalAnimationApi
@@ -207,6 +210,11 @@ class MainActivity : ComponentActivity() {
                     route = NavigationKeys.Route.SE_IMPORT_WORDS
                 ) {
                     ImportWordsDestination(navController)
+                }
+                composable(
+                    route = NavigationKeys.Route.SE_TERMS
+                ) {
+                    TermsDestination(navController)
                 }
                 composable(
                     route = NavigationKeys.Route.SE_IMPORT_WORDS_TUTORIAL
@@ -334,6 +342,29 @@ private fun ImportWordsDestination(
 
 @ExperimentalMaterialApi
 @Composable
+private fun TermsDestination(
+    navController: NavHostController
+) {
+    val termsViewModel: TermsViewModel = hiltViewModel()
+    val termsState = termsViewModel.viewState.value
+
+    TermsScreen(
+        context = LocalContext.current,
+        state = termsState,
+        effectFlow = termsViewModel.effect,
+        onEventSent = { event -> termsViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            when (navigationEffect) {
+                is TermsContract.Effect.Navigation.BackToProfile -> {
+                    navController.popBackStack()
+                }
+            }
+        }
+    )
+}
+
+@ExperimentalMaterialApi
+@Composable
 private fun ImportWordsTutorialDestination(
     navController: NavHostController
 ) {
@@ -366,8 +397,13 @@ private fun ProfileDestination(
         effectFlow = profileViewModel.effect,
         onEventSent = { event -> profileViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
-            if (navigationEffect is ProfileContract.Effect.Navigation.BackToWordsList) {
-                navController.popBackStack()
+            when (navigationEffect) {
+                is ProfileContract.Effect.Navigation.BackToWordsList -> {
+                    navController.popBackStack()
+                }
+                is ProfileContract.Effect.Navigation.GoToTermsAndConditions -> {
+                    navController.navigate(NavigationKeys.Route.SE_TERMS)
+                }
             }
         }
     )

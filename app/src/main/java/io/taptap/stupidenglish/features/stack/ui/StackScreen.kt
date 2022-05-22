@@ -43,7 +43,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
-
 @Composable
 fun StackScreen(
     context: Context,

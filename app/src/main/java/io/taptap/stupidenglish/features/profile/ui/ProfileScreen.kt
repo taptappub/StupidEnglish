@@ -75,6 +75,8 @@ fun ProfileScreen(
                         message = context.getString(effect.errorRes),
                         duration = SnackbarDuration.Short
                     )
+                is ProfileContract.Effect.Navigation.GoToTermsAndConditions ->
+                    onNavigationRequested(effect)
             }
         }?.collect()
     }
@@ -257,8 +259,7 @@ fun MenuScreen(
 
 /**
  * заменить storage на новую штуку
- * проверка на входе есть ли авторизация, чтобы показать экран авторизации
  * механизм переключения темы (темная, светлая или системная)
- * экран авторизации
  * OnTermAndConditionsClick
+ * Надо после этого протестировать
  */

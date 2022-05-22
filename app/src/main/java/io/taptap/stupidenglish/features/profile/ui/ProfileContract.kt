@@ -35,6 +35,7 @@ class ProfileContract {
 
         sealed class Navigation : Effect() {
             object BackToWordsList : Navigation()
+            object GoToTermsAndConditions : Navigation()
         }
     }
 }

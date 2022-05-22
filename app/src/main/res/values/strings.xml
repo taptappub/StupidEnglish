@@ -141,6 +141,9 @@
     <string name="auth_sign_in_button">Sign up with Google</string>
     <string name="auth_sub_title_text">Make an absurd sentence out of the words you are studying</string>
 
+    <!-- Authorisation -->
+    <string name="term_topbar_title">Terms and conditions</string>
+
     <!-- Delete this block -->
     <string name="under_construction">Work in progress</string>
 

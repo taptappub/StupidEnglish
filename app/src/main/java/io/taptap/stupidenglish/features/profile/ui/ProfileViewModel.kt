@@ -43,15 +43,14 @@ class ProfileViewModel @Inject constructor(
 
                 signIn(email = event.authResult.idpResponse?.email)
             }
-
             is ProfileContract.Event.OnSwitchModeClick -> {
                 val darkMode = viewState.value.isDarkMode
                 setState { copy(isDarkMode = !darkMode) }
             }
             is ProfileContract.Event.OnLogoutClick ->
                 setEffect { ProfileContract.Effect.Logout }
-
-            is ProfileContract.Event.OnTermAndConditionsClick -> TODO()
+            is ProfileContract.Event.OnTermAndConditionsClick ->
+                setEffect { ProfileContract.Effect.Navigation.GoToTermsAndConditions }
             is ProfileContract.Event.OnLogout -> {
                 logout()
             }

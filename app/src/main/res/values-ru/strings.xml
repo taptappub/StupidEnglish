@@ -102,4 +102,5 @@
     <string name="auth_skip_button">Продолжить без регистрации</string>
     <string name="auth_sign_in_button">Войти через Google</string>
     <string name="auth_sub_title_text">Составьте абсурдное предложение из слов, которые вы изучаете</string>
+    <string name="term_topbar_title">Условия и положения</string>
 </resources>
