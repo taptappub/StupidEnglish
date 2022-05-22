@@ -355,7 +355,7 @@ private fun SentenceItemRow(
                         .align(Alignment.Bottom)
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_share_24),
+                        painter = painterResource(id = R.drawable.ic_share),
                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
                         contentDescription = null
                     )

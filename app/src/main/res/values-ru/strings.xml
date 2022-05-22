@@ -99,4 +99,7 @@
     <string name="prof_logout">Выйти из аккаунта</string>
     <string name="prod_get_user_error">Произошла ошибка во время запроса сохраненного пользователя</string>
     <string name="word_get_user_error">Произошла ошибка во время запроса сохраненного пользователя</string>
+    <string name="auth_skip_button">Продолжить без регистрации</string>
+    <string name="auth_sign_in_button">Войти через Google</string>
+    <string name="auth_sub_title_text">Составьте абсурдное предложение из слов, которые вы изучаете</string>
 </resources>

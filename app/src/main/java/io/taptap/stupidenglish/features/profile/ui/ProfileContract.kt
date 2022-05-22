@@ -29,7 +29,7 @@ class ProfileContract {
     ) : ViewState
 
     sealed class Effect : ViewSideEffect {
-        object SighInWithGoogle : Effect()
+        object SignInWithGoogle : Effect()
         object Logout : Effect()
         data class GetUserError(@StringRes val errorRes: Int) : Effect()
 

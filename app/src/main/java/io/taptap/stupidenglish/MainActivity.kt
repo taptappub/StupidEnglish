@@ -43,6 +43,9 @@ import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.stupidenglish.features.addword.ui.AddWordScreen
 import io.taptap.stupidenglish.features.addword.ui.AddWordViewModel
 import io.taptap.stupidenglish.features.alarm.ui.AlarmScheduler
+import io.taptap.stupidenglish.features.auth.ui.AuthContract
+import io.taptap.stupidenglish.features.auth.ui.AuthScreen
+import io.taptap.stupidenglish.features.auth.ui.AuthViewModel
 import io.taptap.stupidenglish.features.importwords.ui.ImportWordsContract
 import io.taptap.stupidenglish.features.importwords.ui.ImportWordsScreen
 import io.taptap.stupidenglish.features.importwords.ui.ImportWordsViewModel
@@ -216,6 +219,11 @@ class MainActivity : ComponentActivity() {
                     ProfileDestination(navController)
                 }
                 composable(
+                    route = NavigationKeys.Route.SE_AUTH
+                ) {
+                    AuthDestination(navController)
+                }
+                composable(
                     route = NavigationKeys.Route.SE_REMEMBER,
                     deepLinks = listOf(navDeepLink {
                         uriPattern =
@@ -365,6 +373,27 @@ private fun ProfileDestination(
     )
 }
 
+@ExperimentalMaterialApi
+@Composable
+private fun AuthDestination(
+    navController: NavHostController
+) {
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val authState = authViewModel.viewState.value
+
+    AuthScreen(
+        context = LocalContext.current,
+        state = authState,
+        effectFlow = authViewModel.effect,
+        onEventSent = { event -> authViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            if (navigationEffect is AuthContract.Effect.Navigation.BackToWordsList) {
+                navController.popBackStack()
+            }
+        }
+    )
+}
+
 @Composable
 private fun StackDestination(navController: NavHostController) {
     val stackViewModel: StackViewModel = hiltViewModel()
@@ -437,6 +466,9 @@ private fun WordListDestination(
             when (navigationEffect) {
                 is WordListContract.Effect.Navigation.ToAddWord -> {
                     navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
+                }
+                is WordListContract.Effect.Navigation.ToAuth -> {
+                    navController.navigate(NavigationKeys.Route.SE_AUTH)
                 }
                 is WordListContract.Effect.Navigation.ToAddSentence -> {
                     val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)

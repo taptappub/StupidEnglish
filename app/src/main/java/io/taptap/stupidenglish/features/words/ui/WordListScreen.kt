@@ -246,6 +246,8 @@ fun WordListScreen(
                             message = context.getString(effect.errorRes),
                             duration = SnackbarDuration.Short
                         )
+                    is WordListContract.Effect.Navigation.ToAuth ->
+                        onNavigationRequested(effect)
                 }
             }?.collect()
         }
@@ -264,7 +266,7 @@ fun WordListScreen(
                                         painter = rememberAsyncImagePainter(state.avatar),
                                         contentDescription = null,
                                         modifier = Modifier
-                                            .clip(RoundedCornerShape(8.dp))
+                                            .clip(RoundedCornerShape(12.dp))
                                             .clickable { onEventSent(WordListContract.Event.OnProfileClick) }
                                     )
                                 } else {

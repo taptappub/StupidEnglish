@@ -24,8 +24,8 @@ object NavigationKeys {
 
         const val SE_IMPORT_WORDS = "stupid_english_import_words"
         const val SE_IMPORT_WORDS_TUTORIAL = "stupid_english_import_words_tutorial"
-
         const val SE_PROFILE = "stupid_english_profile"
+        const val SE_AUTH = "stupid_english_auth"
     }
 
     enum class BottomNavigationScreen(

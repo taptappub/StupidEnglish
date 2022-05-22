@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,13 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,10 +34,14 @@ import io.taptap.uikit.AverageText
 import io.taptap.uikit.Divider
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.StupidEnglishTopAppBar
+import io.taptap.uikit.Switch
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
+
+private val IMAGE_SIZE = 100.dp
+private val IMAGE_CLIP_VALUE = 30.dp
 
 @Composable
 fun ProfileScreen(
@@ -50,7 +51,6 @@ fun ProfileScreen(
     onEventSent: (event: ProfileContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: ProfileContract.Effect.Navigation) -> Unit
 ) {
-    val scope = rememberCoroutineScope()
     val scaffoldState: ScaffoldState = rememberScaffoldState()
 
     val authenticator = rememberAuthenticator(context)
@@ -64,7 +64,7 @@ fun ProfileScreen(
             when (effect) {
                 is ProfileContract.Effect.Navigation.BackToWordsList ->
                     onNavigationRequested(effect)
-                is ProfileContract.Effect.SighInWithGoogle ->
+                is ProfileContract.Effect.SignInWithGoogle ->
                     authenticator.launch()
                 is ProfileContract.Effect.Logout ->
                     authenticator.logout {
@@ -122,7 +122,7 @@ private fun ContentScreen(
 }
 
 @Composable
-private fun ColumnScope.RegisteredContentScreen(
+private fun RegisteredContentScreen(
     state: ProfileContract.State,
     onEventSent: (event: ProfileContract.Event) -> Unit
 ) {
@@ -130,8 +130,8 @@ private fun ColumnScope.RegisteredContentScreen(
         painter = rememberAsyncImagePainter(state.avatar),
         contentDescription = null,
         modifier = Modifier
-            .clip(RoundedCornerShape(30.dp))
-            .size(100.dp)
+            .clip(RoundedCornerShape(IMAGE_CLIP_VALUE))
+            .size(IMAGE_SIZE)
     )
 
     Text(
@@ -149,7 +149,7 @@ private fun ColumnScope.RegisteredContentScreen(
 }
 
 @Composable
-private fun ColumnScope.NotRegisteredContentScreen(
+private fun NotRegisteredContentScreen(
     state: ProfileContract.State,
     onEventSent: (event: ProfileContract.Event) -> Unit
 ) {
@@ -158,8 +158,8 @@ private fun ColumnScope.NotRegisteredContentScreen(
         contentDescription = null,
         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
         modifier = Modifier
-            .clip(RoundedCornerShape(30.dp))
-            .size(100.dp)
+            .clip(RoundedCornerShape(IMAGE_CLIP_VALUE))
+            .size(IMAGE_SIZE)
             .clickable { onEventSent(ProfileContract.Event.OnSignInClick) }
     )
 
@@ -209,6 +209,7 @@ fun MenuScreen(
             Image(
                 painter = painterResource(R.drawable.ic_arrow),
                 contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
             )
@@ -231,10 +232,8 @@ fun MenuScreen(
                 modifier = Modifier
                     .padding(horizontal = 12.dp)
             )
-
         }
 
-//        if (isRegistered) {
         if (state.isRegistered) {
             Divider(modifier = Modifier.padding(horizontal = 12.dp))
             Row(
@@ -258,6 +257,7 @@ fun MenuScreen(
 
 /**
  * заменить storage на новую штуку
+ * проверка на входе есть ли авторизация, чтобы показать экран авторизации
  * механизм переключения темы (темная, светлая или системная)
  * экран авторизации
  * OnTermAndConditionsClick

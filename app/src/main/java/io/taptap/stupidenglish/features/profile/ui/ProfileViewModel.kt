@@ -19,7 +19,7 @@ class ProfileViewModel @Inject constructor(
 ) : BaseViewModel<ProfileContract.Event, ProfileContract.State, ProfileContract.Effect>() {
 
     init {
-        viewModelScope.launch(Dispatchers.IO) { getSavedUser() }
+        viewModelScope.launch(Dispatchers.IO) { observeSavedUser() }
     }
 
     override fun setInitialState() = ProfileContract.State(
@@ -34,7 +34,7 @@ class ProfileViewModel @Inject constructor(
             is ProfileContract.Event.OnBackClick ->
                 setEffect { ProfileContract.Effect.Navigation.BackToWordsList }
             is ProfileContract.Event.OnSignInClick ->
-                setEffect { ProfileContract.Effect.SighInWithGoogle }
+                setEffect { ProfileContract.Effect.SignInWithGoogle }
             is ProfileContract.Event.OnSignIn -> {
                 if (event.authResult == null) {
                     Log.i("ProfileViewModel", "event.authResult.idpResponse is null")
@@ -88,7 +88,7 @@ class ProfileViewModel @Inject constructor(
             }
     }
 
-    private suspend fun getSavedUser() {
+    private suspend fun observeSavedUser() {
         repository.observeSavedUser()
             .handle(
                 success = { userFlow ->

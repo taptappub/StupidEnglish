@@ -15,6 +15,13 @@ val NunitoFontFamily = FontFamily(
 )
 
 val StupidEnglishTypography = androidx.compose.material3.Typography(
+    displayLarge = TextStyle(
+        fontFamily = NunitoFontFamily,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 52.sp,
+        lineHeight = 58.sp,
+        letterSpacing = 0.2.sp
+    ),
     headlineLarge = TextStyle(
         fontFamily = NunitoFontFamily,
         fontWeight = FontWeight.ExtraBold,

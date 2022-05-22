@@ -36,6 +36,14 @@ class WordListRepository @Inject constructor(
             settings.isSentenceMotivationShown = value
         }
 
+    var isRegistrationAsked: Boolean
+        get() {
+            return settings.isRegistrationAsked
+        }
+        set(value) {
+            settings.isRegistrationAsked = value
+        }
+
     suspend fun observeWordList(): Reaction<Flow<List<Word>>> = Reaction.on {
         wordDao.observeWords()
             .map { wordDtos ->
