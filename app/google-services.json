@@ -14,6 +14,38 @@
       },
       "oauth_client": [
         {
+          "client_id": "912013363116-25mtt62sgrgjj6ad8eafikm77d5mfm6u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.taptap.stupidenglish",
+            "certificate_hash": "4b45f84a8709efdca096e8d9dc17e80daa61db7e"
+          }
+        },
+        {
+          "client_id": "912013363116-336t5877onopv1693protssaf0djrqk6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.taptap.stupidenglish",
+            "certificate_hash": "22e5432e1515584bc902e6b1c22981ac718bc59a"
+          }
+        },
+        {
+          "client_id": "912013363116-aqbpitog5qq9io9eh8b91tgidqk7919i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.taptap.stupidenglish",
+            "certificate_hash": "7d8ce0e0516593c9668b24bf797d08510239ef20"
+          }
+        },
+        {
+          "client_id": "912013363116-va9o6aek1pvpe544aidehbgieiqu2eeo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.taptap.stupidenglish",
+            "certificate_hash": "d80489afd1df1b8a8ba37ee02ecbfd1632266a70"
+          }
+        },
+        {
           "client_id": "912013363116-19nng80i4iqg6t64ofht93rvm45j94sh.apps.googleusercontent.com",
           "client_type": 3
         }
