@@ -19,7 +19,7 @@ val StupidEnglishTypography = androidx.compose.material3.Typography(
         fontFamily = NunitoFontFamily,
         fontWeight = FontWeight.ExtraBold,
         fontSize = 52.sp,
-        lineHeight = 58.sp,
+        lineHeight = 52.sp,
         letterSpacing = 0.2.sp
     ),
     headlineLarge = TextStyle(

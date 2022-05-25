@@ -37,7 +37,6 @@ import io.taptap.uikit.AverageText
 import io.taptap.uikit.Divider
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.StupidEnglishTopAppBar
-import io.taptap.uikit.Switch
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -200,9 +199,9 @@ fun MenuScreen(
             .padding(vertical = 36.dp, horizontal = 8.dp)
             .background(
                 color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(30.dp)
+                shape = RoundedCornerShape(12.dp)
             )
-            .clip(shape = RoundedCornerShape(30.dp))
+            .clip(shape = RoundedCornerShape(12.dp))
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
