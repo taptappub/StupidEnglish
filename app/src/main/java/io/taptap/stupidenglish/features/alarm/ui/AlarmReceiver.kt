@@ -82,7 +82,6 @@ class AlarmReceiver : BroadcastReceiver() {
             .show(ALARM_NOTIFICATION_ID)
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     private fun createPendingIntent(context: Context, words: List<Word>): PendingIntent {
         val string = words.joinToString(",") { it.id.toString() }
         val taskDetailIntent = Intent(

@@ -415,10 +415,6 @@ class WordListViewModel @Inject constructor(
                         if (user != null) {
                             setState { copy(avatar = user.avatar) }
                         } else {
-                            if (!repository.isRegistrationAsked) {
-                                repository.isRegistrationAsked = true
-                                setEffect { WordListContract.Effect.Navigation.ToAuth }
-                            }
                             setState { copy(avatar = null) }
                         }
                     }

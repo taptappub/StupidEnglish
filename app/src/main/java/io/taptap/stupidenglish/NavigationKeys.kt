@@ -27,6 +27,7 @@ object NavigationKeys {
         const val SE_PROFILE = "stupid_english_profile"
         const val SE_AUTH = "stupid_english_auth"
         const val SE_TERMS = "stupid_english_terms"
+        const val SE_SPLASH = "stupid_english_splash"
     }
 
     enum class BottomNavigationScreen(

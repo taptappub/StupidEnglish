@@ -60,6 +60,9 @@ import io.taptap.stupidenglish.features.profile.ui.ProfileViewModel
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListScreen
 import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
+import io.taptap.stupidenglish.features.splash.ui.SplashContract
+import io.taptap.stupidenglish.features.splash.ui.SplashScreen
+import io.taptap.stupidenglish.features.splash.ui.SplashViewModel
 import io.taptap.stupidenglish.features.stack.ui.StackContract
 import io.taptap.stupidenglish.features.stack.ui.StackScreen
 import io.taptap.stupidenglish.features.stack.ui.StackViewModel
@@ -74,8 +77,6 @@ import io.taptap.uikit.AverageText
 import io.taptap.uikit.PrimaryButton
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
-import kotlinx.coroutines.InternalCoroutinesApi
-import java.lang.Exception
 import javax.inject.Inject
 
 const val URI = "https://stupidenglish.app"
@@ -163,9 +164,15 @@ class MainActivity : ComponentActivity() {
         ) { innerPaddingModifier ->
             AnimatedNavHost(
                 navController = navController,
+                //startDestination = NavigationKeys.Route.SE_SPLASH,
                 startDestination = NavigationKeys.Route.SE_MAIN,
                 modifier = Modifier.padding(innerPaddingModifier)
             ) {
+//                composable(
+//                    route = NavigationKeys.Route.SE_SPLASH
+//                ) {
+//                    SplashDestination(navController)
+//                }
                 navigation(
                     startDestination = NavigationKeys.BottomNavigationScreen.SE_WORDS.route,
                     route = NavigationKeys.Route.SE_MAIN
@@ -261,7 +268,7 @@ class MainActivity : ComponentActivity() {
 //                        slideOutVertically(targetOffsetY = { 1000 })
                     }
                 ) {
-                    AddSentenceDialogDestination(navController)
+                    AddSentenceDestination(navController)
                 }
             }
 
@@ -293,6 +300,36 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@ExperimentalMaterialApi
+@Composable
+private fun SplashDestination(
+    navController: NavHostController
+) {
+    val splashViewModel: SplashViewModel = hiltViewModel()
+    val splashState = splashViewModel.viewState.value
+
+    SplashScreen(
+        context = LocalContext.current,
+        state = splashState,
+        effectFlow = splashViewModel.effect,
+        onEventSent = { event -> splashViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            when (navigationEffect) {
+                is SplashContract.Effect.Navigation.ToAuthScreen -> {
+                    navController.navigate(route = NavigationKeys.Route.SE_AUTH) {
+                        popUpTo(route = NavigationKeys.Route.SE_SPLASH)
+                    }
+                }
+                is SplashContract.Effect.Navigation.ToWordListScreen -> {
+                    navController.navigate(route = NavigationKeys.Route.SE_MAIN) {
+                        popUpTo(route = NavigationKeys.Route.SE_SPLASH)
+                    }
+                }
+            }
+        })
 }
 
 @ExperimentalMaterialApi
@@ -456,7 +493,7 @@ private fun StackDestination(navController: NavHostController) {
 }
 
 @Composable
-private fun AddSentenceDialogDestination(navController: NavHostController) {
+private fun AddSentenceDestination(navController: NavHostController) {
     val addSentenceViewModel: AddSentenceViewModel = hiltViewModel()
     val addSentenceState = addSentenceViewModel.viewState.value
 
@@ -502,9 +539,6 @@ private fun WordListDestination(
             when (navigationEffect) {
                 is WordListContract.Effect.Navigation.ToAddWord -> {
                     navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
-                }
-                is WordListContract.Effect.Navigation.ToAuth -> {
-                    navController.navigate(NavigationKeys.Route.SE_AUTH)
                 }
                 is WordListContract.Effect.Navigation.ToAddSentence -> {
                     val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)

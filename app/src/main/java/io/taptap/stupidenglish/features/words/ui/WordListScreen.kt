@@ -246,8 +246,6 @@ fun WordListScreen(
                             message = context.getString(effect.errorRes),
                             duration = SnackbarDuration.Short
                         )
-                    is WordListContract.Effect.Navigation.ToAuth ->
-                        onNavigationRequested(effect)
                 }
             }?.collect()
         }
