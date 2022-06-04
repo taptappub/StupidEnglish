@@ -3,11 +3,20 @@ package io.taptap.stupidenglish.features.splash.ui
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
+import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
 
 class SplashContract {
-    class Event : ViewEvent
 
-    class State : ViewState
+    sealed class Event : ViewEvent {
+        object OnAnimationEnd : Event()
+    }
+
+    data class State(
+        val list: List<String>,
+        val startAnimationDelay: Long,
+        val startAnimationDuration: Long,
+        val endAnimationDelay: Long
+    ) : ViewState
 
     sealed class Effect : ViewSideEffect {
         sealed class Navigation : Effect() {

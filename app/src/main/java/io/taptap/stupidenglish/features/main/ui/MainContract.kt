@@ -9,13 +9,10 @@ class MainContract {
     sealed class Event : ViewEvent {
         data class OnTabSelected(val item: NavigationKeys.BottomNavigationScreen) : Event()
         data class ChangeBottomSheetVisibility(val visibility: Boolean) : Event()
-
-        object OnGreetingsClose : Event()
     }
 
     data class State(
         val isBottomBarShown: Boolean,
-        val isShownGreetings: Boolean,
         val bottomBarTabs: List<NavigationKeys.BottomNavigationScreen>
     ) : ViewState
 

@@ -5,6 +5,7 @@ import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
 import io.taptap.stupidenglish.features.importwords.ui.ImportWordsContract
+import io.taptap.stupidenglish.features.main.ui.MainContract
 
 class AuthContract {
     sealed class Event : ViewEvent {
@@ -12,15 +13,19 @@ class AuthContract {
 
         object OnSignInClick : Event()
         object OnSkipClick : Event()
+
+        object OnGreetingsClose : Event()
     }
 
-    class State() : ViewState
+    data class State(
+        val isShownGreetings: Boolean,
+    ) : ViewState
 
     sealed class Effect : ViewSideEffect {
         object SignInWithGoogle : Effect()
 
         sealed class Navigation : Effect() {
-            object BackToWordsList : Navigation()
+            object ToWordsList : Navigation()
         }
     }
 }

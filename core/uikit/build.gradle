@@ -52,14 +52,14 @@ dependencies {
 
     implementation project(path: ':core:prefs')
 
-    api 'com.google.android.material:material:1.6.0'
+    api 'com.google.android.material:material:1.6.1'
     api "androidx.compose.ui:ui:1.1.1"
     api "androidx.compose.ui:ui-util:1.1.1"
     api "androidx.compose.material:material:1.1.1"
     api "androidx.compose.ui:ui-tooling:1.1.1"
     api "androidx.compose.ui:ui-tooling-preview:1.1.1"
-    api "androidx.constraintlayout:constraintlayout:2.1.3"
-    api "androidx.constraintlayout:constraintlayout-compose:1.0.0"
+    api "androidx.constraintlayout:constraintlayout:2.1.4"
+    api "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     api 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
     api 'androidx.activity:activity-compose:1.4.0'
     api "androidx.compose.material3:material3:1.0.0-alpha12"
@@ -67,8 +67,8 @@ dependencies {
     //accompanist
     api "com.google.accompanist:accompanist-systemuicontroller:0.24.9-beta"
     api "com.google.accompanist:accompanist-insets:0.24.9-beta"
-    api "com.google.accompanist:accompanist-navigation-material:0.24.9-beta"
-    api "com.google.accompanist:accompanist-navigation-animation:0.24.9-beta"
+    api "com.google.accompanist:accompanist-navigation-material:0.24.7-alpha"
+    api "com.google.accompanist:accompanist-navigation-animation:0.24.7-alpha"
     api "com.google.accompanist:accompanist-flowlayout:0.24.9-beta"
     api "com.google.accompanist:accompanist-pager:0.24.9-beta"
     api "com.google.accompanist:accompanist-pager-indicators:0.24.9-beta"

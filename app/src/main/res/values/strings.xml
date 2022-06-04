@@ -16,8 +16,6 @@
     <string name="app_name" translatable="false">Stupid Language</string>
 
     <!-- Main -->
-    <string name="main_dialog_message">Hey! This is a <b>Beta version</b> of a large app… in future.\n\nI have been trying to learn this stupid English for several years now, and memorizing words is one of the pillars of my learning.\n\nThe approach of creating apps from words gave the most effect, so I decided to make an app which I would like to use myself. If it helps you as well as it does me, I will be very happy. I will try to listen to all your wishes!\n\nIt\'s time to learn words!</string>
-    <string name="main_dialog_ok">I agree</string>
     <string name="main_bottom_bar_words_title">Words</string>
     <string name="main_bottom_bar_sentences_title">Sentences</string>
 
@@ -140,6 +138,8 @@
     <string name="prof_feedback">Give feedback to "taptap4pub@gmail.com"</string>
 
     <!-- Authorisation -->
+    <string name="auth_dialog_message">Hey! This is a <b>Beta version</b> of a large app… in future.\n\nI have been trying to learn this stupid English for several years now, and memorizing words is one of the pillars of my learning.\n\nThe approach of creating apps from words gave the most effect, so I decided to make an app which I would like to use myself. If it helps you as well as it does me, I will be very happy. I will try to listen to all your wishes!\n\nIt\'s time to learn words!</string>
+    <string name="auth_dialog_ok">I agree</string>
     <string name="auth_skip_button">Continue without</string>
     <string name="auth_sign_in_button">Sign up with Google</string>
     <string name="auth_sub_title_text">Make an absurd sentence out of the words you are studying</string>

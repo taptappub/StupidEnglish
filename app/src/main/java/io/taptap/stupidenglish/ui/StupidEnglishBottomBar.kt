@@ -140,7 +140,6 @@ fun StupidEnglishBottomNavigationItemPreview() {
             currentRoute = NavigationKeys.BottomNavigationScreen.SE_WORDS.route,
             state = MainContract.State(
                 isBottomBarShown = false,
-                isShownGreetings = false,
                 bottomBarTabs = listOf(
                     NavigationKeys.BottomNavigationScreen.SE_WORDS,
                     NavigationKeys.BottomNavigationScreen.SE_SENTENCES

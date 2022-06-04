@@ -9,14 +9,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -73,8 +70,6 @@ import io.taptap.stupidenglish.features.words.ui.WordListContract
 import io.taptap.stupidenglish.features.words.ui.WordListScreen
 import io.taptap.stupidenglish.features.words.ui.WordListViewModel
 import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
-import io.taptap.uikit.AverageText
-import io.taptap.uikit.PrimaryButton
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
 import javax.inject.Inject
@@ -120,28 +115,6 @@ class MainActivity : ComponentActivity() {
         val mainViewModel: MainViewModel = hiltViewModel()
         val mainState = mainViewModel.viewState.value
 
-        if (mainState.isShownGreetings) {
-            AlertDialog(
-                onDismissRequest = {
-                    mainViewModel.setEvent(MainContract.Event.OnGreetingsClose)
-                },
-                text = {
-                    AverageText(
-                        text = stringResource(id = R.string.main_dialog_message),
-                        maxLines = 100
-                    )
-                },
-                confirmButton = {
-                    PrimaryButton(
-                        text = stringResource(id = R.string.main_dialog_ok),
-                        modifier = Modifier.padding(8.dp)
-                    ) {
-                        mainViewModel.setEvent(MainContract.Event.OnGreetingsClose)
-                    }
-                }
-            )
-        }
-
         StupidEnglishScaffold(
             scaffoldState = scaffoldState,
 //            bottomBar = {
@@ -164,15 +137,15 @@ class MainActivity : ComponentActivity() {
         ) { innerPaddingModifier ->
             AnimatedNavHost(
                 navController = navController,
-                //startDestination = NavigationKeys.Route.SE_SPLASH,
-                startDestination = NavigationKeys.Route.SE_MAIN,
+                startDestination = NavigationKeys.Route.SE_SPLASH,
+//                startDestination = NavigationKeys.Route.SE_MAIN,
                 modifier = Modifier.padding(innerPaddingModifier)
             ) {
-//                composable(
-//                    route = NavigationKeys.Route.SE_SPLASH
-//                ) {
-//                    SplashDestination(navController)
-//                }
+                composable(
+                    route = NavigationKeys.Route.SE_SPLASH
+                ) {
+                    SplashDestination(navController)
+                }
                 navigation(
                     startDestination = NavigationKeys.BottomNavigationScreen.SE_WORDS.route,
                     route = NavigationKeys.Route.SE_MAIN
@@ -460,8 +433,10 @@ private fun AuthDestination(
         effectFlow = authViewModel.effect,
         onEventSent = { event -> authViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
-            if (navigationEffect is AuthContract.Effect.Navigation.BackToWordsList) {
-                navController.popBackStack()
+            if (navigationEffect is AuthContract.Effect.Navigation.ToWordsList) {
+                navController.navigate(route = NavigationKeys.Route.SE_MAIN) {
+                    popUpTo(route = NavigationKeys.Route.SE_SPLASH)
+                }
             }
         }
     )
@@ -646,6 +621,7 @@ private fun NavController.navigateToTab(
 //11) Перетаскивание в папку слов драг энд дропом. Список групп вылезает сбоку, с анимацией волны, и ты перетягиваешь слово в нужную папку
 //12) импорт из Quizlet по ссылке модуля
 //13) Можно создавать имя группы при импорте из названия страницы
+//4) механизм переключения темы (темная, светлая или системная)
 
 //Гугл аналитика без play service'ов
 //https://developers.google.com/analytics/devguides/collection/android/v4?hl=ru
@@ -658,11 +634,11 @@ private fun NavController.navigateToTab(
 // - если из импорта перейти на боттмошит для добавления группы, то диалог открывается, но фокус на него не ставится и клавиатура не поднимается
 // - в gmail не подставляется subject при отправке письма из настроек
 
+//Этот билд
+//5) ВЫЛОЖИТЬ ВЕСРИЮ ПОСЛЕ ТЕСТИРОВАНИЯ
+
 //Следующий билд
+//2) https://stackoverflow.com/questions/64362801/how-to-handle-visibility-of-a-text-in-jetpack-compose ДЛЯ экрана импорта
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
 //2) Авторизация и сохранение слов в firebase storage
 //3) заменить storage на новую штуку
-//4) механизм переключения темы (темная, светлая или системная)
-//5) ВЫЛОЖИТЬ ВЕСРИЮ ПОСЛЕ ТЕСтИРОВАНИЯ
-//6) Splash как главный экран
-//7) СМ ПЕРЕПИСКУ

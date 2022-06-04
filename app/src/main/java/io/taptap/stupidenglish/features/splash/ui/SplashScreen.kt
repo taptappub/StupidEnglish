@@ -1,81 +1,43 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package io.taptap.stupidenglish.features.splash.ui
 
 import android.content.Context
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.DismissDirection
-import androidx.compose.material.DismissState
-import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FractionalThreshold
-import androidx.compose.material.Icon
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarResult
-import androidx.compose.material.SwipeToDismiss
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.rememberDismissState
-import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import io.taptap.stupidenglish.R
+import androidx.compose.ui.unit.sp
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.stupidenglish.base.ui.hideSheet
-import io.taptap.stupidenglish.base.ui.showSheet
-import io.taptap.uikit.*
-import io.taptap.uikit.fab.BOTTOM_BAR_MARGIN
-import io.taptap.uikit.fab.Fab
-import io.taptap.uikit.theme.StupidEnglishTheme
+import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
-import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -123,5 +85,69 @@ private fun ContentScreen(
     state: SplashContract.State,
     onEventSent: (event: SplashContract.Event) -> Unit
 ) {
-    Box(modifier = Modifier.background(color = Color.Red))
+    var languages by remember { mutableStateOf(0) }
+    val languageCounter by animateIntAsState(
+        targetValue = languages,
+        animationSpec = tween(
+            durationMillis = state.startAnimationDuration.toInt(),
+            delayMillis = state.startAnimationDelay.toInt(),
+            easing = FastOutSlowInEasing
+        ),
+        finishedListener = {
+            onEventSent(SplashContract.Event.OnAnimationEnd)
+        }
+    )
+    LaunchedEffect(Unit) {
+        languages = state.list.size - 1
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center)
+        ) {
+            Text(
+                style = MaterialTheme.typography.displayLarge,
+                fontSize = 42.sp,
+                lineHeight = 42.sp,
+                text = "Stupid "
+            )
+
+            Box {
+                Text(
+                    style = MaterialTheme.typography.displayLarge,
+                    color = Color.Transparent,
+                    fontSize = 42.sp,
+                    lineHeight = 42.sp,
+                    text = "Language"
+                )
+
+                AnimatedContent(
+                    targetState = languageCounter,
+                    transitionSpec = {
+                        (slideInVertically { height -> -height } + fadeIn() with
+                                slideOutVertically { height -> height } + fadeOut())
+                            .using(
+                                // Disable clipping since the faded slide-in/out should
+                                // be displayed out of bounds.
+                                SizeTransform(clip = false)
+                            )
+                    },
+                ) { targetCount ->
+                    Text(
+                        style = MaterialTheme.typography.displayLarge,
+                        fontSize = 42.sp,
+                        lineHeight = 42.sp,
+                        text = state.list[targetCount]
+                    )
+                }
+            }
+        }
+    }
 }

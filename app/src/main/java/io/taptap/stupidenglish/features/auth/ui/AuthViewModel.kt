@@ -1,10 +1,13 @@
 package io.taptap.stupidenglish.features.auth.ui
 
 import android.util.Log
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.features.auth.data.AuthRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import taptap.pub.doOnError
 import javax.inject.Inject
 
@@ -13,7 +16,20 @@ class AuthViewModel @Inject constructor(
     private val repository: AuthRepository
 ) : BaseViewModel<AuthContract.Event, AuthContract.State, AuthContract.Effect>() {
 
-    override fun setInitialState() = AuthContract.State()
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            val isFirstStart = repository.isFirstStart
+            setState {
+                copy(
+                    isShownGreetings = isFirstStart
+                )
+            }
+        }
+    }
+
+    override fun setInitialState() = AuthContract.State(
+        isShownGreetings = false
+    )
 
     override suspend fun handleEvents(event: AuthContract.Event) {
         when (event) {
@@ -27,8 +43,13 @@ class AuthViewModel @Inject constructor(
 
                 signIn(email = event.authResult.idpResponse?.email)
             }
+            is AuthContract.Event.OnGreetingsClose -> {
+                repository.isFirstStart = false
+                setState { copy(isShownGreetings = false) }
+            }
             is AuthContract.Event.OnSkipClick ->
-                setEffect { AuthContract.Effect.Navigation.BackToWordsList }
+                setEffect { AuthContract.Effect.Navigation.ToWordsList }
+
         }
     }
 
@@ -51,6 +72,6 @@ class AuthViewModel @Inject constructor(
                 Log.e("AuthViewModel", "signIn error ${it.message}")
             }
 
-        setEffect { AuthContract.Effect.Navigation.BackToWordsList }
+        setEffect { AuthContract.Effect.Navigation.ToWordsList }
     }
 }

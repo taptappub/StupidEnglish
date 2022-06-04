@@ -2,13 +2,14 @@ package io.taptap.stupidenglish.features.auth.ui
 
 import android.content.Context
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -28,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import io.taptap.authorisation.rememberAuthenticator
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
 import io.taptap.uikit.AverageText
 import io.taptap.uikit.PrimaryButton
 import io.taptap.uikit.StupidEnglishScaffold
@@ -57,7 +58,7 @@ fun AuthScreen(
     LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
         effectFlow?.onEach { effect ->
             when (effect) {
-                is AuthContract.Effect.Navigation.BackToWordsList ->
+                is AuthContract.Effect.Navigation.ToWordsList ->
                     onNavigationRequested(effect)
                 is AuthContract.Effect.SignInWithGoogle -> {
                     authenticator.launch()
@@ -70,6 +71,29 @@ fun AuthScreen(
         scaffoldState = scaffoldState
     ) {
         StupidLanguageBackgroundBox {
+
+            if (state.isShownGreetings) {
+                AlertDialog(
+                    onDismissRequest = {
+                        onEventSent(AuthContract.Event.OnGreetingsClose)
+                    },
+                    text = {
+                        AverageText(
+                            text = stringResource(id = R.string.auth_dialog_message),
+                            maxLines = 100
+                        )
+                    },
+                    confirmButton = {
+                        PrimaryButton(
+                            text = stringResource(id = R.string.auth_dialog_ok),
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            onEventSent(AuthContract.Event.OnGreetingsClose)
+                        }
+                    }
+                )
+            }
+
             ContentScreen(
                 state = state,
                 onEventSent = onEventSent
@@ -129,7 +153,8 @@ private fun ContentScreen(
                     .padding(start = 28.dp, end = 28.dp, top = 16.dp)
             )
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f)
+                .background(color = Color(0xffff0000)))
 
             PrimaryButton(
                 onClick = { onEventSent(AuthContract.Event.OnSignInClick) },
@@ -138,7 +163,7 @@ private fun ContentScreen(
                 startImagePainter = painterResource(R.drawable.ic_google),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 42.dp, end = 42.dp, top = 66.dp)
+                    .padding(start = 42.dp, end = 42.dp, top = 8.dp)
             )
 
             Text(
@@ -160,7 +185,9 @@ private fun ContentScreen(
 private fun AuthScreenPreview() {
     StupidEnglishTheme {
         ContentScreen(
-            state = AuthContract.State(),
+            state = AuthContract.State(
+                isShownGreetings = true
+            ),
             onEventSent = {}
         )
     }
