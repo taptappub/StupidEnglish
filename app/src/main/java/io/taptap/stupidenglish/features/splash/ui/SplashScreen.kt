@@ -6,6 +6,7 @@ import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
@@ -91,7 +92,8 @@ private fun ContentScreen(
         animationSpec = tween(
             durationMillis = state.startAnimationDuration.toInt(),
             delayMillis = state.startAnimationDelay.toInt(),
-            easing = FastOutSlowInEasing
+//            easing = FastOutSlowInEasing
+            easing = CubicBezierEasing(0.2f, 0.0f, 0.2f, 1.0f)
         ),
         finishedListener = {
             onEventSent(SplashContract.Event.OnAnimationEnd)

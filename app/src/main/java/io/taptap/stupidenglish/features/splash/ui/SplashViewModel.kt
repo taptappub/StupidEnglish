@@ -23,7 +23,7 @@ class SplashViewModel @Inject constructor(
     }
 
     override fun setInitialState() = SplashContract.State(
-        list = listOf("Language", "Spanish", "French", "Russian", "English","Spanish", "French", "Russian", "English","Spanish", "French", "Russian", "English", "Language"),
+        list = listOf("Language", "English","Spanish", "French", "Russian", "English","Spanish", "French", "Russian", "English", "Language"),
         startAnimationDelay = 300,
         startAnimationDuration = 3000,
         endAnimationDelay = 1000
