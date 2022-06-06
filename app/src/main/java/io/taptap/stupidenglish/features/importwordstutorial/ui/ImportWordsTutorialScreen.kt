@@ -8,11 +8,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
@@ -26,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -46,8 +45,8 @@ import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.stupidenglish.features.importwords.ui.ImportWordsContract
 import io.taptap.uikit.AverageText
+import io.taptap.uikit.PrimaryButton
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.StupidEnglishTopAppBar
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
@@ -58,7 +57,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @OptIn(
-    ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class,
     ExperimentalPagerApi::class
 )
 @Composable
@@ -172,7 +170,9 @@ private fun ContentScreen(
             state = pagerState,
         ) { pageIndex ->
             when (ImportWordsTutorialContract.Page.getByIndex(pageIndex)) {
-                ImportWordsTutorialContract.Page.GOOGLE_SHEET -> GoogleSheetTutorial()
+                ImportWordsTutorialContract.Page.GOOGLE_SHEET -> GoogleSheetTutorial(
+                    onEventSent = onEventSent
+                )
                 ImportWordsTutorialContract.Page.GOOGLE_TRANSLATER -> GoogleTranslaterTutorial(
                     onEventSent = onEventSent
                 )
@@ -183,7 +183,9 @@ private fun ContentScreen(
 }
 
 @Composable
-private fun GoogleSheetTutorial() {
+private fun GoogleSheetTutorial(
+    onEventSent: (event: ImportWordsTutorialContract.Event) -> Unit
+) {
     val scrollState = rememberScrollState()
 
     Column(
@@ -221,6 +223,14 @@ private fun GoogleSheetTutorial() {
             painter = painterResource(R.drawable.sl_import)
         )
         ImportText(text = stringResource(id = R.string.imwt_google_sheet_8))
+
+        PrimaryButton(
+            modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)
+                .fillMaxWidth(),
+            onClick = { onEventSent(ImportWordsTutorialContract.Event.OnBackClick) },
+            text = stringResource(id = R.string.imwt_back_button),
+        )
     }
 }
 

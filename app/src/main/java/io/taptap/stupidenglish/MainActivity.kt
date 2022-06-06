@@ -138,7 +138,6 @@ class MainActivity : ComponentActivity() {
             AnimatedNavHost(
                 navController = navController,
                 startDestination = NavigationKeys.Route.SE_SPLASH,
-//                startDestination = NavigationKeys.Route.SE_MAIN,
                 modifier = Modifier.padding(innerPaddingModifier)
             ) {
                 composable(
@@ -293,12 +292,16 @@ private fun SplashDestination(
             when (navigationEffect) {
                 is SplashContract.Effect.Navigation.ToAuthScreen -> {
                     navController.navigate(route = NavigationKeys.Route.SE_AUTH) {
-                        popUpTo(route = NavigationKeys.Route.SE_SPLASH)
+                        popUpTo(route = NavigationKeys.Route.SE_SPLASH) {
+                            inclusive = true
+                        }
                     }
                 }
                 is SplashContract.Effect.Navigation.ToWordListScreen -> {
                     navController.navigate(route = NavigationKeys.Route.SE_MAIN) {
-                        popUpTo(route = NavigationKeys.Route.SE_SPLASH)
+                        popUpTo(route = NavigationKeys.Route.SE_SPLASH) {
+                            inclusive = true
+                        }
                     }
                 }
             }
@@ -635,7 +638,11 @@ private fun NavController.navigateToTab(
 // - в gmail не подставляется subject при отправке письма из настроек
 
 //Этот билд
-//5) ВЫЛОЖИТЬ ВЕСРИЮ ПОСЛЕ ТЕСТИРОВАНИЯ
+//Баги
+//2) “Новое слово” - подсказка, буквы не регистрируются при вводе
+//3) вымораживает, что просит тренировку перед добавлением предложения и это неочевидно
+//5) Протестируй переход из пуша, и всю навигацю потом
+//7) В метро получилось создать User’a без всего
 
 //Следующий билд
 //2) https://stackoverflow.com/questions/64362801/how-to-handle-visibility-of-a-text-in-jetpack-compose ДЛЯ экрана импорта

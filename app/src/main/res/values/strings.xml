@@ -107,10 +107,11 @@
     <string name="imwt_google_sheet_8">8. Done</string>
     <string name="imwt_google_translater_1">1. Translate words and add them to favourites</string>
     <string name="imwt_google_translater_2">2. Click on saved at the bottom of the screen</string>
-    <string name="imwt_google_translater_3">3. Click on Google Spreadseet icon to generate the list of imported words</string>
+    <string name="imwt_google_translater_3">3. Click on Google Spreadsheet icon to generate the list of imported words</string>
     <string name="imwt_google_translater_41">"4. Do not change the document, we'll do it for you! Just import from "</string>
     <string name="imwt_google_translater_42">GoogleSheet page</string>
     <string name="imwt_topbar_title">Import tutorial</string>
+    <string name="imwt_back_button">Back to Import</string>
 
     <!-- Alarm notification -->
     <string name="alrm_sentence_title">Time to make a sentence!</string>

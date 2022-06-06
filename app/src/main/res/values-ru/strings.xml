@@ -82,7 +82,7 @@
     <string name="imwt_google_sheet_8">8. Конец</string>
     <string name="imwt_google_translater_1">1. Переведи слово и добавь его в избранные</string>
     <string name="imwt_google_translater_2">2. Нажми кнопку сохранить в самом низу экрана</string>
-    <string name="imwt_google_translater_3">3. Нажми на иконку Google Spreadseet, чтобы создать список избраннных слов</string>
+    <string name="imwt_google_translater_3">3. Нажми на иконку Google Spreadsheet, чтобы создать список избраннных слов</string>
     <string name="imwt_google_translater_41">4. Менять получившийся документ не надо! Мы сделаем все за тебя! Просто сделай импорт из </string>
     <string name="imwt_google_translater_42">GoogleSheet</string>
     <string name="word_minifab_import">Импорт</string>
@@ -106,4 +106,5 @@
     <string name="prof_rate_us">Оценить приложение</string>
     <string name="prof_share_us">Поделиться приложением</string>
     <string name="prof_feedback">Написать нам на "taptap4pub@gmail.com"</string>
+    <string name="imwt_back_button">Вернуться к Импорту</string>
 </resources>
