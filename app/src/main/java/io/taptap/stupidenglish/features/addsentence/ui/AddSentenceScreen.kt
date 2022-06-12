@@ -36,13 +36,12 @@ import com.google.accompanist.flowlayout.FlowRow
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.model.Word
-import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.uikit.AddTextField
 import io.taptap.uikit.AverageText
 import io.taptap.uikit.AverageTitle
-import io.taptap.uikit.fab.NextButton
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.StupidEnglishTopAppBar
+import io.taptap.uikit.fab.NextButton
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -81,9 +80,9 @@ fun AddSentenceScreen(
                         message = context.getString(effect.errorRes),
                         duration = SnackbarDuration.Short
                     )
-                is AddSentenceContract.Effect.ShowUnderConstruction ->
+                is AddSentenceContract.Effect.ShowDescription ->
                     scaffoldState.snackbarHostState.showSnackbar(
-                        message = context.getString(R.string.under_construction),
+                        message = effect.description,
                         duration = SnackbarDuration.Short
                     )
             }
@@ -227,8 +226,8 @@ private fun AddSentenceWordList(
         crossAxisSpacing = 16.dp
     ) {
         state.words.forEach {
-            CustomChip(item = it) {
-                onEventSent(AddSentenceContract.Event.OnChipClick)
+            CustomChip(item = it) { word ->
+                onEventSent(AddSentenceContract.Event.OnChipClick(word))
             }
         }
     }
@@ -237,13 +236,13 @@ private fun AddSentenceWordList(
 @Composable
 private fun CustomChip(
     item: Word,
-    onClicked: () -> Unit
+    onClicked: (item: Word) -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
         backgroundColor = MaterialTheme.colorScheme.surface,
         elevation = 4.dp,
-        modifier = Modifier.clickable { onClicked() }
+        modifier = Modifier.clickable { onClicked(item) }
     ) {
         AverageTitle(
             text = item.word,

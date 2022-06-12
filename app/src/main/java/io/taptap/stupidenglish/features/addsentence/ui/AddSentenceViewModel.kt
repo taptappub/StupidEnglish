@@ -63,7 +63,7 @@ class AddSentenceViewModel @Inject constructor(
                 saveSentence(sentence)
             }
             is AddSentenceContract.Event.OnChipClick ->
-                setEffect { AddSentenceContract.Effect.ShowUnderConstruction }
+                setEffect { AddSentenceContract.Effect.ShowDescription(event.word.description) }
             is AddSentenceContract.Event.OnBackClick ->
                 setEffect { AddSentenceContract.Effect.Navigation.BackToSentenceList(null) }
         }

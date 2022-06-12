@@ -210,7 +210,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     AuthDestination(navController)
                 }
-                composable(
+                /*composable(
                     route = NavigationKeys.Route.SE_REMEMBER,
                     deepLinks = listOf(navDeepLink {
                         uriPattern =
@@ -224,7 +224,7 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     StackDestination(navController)
-                }
+                }*/
                 composable(
                     route = NavigationKeys.Route.SE_ADD_SENTENCE,
                     deepLinks = listOf(navDeepLink {
@@ -484,7 +484,7 @@ private fun AddSentenceDestination(navController: NavHostController) {
             if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
                 navController.backQueue.removeIf {
                     it.destination.route == NavigationKeys.Route.SE_ADD_SENTENCE
-                            || it.destination.route == NavigationKeys.Route.SE_REMEMBER
+                            //|| it.destination.route == NavigationKeys.Route.SE_REMEMBER
                 }
                 navController.navigateToTab(route = SENTENCES) {
                     popUpTo(route = NavigationKeys.Route.SE_ADD_SENTENCE) {
@@ -555,7 +555,8 @@ private fun SentenceListDestination(
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
                 val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                navController.navigate("${NavigationKeys.Route.REMEMBER}/${ids}")
+                navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${ids}")
+//                navController.navigate("${NavigationKeys.Route.REMEMBER}/${ids}")
             }
         }
     )
@@ -625,6 +626,7 @@ private fun NavController.navigateToTab(
 //12) импорт из Quizlet по ссылке модуля
 //13) Можно создавать имя группы при импорте из названия страницы
 //4) механизм переключения темы (темная, светлая или системная)
+//5) Обучение карточками
 
 //Гугл аналитика без play service'ов
 //https://developers.google.com/analytics/devguides/collection/android/v4?hl=ru
@@ -638,18 +640,13 @@ private fun NavController.navigateToTab(
 // - в gmail не подставляется subject при отправке письма из настроек
 // - Если на этом этапе нажать вне попапа, то происходит попытка отправки репорта с ошибкой
 
-//Этот билд
-//Баги
-//2) “Новое слово” - подсказка, буквы не регистрируются при вводе
-//3) вымораживает, что просит тренировку перед добавлением предложения и это неочевидно
-//8) перенести тренировку!!!!!
-//11) При удалении слова есть возможность его восстановить какое-то время, а при удалении группы такой возможности нет. Может тоже стоит поповер выводить, а то если нечаянно удалишь всю группу с кучей слов, будет очень обидно
-//Даже лучше что-то типа r u sure u want to delete the group?
-
-
 
 //Следующий билд
 //2) https://stackoverflow.com/questions/64362801/how-to-handle-visibility-of-a-text-in-jetpack-compose ДЛЯ экрана импорта
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
 //2) Авторизация и сохранение слов в firebase storage
 //3) заменить storage на новую штуку
+//4) “Новое слово” - подсказка, буквы не регистрируются при вводе
+//5) Диалог подтверждения удаления группы
+//6) Статистика по изучению
+//11) При удалении слова есть возможность его восстановить какое-то время, а при удалении группы такой возможности нет. Может тоже стоит поповер выводить, а то если нечаянно удалишь всю группу с кучей слов, будет очень обидно

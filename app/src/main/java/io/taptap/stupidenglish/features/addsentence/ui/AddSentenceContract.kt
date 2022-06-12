@@ -10,7 +10,7 @@ class AddSentenceContract {
         object OnWaitingSentenceError : Event()
         data class OnSentenceChanging(val value: String) : AddSentenceContract.Event()
         object OnSaveSentence : Event()
-        object OnChipClick : Event()
+        data class OnChipClick(val word: Word) : Event()
         object OnBackClick : Event()
     }
 
@@ -24,7 +24,7 @@ class AddSentenceContract {
         data class GetWordsError(val errorRes: Int) : Effect()
         data class WaitingForSentenceError(val errorRes: Int) : Effect()
 
-        object ShowUnderConstruction : Effect()
+        data class ShowDescription(val description: String) : Effect()
 
         sealed class Navigation : Effect() {
             data class BackToSentenceList(val ids: String?) : Navigation()
