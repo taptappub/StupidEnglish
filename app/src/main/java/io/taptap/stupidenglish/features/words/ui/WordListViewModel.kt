@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.words.ui
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
@@ -18,7 +19,6 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -134,7 +134,7 @@ class WordListViewModel @Inject constructor(
             }
             is WordListContract.Event.OnGroupClick -> {
                 if (viewState.value.currentGroup != event.group) {
-                    filterWordListByGroup(event.group)
+                    makeMainList(words, groups, event.group)
                     setState { copy(currentGroup = event.group) }
                 }
             }
@@ -235,15 +235,17 @@ class WordListViewModel @Inject constructor(
         repository.deleteWords(list)
     }
 
-    private fun filterWordListByGroup(group: GroupListModels) {
-        val list = if (group == NoGroup) {
+    private fun filterWordListByGroup(
+        words: List<WordListItemUI>,
+        group: GroupListModels
+    ): List<WordListItemUI> {
+        return if (group == NoGroup) {
             words
         } else {
             words.filter {
                 it.groupsIds.contains(group.id)
             }
         }
-        makeMainList(list, groups)
     }
 
     private suspend fun deleteWord(item: WordListItemUI) {
@@ -307,14 +309,23 @@ class WordListViewModel @Inject constructor(
             )
         }
         groups = makeGroupsList(groupsList)
+        val group = try {
+            viewState.value.currentGroup
+        } catch (e: Exception) {
+            e.printStackTrace()
+            NoGroup
+        }
 
-        makeMainList(words, groups)
+        makeMainList(words, groups, group)
     }
 
     private fun makeMainList(
         list: List<WordListItemUI>,
-        groupsList: List<GroupListModels>
+        groupsList: List<GroupListModels>,
+        currentGroup: GroupListModels
     ) {
+        val filteredList = filterWordListByGroup(list, currentGroup)
+
         val mainList = mutableListOf<WordListListModels>()
         if (showOnboardingLabel(words.size)) {
             mainList.add(OnboardingWordUI)
@@ -329,10 +340,10 @@ class WordListViewModel @Inject constructor(
         )
 
         mainList.add(WordListTitleUI(valueRes = R.string.word_list_list_title))
-        if (list.isEmpty()) {
+        if (filteredList.isEmpty()) {
             mainList.add(WordListEmptyUI(descriptionRes = R.string.word_empty_list_description))
         } else {
-            mainList.addAll(list)
+            mainList.addAll(filteredList)
         }
 
         val dialogGroups = groupsList.toMutableList().apply {
