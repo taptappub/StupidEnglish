@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
+import io.taptap.stupidenglish.base.isNotEmpty
 import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
 import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
 import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
@@ -42,10 +43,13 @@ class AddWordViewModel @Inject constructor(
                 setState { copy(addWordState = AddWordContract.AddWordState.HasWord) }
 
             is AddWordContract.Event.OnDescriptionChanging ->
-                setState { copy(description = event.value) }
+                event.value.isNotEmpty {
+                    setState { copy(description = it) }
+                }
             is AddWordContract.Event.OnWordChanging ->
-                setState { copy(word = event.value) }
-
+                event.value.isNotEmpty {
+                    setState { copy(word = it) }
+                }
             is AddWordContract.Event.BackToNoneState ->
                 setState {
                     copy(
@@ -103,11 +107,13 @@ class AddWordViewModel @Inject constructor(
         description: String,
         groups: List<GroupListModels>
     ) {
+        val trimWord = word.trim()
+        val trimDescription = description.trim()
         viewModelScope.launch(Dispatchers.IO) {
             val groupsIds = groups.mapNotNull {
                 if (it.id == NoGroup.id) null else it.id
             }
-            repository.saveWord(word, description, groupsIds)
+            repository.saveWord(trimWord, trimDescription, groupsIds)
                 .handle(
                     success = {
                         withContext(Dispatchers.Main) {

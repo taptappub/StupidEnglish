@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
+import io.taptap.stupidenglish.base.isNotEmpty
 import io.taptap.stupidenglish.features.addsentence.data.AddSentenceRepository
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import kotlinx.coroutines.Dispatchers
@@ -48,7 +49,9 @@ class AddSentenceViewModel @Inject constructor(
     override suspend fun handleEvents(event: AddSentenceContract.Event) {
         when (event) {
             is AddSentenceContract.Event.OnSentenceChanging ->
-                setState { copy(sentence = event.value) }
+                event.value.isNotEmpty {
+                    setState { copy(sentence = it) }
+                }
             is AddSentenceContract.Event.OnWaitingSentenceError -> setEffect {
                 AddSentenceContract.Effect.WaitingForSentenceError(
                     R.string.adds_sentence_not_found_error
@@ -69,7 +72,8 @@ class AddSentenceViewModel @Inject constructor(
     private fun saveSentence(sentence: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val wordsIds = viewState.value.words.map { it.id }
-            repository.saveSentence(sentence, wordsIds)
+            val trimSentence = sentence.trim()
+            repository.saveSentence(trimSentence, wordsIds)
                 .handle(
                     success = {
                         withContext(Dispatchers.Main) {

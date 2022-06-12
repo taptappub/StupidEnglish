@@ -17,6 +17,13 @@ fun <E> List<E>.getRandom(count: Int): List<E> {
     return asSequence().shuffled().take(count).toList()
 }
 
+suspend fun String.isNotEmpty(function: suspend (it: String) -> Unit) {
+    val trimString = this.trim()
+    if (trimString.isNotEmpty()) {
+        function(trimString)
+    }
+}
+
 /* val json = Uri.encode(Gson().toJson(navigationEffect.sentenceNavigation)) */
 
 /* Gson().fromJson(value, SentenceNavigation::class.java) */

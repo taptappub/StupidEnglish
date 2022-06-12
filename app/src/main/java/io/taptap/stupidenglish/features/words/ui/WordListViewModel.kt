@@ -1,6 +1,5 @@
 package io.taptap.stupidenglish.features.words.ui
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
@@ -17,6 +16,7 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
+import io.taptap.stupidenglish.base.isNotEmpty
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -148,7 +148,9 @@ class WordListViewModel @Inject constructor(
                 saveGroup(viewState.value.group)
             }
             is WordListContract.Event.OnGroupChanging -> {
-                setState { copy(group = event.value) }
+                event.value.isNotEmpty {
+                    setState { copy(group = it) }
+                }
             }
             is WordListContract.Event.OnGroupAddingCancel -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
@@ -374,8 +376,9 @@ class WordListViewModel @Inject constructor(
     }
 
     private fun saveGroup(group: String) {
+        val trimGroup = group.trim()
         viewModelScope.launch(Dispatchers.IO) {
-            repository.saveGroup(group)
+            repository.saveGroup(trimGroup)
                 .doOnComplete {
                     setState {
                         copy(

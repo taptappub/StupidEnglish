@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
+import io.taptap.stupidenglish.base.isNotEmpty
 import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
 import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
 import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
@@ -55,9 +56,10 @@ class ImportWordsViewModel @Inject constructor(
     override suspend fun handleEvents(event: ImportWordsContract.Event) {
         when (event) {
             is ImportWordsContract.Event.OnLinkChanging -> {
-                val link = event.value
-                setState { copy(link = link) }
-                handleLinkChanging(link)
+                event.value.isNotEmpty {
+                    setState { copy(link = it) }
+                    handleLinkChanging(it)
+                }
             }
             is ImportWordsContract.Event.OnGroupSelect -> {
                 val selectedGroups = ArrayList(viewState.value.selectedGroups)
@@ -140,8 +142,8 @@ class ImportWordsViewModel @Inject constructor(
         val newWords = words.map {
             Word(
                 id = it.id,
-                word = it.word,
-                description = it.description,
+                word = it.word.trim(),
+                description = it.description.trim(),
                 points = it.points,
                 groupsIds = groupsIds
             )
@@ -170,8 +172,9 @@ class ImportWordsViewModel @Inject constructor(
     }
 
     private fun saveGroup(group: String) {
+        val trimGroup = group.trim()
         viewModelScope.launch(Dispatchers.IO) {
-            interactor.saveGroup(group)
+            interactor.saveGroup(trimGroup)
                 .doOnComplete {
                     setState { copy(group = "", isAddGroup = false) }
                     setEffect { ImportWordsContract.Effect.HideBottomSheet }
