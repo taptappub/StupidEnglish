@@ -92,7 +92,6 @@ private fun ContentScreen(
         animationSpec = tween(
             durationMillis = state.startAnimationDuration.toInt(),
             delayMillis = state.startAnimationDelay.toInt(),
-//            easing = FastOutSlowInEasing
             easing = CubicBezierEasing(0.2f, 0.0f, 0.2f, 1.0f)
         ),
         finishedListener = {
@@ -116,6 +115,7 @@ private fun ContentScreen(
         ) {
             Text(
                 style = MaterialTheme.typography.displayLarge,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 42.sp,
                 lineHeight = 42.sp,
                 text = "Stupid "
@@ -144,6 +144,7 @@ private fun ContentScreen(
                 ) { targetCount ->
                     Text(
                         style = MaterialTheme.typography.displayLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 42.sp,
                         lineHeight = 42.sp,
                         text = state.list[targetCount]

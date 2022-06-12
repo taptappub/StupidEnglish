@@ -80,6 +80,7 @@ fun AuthScreen(
                     text = {
                         AverageText(
                             text = stringResource(id = R.string.auth_dialog_message),
+                            color = Color.Black,
                             maxLines = 100
                         )
                     },
