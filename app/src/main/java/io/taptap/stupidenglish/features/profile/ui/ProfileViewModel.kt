@@ -51,7 +51,7 @@ class ProfileViewModel @Inject constructor(
                     return
                 }
 
-                signIn(email = event.authResult.idpResponse?.email)
+                signIn(event.authResult.idpResponse?.email)
             }
             is ProfileContract.Event.OnSwitchModeClick -> {
                 val newMode = !viewState.value.isDarkMode
@@ -101,19 +101,28 @@ class ProfileViewModel @Inject constructor(
         setState { copy(name = "", avatar = "", isRegistered = false) }
     }
 
-    private suspend fun signIn(email: String?) {
+    private suspend fun signIn(selectedEmail: String?) {
         val user = FirebaseAuth.getInstance().currentUser
-        if (user?.email != email) {
+        if (user == null) {
+            Log.i("ProfileViewModel", "user is null")
+            return
+        }
+        if (user.email.isNullOrEmpty()) {
+            Log.i("ProfileViewModel", "email is null or empty")
+            return
+        }
+        if (user.email != selectedEmail) {
             Log.i("ProfileViewModel", "current email != selected email")
             return
         }
 
-        val name = user?.displayName ?: ""
-        val image = user?.photoUrl.toString() ?: ""
-        val email = user?.email ?: ""
-        val isEmailVerified = user?.isEmailVerified
-        val phoneNumber = user?.phoneNumber
-        val uid = user?.uid ?: ""
+
+        val name = user.displayName ?: ""
+        val image = user.photoUrl.toString()
+        val email = user.email ?: ""
+        val isEmailVerified = user.isEmailVerified
+        val phoneNumber = user.phoneNumber
+        val uid = user.uid
 
         setState { copy(name = name, avatar = image, isRegistered = true) }
 

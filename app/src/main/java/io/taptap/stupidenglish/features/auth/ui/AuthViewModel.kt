@@ -41,7 +41,7 @@ class AuthViewModel @Inject constructor(
                     return
                 }
 
-                signIn(email = event.authResult.idpResponse?.email)
+                signIn(event.authResult.idpResponse?.email)
             }
             is AuthContract.Event.OnGreetingsClose -> {
                 repository.isFirstStart = false
@@ -53,19 +53,27 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private suspend fun signIn(email: String?) {
+    private suspend fun signIn(selectedEmail: String?) {
         val user = FirebaseAuth.getInstance().currentUser
-        if (user?.email != email) {
+        if (user == null) {
+            Log.i("AuthViewModel", "user is null")
+            return
+        }
+        if (user.email.isNullOrEmpty()) {
+            Log.i("AuthViewModel", "email is null or empty")
+            return
+        }
+        if (user.email != selectedEmail) {
             Log.i("AuthViewModel", "current email != selected email")
             return
         }
 
-        val name = user?.displayName ?: ""
-        val image = user?.photoUrl.toString() ?: ""
-        val email = user?.email ?: ""
-        val isEmailVerified = user?.isEmailVerified
-        val phoneNumber = user?.phoneNumber
-        val uid = user?.uid ?: ""
+        val name = user.displayName ?: ""
+        val image = user.photoUrl.toString()
+        val email = user.email ?: ""
+        val isEmailVerified = user.isEmailVerified
+        val phoneNumber = user.phoneNumber
+        val uid = user.uid
 
         repository.saveUser(name, image, email, isEmailVerified, phoneNumber, uid)
             .doOnError {
