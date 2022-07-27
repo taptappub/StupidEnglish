@@ -18,7 +18,7 @@ class RandomWordsDataSource @Inject constructor(
         val realCount = when {
             words.size in 1 until maxCount -> words.size
             words.size >= maxCount -> maxCount
-            else -> throw IllegalStateException("words.size is 0")
+            else -> error("words.size is 0")
         }
         words.getRandom(realCount).toWords()
     }

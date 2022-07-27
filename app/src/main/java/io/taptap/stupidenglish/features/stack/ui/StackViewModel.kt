@@ -27,7 +27,7 @@ class StackViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             val wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.WORDS_ID)
-                ?: throw IllegalStateException("No wordsIds was passed to AddSentenceViewModel.")
+                ?: error("No wordsIds was passed to AddSentenceViewModel.")
 
             val wordsIds = addSentenceArgumentsMapper.mapFrom(wordsIdsString)
             val words = repository.getWordsById(wordsIds!!).takeOrReturn {

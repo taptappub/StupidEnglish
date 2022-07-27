@@ -268,7 +268,7 @@ private fun GroupsStackRow(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             when (groups.size) {
-                0 -> throw IllegalStateException("Groups count can't be 0")
+                0 -> error("Groups count can't be 0")
                 1 -> OneGroup(groups.first())
                 in 2..5 -> ManyGroups(
                     groups = groups,

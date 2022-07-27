@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexMethod:WordListScreen.kt$@OptIn(ExperimentalComposeUiApi::class) @ExperimentalFoundationApi @ExperimentalMaterialApi @Composable fun WordListScreen( context: Context, state: WordListContract.State, effectFlow: Flow&lt;WordListContract.Effect>?, onEventSent: (event: WordListContract.Event) -> Unit, onChangeBottomSheetVisibility: (visibility: Boolean) -> Unit, onNavigationRequested: (navigationEffect: WordListContract.Effect.Navigation) -> Unit )</ID>
+    <ID>ComplexMethod:WordListViewModel.kt$WordListViewModel$override suspend fun handleEvents(event: WordListContract.Event)</ID>
+    <ID>EmptyFunctionBlock:CardStackAdapter.kt$CardStackAdapter.&lt;no name provided>${}</ID>
+    <ID>EmptyFunctionBlock:StackScreen.kt$&lt;no name provided>${ }</ID>
+    <ID>LongMethod:AddSentenceScreen.kt$@Composable private fun ContentScreen( state: AddSentenceContract.State, onEventSent: (event: AddSentenceContract.Event) -> Unit )</ID>
+    <ID>LongMethod:AddWordScreen.kt$@Composable private fun ContentScreen( state: AddWordContract.State, onEventSent: (event: AddWordContract.Event) -> Unit )</ID>
+    <ID>LongMethod:AddWordScreen.kt$@Composable private fun HasWordScreen( state: AddWordContract.State, onEventSent: (event: AddWordContract.Event) -> Unit, modifier: Modifier )</ID>
+    <ID>LongMethod:AddWordScreen.kt$@OptIn(ExperimentalComposeUiApi::class) @ExperimentalMaterialApi @Composable fun AddWordScreen( context: Context, state: AddWordContract.State, effectFlow: Flow&lt;AddWordContract.Effect>?, onEventSent: (event: AddWordContract.Event) -> Unit, onNavigationRequested: (navigationEffect: AddWordContract.Effect.Navigation) -> Unit )</ID>
+    <ID>LongMethod:AddWordViewModel.kt$AddWordViewModel$override suspend fun handleEvents(event: AddWordContract.Event)</ID>
+    <ID>LongMethod:AuthScreen.kt$@Composable private fun ContentScreen( state: AuthContract.State, onEventSent: (event: AuthContract.Event) -> Unit )</ID>
+    <ID>LongMethod:ImportWordsScreen.kt$@Composable private fun ImportWordStateScreen( state: ImportWordsContract.State, modifier: Modifier, onEventSent: (event: ImportWordsContract.Event) -> Unit )</ID>
+    <ID>LongMethod:ImportWordsScreen.kt$@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class) @Composable fun ImportWordsScreen( context: Context, state: ImportWordsContract.State, effectFlow: Flow&lt;ImportWordsContract.Effect>?, onEventSent: (event: ImportWordsContract.Event) -> Unit, onNavigationRequested: (navigationEffect: ImportWordsContract.Effect.Navigation) -> Unit )</ID>
+    <ID>LongMethod:MainActivity.kt$MainActivity$@ExperimentalMaterialApi @OptIn( ExperimentalFoundationApi::class ) @ExperimentalAnimationApi @ExperimentalMaterialNavigationApi @Composable private fun StupidApp()</ID>
+    <ID>LongMethod:ProfileScreen.kt$@Composable fun MenuScreen( state: ProfileContract.State, onEventSent: (event: ProfileContract.Event) -> Unit )</ID>
+    <ID>LongMethod:SentencesListScreen.kt$@ExperimentalMaterialApi @Composable private fun SentenceItemRow( item: SentencesListItemUI, onClicked: () -> Unit, dismissState: DismissState, onShareClicked: (SentencesListItemUI) -> Unit, modifier: Modifier )</ID>
+    <ID>LongMethod:SentencesListScreen.kt$@OptIn(ExperimentalComposeUiApi::class) @ExperimentalFoundationApi @ExperimentalMaterialApi @Composable fun SentencesListScreen( context: Context, state: SentencesListContract.State, effectFlow: Flow&lt;SentencesListContract.Effect>?, onEventSent: (event: SentencesListContract.Event) -> Unit, onChangeBottomSheetVisibility: (visibility: Boolean) -> Unit, onNavigationRequested: (navigationEffect: SentencesListContract.Effect.Navigation) -> Unit )</ID>
+    <ID>LongMethod:SentencesListViewModel.kt$SentencesListViewModel$override suspend fun handleEvents(event: SentencesListContract.Event)</ID>
+    <ID>LongMethod:SplashScreen.kt$@ExperimentalFoundationApi @Composable private fun ContentScreen( state: SplashContract.State, onEventSent: (event: SplashContract.Event) -> Unit )</ID>
+    <ID>LongMethod:StupidEnglishBottomBar.kt$//ver2 @Composable fun StupidEnglishBottomBar( currentRoute: String, modifier: Modifier = Modifier, state: MainContract.State, effectFlow: Flow&lt;MainContract.Effect>?, onEventSent: (event: MainContract.Event) -> Unit, onNavigationRequested: (navigationEffect: MainContract.Effect.Navigation) -> Unit )</ID>
+    <ID>LongMethod:WordListScreen.kt$@ExperimentalFoundationApi @ExperimentalMaterialApi @Composable private fun MainList( wordItems: List&lt;WordListListModels>, group: GroupListModels?, listState: LazyListState, onEventSent: (event: WordListContract.Event) -> Unit, deletedWordIds: MutableList&lt;Long> )</ID>
+    <ID>LongMethod:WordListScreen.kt$@OptIn(ExperimentalComposeUiApi::class) @ExperimentalFoundationApi @ExperimentalMaterialApi @Composable fun WordListScreen( context: Context, state: WordListContract.State, effectFlow: Flow&lt;WordListContract.Effect>?, onEventSent: (event: WordListContract.Event) -> Unit, onChangeBottomSheetVisibility: (visibility: Boolean) -> Unit, onNavigationRequested: (navigationEffect: WordListContract.Effect.Navigation) -> Unit )</ID>
+    <ID>LongMethod:WordListViewModel.kt$WordListViewModel$override suspend fun handleEvents(event: WordListContract.Event)</ID>
+    <ID>LongParameterList:ChooseGroupBottomSheet.kt$( list: List&lt;GroupListModels>, selectedList: List&lt;GroupListModels>, @StringRes titleRes: Int, @StringRes buttonRes: Int, modifier: Modifier, onItemClick: (GroupListModels) -> Unit, onButtonClick: () -> Unit )</ID>
+    <ID>LongParameterList:IWriteUserDataSource.kt$IWriteUserDataSource$( name: String, image: String, email: String, emailVerified: Boolean?, phoneNumber: String?, uid: String )</ID>
+    <ID>LongParameterList:SentencesListScreen.kt$( context: Context, state: SentencesListContract.State, effectFlow: Flow&lt;SentencesListContract.Effect>?, onEventSent: (event: SentencesListContract.Event) -> Unit, onChangeBottomSheetVisibility: (visibility: Boolean) -> Unit, onNavigationRequested: (navigationEffect: SentencesListContract.Effect.Navigation) -> Unit )</ID>
+    <ID>LongParameterList:SentencesListScreen.kt$( gradient: Brush, contentPadding: PaddingValues, shape: RoundedCornerShape, modifier: Modifier = Modifier, onClick: () -> Unit = { }, content: @Composable (RowScope.() -> Unit) )</ID>
+    <ID>LongParameterList:StupidEnglishBottomBar.kt$( currentRoute: String, modifier: Modifier = Modifier, state: MainContract.State, effectFlow: Flow&lt;MainContract.Effect>?, onEventSent: (event: MainContract.Event) -> Unit, onNavigationRequested: (navigationEffect: MainContract.Effect.Navigation) -> Unit )</ID>
+    <ID>LongParameterList:WordListScreen.kt$( context: Context, state: WordListContract.State, effectFlow: Flow&lt;WordListContract.Effect>?, onEventSent: (event: WordListContract.Event) -> Unit, onChangeBottomSheetVisibility: (visibility: Boolean) -> Unit, onNavigationRequested: (navigationEffect: WordListContract.Effect.Navigation) -> Unit )</ID>
+    <ID>LongParameterList:WordListScreen.kt$( title: String, button: String, currentGroup: GroupListModels?, list: List&lt;GroupListModels>, onButtonClicked: () -> Unit, onGroupClicked: (GroupListModels) -> Unit, onGroupLongClicked: (GroupListModels) -> Unit )</ID>
+    <ID>MagicNumber:AddWordScreen.kt$14</ID>
+    <ID>MagicNumber:AddWordScreen.kt$5</ID>
+    <ID>MagicNumber:AlarmReceiver.kt$AlarmReceiver$231</ID>
+    <ID>MagicNumber:AlarmReceiver.kt$AlarmReceiver$3</ID>
+    <ID>MagicNumber:AlarmScheduler.kt$AlarmScheduler$1000</ID>
+    <ID>MagicNumber:AlarmScheduler.kt$AlarmScheduler$12</ID>
+    <ID>MagicNumber:AuthScreen.kt$0xffff0000</ID>
+    <ID>MagicNumber:AuthScreen.kt$52</ID>
+    <ID>MagicNumber:AuthScreen.kt$760</ID>
+    <ID>MagicNumber:CardStackAdapter.kt$CardStackAdapter$500</ID>
+    <ID>MagicNumber:CardStackUIUtils.kt$3</ID>
+    <ID>MagicNumber:CardStackUIUtils.kt$4</ID>
+    <ID>MagicNumber:ImportWordsRepository.kt$3</ID>
+    <ID>MagicNumber:ImportWordsViewModel.kt$ImportWordsViewModel$2000</ID>
+    <ID>MagicNumber:ImportWordsViewModel.kt$ImportWordsViewModel$500</ID>
+    <ID>MagicNumber:SentencesListScreen.kt$0.5f</ID>
+    <ID>MagicNumber:SentencesListScreen.kt$0.6f</ID>
+    <ID>MagicNumber:SentencesListScreen.kt$0.80f</ID>
+    <ID>MagicNumber:SentencesListScreen.kt$2.2f</ID>
+    <ID>MagicNumber:SentencesListUiModels.kt$SentencesListEmptyUI$2</ID>
+    <ID>MagicNumber:SentencesListViewModel.kt$SentencesListViewModel$3</ID>
+    <ID>MagicNumber:SplashScreen.kt$0.2f</ID>
+    <ID>MagicNumber:StackScreen.kt$0.3f</ID>
+    <ID>MagicNumber:StackScreen.kt$0.8f</ID>
+    <ID>MagicNumber:StackScreen.kt$16.0f</ID>
+    <ID>MagicNumber:StackScreen.kt$20.0f</ID>
+    <ID>MagicNumber:StackScreen.kt$3</ID>
+    <ID>MagicNumber:StupidApiProvider.kt$StupidApiProvider$28</ID>
+    <ID>MagicNumber:WordListScreen.kt$0.5f</ID>
+    <ID>MagicNumber:WordListScreen.kt$0.6f</ID>
+    <ID>MagicNumber:WordListScreen.kt$0.80f</ID>
+    <ID>MagicNumber:WordListScreen.kt$2.2f</ID>
+    <ID>MagicNumber:WordListUiModels.kt$OnboardingWordUI$2</ID>
+    <ID>MagicNumber:WordListUiModels.kt$WordListEmptyUI$4</ID>
+    <ID>MagicNumber:WordListUiModels.kt$WordListGroupUI$3</ID>
+    <ID>MagicNumber:WordListViewModel.kt$WordListViewModel$2000</ID>
+    <ID>MagicNumber:WordListViewModel.kt$WordListViewModel$3</ID>
+    <ID>MaxLineLength:ImportWordsTutorialViewModel.kt$ImportWordsTutorialViewModel$class</ID>
+    <ID>MaxLineLength:MainActivity.kt$// - если из импорта перейти на боттмошит для добавления группы, то диалог открывается, но фокус на него не ставится и клавиатура не поднимается</ID>
+    <ID>MaxLineLength:MainActivity.kt$//1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE</ID>
+    <ID>MaxLineLength:MainActivity.kt$//11) Перетаскивание в папку слов драг энд дропом. Список групп вылезает сбоку, с анимацией волны, и ты перетягиваешь слово в нужную папку</ID>
+    <ID>MaxLineLength:MainActivity.kt$//11) При удалении слова есть возможность его восстановить какое-то время, а при удалении группы такой возможности нет. Может тоже стоит поповер выводить, а то если нечаянно удалишь всю группу с кучей слов, будет очень обидно</ID>
+    <ID>MaxLineLength:MainActivity.kt$//2) https://stackoverflow.com/questions/64362801/how-to-handle-visibility-of-a-text-in-jetpack-compose ДЛЯ экрана импорта</ID>
+    <ID>MaxLineLength:SentencesListViewModel.kt$SentencesListViewModel$setEffect { SentencesListContract.Effect.GetRandomWordsError(R.string.stns_get_random_words_error) }</ID>
+    <ID>MaxLineLength:SentencesListViewModel.kt$SentencesListViewModel$setEffect { SentencesListContract.Effect.GetSentencesError(R.string.stns_get_sentences_error) }</ID>
+    <ID>MaxLineLength:SplashViewModel.kt$SplashViewModel$list = listOf("Language", "English","Spanish", "French", "Russian", "English","Spanish", "French", "Russian", "English", "Language")</ID>
+    <ID>MaxLineLength:WordListViewModel.kt$WordListViewModel$if</ID>
+    <ID>NewLineAtEndOfFile:AddSentenceArgumentsMapper.kt$io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper.kt</ID>
+    <ID>NewLineAtEndOfFile:AddSentenceContract.kt$io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract.kt</ID>
+    <ID>NewLineAtEndOfFile:AddWordContract.kt$io.taptap.stupidenglish.features.addword.ui.AddWordContract.kt</ID>
+    <ID>NewLineAtEndOfFile:AlarmRepository.kt$io.taptap.stupidenglish.features.alarm.data.AlarmRepository.kt</ID>
+    <ID>NewLineAtEndOfFile:AuthScreen.kt$io.taptap.stupidenglish.features.auth.ui.AuthScreen.kt</ID>
+    <ID>NewLineAtEndOfFile:AuthViewModel.kt$io.taptap.stupidenglish.features.auth.ui.AuthViewModel.kt</ID>
+    <ID>NewLineAtEndOfFile:BootReceiver.kt$io.taptap.stupidenglish.features.alarm.ui.BootReceiver.kt</ID>
+    <ID>NewLineAtEndOfFile:CardStackUIUtils.kt$io.taptap.stupidenglish.features.stack.ui.adapter.CardStackUIUtils.kt</ID>
+    <ID>NewLineAtEndOfFile:DataSourcesProvider.kt$io.taptap.stupidenglish.di.DataSourcesProvider.kt</ID>
+    <ID>NewLineAtEndOfFile:GoogleSheetApiProvider.kt$io.taptap.stupidenglish.di.GoogleSheetApiProvider.kt</ID>
+    <ID>NewLineAtEndOfFile:GroupItemHeader.kt$io.taptap.stupidenglish.ui.GroupItemHeader.kt</ID>
+    <ID>NewLineAtEndOfFile:IKeysDataSource.kt$io.taptap.stupidenglish.base.logic.sources.keys.IKeysDataSource.kt</ID>
+    <ID>NewLineAtEndOfFile:IWriteWordsDataSource.kt$io.taptap.stupidenglish.base.logic.sources.words.write.IWriteWordsDataSource.kt</ID>
+    <ID>NewLineAtEndOfFile:ImportWordsContract.kt$io.taptap.stupidenglish.features.importwords.ui.ImportWordsContract.kt</ID>
+    <ID>NewLineAtEndOfFile:ImportWordsInteractor.kt$io.taptap.stupidenglish.features.importwords.domain.ImportWordsInteractor.kt</ID>
+    <ID>NewLineAtEndOfFile:ImportWordsTutorialContract.kt$io.taptap.stupidenglish.features.importwordstutorial.ui.ImportWordsTutorialContract.kt</ID>
+    <ID>NewLineAtEndOfFile:MainContract.kt$io.taptap.stupidenglish.features.main.ui.MainContract.kt</ID>
+    <ID>NewLineAtEndOfFile:ProfileContract.kt$io.taptap.stupidenglish.features.profile.ui.ProfileContract.kt</ID>
+    <ID>NewLineAtEndOfFile:ProfileViewModel.kt$io.taptap.stupidenglish.features.profile.ui.ProfileViewModel.kt</ID>
+    <ID>NewLineAtEndOfFile:SentencesListContract.kt$io.taptap.stupidenglish.features.sentences.ui.SentencesListContract.kt</ID>
+    <ID>NewLineAtEndOfFile:SplashContract.kt$io.taptap.stupidenglish.features.splash.ui.SplashContract.kt</ID>
+    <ID>NewLineAtEndOfFile:SplashRepository.kt$io.taptap.stupidenglish.features.splash.data.SplashRepository.kt</ID>
+    <ID>NewLineAtEndOfFile:StackContract.kt$io.taptap.stupidenglish.features.stack.ui.StackContract.kt</ID>
+    <ID>NewLineAtEndOfFile:StupidApiProvider.kt$io.taptap.stupidenglish.di.StupidApiProvider.kt</ID>
+    <ID>NewLineAtEndOfFile:StupidEnglishBottomBar.kt$io.taptap.stupidenglish.ui.StupidEnglishBottomBar.kt</ID>
+    <ID>NewLineAtEndOfFile:TermsContract.kt$io.taptap.stupidenglish.features.termsandconditions.ui.TermsContract.kt</ID>
+    <ID>NewLineAtEndOfFile:TermsScreen.kt$io.taptap.stupidenglish.features.termsandconditions.ui.TermsScreen.kt</ID>
+    <ID>NewLineAtEndOfFile:WordListUiModels.kt$io.taptap.stupidenglish.features.words.ui.model.WordListUiModels.kt</ID>
+    <ID>NewLineAtEndOfFile:WriteWordsDataSource.kt$io.taptap.stupidenglish.base.logic.sources.words.write.WriteWordsDataSource.kt</ID>
+    <ID>PrintStackTrace:MainActivity.kt$e</ID>
+    <ID>PrintStackTrace:WordListViewModel.kt$WordListViewModel$e</ID>
+    <ID>ReturnCount:AuthViewModel.kt$AuthViewModel$private suspend fun signIn(selectedEmail: String?)</ID>
+    <ID>ReturnCount:ProfileViewModel.kt$ProfileViewModel$private suspend fun signIn(selectedEmail: String?)</ID>
+    <ID>TooGenericExceptionCaught:MainActivity.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:WordListViewModel.kt$WordListViewModel$e: Exception</ID>
+    <ID>TooManyFunctions:AddWordScreen.kt$io.taptap.stupidenglish.features.addword.ui.AddWordScreen.kt</ID>
+    <ID>TooManyFunctions:MainActivity.kt$io.taptap.stupidenglish.MainActivity.kt</ID>
+    <ID>TooManyFunctions:WordDao.kt$WordDao</ID>
+    <ID>TooManyFunctions:WordListViewModel.kt$WordListViewModel : BaseViewModel</ID>
+    <ID>UnusedPrivateMember:AuthScreen.kt$@Preview(showBackground = true) @Composable private fun AuthScreenPreview()</ID>
+    <ID>UnusedPrivateMember:AuthScreen.kt$state: AuthContract.State</ID>
+    <ID>UnusedPrivateMember:ImportWordsTutorialScreen.kt$context: Context</ID>
+    <ID>UnusedPrivateMember:ImportWordsTutorialScreen.kt$scope: CoroutineScope</ID>
+    <ID>UnusedPrivateMember:MainActivity.kt$@Composable private fun StackDestination(navController: NavHostController)</ID>
+    <ID>UnusedPrivateMember:MainViewModel.kt$MainViewModel$private val repository: MainRepository</ID>
+    <ID>UnusedPrivateMember:SplashScreen.kt$context: Context</ID>
+    <ID>UnusedPrivateMember:StackViewModel.kt$StackViewModel$wordId: Long</ID>
+    <ID>UnusedPrivateMember:TermsScreen.kt$context: Context</ID>
+    <ID>UnusedPrivateMember:TermsScreen.kt$onEventSent: (event: TermsContract.Event) -> Unit</ID>
+    <ID>WildcardImport:AlarmReceiver.kt$import kotlinx.coroutines.*</ID>
+    <ID>WildcardImport:SentencesListScreen.kt$import io.taptap.uikit.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

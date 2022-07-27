@@ -14,7 +14,7 @@ class StackRepository @Inject constructor(
     suspend fun getWordsById(wordsIds: List<Long>): Reaction<List<Word>> = Reaction.on {
         wordsIds.map {
             wordDao.getWordDto(it)?.toWord()
-                ?: throw IllegalStateException("There is no word with id = $it")
+                ?: error("There is no word with id = $it")
         }
     }
 
