@@ -1,9 +1,9 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext {
-        compileSdkVersion = 31
+        compileSdkVersion = 32
         minSdkVersion = 24
-        targetSdkVersion = 31
+        targetSdkVersion = 32
         buildToolsVersion = "30.0.3"
 
         reaction_version = "1.0.4"
