@@ -55,11 +55,11 @@ dependencies {
     implementation project(path: ':core:prefs')
 
     api 'com.google.android.material:material:1.6.1'
-    api "androidx.compose.ui:ui:1.1.1"
-    api "androidx.compose.ui:ui-util:1.1.1"
-    api "androidx.compose.material:material:1.1.1"
-    api "androidx.compose.ui:ui-tooling:1.1.1"
-    api "androidx.compose.ui:ui-tooling-preview:1.1.1"
+    api "androidx.compose.ui:ui:1.2.0"
+    api "androidx.compose.ui:ui-util:1.2.0"
+    api "androidx.compose.material:material:1.2.0"
+    api "androidx.compose.ui:ui-tooling:1.2.0"
+    api "androidx.compose.ui:ui-tooling-preview:1.2.0"
     api "androidx.constraintlayout:constraintlayout:2.1.4"
     api "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     api 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
