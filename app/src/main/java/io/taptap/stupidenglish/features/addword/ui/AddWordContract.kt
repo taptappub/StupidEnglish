@@ -3,7 +3,7 @@ package io.taptap.stupidenglish.features.addword.ui
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
+import io.taptap.uikit.group.GroupListModels
 
 class AddWordContract {
     sealed class Event : ViewEvent {

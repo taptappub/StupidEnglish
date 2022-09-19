@@ -88,7 +88,7 @@
     <ID>NewLineAtEndOfFile:CardStackUIUtils.kt$io.taptap.stupidenglish.features.stack.ui.adapter.CardStackUIUtils.kt</ID>
     <ID>NewLineAtEndOfFile:DataSourcesProvider.kt$io.taptap.stupidenglish.di.DataSourcesProvider.kt</ID>
     <ID>NewLineAtEndOfFile:GoogleSheetApiProvider.kt$io.taptap.stupidenglish.di.GoogleSheetApiProvider.kt</ID>
-    <ID>NewLineAtEndOfFile:GroupItemHeader.kt$io.taptap.stupidenglish.ui.GroupItemHeader.kt</ID>
+    <ID>NewLineAtEndOfFile:GroupItemHeader.kt$io.taptap.uikit.group.GroupItemHeader.kt</ID>
     <ID>NewLineAtEndOfFile:IKeysDataSource.kt$io.taptap.stupidenglish.base.logic.sources.keys.IKeysDataSource.kt</ID>
     <ID>NewLineAtEndOfFile:IWriteWordsDataSource.kt$io.taptap.stupidenglish.base.logic.sources.words.write.IWriteWordsDataSource.kt</ID>
     <ID>NewLineAtEndOfFile:ImportWordsContract.kt$io.taptap.stupidenglish.features.importwords.ui.ImportWordsContract.kt</ID>

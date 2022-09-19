@@ -19,10 +19,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.taptap.stupidenglish.R
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
-import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
-import io.taptap.stupidenglish.base.logic.sources.groups.read.getTitle
+import io.taptap.uikit.group.GroupItemUI
+import io.taptap.uikit.group.GroupListModels
+import io.taptap.uikit.group.NoGroup
+import io.taptap.uikit.group.getTitle
 import io.taptap.uikit.AverageText
 import io.taptap.uikit.Divider
 import io.taptap.uikit.LetterRoundView

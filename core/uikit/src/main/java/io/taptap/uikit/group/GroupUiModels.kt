@@ -1,8 +1,8 @@
-package io.taptap.stupidenglish.base.logic.sources.groups.read
+package io.taptap.uikit.group
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import io.taptap.stupidenglish.R
+import io.taptap.uikit.R
 
 sealed class GroupListModels(
     open val id: Long

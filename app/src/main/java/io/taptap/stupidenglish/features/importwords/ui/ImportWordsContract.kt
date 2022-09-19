@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
+import io.taptap.uikit.group.GroupListModels
 
 class ImportWordsContract {
     sealed class Event : ViewEvent {

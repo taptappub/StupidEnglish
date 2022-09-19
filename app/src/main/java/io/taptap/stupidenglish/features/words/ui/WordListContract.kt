@@ -4,8 +4,7 @@ import androidx.annotation.StringRes
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewState
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
-import io.taptap.stupidenglish.features.profile.ui.ProfileContract
+import io.taptap.uikit.group.GroupListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 

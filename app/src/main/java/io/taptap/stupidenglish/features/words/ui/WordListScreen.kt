@@ -8,7 +8,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,11 +21,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -70,14 +67,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
-import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
-import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroupItemUI
+import io.taptap.uikit.group.GroupListModels
+import io.taptap.uikit.group.NoGroupItemUI
 import io.taptap.stupidenglish.base.noRippleClickable
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
@@ -88,12 +82,10 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import io.taptap.stupidenglish.ui.ChooseGroupBottomSheetScreen
-import io.taptap.stupidenglish.ui.GroupItemHeader
 import io.taptap.uikit.AverageTitle
 import io.taptap.uikit.DialogSheetScreen
 import io.taptap.uikit.EmptyListContent
 import io.taptap.uikit.LargeTitle
-import io.taptap.uikit.LetterRoundView
 import io.taptap.uikit.LoadingBar
 import io.taptap.uikit.ModalBottomSheetLayout
 import io.taptap.uikit.StupidEnglishScaffold
@@ -104,6 +96,7 @@ import io.taptap.uikit.fab.FabIcon
 import io.taptap.uikit.fab.FabOption
 import io.taptap.uikit.fab.MultiFabItem
 import io.taptap.uikit.fab.MultiFloatingActionButton
+import io.taptap.uikit.group.GroupItemRow
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
@@ -406,127 +399,6 @@ private fun MainList(
     }
 }
 
-@Composable
-private fun GroupItemRow(
-    title: String,
-    button: String,
-    currentGroup: GroupListModels?,
-    list: List<GroupListModels>,
-    onButtonClicked: () -> Unit,
-    onGroupClicked: (GroupListModels) -> Unit,
-    onGroupLongClicked: (GroupListModels) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 28.dp)
-    ) {
-        GroupItemHeader(
-            title = title,
-            button = button,
-            onButtonClicked = onButtonClicked
-        )
-        GroupItemGroupsRow(
-            list = list,
-            currentGroup = currentGroup,
-            onGroupClicked = onGroupClicked,
-            onGroupLongClicked = onGroupLongClicked
-        )
-    }
-}
-
-@Composable
-private fun GroupItemGroupsRow(
-    list: List<GroupListModels>,
-    currentGroup: GroupListModels?,
-    onGroupClicked: (GroupListModels) -> Unit,
-    onGroupLongClicked: (GroupListModels) -> Unit
-) {
-    val listState = rememberLazyListState()
-
-    LazyRow(
-        state = listState,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
-    ) {
-        items(
-            items = list,
-            key = { it.id }
-        ) { item ->
-            when (item) {
-                is NoGroupItemUI -> GroupItem(
-                    title = stringResource(id = item.titleRes),
-                    group = item,
-                    selected = currentGroup == item,
-                    onGroupClicked = onGroupClicked,
-                    onGroupLongClicked = onGroupLongClicked
-                )
-                is GroupItemUI -> GroupItem(
-                    title = item.name,
-                    group = item,
-                    selected = currentGroup == item,
-                    onGroupClicked = onGroupClicked,
-                    onGroupLongClicked = onGroupLongClicked
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun GroupItem(
-    title: String,
-    group: GroupListModels,
-    selected: Boolean,
-    onGroupClicked: (GroupListModels) -> Unit,
-    onGroupLongClicked: (GroupListModels) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .width(60.dp)
-            .padding(horizontal = 2.dp)
-    ) {
-        LetterRoundView(
-            letter = title[0].uppercaseChar(),
-            selected = selected,
-            fontSize = 28.sp,
-            modifier = Modifier
-                .size(56.dp)
-                .then(
-                    if (group == NoGroup) {
-                        Modifier.clickable { onGroupClicked(group) }
-                    } else {
-                        Modifier.combinedClickable(
-                            onClick = { onGroupClicked(group) },
-                            onLongClick = { onGroupLongClicked(group) },
-                        )
-                    }
-                )
-        )
-        Text(
-            text = title,
-            textAlign = TextAlign.Center,
-            fontSize = 10.sp,
-            color = if (selected) {
-                MaterialTheme.colorScheme.onSurface
-            } else {
-                MaterialTheme.colorScheme.secondary
-            },
-            style = if (selected) {
-                MaterialTheme.typography.bodyMedium
-            } else {
-                MaterialTheme.typography.bodySmall
-            },
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(2.dp)
-        )
-    }
-}
-
 @ExperimentalMaterialApi
 @Composable
 private fun OnboardingItemRow(
@@ -665,39 +537,6 @@ private fun WordItem(
             style = MaterialTheme.typography.bodySmall,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GroupItemRow() {
-    StupidEnglishTheme {
-        GroupItemRow(
-            title = "Groups",
-            button = "Add",
-            currentGroup = null,
-            onButtonClicked = {},
-            list = emptyList(),
-            onGroupClicked = {},
-            onGroupLongClicked = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GroupItem() {
-    StupidEnglishTheme {
-        GroupItem(
-            title = "Title",
-            group = NoGroupItemUI(
-                id = -1,
-                titleRes = R.string.word_group_title
-            ),
-            selected = true,
-            onGroupClicked = {},
-            onGroupLongClicked = {}
         )
     }
 }

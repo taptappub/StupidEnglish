@@ -4,9 +4,9 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
-import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
+import io.taptap.uikit.group.GroupItemUI
+import io.taptap.uikit.group.GroupListModels
+import io.taptap.uikit.group.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.words.data.WordListRepository
@@ -17,6 +17,7 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import io.taptap.stupidenglish.base.isNotEmpty
+import io.taptap.uikit.group.NoGroupItemUI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -345,7 +346,9 @@ class WordListViewModel @Inject constructor(
         if (filteredList.isEmpty()) {
             mainList.add(WordListEmptyUI(descriptionRes = R.string.word_empty_list_description))
         } else {
-            mainList.addAll(filteredList)
+            val newGroupList = groupsList.toWordListListModels()
+//            mainList.addAll(filteredList)
+            mainList.addAll(newGroupList)
         }
 
         val dialogGroups = groupsList.toMutableList().apply {
@@ -437,5 +440,22 @@ class WordListViewModel @Inject constructor(
                     setEffect { WordListContract.Effect.GetUserError(R.string.word_get_user_error) }
                 }
             )
+    }
+}
+
+private fun List<GroupListModels>.toWordListListModels(): List<WordListListModels> {
+    return this.map {
+
+        val word = when (it) {
+            is GroupItemUI -> it.name
+            is NoGroupItemUI -> "ass"
+        }
+
+        WordListItemUI(
+            id = it.id + 10000,
+            word = word,
+            description = word,
+            groupsIds = emptyList()
+        )
     }
 }

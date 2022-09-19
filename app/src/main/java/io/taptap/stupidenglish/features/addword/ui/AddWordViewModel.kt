@@ -5,9 +5,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.isNotEmpty
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
-import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
+import io.taptap.uikit.group.GroupItemUI
+import io.taptap.uikit.group.GroupListModels
+import io.taptap.uikit.group.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.features.addword.data.AddWordRepository
 import kotlinx.coroutines.Dispatchers

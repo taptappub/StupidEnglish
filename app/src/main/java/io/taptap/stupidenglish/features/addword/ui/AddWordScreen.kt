@@ -56,10 +56,10 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupItemUI
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
-import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
-import io.taptap.stupidenglish.base.logic.sources.groups.read.getTitle
+import io.taptap.uikit.group.GroupItemUI
+import io.taptap.uikit.group.GroupListModels
+import io.taptap.uikit.group.NoGroup
+import io.taptap.uikit.group.getTitle
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.ui.ChooseGroupBottomSheetScreen

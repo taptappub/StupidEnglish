@@ -3,7 +3,6 @@ package io.taptap.stupidenglish.features.splash.ui
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
-import io.taptap.stupidenglish.base.logic.sources.groups.read.GroupListModels
 
 class SplashContract {
 
