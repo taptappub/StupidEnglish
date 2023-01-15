@@ -38,9 +38,9 @@ dependencies {
     implementation "io.github.taptappub:reaction:$reaction_version"
 
     // GSON
-    api "com.google.code.gson:gson:2.8.9"
+    api "com.google.code.gson:gson:2.9.0"
 
     // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 }
