@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.addsentence.ui
 
+import androidx.compose.runtime.MutableState
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewState
@@ -8,14 +9,12 @@ import io.taptap.stupidenglish.base.model.Word
 class AddSentenceContract {
     sealed class Event : ViewEvent {
         object OnWaitingSentenceError : Event()
-        data class OnSentenceChanging(val value: String) : AddSentenceContract.Event()
         object OnSaveSentence : Event()
         data class OnChipClick(val word: Word) : Event()
         object OnBackClick : Event()
     }
 
     data class State(
-        val sentence: String,
         val words: List<Word>
     ) : ViewState
 

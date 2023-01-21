@@ -84,6 +84,10 @@ import kotlinx.coroutines.flow.onEach
 fun AddWordScreen(
     context: Context,
     state: AddWordContract.State,
+    word: String,
+    onWordChanged: (word: String) -> Unit,
+    description: String,
+    onDescriptionChanged: (description: String) -> Unit,
     effectFlow: Flow<AddWordContract.Effect>?,
     onEventSent: (event: AddWordContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: AddWordContract.Effect.Navigation) -> Unit
@@ -163,6 +167,10 @@ fun AddWordScreen(
             scaffoldState = scaffoldState
         ) {
             ContentScreen(
+                word,
+                onWordChanged,
+                description,
+                onDescriptionChanged,
                 state,
                 onEventSent
             )
@@ -172,6 +180,10 @@ fun AddWordScreen(
 
 @Composable
 private fun ContentScreen(
+    word: String,
+    onWordChanged: (word: String) -> Unit,
+    description: String,
+    onDescriptionChanged: (description: String) -> Unit,
     state: AddWordContract.State,
     onEventSent: (event: AddWordContract.Event) -> Unit
 ) {
@@ -192,6 +204,10 @@ private fun ContentScreen(
             val (content, button, groups) = createRefs()
 
             AddWordContextBox(
+                word = word,
+                onWordChanged = onWordChanged,
+                description = description,
+                onDescriptionChanged = onDescriptionChanged,
                 state = state,
                 onEventSent = onEventSent,
                 modifier = Modifier
@@ -224,15 +240,15 @@ private fun ContentScreen(
             val focusManager = LocalFocusManager.current
 
             NextButton(
-                visibility = state.word.isNotEmpty(),
+                visibility = word.isNotEmpty(),
                 onClick = {
                     when {
                         state.addWordState == AddWordContract.AddWordState.None -> {
                             onEventSent(AddWordContract.Event.OnWord)
                         }
                         state.addWordState == AddWordContract.AddWordState.HasWord
-                                && state.description.isNotEmpty()
-                                && state.word.isNotEmpty() -> {
+                                && description.isNotEmpty()
+                                && word.isNotEmpty() -> {
                             focusManager.clearFocus()
                             onEventSent(AddWordContract.Event.OnSaveWord)
                         }
@@ -358,6 +374,10 @@ private fun OneGroup(first: GroupListModels) {
 
 @Composable
 private fun AddWordContextBox(
+    word: String,
+    onWordChanged: (word: String) -> Unit,
+    description: String,
+    onDescriptionChanged: (description: String) -> Unit,
     state: AddWordContract.State,
     onEventSent: (event: AddWordContract.Event) -> Unit,
     modifier: Modifier
@@ -367,15 +387,27 @@ private fun AddWordContextBox(
         animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing)
     ) { screen ->
         when (screen) {
-            AddWordContract.AddWordState.None -> NoneScreen(state, onEventSent, modifier)
-            AddWordContract.AddWordState.HasWord -> HasWordScreen(state, onEventSent, modifier)
+            AddWordContract.AddWordState.None -> NoneScreen(
+                word,
+                onWordChanged,
+                onEventSent,
+                modifier
+            )
+            AddWordContract.AddWordState.HasWord -> HasWordScreen(
+                word,
+                description,
+                onDescriptionChanged,
+                onEventSent,
+                modifier
+            )
         }
     }
 }
 
 @Composable
 private fun NoneScreen(
-    state: AddWordContract.State,
+    word: String,
+    onWordChanged: (word: String) -> Unit,
     onEventSent: (event: AddWordContract.Event) -> Unit,
     modifier: Modifier
 ) {
@@ -386,8 +418,8 @@ private fun NoneScreen(
 //        val focusRequester = FocusRequester()
 
         AddTextField(
-            value = state.word,
-            onValueChange = { onEventSent(AddWordContract.Event.OnWordChanging(it)) },
+            value = word,
+            onValueChange = onWordChanged,
             placeholder = stringResource(id = R.string.addw_word_placeholder),
             keyboardOptions = KeyboardOptions.Default.copy(
                 capitalization = KeyboardCapitalization.Sentences,
@@ -397,7 +429,7 @@ private fun NoneScreen(
             ),
             keyboardActions = KeyboardActions(
                 onNext = {
-                    if (state.word.isNotEmpty()) {
+                    if (word.isNotEmpty()) {
                         onEventSent(AddWordContract.Event.OnWord)
                     }
                 }
@@ -415,14 +447,16 @@ private fun NoneScreen(
 
 @Composable
 private fun HasWordScreen(
-    state: AddWordContract.State,
+    word: String,
+    description: String,
+    onDescriptionChanged: (description: String) -> Unit,
     onEventSent: (event: AddWordContract.Event) -> Unit,
     modifier: Modifier
 ) {
     ConstraintLayout(modifier = modifier) {
-        val (word, description) = createRefs()
+        val (wordRef, descriptionRef) = createRefs()
         AddTextField(
-            value = state.word,
+            value = word,
             onValueChange = {},
             enabled = false,
             placeholder = stringResource(id = R.string.addw_word_placeholder),
@@ -437,9 +471,9 @@ private fun HasWordScreen(
                 .clickable {
                     onEventSent(AddWordContract.Event.BackToNoneState)
                 }
-                .constrainAs(word) {
+                .constrainAs(wordRef) {
                     top.linkTo(parent.top)
-                    bottom.linkTo(description.top)
+                    bottom.linkTo(descriptionRef.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
@@ -451,8 +485,8 @@ private fun HasWordScreen(
         }
         val focusManager = LocalFocusManager.current
         AddTextField(
-            value = state.description,
-            onValueChange = { onEventSent(AddWordContract.Event.OnDescriptionChanging(it)) },
+            value = description,
+            onValueChange = onDescriptionChanged,
             placeholder = stringResource(id = R.string.addw_description_placeholder),
             keyboardOptions = KeyboardOptions.Default.copy(
                 capitalization = KeyboardCapitalization.Sentences,
@@ -462,7 +496,7 @@ private fun HasWordScreen(
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    if (state.word.isNotEmpty() && state.description.isNotEmpty()) {
+                    if (word.isNotEmpty() && description.isNotEmpty()) {
                         focusManager.clearFocus()
                         onEventSent(AddWordContract.Event.OnSaveWord)
                     } else {
@@ -472,7 +506,7 @@ private fun HasWordScreen(
             ),
             modifier = Modifier
                 .focusRequester(focusRequester)
-                .constrainAs(description) {
+                .constrainAs(descriptionRef) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
@@ -587,9 +621,11 @@ fun OneGroupPreview() {
 fun ContentScreenPreview() {
     StupidEnglishTheme {
         ContentScreen(
+            word = "word",
+            description = "",
+            onWordChanged = {},
+            onDescriptionChanged = {},
             state = AddWordContract.State(
-                word = "word",
-                description = "",
                 groups = listOf(
                     GroupItemUI(
                         id = 1,

@@ -1,12 +1,14 @@
 package io.taptap.stupidenglish.features.addsentence.ui
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
-import io.taptap.stupidenglish.base.isNotEmpty
 import io.taptap.stupidenglish.features.addsentence.data.AddSentenceRepository
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +27,14 @@ class AddSentenceViewModel @Inject constructor(
 
     private var wordsIdsString: String? = null
 
+    var sentence by mutableStateOf("")
+        private set
+
+    @JvmName("setSentence1")
+    fun setSentence(newSentence: String) {
+        sentence = newSentence
+    }
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.SENTENCE_WORDS_ID)
@@ -42,16 +52,11 @@ class AddSentenceViewModel @Inject constructor(
     }
 
     override fun setInitialState() = AddSentenceContract.State(
-        sentence = "",
         words = emptyList()
     )
 
     override suspend fun handleEvents(event: AddSentenceContract.Event) {
         when (event) {
-            is AddSentenceContract.Event.OnSentenceChanging ->
-                event.value.isNotEmpty {
-                    setState { copy(sentence = it) }
-                }
             is AddSentenceContract.Event.OnWaitingSentenceError -> setEffect {
                 AddSentenceContract.Effect.WaitingForSentenceError(
                     R.string.adds_sentence_not_found_error
@@ -59,7 +64,6 @@ class AddSentenceViewModel @Inject constructor(
             }
             is AddSentenceContract.Event.OnSaveSentence -> {
                 setInitialState()
-                val sentence = viewState.value.sentence
                 saveSentence(sentence)
             }
             is AddSentenceContract.Event.OnChipClick ->
@@ -77,7 +81,11 @@ class AddSentenceViewModel @Inject constructor(
                 .handle(
                     success = {
                         withContext(Dispatchers.Main) {
-                            setEffect { AddSentenceContract.Effect.Navigation.BackToSentenceList(wordsIdsString) }
+                            setEffect {
+                                AddSentenceContract.Effect.Navigation.BackToSentenceList(
+                                    wordsIdsString
+                                )
+                            }
                         }
                     },
                     error = {

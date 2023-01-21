@@ -319,6 +319,10 @@ private fun AddWordDestination(
     AddWordScreen(
         context = LocalContext.current,
         state = addWordState,
+        word = addWordViewModel.word,
+        onWordChanged = addWordViewModel::setWord,
+        description = addWordViewModel.description,
+        onDescriptionChanged = addWordViewModel::setDescription,
         effectFlow = addWordViewModel.effect,
         onEventSent = { event -> addWordViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
@@ -474,10 +478,13 @@ private fun StackDestination(navController: NavHostController) {
 private fun AddSentenceDestination(navController: NavHostController) {
     val addSentenceViewModel: AddSentenceViewModel = hiltViewModel()
     val addSentenceState = addSentenceViewModel.viewState.value
+    val sentence = addSentenceViewModel.sentence
 
     AddSentenceScreen(
         context = LocalContext.current,
         state = addSentenceState,
+        sentence = sentence,
+        onSentenceChanged = addSentenceViewModel::setSentence,
         effectFlow = addSentenceViewModel.effect,
         onEventSent = { event -> addSentenceViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
@@ -642,7 +649,6 @@ private fun NavController.navigateToTab(
 //2) https://stackoverflow.com/questions/64362801/how-to-handle-visibility-of-a-text-in-jetpack-compose ДЛЯ экрана импорта
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
 //2) Авторизация и сохранение слов в firebase storage
-//4) “Новое слово” - подсказка, буквы не регистрируются при вводе
 //5) Диалог подтверждения удаления группы
 //6) Статистика по изучению
 //11) При удалении слова есть возможность его восстановить какое-то время, а при удалении группы такой возможности нет. Может тоже стоит поповер выводить, а то если нечаянно удалишь всю группу с кучей слов, будет очень обидно

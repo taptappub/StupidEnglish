@@ -346,9 +346,7 @@ class WordListViewModel @Inject constructor(
         if (filteredList.isEmpty()) {
             mainList.add(WordListEmptyUI(descriptionRes = R.string.word_empty_list_description))
         } else {
-            val newGroupList = groupsList.toWordListListModels()
-//            mainList.addAll(filteredList)
-            mainList.addAll(newGroupList)
+            mainList.addAll(filteredList)
         }
 
         val dialogGroups = groupsList.toMutableList().apply {

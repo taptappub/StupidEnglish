@@ -10,8 +10,6 @@ class AddWordContract {
         object OnWord : Event()
         object OnBackClick: Event()
 
-        data class OnWordChanging(val value: String) : Event()
-        data class OnDescriptionChanging(val value: String) : Event()
         data class OnGroupSelect(val item: GroupListModels) : Event()
 
         object BackToNoneState : AddWordContract.Event()
@@ -26,8 +24,6 @@ class AddWordContract {
     }
 
     data class State(
-        val word: String,
-        val description: String,
         val groups: List<GroupListModels>,
         val addWordState: AddWordState,
         val selectedGroups: List<GroupListModels>,

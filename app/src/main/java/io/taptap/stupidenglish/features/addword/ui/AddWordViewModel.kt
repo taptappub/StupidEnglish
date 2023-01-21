@@ -1,5 +1,8 @@
 package io.taptap.stupidenglish.features.addword.ui
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
@@ -26,9 +29,23 @@ class AddWordViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) { getGroupsList() }
     }
 
+    var word by mutableStateOf("")
+        private set
+
+    @JvmName("setWord1")
+    fun setWord(newWord: String) {
+        word = newWord
+    }
+
+    var description by mutableStateOf("")
+        private set
+
+    @JvmName("setSentence1")
+    fun setDescription(newDescription: String) {
+        description = newDescription
+    }
+
     override fun setInitialState() = AddWordContract.State(
-        word = "",
-        description = "",
         selectedGroups = listOf(NoGroup),
         dialogSelectedGroups = listOf(NoGroup),
         groups = emptyList(),
@@ -41,27 +58,16 @@ class AddWordViewModel @Inject constructor(
                 setEffect { AddWordContract.Effect.Navigation.BackToWordList }
             is AddWordContract.Event.OnWord ->
                 setState { copy(addWordState = AddWordContract.AddWordState.HasWord) }
-
-            is AddWordContract.Event.OnDescriptionChanging ->
-                event.value.isNotEmpty {
-                    setState { copy(description = it) }
-                }
-            is AddWordContract.Event.OnWordChanging ->
-                event.value.isNotEmpty {
-                    setState { copy(word = it) }
-                }
-            is AddWordContract.Event.BackToNoneState ->
+            is AddWordContract.Event.BackToNoneState -> {
                 setState {
                     copy(
                         addWordState = AddWordContract.AddWordState.None,
-                        description = ""
                     )
                 }
-
+                setDescription("")
+            }
             is AddWordContract.Event.OnSaveWord -> {
                 setInitialState()
-                val word = viewState.value.word
-                val description = viewState.value.description
                 val selectedGroups = viewState.value.selectedGroups
                 saveWord(word, description, selectedGroups)
             }
