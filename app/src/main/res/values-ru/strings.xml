@@ -35,6 +35,7 @@
     <string name="adds_motivation_confirm">Поделиться</string>
     <string name="adds_motivation_decline">Позже</string>
     <string name="main_bottom_bar_words_title">Слова</string>
+    <string name="main_bottom_bar_sets_title">Сеты</string>
     <string name="main_bottom_bar_sentences_title">Предложения</string>
     <string name="stck_hint_button_text">Я не помню!</string>
     <string name="word_fab_text">Добавить слово</string>

@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.features.sentences.ui
+package io.taptap.stupidenglish.archive.features.sentences.ui
 
 import android.content.Context
 import androidx.compose.animation.core.animateDpAsState

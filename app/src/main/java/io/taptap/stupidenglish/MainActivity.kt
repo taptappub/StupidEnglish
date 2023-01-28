@@ -23,7 +23,6 @@ import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -31,7 +30,6 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import dagger.hilt.android.AndroidEntryPoint
-import io.taptap.stupidenglish.NavigationKeys.Route.SENTENCES
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceScreen
@@ -54,9 +52,6 @@ import io.taptap.stupidenglish.features.main.ui.MainViewModel
 import io.taptap.stupidenglish.features.profile.ui.ProfileContract
 import io.taptap.stupidenglish.features.profile.ui.ProfileScreen
 import io.taptap.stupidenglish.features.profile.ui.ProfileViewModel
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListScreen
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
 import io.taptap.stupidenglish.features.splash.ui.SplashContract
 import io.taptap.stupidenglish.features.splash.ui.SplashScreen
 import io.taptap.stupidenglish.features.splash.ui.SplashViewModel
@@ -73,6 +68,8 @@ import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
 import javax.inject.Inject
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 const val URI = "https://stupidenglish.app"
 
@@ -113,7 +110,7 @@ class MainActivity : ComponentActivity() {
         val scaffoldState = rememberScaffoldState()
 
         val mainViewModel: MainViewModel = hiltViewModel()
-        val mainState = mainViewModel.viewState.value
+        val mainState by mainViewModel.viewState.collectAsState()
 
         StupidEnglishScaffold(
             scaffoldState = scaffoldState,
@@ -159,14 +156,10 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(
-                        route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route,
-                        arguments = listOf(navArgument(NavigationKeys.Arg.WORDS_ID) {
-                            nullable = true
-                            defaultValue = null
-                        }),
+                        route = NavigationKeys.BottomNavigationScreen.SE_SETS.route,
                         enterTransition = null
                     ) {
-                        SentenceListDestination(
+                        SetsListDestination(
                             navController = navController,
                             onEventSent = { event -> mainViewModel.setEvent(event) }
                         )
@@ -225,23 +218,6 @@ class MainActivity : ComponentActivity() {
                 ) {
                     StackDestination(navController)
                 }*/
-                composable(
-                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
-                    deepLinks = listOf(navDeepLink {
-                        uriPattern =
-                            "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}={${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
-                    }),
-                    enterTransition = {
-                        fadeIn()
-//                        slideInVertically(initialOffsetY = { 1000 })
-                    },
-                    exitTransition = {
-                        fadeOut()
-//                        slideOutVertically(targetOffsetY = { 1000 })
-                    }
-                ) {
-                    AddSentenceDestination(navController)
-                }
             }
 
             if (mainState.shouldShowBottomBar(navController)) {
@@ -281,7 +257,7 @@ private fun SplashDestination(
     navController: NavHostController
 ) {
     val splashViewModel: SplashViewModel = hiltViewModel()
-    val splashState = splashViewModel.viewState.value
+    val splashState by splashViewModel.viewState.collectAsState()
 
     SplashScreen(
         context = LocalContext.current,
@@ -314,7 +290,7 @@ private fun AddWordDestination(
     navController: NavHostController
 ) {
     val addWordViewModel: AddWordViewModel = hiltViewModel()
-    val addWordState = addWordViewModel.viewState.value
+    val addWordState by addWordViewModel.viewState.collectAsState()
 
     AddWordScreen(
         context = LocalContext.current,
@@ -338,7 +314,7 @@ private fun ImportWordsDestination(
     navController: NavHostController
 ) {
     val importWordsViewModel: ImportWordsViewModel = hiltViewModel()
-    val importWordsState = importWordsViewModel.viewState.value
+    val importWordsState by importWordsViewModel.viewState.collectAsState()
 
     ImportWordsScreen(
         context = LocalContext.current,
@@ -363,7 +339,7 @@ private fun TermsDestination(
     navController: NavHostController
 ) {
     val termsViewModel: TermsViewModel = hiltViewModel()
-    val termsState = termsViewModel.viewState.value
+    val termsState by termsViewModel.viewState.collectAsState()
 
     TermsScreen(
         context = LocalContext.current,
@@ -386,7 +362,7 @@ private fun ImportWordsTutorialDestination(
     navController: NavHostController
 ) {
     val importWordsTutorialViewModel: ImportWordsTutorialViewModel = hiltViewModel()
-    val importWordsTutorialState = importWordsTutorialViewModel.viewState.value
+    val importWordsTutorialState by importWordsTutorialViewModel.viewState.collectAsState()
 
     ImportWordsTutorialScreen(
         context = LocalContext.current,
@@ -406,7 +382,7 @@ private fun ProfileDestination(
     navController: NavHostController
 ) {
     val profileViewModel: ProfileViewModel = hiltViewModel()
-    val profileState = profileViewModel.viewState.value
+    val profileState by profileViewModel.viewState.collectAsState()
 
     ProfileScreen(
         context = LocalContext.current,
@@ -432,7 +408,7 @@ private fun AuthDestination(
     navController: NavHostController
 ) {
     val authViewModel: AuthViewModel = hiltViewModel()
-    val authState = authViewModel.viewState.value
+    val authState by authViewModel.viewState.collectAsState()
 
     AuthScreen(
         context = LocalContext.current,
@@ -452,7 +428,7 @@ private fun AuthDestination(
 @Composable
 private fun StackDestination(navController: NavHostController) {
     val stackViewModel: StackViewModel = hiltViewModel()
-    val stackState = stackViewModel.viewState.value
+    val stackState by stackViewModel.viewState.collectAsState()
 
     StackScreen(
         context = LocalContext.current,
@@ -465,41 +441,20 @@ private fun StackDestination(navController: NavHostController) {
                     navController.popBackStack()
                 }
                 is StackContract.Effect.Navigation.ToAddSentence -> {
-                    val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                    navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${ids}") {
-                        popUpTo(route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route)
-                    }
+                    throw IllegalStateException("Ты не доделал...")
                 }
             }
         })
 }
 
+@ExperimentalFoundationApi
+@ExperimentalMaterialApi
 @Composable
-private fun AddSentenceDestination(navController: NavHostController) {
-    val addSentenceViewModel: AddSentenceViewModel = hiltViewModel()
-    val addSentenceState = addSentenceViewModel.viewState.value
-    val sentence = addSentenceViewModel.sentence
+private fun SetsListDestination(
+    navController: NavHostController,
+    onEventSent: (event: MainContract.Event) -> Unit
+) {
 
-    AddSentenceScreen(
-        context = LocalContext.current,
-        state = addSentenceState,
-        sentence = sentence,
-        onSentenceChanged = addSentenceViewModel::setSentence,
-        effectFlow = addSentenceViewModel.effect,
-        onEventSent = { event -> addSentenceViewModel.setEvent(event) },
-        onNavigationRequested = { navigationEffect ->
-            if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
-                navController.backQueue.removeIf {
-                    it.destination.route == NavigationKeys.Route.SE_ADD_SENTENCE
-                            //|| it.destination.route == NavigationKeys.Route.SE_REMEMBER
-                }
-                navController.navigateToTab(route = SENTENCES) {
-                    popUpTo(route = NavigationKeys.Route.SE_ADD_SENTENCE) {
-                        inclusive = true
-                    }
-                }
-            }
-        })
 }
 
 @ExperimentalFoundationApi
@@ -510,7 +465,7 @@ private fun WordListDestination(
     onEventSent: (event: MainContract.Event) -> Unit
 ) {
     val wordViewModel: WordListViewModel = hiltViewModel()
-    val wordState = wordViewModel.viewState.value
+    val wordState by wordViewModel.viewState.collectAsState()
 
     WordListScreen(
         context = LocalContext.current,
@@ -525,12 +480,12 @@ private fun WordListDestination(
                 is WordListContract.Effect.Navigation.ToAddWord -> {
                     navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
                 }
-                is WordListContract.Effect.Navigation.ToAddSentence -> {
-                    val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                    navController.navigateToTab(
-                        route = "$SENTENCES?${NavigationKeys.Arg.WORDS_ID}=$ids"
-                    )
-                }
+//                is WordListContract.Effect.Navigation.ToAddSentence -> {
+//                    val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
+//                    navController.navigateToTab(
+//                        route = "$SENTENCES?${NavigationKeys.Arg.WORDS_IDS}=$ids"
+//                    )
+//                }
                 is WordListContract.Effect.Navigation.ToImportWords -> {
                     navController.navigate(NavigationKeys.Route.SE_IMPORT_WORDS)
                 }
@@ -539,34 +494,6 @@ private fun WordListDestination(
                 }
             }
         })
-}
-
-@ExperimentalFoundationApi
-@ExperimentalMaterialApi
-@Composable
-private fun SentenceListDestination(
-    navController: NavHostController,
-    onEventSent: (event: MainContract.Event) -> Unit
-) {
-    val sentenceViewModel: SentencesListViewModel = hiltViewModel()
-    val sentenceState = sentenceViewModel.viewState.value
-
-    SentencesListScreen(
-        context = LocalContext.current,
-        state = sentenceState,
-        effectFlow = sentenceViewModel.effect,
-        onEventSent = { event -> sentenceViewModel.setEvent(event) },
-        onChangeBottomSheetVisibility = { visibility ->
-            onEventSent(MainContract.Event.ChangeBottomSheetVisibility(visibility))
-        },
-        onNavigationRequested = { navigationEffect ->
-            if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
-                val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${ids}")
-//                navController.navigate("${NavigationKeys.Route.REMEMBER}/${ids}")
-            }
-        }
-    )
 }
 
 private val NavGraph.startDestination: NavDestination?
@@ -602,7 +529,7 @@ private fun List<String>.containsRoute(curRoute: String?): Boolean {
     return false
 }
 
-private fun NavController.navigateToTab(
+fun NavController.navigateToTab(
     route: String,
     builder: (NavOptionsBuilder.() -> Unit)? = null
 ) {
@@ -648,9 +575,14 @@ private fun NavController.navigateToTab(
 
 
 //Следующий билд
+//1) Переименуй Group в Set
 //2) https://stackoverflow.com/questions/64362801/how-to-handle-visibility-of-a-text-in-jetpack-compose ДЛЯ экрана импорта
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
 //2) Авторизация и сохранение слов в firebase storage
 //5) Диалог подтверждения удаления группы
 //6) Статистика по изучению
 //11) При удалении слова есть возможность его восстановить какое-то время, а при удалении группы такой возможности нет. Может тоже стоит поповер выводить, а то если нечаянно удалишь всю группу с кучей слов, будет очень обидно
+
+Переименуй Group в Set
+вынести в bottombar добавление: сетов, слов
+Изменить экран слова, как в фигме

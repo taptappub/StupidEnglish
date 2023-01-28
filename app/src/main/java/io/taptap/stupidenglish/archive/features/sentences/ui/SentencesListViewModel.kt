@@ -1,6 +1,5 @@
-package io.taptap.stupidenglish.features.sentences.ui
+package io.taptap.stupidenglish.archive.features.sentences.ui
 
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,7 +9,7 @@ import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.logic.share.ShareUtil
 import io.taptap.stupidenglish.base.model.Sentence
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
-import io.taptap.stupidenglish.features.sentences.data.SentencesListRepository
+import io.taptap.stupidenglish.archive.features.sentences.data.SentencesListRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,7 +30,7 @@ class SentencesListViewModel @Inject constructor(
 ) : BaseViewModel<SentencesListContract.Event, SentencesListContract.State, SentencesListContract.Effect>() {
 
     init {
-        val wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.WORDS_ID)
+        val wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.WORDS_IDS)
         val wordsIds = addSentenceArgumentsMapper.mapFrom(wordsIdsString)
 
         if (wordsIds != null) {

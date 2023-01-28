@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes
 object NavigationKeys {
 
     object Arg {
-        const val WORDS_ID = "words_id"
+        const val WORDS_IDS = "words_ids"
         const val SENTENCE_WORDS_ID = "sentence_words_id"
     }
 
@@ -13,12 +13,8 @@ object NavigationKeys {
         const val SE_MAIN = "stupid_english_main"
 
         const val SE_WORDS = "stupid_english_words"
-        const val SENTENCES = "stupid_english_sentences"
-        const val SE_SENTENCES = "$SENTENCES?${Arg.WORDS_ID}={${Arg.WORDS_ID}}"
-
         const val SE_ADD_WORD = "stupid_english_add_word"
-        const val ADD_SENTENCE = "stupid_english_add_sentences"
-        const val SE_ADD_SENTENCE = "$ADD_SENTENCE/{${Arg.SENTENCE_WORDS_ID}}"
+        const val SE_SETS = "stupid_english_sets"
 //        const val REMEMBER = "stupid_english_remember"
 //        const val SE_REMEMBER = "$REMEMBER/{${Arg.WORDS_ID}}"
 
@@ -30,6 +26,14 @@ object NavigationKeys {
         const val SE_SPLASH = "stupid_english_splash"
     }
 
+    /**
+     * Archive
+     */
+//    const val SENTENCES = "stupid_english_sentences"
+//    const val SE_SENTENCES = "$SENTENCES?${Arg.WORDS_ID}={${Arg.WORDS_ID}}"
+//    const val ADD_SENTENCE = "stupid_english_add_sentences"
+//    const val SE_ADD_SENTENCE = "$ADD_SENTENCE/{${Arg.SENTENCE_WORDS_ID}}"
+
     enum class BottomNavigationScreen(
         val route: String,
         val title: Int,
@@ -40,10 +44,15 @@ object NavigationKeys {
             title = R.string.main_bottom_bar_words_title,
             icon = R.drawable.ic_head_icon
         ),
-        SE_SENTENCES(
-            route = Route.SE_SENTENCES,
-            title = R.string.main_bottom_bar_sentences_title,
+        SE_SETS(
+            route = Route.SE_SETS,
+            title = R.string.main_bottom_bar_sets_title,
             icon = R.drawable.ic_cloud_icon
         )
+//        SE_SENTENCES(
+//            route = Route.SE_SENTENCES,
+//            title = R.string.main_bottom_bar_sentences_title,
+//            icon = R.drawable.ic_cloud_icon
+//        )
     }
 }

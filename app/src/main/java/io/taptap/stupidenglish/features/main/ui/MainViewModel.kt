@@ -15,7 +15,7 @@ class MainViewModel @Inject constructor(
         isBottomBarShown = true,
         bottomBarTabs = listOf(
             NavigationKeys.BottomNavigationScreen.SE_WORDS,
-            NavigationKeys.BottomNavigationScreen.SE_SENTENCES
+            NavigationKeys.BottomNavigationScreen.SE_SETS
         )
     )
 

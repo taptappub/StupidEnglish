@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.features.sentences.data
+package io.taptap.stupidenglish.archive.features.sentences.data
 
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
 import io.taptap.stupidenglish.base.logic.mapper.toSentence

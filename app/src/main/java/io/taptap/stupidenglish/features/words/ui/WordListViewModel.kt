@@ -77,9 +77,9 @@ class WordListViewModel @Inject constructor(
                                 )
                             }
                         } else {
-                            setEffect {
-                                WordListContract.Effect.Navigation.ToAddSentence(randomWords)
-                            }
+//                            setEffect {
+//                                WordListContract.Effect.Navigation.ToAddSentence(randomWords)
+//                            }
                         }
                     }
                 }
@@ -93,9 +93,9 @@ class WordListViewModel @Inject constructor(
                     val randomWords = getRandomWords()
                     withContext(Dispatchers.Main) {
                         if (randomWords != null) {
-                            setEffect {
-                                WordListContract.Effect.Navigation.ToAddSentence(randomWords)
-                            }
+//                            setEffect {
+//                                WordListContract.Effect.Navigation.ToAddSentence(randomWords)
+//                            }
                         }
                     }
                 }
@@ -270,7 +270,7 @@ class WordListViewModel @Inject constructor(
             val size = words.size
 
             if (size == WORDS_FOR_MOTIVATION && !repository.isSentenceMotivationShown) { //todo придумать время мотивации
-                delay(2000)
+                delay(3000)
                 if (size % WORDS_FOR_MOTIVATION == 0) {
                     setState { copy(sheetContentType = WordListContract.SheetContentType.Motivation) }
                     setEffect { WordListContract.Effect.ShowBottomSheet }
@@ -438,22 +438,5 @@ class WordListViewModel @Inject constructor(
                     setEffect { WordListContract.Effect.GetUserError(R.string.word_get_user_error) }
                 }
             )
-    }
-}
-
-private fun List<GroupListModels>.toWordListListModels(): List<WordListListModels> {
-    return this.map {
-
-        val word = when (it) {
-            is GroupItemUI -> it.name
-            is NoGroupItemUI -> "ass"
-        }
-
-        WordListItemUI(
-            id = it.id + 10000,
-            word = word,
-            description = word,
-            groupsIds = emptyList()
-        )
     }
 }

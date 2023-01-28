@@ -1,4 +1,4 @@
-package io.taptap.stupidenglish.features.sentences.ui
+package io.taptap.stupidenglish.archive.features.sentences.ui
 
 import androidx.compose.material.ExperimentalMaterialApi
 import io.taptap.stupidenglish.base.ViewEvent

@@ -71,7 +71,7 @@ class WordListContract {
             object ToAddWord : Navigation()
             object ToImportWords : Navigation()
             object ToProfile : Navigation()
-            data class ToAddSentence(val wordIds: List<Long>) : Navigation()
+//            data class ToAddSentence(val wordIds: List<Long>) : Navigation()
         }
     }
 }

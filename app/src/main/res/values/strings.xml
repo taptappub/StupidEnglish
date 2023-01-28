@@ -17,6 +17,7 @@
 
     <!-- Main -->
     <string name="main_bottom_bar_words_title">Words</string>
+    <string name="main_bottom_bar_sets_title">Sets</string>
     <string name="main_bottom_bar_sentences_title">Sentences</string>
 
     <!-- Word List -->

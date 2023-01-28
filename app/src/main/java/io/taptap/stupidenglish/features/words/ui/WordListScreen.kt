@@ -211,8 +211,8 @@ fun WordListScreen(
                             message = context.getString(effect.errorRes),
                             duration = SnackbarDuration.Short
                         )
-                    is WordListContract.Effect.Navigation.ToAddSentence ->
-                        onNavigationRequested(effect)
+//                    is WordListContract.Effect.Navigation.ToAddSentence ->
+//                        onNavigationRequested(effect)
                     is WordListContract.Effect.Navigation.ToProfile ->
                         onNavigationRequested(effect)
                     is WordListContract.Effect.ShowUnderConstruction ->
