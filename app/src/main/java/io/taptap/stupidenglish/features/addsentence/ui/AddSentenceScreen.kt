@@ -256,20 +256,3 @@ private fun CustomChip(
         )
     }
 }
-
-/*
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    StupidEnglishTheme {
-        AddSentenceScreen(
-            LocalContext.current,
-            AddSentenceContract.State(
-                sentence = "",
-                words = emptyList()
-            ),
-            null,
-            { },
-            { })
-    }
-}*/
