@@ -7,35 +7,27 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
-import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.base.ui.helpers.GroupViewModelHelper
+import io.taptap.stupidenglish.base.ui.helpers.IGroupViewModelHelper
 import io.taptap.stupidenglish.features.importwords.domain.ImportWordsInteractor
-import io.taptap.uikit.group.GroupItemUI
-import io.taptap.uikit.group.GroupListItemsModels
-import io.taptap.uikit.group.GroupListModels
 import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import taptap.pub.doOnComplete
 import taptap.pub.doOnError
 import taptap.pub.doOnSuccess
 import taptap.pub.fold
-import taptap.pub.takeOrReturn
 import javax.inject.Inject
 
 @HiltViewModel
 class ImportWordsViewModel @Inject constructor(
     private val interactor: ImportWordsInteractor
-) : BaseViewModel<ImportWordsContract.Event, ImportWordsContract.State, ImportWordsContract.Effect>() {
+) : BaseViewModel<ImportWordsContract.Event, ImportWordsContract.State, ImportWordsContract.Effect>(),
+    IGroupViewModelHelper by GroupViewModelHelper(interactor, interactor) {
 
     private var words: List<Word> = mutableListOf()
 
@@ -63,7 +55,9 @@ class ImportWordsViewModel @Inject constructor(
             setEffect { ImportWordsContract.Effect.Navigation.GoToImportTutorial }
             interactor.isImportTutorialShown = true
         }
-        viewModelScope.launch(Dispatchers.IO) { getGroupsList() }
+
+        setCoroutineScope(viewModelScope)
+        getGroupsList()
     }
 
     override fun setInitialState() = ImportWordsContract.State(
@@ -185,41 +179,23 @@ class ImportWordsViewModel @Inject constructor(
     }
 
     private fun saveGroup(group: String) {
-        val trimGroup = group.trim()
-        viewModelScope.launch(Dispatchers.IO) {
-            interactor.saveGroup(trimGroup)
-                .doOnComplete {
-                    setGroup("")
-                    setState { copy(isAddGroup = false) }
-                    setEffect { ImportWordsContract.Effect.HideBottomSheet }
-                }
-        }
-    }
-
-    private suspend fun getGroupsList() {
-        val groupList = interactor.observeGroupList().takeOrReturn {
-            setEffect { ImportWordsContract.Effect.GetGroupsError(R.string.impw_get_groups_error) }
-            return
-        }
-        groupList.collect { list ->
-            val groups = makeGroupsList(list)
-            setState {
-                copy(groups = groups)
-            }
-        }
-    }
-
-    private fun makeGroupsList(groupsList: List<Group>): List<GroupListItemsModels> {
-        val groupList = mutableListOf<GroupListItemsModels>()
-        groupList.add(NoGroup)
-
-        groupList.addAll(groupsList.map {
-            GroupItemUI(
-                id = it.id,
-                name = it.name
-            )
+        saveGroup(group, doOnComplete = {
+            setGroup("")
+            setState { copy(isAddGroup = false) }
+            setEffect { ImportWordsContract.Effect.HideBottomSheet }
         })
+    }
 
-        return groupList
+    private fun getGroupsList() {
+        getGroupsList(
+            collect = { groups ->
+                setState {
+                    copy(groups = groups)
+                }
+            },
+            onError = {
+                setEffect { ImportWordsContract.Effect.GetGroupsError(R.string.impw_get_groups_error) }
+            }
+        )
     }
 }

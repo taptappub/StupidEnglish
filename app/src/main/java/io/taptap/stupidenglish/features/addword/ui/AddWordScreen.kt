@@ -1,26 +1,17 @@
 package io.taptap.stupidenglish.features.addword.ui
 
 import android.content.Context
-import androidx.annotation.PluralsRes
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
@@ -41,29 +32,21 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
-import io.taptap.stupidenglish.ui.ChooseGroupBottomSheetScreen
 import io.taptap.stupidenglish.ui.ChooseGroupContent
 import io.taptap.uikit.AddTextField
-import io.taptap.uikit.AverageTitle
-import io.taptap.uikit.Divider
-import io.taptap.uikit.LetterRoundView
 import io.taptap.uikit.ModalBottomSheetLayout
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.StupidEnglishTopAppBar
@@ -73,7 +56,6 @@ import io.taptap.uikit.group.GroupItemHeader
 import io.taptap.uikit.group.GroupItemUI
 import io.taptap.uikit.group.GroupListItemsModels
 import io.taptap.uikit.group.NoGroup
-import io.taptap.uikit.group.getTitle
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
@@ -222,27 +204,10 @@ private fun ContentScreen(
                     }
             )
 
-            /*GroupsStackRow(
-                groups = state.selectedGroups,
-                onClick = {
-                    onEventSent(AddWordContract.Event.OnGroupsClick)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .imePadding()
-                    .constrainAs(groups) {
-                        top.linkTo(content.bottom)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-            )*/
-
             val focusManager = LocalFocusManager.current
 
             NextButton(
-                visibility = state.addWordState == AddWordContract.AddWordState.HasGroups,
+                visibility = word.isNotEmpty(),
                 onClick = {
                     when {
                         state.addWordState == AddWordContract.AddWordState.None -> {
@@ -252,6 +217,11 @@ private fun ContentScreen(
                                 && description.isNotEmpty()
                                 && word.isNotEmpty() -> {
                             focusManager.clearFocus()
+                            onEventSent(AddWordContract.Event.OnDescription)
+                        }
+                        state.addWordState == AddWordContract.AddWordState.HasDescription
+                                && description.isNotEmpty()
+                                && word.isNotEmpty() -> {
                             onEventSent(AddWordContract.Event.OnSaveWord)
                         }
                         else -> {
@@ -497,7 +467,6 @@ private fun HasDescriptionScreen(
         }
     }
 }
-
 
 
 @Preview(showBackground = true)

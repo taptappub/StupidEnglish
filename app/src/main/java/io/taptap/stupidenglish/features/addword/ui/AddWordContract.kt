@@ -37,8 +37,7 @@ class AddWordContract {
     enum class AddWordState {
         None,
         HasWord,
-        HasDescription,
-        HasGroups,
+        HasDescription
     }
 
     sealed class Effect : ViewSideEffect {
