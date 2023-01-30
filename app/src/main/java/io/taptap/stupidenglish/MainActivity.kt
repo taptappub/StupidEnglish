@@ -586,8 +586,6 @@ fun NavController.navigateToTab(
 //7) https://stackoverflow.com/questions/67252538/jetpack-compose-update-composable-when-list-changes
 
 
-
-//повесь дейстие на кнопку +
 //переложи GroupStack в Archive
 //вынеси повторяющуюся ебалу про Groups из Import и Add
 //переверстай AddWordScreen, чтобы не прыгало ничего

@@ -386,6 +386,9 @@ private fun MainList(
                     },
                     onGroupLongClicked = { group ->
                         onEventSent(WordListContract.Event.OnGroupLongClick(group))
+                    },
+                    onPlusClicked = {
+                        onEventSent(WordListContract.Event.OnAddGroupClick)
                     }
                 )
                 is WordListEmptyUI -> EmptyListContent(
