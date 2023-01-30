@@ -25,4 +25,8 @@ data class WordListTitleUI(
     val valueRes: Int
 ) : WordListListModels(-1)
 
+data class WordListDynamicTitleUI(
+    val currentGroup: GroupListItemsModels
+) : WordListListModels(-5)
+
 object OnboardingWordUI : WordListListModels(-2)

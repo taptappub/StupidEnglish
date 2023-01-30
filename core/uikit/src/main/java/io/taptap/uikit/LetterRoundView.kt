@@ -117,6 +117,11 @@ fun LetterRoundView(
     shape: Shape = CircleShape,
     content: @Composable BoxScope.() -> Unit
 ) {
+    /*Column(modifier = Modifier.fillMaxWidth().wrapContentSize(Alignment.Center)) {
+        Box(
+            modifier = Modifier.size(100.dp).clip(shape).background(Color.Red)
+        )
+    }*/
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -128,11 +133,11 @@ fun LetterRoundView(
             .then(
                 if (border1 != null) Modifier.border(border1, shape) else Modifier
             )
+            .clip(shape)
             .background(
                 color = color,
                 shape = shape
             )
-            .clip(shape)
     ) {
         content()
     }

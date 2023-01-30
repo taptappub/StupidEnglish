@@ -586,8 +586,9 @@ fun NavController.navigateToTab(
 //7) https://stackoverflow.com/questions/67252538/jetpack-compose-update-composable-when-list-changes
 
 
-//выделение групп квадратное
 //переверстай AddWordScreen, чтобы не прыгало ничего (Не забудь добавить Галочку "Принять" в верхний правый угол)
 //показывать контекстное меню по лонгклику по группе
 //5) Обучение карточками или предложениями
+//поправить диалог добавления группы
 //реализовать view all с группами
+//Ты сломал OnOnboardingClick и OnMotivationConfirmClick

@@ -73,6 +73,7 @@ import io.taptap.stupidenglish.base.noRippleClickable
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
+import io.taptap.stupidenglish.features.words.ui.model.WordListDynamicTitleUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
@@ -95,6 +96,7 @@ import io.taptap.uikit.fab.MultiFabItem
 import io.taptap.uikit.fab.MultiFloatingActionButton
 import io.taptap.uikit.group.GroupItemRow
 import io.taptap.uikit.group.GroupListItemsModels
+import io.taptap.uikit.group.getTitle
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
 import kotlinx.coroutines.flow.Flow
@@ -363,6 +365,10 @@ private fun MainList(
                     onClicked = {
                         onEventSent(WordListContract.Event.OnWordClick)
                     }
+                )
+                is WordListDynamicTitleUI -> AverageTitle(
+                    text = item.currentGroup.getTitle(),
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
                 )
                 is WordListTitleUI -> AverageTitle(
                     text = stringResource(id = item.valueRes),

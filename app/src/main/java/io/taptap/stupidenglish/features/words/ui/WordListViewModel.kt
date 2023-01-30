@@ -11,16 +11,15 @@ import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.words.data.WordListRepository
 import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
+import io.taptap.stupidenglish.features.words.ui.model.WordListDynamicTitleUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
-import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import io.taptap.uikit.group.GroupItemUI
 import io.taptap.uikit.group.GroupListItemsModels
 import io.taptap.uikit.group.GroupListModels
 import io.taptap.uikit.group.NoGroup
-import io.taptap.uikit.group.PlusGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -329,7 +328,7 @@ class WordListViewModel @Inject constructor(
     private fun makeMainList(
         list: List<WordListItemUI>,
         groupsList: List<GroupListItemsModels>,
-        currentGroup: GroupListModels
+        currentGroup: GroupListItemsModels
     ) {
         val filteredList = filterWordListByGroup(list, currentGroup)
 
@@ -346,7 +345,8 @@ class WordListViewModel @Inject constructor(
             )
         )
 
-        mainList.add(WordListTitleUI(valueRes = R.string.word_list_list_title))
+        mainList.add(WordListDynamicTitleUI(currentGroup = currentGroup))
+//        mainList.add(WordListTitleUI(valueRes = R.string.word_list_list_title))
         if (filteredList.isEmpty()) {
             mainList.add(WordListEmptyUI(descriptionRes = R.string.word_empty_list_description))
         } else {

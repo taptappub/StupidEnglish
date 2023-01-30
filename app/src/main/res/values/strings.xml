@@ -21,7 +21,6 @@
     <string name="main_bottom_bar_sentences_title">Sentences</string>
 
     <!-- Word List -->
-    <string name="word_list_list_title">My words</string>
     <string name="word_get_random_words_error">Can\'t find random words</string>
     <string name="word_get_list_error">Error while getting words</string>
     <string name="word_get_groups_error">Error while getting sets</string>
