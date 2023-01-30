@@ -42,7 +42,6 @@ class ImportWordsViewModel @Inject constructor(
     var link by mutableStateOf("")
         private set
 
-    @OptIn(FlowPreview::class)
     @JvmName("setLink1")
     fun setLink(newLink: String) {
         link = newLink
@@ -98,7 +97,6 @@ class ImportWordsViewModel @Inject constructor(
                 saveGroup(group)
             }
             is ImportWordsContract.Event.OnGroupAddingCancel -> {
-
                 group = ""
                 setState { copy(isAddGroup = false) }
             }

@@ -3,7 +3,6 @@ package io.taptap.stupidenglish.features.addword.ui
 import android.content.Context
 import androidx.annotation.PluralsRes
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -20,6 +19,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -56,13 +56,9 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.uikit.group.GroupItemUI
-import io.taptap.uikit.group.GroupListModels
-import io.taptap.uikit.group.NoGroup
-import io.taptap.uikit.group.getTitle
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
-import io.taptap.stupidenglish.ui.ChooseGroupBottomSheetScreen
+import io.taptap.stupidenglish.ui.ChooseGroupContent
 import io.taptap.uikit.AddTextField
 import io.taptap.uikit.AverageTitle
 import io.taptap.uikit.Divider
@@ -70,8 +66,13 @@ import io.taptap.uikit.LetterRoundView
 import io.taptap.uikit.ModalBottomSheetLayout
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.StupidEnglishTopAppBar
+import io.taptap.uikit.complex.AddGroupBottomSheetScreen
 import io.taptap.uikit.fab.NextButton
+import io.taptap.uikit.group.GroupItemHeader
+import io.taptap.uikit.group.GroupItemUI
 import io.taptap.uikit.group.GroupListItemsModels
+import io.taptap.uikit.group.NoGroup
+import io.taptap.uikit.group.getTitle
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
@@ -89,6 +90,8 @@ fun AddWordScreen(
     onWordChanged: (word: String) -> Unit,
     description: String,
     onDescriptionChanged: (description: String) -> Unit,
+    group: String,
+    onGroupChange: (newGroup: String) -> Unit,
     effectFlow: Flow<AddWordContract.Effect>?,
     onEventSent: (event: AddWordContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: AddWordContract.Effect.Navigation) -> Unit
@@ -105,14 +108,13 @@ fun AddWordScreen(
     LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
         effectFlow?.onEach { effect ->
             when (effect) {
-                is AddWordContract.Effect.HideChooseGroupBottomSheet ->
+                is AddWordContract.Effect.HideBottomSheet ->
                     modalBottomSheetState.hideSheet(scope)
-                is AddWordContract.Effect.ShowChooseGroupBottomSheet -> {
+                is AddWordContract.Effect.ShowBottomSheet -> {
                     modalBottomSheetState.showSheet(scope)
                 }
-                is AddWordContract.Effect.Navigation.BackToWordList -> onNavigationRequested(
-                    effect
-                )
+                is AddWordContract.Effect.Navigation.BackToWordList ->
+                    onNavigationRequested(effect)
                 is AddWordContract.Effect.SaveError ->
                     scaffoldState.snackbarHostState.showSnackbar(
                         message = context.getString(effect.errorRes),
@@ -128,6 +130,11 @@ fun AddWordScreen(
                         message = context.getString(effect.errorRes),
                         duration = SnackbarDuration.Short
                     )
+                is AddWordContract.Effect.GetGroupsError ->
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = context.getString(effect.errorRes),
+                        duration = SnackbarDuration.Short
+                    )
             }
         }?.collect()
     }
@@ -136,7 +143,7 @@ fun AddWordScreen(
         val keyboardController = LocalSoftwareKeyboardController.current
         DisposableEffect(Unit) {
             onDispose {
-                onEventSent(AddWordContract.Event.OnChooseGroupBottomSheetCancel)
+                onEventSent(AddWordContract.Event.OnGroupAddingCancel)
                 keyboardController?.hide()
             }
         }
@@ -145,23 +152,33 @@ fun AddWordScreen(
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
-            ChooseGroupBottomSheetScreen(
-                list = state.groups,
-                selectedList = state.dialogSelectedGroups,
-                buttonRes = R.string.addw_group_button,
-                titleRes = R.string.addw_group_choose_group_title,
-                onItemClick = { item ->
-                    onEventSent(AddWordContract.Event.OnGroupSelect(item))
-                },
-                onButtonClick = {
-                    onEventSent(AddWordContract.Event.OnGroupsChosenConfirmClick)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .imePadding()
-                    .animateContentSize()
+            AddGroupBottomSheetScreen(
+                sheetTitle = stringResource(id = R.string.impw_group_add_group_title),
+                group = group,
+                onGroupNameChange = onGroupChange,
+                onAddGroup = {
+                    if (group.isNotEmpty()) {
+                        onEventSent(AddWordContract.Event.OnApplyGroup)
+                    }
+                }
             )
+//            ChooseGroupBottomSheetScreen(
+//                list = state.groups,
+//                selectedList = state.dialogSelectedGroups,
+//                buttonRes = R.string.addw_group_button,
+//                titleRes = R.string.addw_group_choose_group_title,
+//                onItemClick = { item ->
+//                    onEventSent(AddWordContract.Event.OnGroupSelect(item))
+//                },
+//                onButtonClick = {
+//                    onEventSent(AddWordContract.Event.OnGroupsChosenConfirmClick)
+//                },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .navigationBarsPadding()
+//                    .imePadding()
+//                    .animateContentSize()
+//            )
         }
     ) {
         StupidEnglishScaffold(
@@ -202,7 +219,7 @@ private fun ContentScreen(
                 .imePadding()
                 .fillMaxSize()
         ) {
-            val (content, button, groups) = createRefs()
+            val (contentRef, buttonRef) = createRefs()
 
             AddWordContextBox(
                 word = word,
@@ -213,15 +230,15 @@ private fun ContentScreen(
                 onEventSent = onEventSent,
                 modifier = Modifier
                     .fillMaxSize()
-                    .constrainAs(content) {
+                    .constrainAs(contentRef) {
                         top.linkTo(parent.top)
-                        bottom.linkTo(groups.top)
+                        bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
             )
 
-            GroupsStackRow(
+            /*GroupsStackRow(
                 groups = state.selectedGroups,
                 onClick = {
                     onEventSent(AddWordContract.Event.OnGroupsClick)
@@ -236,12 +253,12 @@ private fun ContentScreen(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-            )
+            )*/
 
             val focusManager = LocalFocusManager.current
 
             NextButton(
-                visibility = word.isNotEmpty(),
+                visibility = state.addWordState == AddWordContract.AddWordState.HasGroups,
                 onClick = {
                     when {
                         state.addWordState == AddWordContract.AddWordState.None -> {
@@ -259,7 +276,7 @@ private fun ContentScreen(
                     }
                 },
                 modifier = Modifier
-                    .constrainAs(button) {
+                    .constrainAs(buttonRef) {
                         bottom.linkTo(parent.bottom, 16.dp + 52.dp)
                         end.linkTo(parent.end, 16.dp)
                     }
@@ -401,6 +418,14 @@ private fun AddWordContextBox(
                 onEventSent,
                 modifier
             )
+            else -> HasDescriptionScreen(
+                word = word,
+                description = description,
+                groups = state.groups,
+                selectedGroups = state.selectedGroups,
+                onEventSent = onEventSent,
+                modifier = modifier
+            )
         }
     }
 }
@@ -461,12 +486,7 @@ private fun HasWordScreen(
             onValueChange = {},
             enabled = false,
             placeholder = stringResource(id = R.string.addw_word_placeholder),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                capitalization = KeyboardCapitalization.Sentences,
-                autoCorrect = false,
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Default
-            ),
+            keyboardOptions = KeyboardOptions.Default,
             keyboardActions = KeyboardActions.Default,
             modifier = Modifier
                 .clickable {
@@ -480,7 +500,6 @@ private fun HasWordScreen(
                 }
         )
 
-//        val focusRequester = FocusRequester()
         val focusRequester by remember {
             mutableStateOf(FocusRequester())
         }
@@ -493,13 +512,13 @@ private fun HasWordScreen(
                 capitalization = KeyboardCapitalization.Sentences,
                 autoCorrect = false,
                 keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(
-                onDone = {
+                onNext = {
                     if (word.isNotEmpty() && description.isNotEmpty()) {
                         focusManager.clearFocus()
-                        onEventSent(AddWordContract.Event.OnSaveWord)
+                        onEventSent(AddWordContract.Event.OnDescription)
                     } else {
                         onEventSent(AddWordContract.Event.OnWaitingDescriptionError)
                     }
@@ -517,6 +536,85 @@ private fun HasWordScreen(
 
         LaunchedEffect("") {
             focusRequester.requestFocus()
+        }
+    }
+}
+
+@Composable
+private fun HasDescriptionScreen(
+    word: String,
+    description: String,
+    groups: List<GroupListItemsModels>,
+    selectedGroups: List<GroupListItemsModels>,
+    onEventSent: (event: AddWordContract.Event) -> Unit,
+    modifier: Modifier
+) {
+    ConstraintLayout(modifier = modifier) {
+        val (wordRef, descriptionRef, groupRef) = createRefs()
+        AddTextField(
+            value = word,
+            onValueChange = {},
+            enabled = false,
+            placeholder = stringResource(id = R.string.addw_word_placeholder),
+            keyboardOptions = KeyboardOptions.Default,
+            keyboardActions = KeyboardActions.Default,
+            modifier = Modifier
+                .clickable {
+                    onEventSent(AddWordContract.Event.BackToNoneState)
+                }
+                .constrainAs(wordRef) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(descriptionRef.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        )
+
+        AddTextField(
+            value = description,
+            onValueChange = {},
+            enabled = false,
+            placeholder = stringResource(id = R.string.addw_description_placeholder),
+            keyboardOptions = KeyboardOptions.Default,
+            keyboardActions = KeyboardActions.Default,
+            modifier = Modifier
+                .clickable {
+                    onEventSent(AddWordContract.Event.BackToWordState)
+                }
+                .constrainAs(descriptionRef) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(groupRef.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        )
+
+        Column(
+            modifier = Modifier
+                .constrainAs(groupRef) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        ) {
+            GroupItemHeader(
+                title = stringResource(id = R.string.impw_choose_groups_label),
+                button = stringResource(id = R.string.impw_choose_groups_button),
+                onButtonClicked = {
+                    onEventSent(AddWordContract.Event.OnAddGroupClick)
+                }
+            )
+            ChooseGroupContent(
+                list = groups,
+                selectedList = selectedGroups,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                onItemClick = { item ->
+                    onEventSent(AddWordContract.Event.OnGroupSelect(item))
+                }
+            )
         }
     }
 }
@@ -622,11 +720,12 @@ fun OneGroupPreview() {
 fun ContentScreenPreview() {
     StupidEnglishTheme {
         ContentScreen(
-            word = "word",
-            description = "",
+            word = "Unknown word",
+            description = "Asss",
             onWordChanged = {},
             onDescriptionChanged = {},
             state = AddWordContract.State(
+                isAddGroup = false,
                 groups = listOf(
                     GroupItemUI(
                         id = 1,
@@ -641,9 +740,8 @@ fun ContentScreenPreview() {
                         name = "test name"
                     )
                 ),
-                addWordState = AddWordContract.AddWordState.None,
-                selectedGroups = listOf(NoGroup),
-                dialogSelectedGroups = listOf(NoGroup)
+                addWordState = AddWordContract.AddWordState.HasDescription,
+                selectedGroups = listOf(NoGroup)
             ),
             onEventSent = {}
         )

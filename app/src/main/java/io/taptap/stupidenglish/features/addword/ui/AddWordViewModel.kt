@@ -13,10 +13,12 @@ import io.taptap.uikit.group.GroupListModels
 import io.taptap.uikit.group.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.features.addword.data.AddWordRepository
+import io.taptap.stupidenglish.features.importwords.ui.ImportWordsContract
 import io.taptap.uikit.group.GroupListItemsModels
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import taptap.pub.doOnComplete
 import taptap.pub.handle
 import taptap.pub.takeOrReturn
 import javax.inject.Inject
@@ -46,10 +48,18 @@ class AddWordViewModel @Inject constructor(
         description = newDescription
     }
 
+    var group by mutableStateOf("")
+        private set
+
+    @JvmName("setGroup1")
+    fun setGroup(newGroup: String) {
+        group = newGroup
+    }
+
     override fun setInitialState() = AddWordContract.State(
         selectedGroups = listOf(NoGroup),
-        dialogSelectedGroups = listOf(NoGroup),
         groups = emptyList(),
+        isAddGroup = false,
         addWordState = AddWordContract.AddWordState.None
     )
 
@@ -59,6 +69,8 @@ class AddWordViewModel @Inject constructor(
                 setEffect { AddWordContract.Effect.Navigation.BackToWordList }
             is AddWordContract.Event.OnWord ->
                 setState { copy(addWordState = AddWordContract.AddWordState.HasWord) }
+            is AddWordContract.Event.OnDescription ->
+                setState { copy(addWordState = AddWordContract.AddWordState.HasDescription) }
             is AddWordContract.Event.BackToNoneState -> {
                 setState {
                     copy(
@@ -66,6 +78,14 @@ class AddWordViewModel @Inject constructor(
                     )
                 }
                 setDescription("")
+            }
+            is AddWordContract.Event.BackToWordState -> {
+                setState {
+                    copy(
+                        addWordState = AddWordContract.AddWordState.HasWord,
+                        selectedGroups = listOf(NoGroup)
+                    )
+                }
             }
             is AddWordContract.Event.OnSaveWord -> {
                 setInitialState()
@@ -79,32 +99,24 @@ class AddWordViewModel @Inject constructor(
             }
 
             is AddWordContract.Event.OnGroupSelect -> {
-                val selectedGroups = ArrayList(viewState.value.dialogSelectedGroups)
+                val selectedGroups = ArrayList(viewState.value.selectedGroups)
                 if (selectedGroups.contains(event.item)) {
                     selectedGroups.remove(event.item)
                 } else {
                     selectedGroups.add(event.item)
                 }
-                setState { copy(dialogSelectedGroups = selectedGroups) }
+                setState { copy(selectedGroups = selectedGroups) }
             }
-            is AddWordContract.Event.OnChooseGroupBottomSheetCancel -> {
-                setState { copy(dialogSelectedGroups = listOf(NoGroup)) }
-                setEffect { AddWordContract.Effect.HideChooseGroupBottomSheet }
+            is AddWordContract.Event.OnAddGroupClick -> {
+                setState { copy(isAddGroup = true) }
+                setEffect { AddWordContract.Effect.ShowBottomSheet }
             }
-
-            is AddWordContract.Event.OnGroupsClick -> {
-                val selectedGroups = ArrayList(viewState.value.selectedGroups)
-                setState { copy(dialogSelectedGroups = selectedGroups) }
-                setEffect { AddWordContract.Effect.ShowChooseGroupBottomSheet }
+            is AddWordContract.Event.OnApplyGroup -> {
+                saveGroup(group)
             }
-            is AddWordContract.Event.OnGroupsChosenConfirmClick -> {
-                val dialogSelectedGroups = ArrayList(viewState.value.dialogSelectedGroups)
-                setState {
-                    copy(
-                        selectedGroups = dialogSelectedGroups
-                    )
-                }
-                setEffect { AddWordContract.Effect.HideChooseGroupBottomSheet }
+            is AddWordContract.Event.OnGroupAddingCancel -> {
+//                group = ""
+                setState { copy(isAddGroup = false) }
             }
         }
     }
@@ -136,9 +148,21 @@ class AddWordViewModel @Inject constructor(
         }
     }
 
+    private fun saveGroup(group: String) {
+        val trimGroup = group.trim()
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.saveGroup(trimGroup)
+                .doOnComplete {
+                    setGroup("")
+                    setState { copy(isAddGroup = false) }
+                    setEffect { AddWordContract.Effect.HideBottomSheet }
+                }
+        }
+    }
+
     private suspend fun getGroupsList() {
         val groupList = repository.observeGroupList().takeOrReturn {
-            setEffect { AddWordContract.Effect.GetWordsError(R.string.addw_get_groups_error) }
+            setEffect { AddWordContract.Effect.GetGroupsError(R.string.addw_get_groups_error) }
             return
         }
         groupList.collect { list ->

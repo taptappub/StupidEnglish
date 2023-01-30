@@ -54,7 +54,7 @@ fun StupidEnglishTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val systemUiController = rememberSystemUiController()
+//    val systemUiController = rememberSystemUiController()
 
     val colors = getColors(darkTheme)
 
@@ -66,17 +66,17 @@ fun StupidEnglishTheme(
 
     Log.d("Theme", "MaterialTheme.colorScheme.background = ${MaterialTheme.colorScheme.background}")
 
-    systemUiController.setNavigationBarColor(
-        color = if (darkTheme) { Black } else { White }
-            .copy(alpha = 0.77f),
-        darkIcons = !darkTheme,
-        navigationBarContrastEnforced = false
-    )
-
-    systemUiController.setStatusBarColor(
-        color = Color.Transparent,
-        darkIcons = !darkTheme
-    )
+//    systemUiController.setNavigationBarColor(
+//        color = if (darkTheme) { Black } else { White }
+//            .copy(alpha = 0.77f),
+//        darkIcons = !darkTheme,
+//        navigationBarContrastEnforced = false
+//    )
+//
+//    systemUiController.setStatusBarColor(
+//        color = Color.Transparent,
+//        darkIcons = !darkTheme
+//    )
 }
 
 @Composable

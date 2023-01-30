@@ -46,6 +46,7 @@ import io.taptap.uikit.StupidEnglishTopAppBar
 import io.taptap.uikit.TextField
 import io.taptap.uikit.complex.AddGroupBottomSheetScreen
 import io.taptap.uikit.fab.NextButton
+import io.taptap.uikit.group.GroupListItemsModels
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -264,9 +265,15 @@ private fun ImportWordStateScreen(
                     onEventSent(ImportWordsContract.Event.OnAddGroupClick)
                 }
             )
-            GroupsChooserScreen(
-                state = state,
-                onEventSent = onEventSent
+            ChooseGroupContent(
+                list = state.groups,
+                selectedList = state.selectedGroups,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                onItemClick = { item ->
+                    onEventSent(ImportWordsContract.Event.OnGroupSelect(item))
+                }
             )
         }
     }
@@ -274,23 +281,6 @@ private fun ImportWordStateScreen(
     if (state.importWordState == ImportWordsContract.ImportWordState.InProgress) {
         LoadingBar()
     }
-}
-
-@Composable
-fun GroupsChooserScreen(
-    state: ImportWordsContract.State,
-    onEventSent: (event: ImportWordsContract.Event) -> Unit
-) {
-    ChooseGroupContent(
-        list = state.groups,
-        selectedList = state.selectedGroups,
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        onItemClick = { item ->
-            onEventSent(ImportWordsContract.Event.OnGroupSelect(item))
-        }
-    )
 }
 
 private fun ImportWordsContract.ParsingState.toResultNotificationState(): ResultNotification.State {

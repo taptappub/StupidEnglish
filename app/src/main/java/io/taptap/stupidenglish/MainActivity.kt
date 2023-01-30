@@ -294,6 +294,8 @@ private fun AddWordDestination(
         onWordChanged = addWordViewModel::setWord,
         description = addWordViewModel.description,
         onDescriptionChanged = addWordViewModel::setDescription,
+        group = addWordViewModel.group,
+        onGroupChange = addWordViewModel::setGroup,
         effectFlow = addWordViewModel.effect,
         onEventSent = { event -> addWordViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
@@ -585,4 +587,8 @@ fun NavController.navigateToTab(
 
 
 
-//вынести в bottombar добавление: сетов, слов
+//кнопку + сделай в таком же стиле, как и остальные кнопки
+//повесь дейстие на кнопку +
+//переложи GroupStack в Archive
+//вынеси повторяющуюся ебалу про Groups из Import и Add
+//переверстай AddWordScreen, чтобы не прыгало ничего
