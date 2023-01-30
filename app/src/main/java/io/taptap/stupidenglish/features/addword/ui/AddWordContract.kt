@@ -12,13 +12,12 @@ class AddWordContract {
         object OnWord : Event()
         object OnDescription : Event()
         object OnBackClick: Event()
+        object OnNewWord: Event()
 
         data class OnGroupSelect(val item: GroupListItemsModels) : Event()
 
         object BackToNoneState : Event()
         object BackToWordState : Event()
-
-        object OnSaveWord : Event()
 
         object OnAddGroupClick : Event()
         object OnApplyGroup : Event()

@@ -62,6 +62,7 @@
     <string name="addw_group_choose_group_title">Choose sets for the word</string>
     <string name="addw_group_button">Apply</string>
     <string name="addw_topbar_title">New word</string>
+    <string name="addw_bottom_button_text">One more word</string>
     <string name="addw_get_groups_error">Error while getting sets</string>
     <plurals name="addw_group_count">
         <item quantity="one">%d set</item>

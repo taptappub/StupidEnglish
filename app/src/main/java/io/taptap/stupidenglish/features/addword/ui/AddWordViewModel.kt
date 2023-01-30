@@ -62,8 +62,21 @@ class AddWordViewModel @Inject constructor(
 
     override suspend fun handleEvents(event: AddWordContract.Event) {
         when (event) {
-            is AddWordContract.Event.OnBackClick ->
-                setEffect { AddWordContract.Effect.Navigation.BackToWordList }
+            is AddWordContract.Event.OnBackClick -> {
+                if (word.isNotEmpty()
+                    && description.isNotEmpty()
+                    && viewState.value.addWordState == AddWordContract.AddWordState.HasDescription
+                ) {
+                    saveWord(onSuccess = {
+                        setEffect { AddWordContract.Effect.Navigation.BackToWordList }
+                    })
+                } else {
+                    setEffect { AddWordContract.Effect.Navigation.BackToWordList }
+                }
+            }
+            is AddWordContract.Event.OnNewWord -> {
+                saveWord(onSuccess = {})
+            }
             is AddWordContract.Event.OnWord ->
                 setState { copy(addWordState = AddWordContract.AddWordState.HasWord) }
             is AddWordContract.Event.OnDescription ->
@@ -83,11 +96,6 @@ class AddWordViewModel @Inject constructor(
                         selectedGroups = listOf(NoGroup)
                     )
                 }
-            }
-            is AddWordContract.Event.OnSaveWord -> {
-                setInitialState()
-                val selectedGroups = viewState.value.selectedGroups
-                saveWord(word, description, selectedGroups)
             }
             is AddWordContract.Event.OnWaitingDescriptionError -> setEffect {
                 AddWordContract.Effect.WaitingForDescriptionError(
@@ -117,10 +125,25 @@ class AddWordViewModel @Inject constructor(
         }
     }
 
+    private fun saveWord(onSuccess: () -> Unit) {
+        val selectedGroups = viewState.value.selectedGroups
+        saveWord(word, description, selectedGroups, onSuccess)
+
+        setState {
+            copy(
+                addWordState = AddWordContract.AddWordState.None
+            )
+        }
+        setWord("")
+        setDescription("")
+        setGroup("")
+    }
+
     private fun saveWord(
         word: String,
         description: String,
-        groups: List<GroupListModels>
+        groups: List<GroupListModels>,
+        onSuccess: () -> Unit
     ) {
         val trimWord = word.trim()
         val trimDescription = description.trim()
@@ -132,7 +155,7 @@ class AddWordViewModel @Inject constructor(
                 .handle(
                     success = {
                         withContext(Dispatchers.Main) {
-                            setEffect { AddWordContract.Effect.Navigation.BackToWordList }
+                            onSuccess()
                         }
                     },
                     error = {

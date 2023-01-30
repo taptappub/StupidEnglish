@@ -1,6 +1,7 @@
 package io.taptap.stupidenglish.features.addword.ui
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -9,8 +10,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -34,6 +37,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -48,6 +52,7 @@ import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.ui.ChooseGroupContent
 import io.taptap.uikit.AddTextField
 import io.taptap.uikit.ModalBottomSheetLayout
+import io.taptap.uikit.PrimaryButton
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.StupidEnglishTopAppBar
 import io.taptap.uikit.complex.AddGroupBottomSheetScreen
@@ -132,6 +137,10 @@ fun AddWordScreen(
         }
     }
 
+    BackHandler {
+        onEventSent(AddWordContract.Event.OnBackClick)
+    }
+
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
@@ -206,7 +215,10 @@ private fun ContentScreen(
 
             val focusManager = LocalFocusManager.current
 
-            NextButton(
+            BottomButton(
+                showTextButton = state.addWordState == AddWordContract.AddWordState.HasDescription
+                        && description.isNotEmpty()
+                        && word.isNotEmpty(),
                 visibility = word.isNotEmpty(),
                 onClick = {
                     when {
@@ -222,7 +234,7 @@ private fun ContentScreen(
                         state.addWordState == AddWordContract.AddWordState.HasDescription
                                 && description.isNotEmpty()
                                 && word.isNotEmpty() -> {
-                            onEventSent(AddWordContract.Event.OnSaveWord)
+                            onEventSent(AddWordContract.Event.OnNewWord)
                         }
                         else -> {
                             onEventSent(AddWordContract.Event.OnWaitingDescriptionError)
@@ -236,6 +248,30 @@ private fun ContentScreen(
                     }
             )
         }
+    }
+}
+
+@Composable
+private fun BottomButton(
+    showTextButton: Boolean,
+    visibility: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier
+) {
+    if (showTextButton) {
+        PrimaryButton(
+            startImagePainter = painterResource(id = R.drawable.ic_plus),
+            text = stringResource(id = R.string.addw_bottom_button_text),
+            onClick = onClick,
+            modifier = modifier
+                .height(52.dp)
+        )
+    } else {
+        NextButton(
+            visibility = visibility,
+            onClick = onClick,
+            modifier = modifier
+        )
     }
 }
 

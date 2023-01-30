@@ -18,7 +18,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.taptap.uikit.theme.StupidEnglishTheme
 
 @Composable
 fun PrimaryButton(
@@ -74,6 +76,28 @@ fun SecondaryButton(
             text = text,
             color = textColor,
             style = style
+        )
+    }
+}
+
+@Preview()
+@Composable
+fun PrimaryButton() {
+    StupidEnglishTheme {
+        PrimaryButton(
+            text = "Ass",
+            onClick = {}
+        )
+    }
+}
+
+@Preview()
+@Composable
+fun SecondaryButton() {
+    StupidEnglishTheme {
+        SecondaryButton(
+            text = "Ass2",
+            onClick = {}
         )
     }
 }
