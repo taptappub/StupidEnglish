@@ -6,7 +6,6 @@ import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
-import io.taptap.stupidenglish.features.words.ui.WordListContract
 
 class ProfileContract {
     sealed class Event : ViewEvent {

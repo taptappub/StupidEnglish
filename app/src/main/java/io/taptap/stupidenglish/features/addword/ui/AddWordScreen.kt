@@ -71,6 +71,7 @@ import io.taptap.uikit.ModalBottomSheetLayout
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.StupidEnglishTopAppBar
 import io.taptap.uikit.fab.NextButton
+import io.taptap.uikit.group.GroupListItemsModels
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
@@ -269,7 +270,7 @@ private fun ContentScreen(
 
 @Composable
 private fun GroupsStackRow(
-    groups: List<GroupListModels>,
+    groups: List<GroupListItemsModels>,
     onClick: () -> Unit,
     modifier: Modifier
 ) {
@@ -306,7 +307,7 @@ private fun GroupsStackRow(
 }
 
 @Composable
-private fun ManyGroups(groups: List<GroupListModels>, text: String) {
+private fun ManyGroups(groups: List<GroupListItemsModels>, text: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.wrapContentWidth()
@@ -323,7 +324,7 @@ private fun ManyGroups(groups: List<GroupListModels>, text: String) {
 }
 
 @Composable
-private fun StackRowOfGroups(groups: List<GroupListModels>) {
+private fun StackRowOfGroups(groups: List<GroupListItemsModels>) {
     Row(
         horizontalArrangement = Arrangement.spacedBy((-14).dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -350,7 +351,7 @@ private fun StackRowOfGroups(groups: List<GroupListModels>) {
 }
 
 @Composable
-private fun OneGroup(first: GroupListModels) {
+private fun OneGroup(first: GroupListItemsModels) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.wrapContentWidth()

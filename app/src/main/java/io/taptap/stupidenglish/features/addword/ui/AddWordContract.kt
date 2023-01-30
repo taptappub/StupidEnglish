@@ -3,6 +3,7 @@ package io.taptap.stupidenglish.features.addword.ui
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
+import io.taptap.uikit.group.GroupListItemsModels
 import io.taptap.uikit.group.GroupListModels
 
 class AddWordContract {
@@ -10,9 +11,9 @@ class AddWordContract {
         object OnWord : Event()
         object OnBackClick: Event()
 
-        data class OnGroupSelect(val item: GroupListModels) : Event()
+        data class OnGroupSelect(val item: GroupListItemsModels) : Event()
 
-        object BackToNoneState : AddWordContract.Event()
+        object BackToNoneState : Event()
 
         object OnSaveWord : Event()
 
@@ -24,10 +25,10 @@ class AddWordContract {
     }
 
     data class State(
-        val groups: List<GroupListModels>,
+        val groups: List<GroupListItemsModels>,
         val addWordState: AddWordState,
-        val selectedGroups: List<GroupListModels>,
-        val dialogSelectedGroups: List<GroupListModels>
+        val selectedGroups: List<GroupListItemsModels>,
+        val dialogSelectedGroups: List<GroupListItemsModels>
     ) : ViewState
 
     enum class AddWordState {

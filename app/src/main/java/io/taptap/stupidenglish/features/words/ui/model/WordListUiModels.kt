@@ -1,6 +1,6 @@
 package io.taptap.stupidenglish.features.words.ui.model
 
-import io.taptap.uikit.group.GroupListModels
+import io.taptap.uikit.group.GroupListItemsModels
 
 sealed class WordListListModels(open val id: Long)
 
@@ -18,7 +18,7 @@ data class WordListEmptyUI(
 data class WordListGroupUI(
     val titleRes: Int,
     val buttonRes: Int,
-    val groups: List<GroupListModels>
+    val groups: List<GroupListItemsModels>
 ) : WordListListModels(-3)
 
 data class WordListTitleUI(

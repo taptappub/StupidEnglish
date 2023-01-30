@@ -1,12 +1,16 @@
 package io.taptap.uikit.group
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -16,7 +20,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -30,11 +36,13 @@ import io.taptap.uikit.theme.StupidEnglishTheme
 fun GroupItemRow(
     title: String,
     button: String,
-    currentGroup: GroupListModels?,
-    list: List<GroupListModels>,
+    currentGroup: GroupListItemsModels?,
+    list: List<GroupListItemsModels>,
     onButtonClicked: () -> Unit,
-    onGroupClicked: (GroupListModels) -> Unit,
-    onGroupLongClicked: (GroupListModels) -> Unit
+    onGroupClicked: (GroupListItemsModels) -> Unit,
+    onGroupLongClicked: (GroupListItemsModels) -> Unit,
+    isPlusEnabled: Boolean = true,
+    onPlusClicked: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -48,6 +56,8 @@ fun GroupItemRow(
         )
         GroupItemGroupsRow(
             list = list,
+            isPlusEnabled = isPlusEnabled,
+            onPlusClicked = onPlusClicked,
             currentGroup = currentGroup,
             onGroupClicked = onGroupClicked,
             onGroupLongClicked = onGroupLongClicked
@@ -57,12 +67,25 @@ fun GroupItemRow(
 
 @Composable
 private fun GroupItemGroupsRow(
-    list: List<GroupListModels>,
-    currentGroup: GroupListModels?,
-    onGroupClicked: (GroupListModels) -> Unit,
-    onGroupLongClicked: (GroupListModels) -> Unit
+    list: List<GroupListItemsModels>,
+    currentGroup: GroupListItemsModels?,
+    onGroupClicked: (GroupListItemsModels) -> Unit,
+    onGroupLongClicked: (GroupListItemsModels) -> Unit,
+    isPlusEnabled: Boolean,
+    onPlusClicked: () -> Unit
 ) {
     val listState = rememberLazyListState()
+
+    val newList: List<GroupListModels> = if (isPlusEnabled) {
+        list
+            .map { it as GroupListModels }
+            .toMutableList()
+            .apply {
+                add(0, PlusGroup)
+            }
+    } else {
+        list
+    }
 
     LazyRow(
         state = listState,
@@ -70,7 +93,7 @@ private fun GroupItemGroupsRow(
         contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         items(
-            items = list,
+            items = newList,
             key = { it.id }
         ) { item ->
             when (item) {
@@ -78,7 +101,9 @@ private fun GroupItemGroupsRow(
                     title = stringResource(id = item.titleRes),
                     group = item,
                     selected = currentGroup == item,
-                    onGroupClicked = onGroupClicked,
+                    onGroupClicked = {
+                        onGroupClicked(item as NoGroupItemUI)
+                    },
                     onGroupLongClicked = onGroupLongClicked
                 )
                 is GroupItemUI -> GroupItem(
@@ -88,8 +113,41 @@ private fun GroupItemGroupsRow(
                     onGroupClicked = onGroupClicked,
                     onGroupLongClicked = onGroupLongClicked
                 )
+                is PlusGroup -> PlusGroupItem(
+                    onPlusClicked = onPlusClicked
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun PlusGroupItem(
+    onPlusClicked: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .padding(top = 6.dp)
+    ) {
+        LetterRoundView(
+            letter = '+',
+            selected = false,
+            fontSize = 24.sp,
+            textColor = MaterialTheme.colorScheme.tertiary,
+            modifier = Modifier
+                .size(44.dp)
+                .clickable {
+                    onPlusClicked()
+                }
+        )
+
+        Box(modifier = Modifier
+            .padding(start = 18.dp, end = 8.dp)
+            .background(color = MaterialTheme.colorScheme.tertiary)
+            .height(26.dp)
+            .align(CenterVertically)
+            .width(2.dp)
+        )
     }
 }
 
@@ -97,10 +155,10 @@ private fun GroupItemGroupsRow(
 @Composable
 private fun GroupItem(
     title: String,
-    group: GroupListModels,
+    group: GroupListItemsModels,
     selected: Boolean,
-    onGroupClicked: (GroupListModels) -> Unit,
-    onGroupLongClicked: (GroupListModels) -> Unit
+    onGroupClicked: (GroupListItemsModels) -> Unit,
+    onGroupLongClicked: (GroupListItemsModels) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -177,5 +235,15 @@ fun GroupItem() {
             onGroupClicked = {},
             onGroupLongClicked = {}
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PlusGroupItem() {
+    StupidEnglishTheme {
+        PlusGroupItem {
+
+        }
     }
 }

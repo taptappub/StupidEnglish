@@ -17,16 +17,17 @@ import io.taptap.uikit.group.NoGroup
 import io.taptap.uikit.AverageTitle
 import io.taptap.uikit.BottomSheetScreen
 import io.taptap.uikit.PrimaryButton
+import io.taptap.uikit.group.GroupListItemsModels
 import io.taptap.uikit.theme.StupidEnglishTheme
 
 @Composable
 fun ChooseGroupBottomSheetScreen(
-    list: List<GroupListModels>,
-    selectedList: List<GroupListModels>,
+    list: List<GroupListItemsModels>,
+    selectedList: List<GroupListItemsModels>,
     @StringRes titleRes: Int,
     @StringRes buttonRes: Int,
     modifier: Modifier,
-    onItemClick: (GroupListModels) -> Unit,
+    onItemClick: (GroupListItemsModels) -> Unit,
     onButtonClick: () -> Unit
 ) {
     BottomSheetScreen(modifier = modifier) {

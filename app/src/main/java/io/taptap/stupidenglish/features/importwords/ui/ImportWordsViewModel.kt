@@ -1,22 +1,29 @@
 package io.taptap.stupidenglish.features.importwords.ui
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
-import io.taptap.stupidenglish.base.isNotEmpty
-import io.taptap.uikit.group.GroupItemUI
-import io.taptap.uikit.group.GroupListModels
-import io.taptap.uikit.group.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.importwords.domain.ImportWordsInteractor
+import io.taptap.uikit.group.GroupItemUI
+import io.taptap.uikit.group.GroupListItemsModels
+import io.taptap.uikit.group.GroupListModels
+import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import taptap.pub.doOnComplete
 import taptap.pub.doOnError
@@ -32,6 +39,26 @@ class ImportWordsViewModel @Inject constructor(
 
     private var words: List<Word> = mutableListOf()
 
+    var link by mutableStateOf("")
+        private set
+
+    @OptIn(FlowPreview::class)
+    @JvmName("setLink1")
+    fun setLink(newLink: String) {
+        link = newLink
+        viewModelScope.launch(Dispatchers.IO) {
+            handleLinkChanging(newLink)
+        }
+    }
+
+    var group by mutableStateOf("")
+        private set
+
+    @JvmName("setGroup1")
+    fun setGroup(newGroup: String) {
+        group = newGroup
+    }
+
     init {
         if (!interactor.isImportTutorialShown) {
             setEffect { ImportWordsContract.Effect.Navigation.GoToImportTutorial }
@@ -41,9 +68,7 @@ class ImportWordsViewModel @Inject constructor(
     }
 
     override fun setInitialState() = ImportWordsContract.State(
-        link = "",
         selectedGroups = listOf(NoGroup),
-        group = "",
         isAddGroup = false,
         groups = emptyList(),
         importWordState = ImportWordsContract.ImportWordState.None,
@@ -52,12 +77,6 @@ class ImportWordsViewModel @Inject constructor(
 
     override suspend fun handleEvents(event: ImportWordsContract.Event) {
         when (event) {
-            is ImportWordsContract.Event.OnLinkChanging -> {
-                event.value.isNotEmpty {
-                    setState { copy(link = it) }
-                    handleLinkChanging(it)
-                }
-            }
             is ImportWordsContract.Event.OnGroupSelect -> {
                 val selectedGroups = ArrayList(viewState.value.selectedGroups)
                 if (selectedGroups.contains(event.item)) {
@@ -76,13 +95,12 @@ class ImportWordsViewModel @Inject constructor(
                 setEffect { ImportWordsContract.Effect.ShowBottomSheet }
             }
             is ImportWordsContract.Event.OnApplyGroup -> {
-                saveGroup(viewState.value.group)
+                saveGroup(group)
             }
             is ImportWordsContract.Event.OnGroupAddingCancel -> {
-                setState { copy(group = "", isAddGroup = false) }
-            }
-            is ImportWordsContract.Event.OnGroupChanging -> {
-                setState { copy(group = event.value) }
+
+                group = ""
+                setState { copy(isAddGroup = false) }
             }
             is ImportWordsContract.Event.OnTutorialClick -> {
                 setEffect { ImportWordsContract.Effect.Navigation.GoToImportTutorial }
@@ -105,7 +123,7 @@ class ImportWordsViewModel @Inject constructor(
 
                 debounceJob?.cancel()
                 debounceJob = CoroutineScope(currentCoroutineContext()).launch {
-                    delay(500)
+                    delay(700)
                     interactor.getWordsFromGoogleSheetTable(link)
                         .doOnSuccess { words = it }
                         .fold(
@@ -173,7 +191,8 @@ class ImportWordsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             interactor.saveGroup(trimGroup)
                 .doOnComplete {
-                    setState { copy(group = "", isAddGroup = false) }
+                    setGroup("")
+                    setState { copy(isAddGroup = false) }
                     setEffect { ImportWordsContract.Effect.HideBottomSheet }
                 }
         }
@@ -192,8 +211,8 @@ class ImportWordsViewModel @Inject constructor(
         }
     }
 
-    private fun makeGroupsList(groupsList: List<Group>): List<GroupListModels> {
-        val groupList = mutableListOf<GroupListModels>()
+    private fun makeGroupsList(groupsList: List<Group>): List<GroupListItemsModels> {
+        val groupList = mutableListOf<GroupListItemsModels>()
         groupList.add(NoGroup)
 
         groupList.addAll(groupsList.map {
@@ -204,21 +223,5 @@ class ImportWordsViewModel @Inject constructor(
         })
 
         return groupList
-    }
-}
-
-suspend fun <T> CoroutineScope.debounce(
-    waitMs: Long = 300L,
-    destinationFunction: (T) -> Unit
-): suspend (T) -> Unit {
-    var debounceJob: Job? = null
-    return { param: T ->
-        debounceJob?.cancel()
-        debounceJob = coroutineScope {
-            launch {
-                delay(waitMs)
-                destinationFunction(param)
-            }
-        }
     }
 }

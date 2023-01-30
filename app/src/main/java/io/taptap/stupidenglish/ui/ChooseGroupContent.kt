@@ -26,14 +26,15 @@ import io.taptap.uikit.group.getTitle
 import io.taptap.uikit.AverageText
 import io.taptap.uikit.Divider
 import io.taptap.uikit.LetterRoundView
+import io.taptap.uikit.group.GroupListItemsModels
 import io.taptap.uikit.theme.StupidEnglishTheme
 
 @Composable
 fun ChooseGroupContent(
-    list: List<GroupListModels>,
-    selectedList: List<GroupListModels>,
+    list: List<GroupListItemsModels>,
+    selectedList: List<GroupListItemsModels>,
     modifier: Modifier,
-    onItemClick: (GroupListModels) -> Unit
+    onItemClick: (GroupListItemsModels) -> Unit
 ) {
     val listState = rememberLazyListState()
     LazyColumn(
@@ -57,7 +58,7 @@ fun ChooseGroupContent(
 
 @Composable
 private fun GroupItemRow(
-    item: GroupListModels,
+    item: GroupListItemsModels,
     isSelected: Boolean,
     onItemClick: () -> Unit
 ) {

@@ -13,6 +13,7 @@ import io.taptap.uikit.group.GroupListModels
 import io.taptap.uikit.group.NoGroup
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.features.addword.data.AddWordRepository
+import io.taptap.uikit.group.GroupListItemsModels
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -148,8 +149,8 @@ class AddWordViewModel @Inject constructor(
         }
     }
 
-    private fun makeGroupsList(groupsList: List<Group>): List<GroupListModels> {
-        val groupList = mutableListOf<GroupListModels>()
+    private fun makeGroupsList(groupsList: List<Group>): List<GroupListItemsModels> {
+        val groupList = mutableListOf<GroupListItemsModels>()
         groupList.add(NoGroup)
 
         groupList.addAll(groupsList.map {

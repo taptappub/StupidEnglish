@@ -1,12 +1,12 @@
 package io.taptap.stupidenglish.features.words.ui
 
 import androidx.annotation.StringRes
-import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewEvent
+import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
-import io.taptap.uikit.group.GroupListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
+import io.taptap.uikit.group.GroupListItemsModels
 
 class WordListContract {
     sealed class Event : ViewEvent {
@@ -32,20 +32,18 @@ class WordListContract {
         object OnApplyGroupsRemove : Event()
 
         object OnGroupRemovingCancel : Event()
-        data class OnGroupSelect(val item: GroupListModels) : Event()
-        data class OnGroupChanging(val value: String) : Event()
-        data class OnGroupClick(val group: GroupListModels) : Event()
-        data class OnGroupLongClick(val group: GroupListModels) : Event()
+        data class OnGroupSelect(val item: GroupListItemsModels) : Event()
+        data class OnGroupClick(val group: GroupListItemsModels) : Event()
+        data class OnGroupLongClick(val group: GroupListItemsModels) : Event()
     }
 
     data class State(
         val wordList: List<WordListListModels>,
-        val removedGroups: List<GroupListModels>,
-        val dialogGroups: List<GroupListModels>,
+        val removedGroups: List<GroupListItemsModels>,
+        val dialogGroups: List<GroupListItemsModels>,
         val isLoading: Boolean = false,
-        val currentGroup: GroupListModels,
+        val currentGroup: GroupListItemsModels,
         val sheetContentType: SheetContentType,
-        val group: String,
         val deletedWordIds: MutableList<Long>,
         val avatar: String?
     ) : ViewState

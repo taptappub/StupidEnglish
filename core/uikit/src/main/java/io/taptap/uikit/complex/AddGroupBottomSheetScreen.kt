@@ -38,7 +38,7 @@ fun AddGroupBottomSheetScreen(
         .height(300.dp),
     onGroupNameChange: (String) -> Unit,
     onAddGroup: () -> Unit,
-    group: () -> String
+    group: String
 ) {
     BottomSheetScreen(
         modifier = modifier
@@ -59,7 +59,7 @@ fun AddGroupBottomSheetScreen(
                 val focusRequester = FocusRequester()
 
                 AddTextField(
-                    value = group(),
+                    value = group,
                     onValueChange = onGroupNameChange,
                     placeholder = "",
                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -94,7 +94,7 @@ fun AddGroupBottomSheetScreen(
             )
 
             NextButton(
-                visibility = group().isNotEmpty(),
+                visibility = group.isNotEmpty(),
                 onClick = {
                     keyboardController?.hide()
                     onAddGroup()

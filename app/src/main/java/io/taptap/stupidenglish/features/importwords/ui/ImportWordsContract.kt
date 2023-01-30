@@ -4,16 +4,15 @@ import androidx.annotation.StringRes
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
+import io.taptap.uikit.group.GroupListItemsModels
 import io.taptap.uikit.group.GroupListModels
 
 class ImportWordsContract {
     sealed class Event : ViewEvent {
-        data class OnGroupSelect(val item: GroupListModels) : Event()
+        data class OnGroupSelect(val item: GroupListItemsModels) : Event()
         object OnImportClick : Event()
-        data class OnLinkChanging(val value: String) : Event()
 
         object OnAddGroupClick : Event()
-        data class OnGroupChanging(val value: String) : Event()
         object OnApplyGroup : Event()
         object OnGroupAddingCancel : Event()
 
@@ -22,12 +21,10 @@ class ImportWordsContract {
     }
 
     data class State(
-        val link: String,
-        val group: String,
-        val groups: List<GroupListModels>,
+        val groups: List<GroupListItemsModels>,
         val isAddGroup: Boolean,
         val importWordState: ImportWordState,
-        val selectedGroups: List<GroupListModels>,
+        val selectedGroups: List<GroupListItemsModels>,
         val parsingState: ParsingState
     ) : ViewState
 

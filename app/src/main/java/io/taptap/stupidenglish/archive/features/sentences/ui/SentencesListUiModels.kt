@@ -1,7 +1,5 @@
 package io.taptap.stupidenglish.archive.features.sentences.ui
 
-import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
-
 sealed class SentencesListListModels(open val id: Long)
 
 data class SentencesListItemUI(

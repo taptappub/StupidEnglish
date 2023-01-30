@@ -86,19 +86,6 @@ private fun getColors(darkTheme: Boolean): ColorScheme {
     } else {
         LightColorPalette
     }
-//    val context: Context = LocalContext.current
-//    val theme = remember {
-//        val uiKitSettings = UiKitSettings(context)
-//        ThemeType.getByValue(uiKitSettings.theme)
-//    }
-//    return when(theme) {
-//        ThemeType.LIGHT -> if (darkTheme) {
-//            DarkColorPalette
-//        } else {
-//            LightColorPalette
-//        }
-//        ThemeType.DARK -> DarkColorPalette
-//    }
 }
 
 @Composable

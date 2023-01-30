@@ -65,13 +65,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.uikit.group.GroupListModels
-import io.taptap.uikit.group.NoGroupItemUI
 import io.taptap.stupidenglish.base.noRippleClickable
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
@@ -97,7 +94,7 @@ import io.taptap.uikit.fab.FabOption
 import io.taptap.uikit.fab.MultiFabItem
 import io.taptap.uikit.fab.MultiFloatingActionButton
 import io.taptap.uikit.group.GroupItemRow
-import io.taptap.uikit.theme.StupidEnglishTheme
+import io.taptap.uikit.group.GroupListItemsModels
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
 import kotlinx.coroutines.flow.Flow
@@ -111,6 +108,8 @@ import kotlinx.coroutines.flow.onEach
 fun WordListScreen(
     context: Context,
     state: WordListContract.State,
+    group: String,
+    onGroupChange: (newGroup: String) -> Unit,
     effectFlow: Flow<WordListContract.Effect>?,
     onEventSent: (event: WordListContract.Event) -> Unit,
     onChangeBottomSheetVisibility: (visibility: Boolean) -> Unit,
@@ -145,10 +144,10 @@ fun WordListScreen(
                 WordListContract.SheetContentType.AddGroup ->
                     AddGroupBottomSheetScreen(
                         sheetTitle = stringResource(id = R.string.word_group_add_group_title),
-                        group = { state.group },
-                        onGroupNameChange = { onEventSent(WordListContract.Event.OnGroupChanging(it)) },
+                        group = group,
+                        onGroupNameChange = onGroupChange,
                         onAddGroup = {
-                            if (state.group.isNotEmpty()) {
+                            if (group.isNotEmpty()) {
                                 onEventSent(WordListContract.Event.OnApplyGroup)
                             }
                         }
@@ -324,7 +323,7 @@ fun WordListScreen(
 @Composable
 private fun MainList(
     wordItems: List<WordListListModels>,
-    group: GroupListModels?,
+    group: GroupListItemsModels?,
     listState: LazyListState,
     onEventSent: (event: WordListContract.Event) -> Unit,
     deletedWordIds: MutableList<Long>

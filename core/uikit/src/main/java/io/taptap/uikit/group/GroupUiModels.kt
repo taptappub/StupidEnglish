@@ -8,15 +8,21 @@ sealed class GroupListModels(
     open val id: Long
 )
 
+object PlusGroup : GroupListModels(id = -2)
+
+sealed class GroupListItemsModels(
+    override val id: Long
+) : GroupListModels(id)
+
 data class GroupItemUI(
     override val id: Long,
     val name: String
-) : GroupListModels(id)
+) : GroupListItemsModels(id)
 
 data class NoGroupItemUI(
     override val id: Long,
     val titleRes: Int
-) : GroupListModels(id)
+) : GroupListItemsModels(id)
 
 val NoGroup = NoGroupItemUI(
     id = -1,
@@ -24,7 +30,7 @@ val NoGroup = NoGroupItemUI(
 )
 
 @Composable
-fun GroupListModels.getTitle():String {
+fun GroupListItemsModels.getTitle():String {
     return when (this) {
         is GroupItemUI -> this.name
         is NoGroupItemUI -> stringResource(id = this.titleRes)

@@ -56,6 +56,10 @@ import kotlinx.coroutines.flow.onEach
 fun ImportWordsScreen(
     context: Context,
     state: ImportWordsContract.State,
+    link: String,
+    onLinkChange: (newUrl: String) -> Unit,
+    group: String,
+    onGroupChange: (newGroup: String) -> Unit,
     effectFlow: Flow<ImportWordsContract.Effect>?,
     onEventSent: (event: ImportWordsContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: ImportWordsContract.Effect.Navigation) -> Unit
@@ -82,10 +86,10 @@ fun ImportWordsScreen(
         sheetContent = {
             AddGroupBottomSheetScreen(
                 sheetTitle = stringResource(id = R.string.impw_group_add_group_title),
-                group = { state.group },
-                onGroupNameChange = { onEventSent(ImportWordsContract.Event.OnGroupChanging(it)) },
+                group = group,
+                onGroupNameChange = onGroupChange,
                 onAddGroup = {
-                    if (state.group.isNotEmpty()) {
+                    if (group.isNotEmpty()) {
                         onEventSent(ImportWordsContract.Event.OnApplyGroup)
                     }
                 }
@@ -121,6 +125,8 @@ fun ImportWordsScreen(
             scaffoldState = scaffoldState
         ) {
             ContentScreen(
+                link,
+                onLinkChange,
                 state,
                 onEventSent
             )
@@ -130,6 +136,8 @@ fun ImportWordsScreen(
 
 @Composable
 private fun ContentScreen(
+    link: String,
+    onLinkChange: (newUrl: String) -> Unit,
     state: ImportWordsContract.State,
     onEventSent: (event: ImportWordsContract.Event) -> Unit
 ) {
@@ -151,6 +159,8 @@ private fun ContentScreen(
 
             ImportWordStateScreen(
                 state = state,
+                link = link,
+                onLinkChange = onLinkChange,
                 onEventSent = onEventSent,
                 modifier = Modifier
                     .constrainAs(content) {
@@ -188,6 +198,8 @@ private fun ContentScreen(
 @Composable
 private fun ImportWordStateScreen(
     state: ImportWordsContract.State,
+    link: String,
+    onLinkChange: (newUrl: String) -> Unit,
     modifier: Modifier,
     onEventSent: (event: ImportWordsContract.Event) -> Unit
 ) {
@@ -197,7 +209,7 @@ private fun ImportWordStateScreen(
         modifier = modifier.fillMaxSize()
     ) {
         TextField(
-            value = state.link,
+            value = link,
             isOnFocus = false,
             labelValue = stringResource(id = R.string.impw_textfield_label),
             hintValue = if (state.importWordState is ImportWordsContract.ImportWordState.Error) {
@@ -205,9 +217,7 @@ private fun ImportWordStateScreen(
             } else {
                 ""
             },
-            onValueChange = { text ->
-                onEventSent(ImportWordsContract.Event.OnLinkChanging(text))
-            },
+            onValueChange = onLinkChange,
             isError = state.importWordState is ImportWordsContract.ImportWordState.Error,
             modifier = modifier
                 .fillMaxWidth()

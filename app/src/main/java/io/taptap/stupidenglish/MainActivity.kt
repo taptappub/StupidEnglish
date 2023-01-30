@@ -23,17 +23,12 @@ import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import dagger.hilt.android.AndroidEntryPoint
-import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
-import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
-import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceScreen
-import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceViewModel
 import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.stupidenglish.features.addword.ui.AddWordScreen
 import io.taptap.stupidenglish.features.addword.ui.AddWordViewModel
@@ -319,6 +314,10 @@ private fun ImportWordsDestination(
     ImportWordsScreen(
         context = LocalContext.current,
         state = importWordsState,
+        group = importWordsViewModel.group,
+        link = importWordsViewModel.link,
+        onLinkChange = importWordsViewModel::setLink,
+        onGroupChange= importWordsViewModel::setGroup,
         effectFlow = importWordsViewModel.effect,
         onEventSent = { event -> importWordsViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
@@ -470,6 +469,8 @@ private fun WordListDestination(
     WordListScreen(
         context = LocalContext.current,
         state = wordState,
+        group = wordViewModel.groupName,
+        onGroupChange = wordViewModel::setNewGroupName,
         effectFlow = wordViewModel.effect,
         onEventSent = { event -> wordViewModel.setEvent(event) },
         onChangeBottomSheetVisibility = { visibility ->
@@ -575,14 +576,13 @@ fun NavController.navigateToTab(
 
 
 //Следующий билд
-//1) Переименуй Group в Set
 //2) https://stackoverflow.com/questions/64362801/how-to-handle-visibility-of-a-text-in-jetpack-compose ДЛЯ экрана импорта
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
 //2) Авторизация и сохранение слов в firebase storage
 //5) Диалог подтверждения удаления группы
 //6) Статистика по изучению
-//11) При удалении слова есть возможность его восстановить какое-то время, а при удалении группы такой возможности нет. Может тоже стоит поповер выводить, а то если нечаянно удалишь всю группу с кучей слов, будет очень обидно
+//7) https://stackoverflow.com/questions/67252538/jetpack-compose-update-composable-when-list-changes
 
-Переименуй Group в Set
-вынести в bottombar добавление: сетов, слов
-Изменить экран слова, как в фигме
+
+
+//вынести в bottombar добавление: сетов, слов
