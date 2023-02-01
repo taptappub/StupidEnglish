@@ -1,6 +1,5 @@
 package io.taptap.stupidenglish.features.addsentence.ui
 
-import androidx.compose.runtime.MutableState
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewState
@@ -26,7 +25,7 @@ class AddSentenceContract {
         data class ShowDescription(val description: String) : Effect()
 
         sealed class Navigation : Effect() {
-            data class BackToSentenceList(val ids: String?) : Navigation()
+            object BackToWordList : Navigation()
         }
     }
 }

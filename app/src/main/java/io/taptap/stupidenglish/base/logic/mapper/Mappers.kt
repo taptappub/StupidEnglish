@@ -12,14 +12,18 @@ fun WordDto.toWord(): Word = Word(
     word = word,
     description = description,
     points = points,
-    groupsIds = if (groupsIds.isNullOrEmpty()) {
-        emptyList()
-    } else if (!groupsIds.contains(",")) {
-        listOf(groupsIds.toLong())
-    } else {
-        groupsIds.split(",").map { it.toLong() }
-    }
+    groupsIds = groupsIds.convertGroupsIds()
 )
+
+fun String.convertGroupsIds(): List<Long> {
+    return if (this.isNullOrEmpty()) {
+        emptyList()
+    } else if (!this.contains(",")) {
+        listOf(this.toLong())
+    } else {
+        this.split(",").map { it.toLong() }
+    }
+}
 
 fun List<WordDto>.toWords(): List<Word> = map { it.toWord() }
 

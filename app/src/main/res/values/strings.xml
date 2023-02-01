@@ -43,6 +43,11 @@
     <string name="word_minifab_manual">Manual</string>
     <string name="word_minifab_import">Import</string>
     <string name="word_get_user_error">Error while getting user</string>
+    <string name="word_menu_open">Open set</string>
+    <string name="word_menu_add_word">Add word</string>
+    <string name="word_menu_flashcards">Flashcards</string>
+    <string name="word_menu_learn">Learn</string>
+    <string name="word_menu_remove">Remove</string>
 
     <!-- Sentences List -->
     <string name="stns_list_list_title">Stupid sentences</string>

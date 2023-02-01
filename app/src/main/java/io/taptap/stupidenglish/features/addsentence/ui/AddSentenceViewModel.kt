@@ -37,7 +37,7 @@ class AddSentenceViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.SENTENCE_WORDS_ID)
+            wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.WORDS_IDS)
                 ?: error("No wordsIds was passed to AddSentenceViewModel.")
             val wordsIds = addSentenceArgumentsMapper.mapFrom(wordsIdsString)
             val words = repository.getWordsById(wordsIds!!).takeOrReturn {
@@ -63,13 +63,13 @@ class AddSentenceViewModel @Inject constructor(
                 )
             }
             is AddSentenceContract.Event.OnSaveSentence -> {
-                setInitialState()
+                setState { copy(words = emptyList()) }
                 saveSentence(sentence)
             }
             is AddSentenceContract.Event.OnChipClick ->
                 setEffect { AddSentenceContract.Effect.ShowDescription(event.word.description) }
             is AddSentenceContract.Event.OnBackClick ->
-                setEffect { AddSentenceContract.Effect.Navigation.BackToSentenceList(null) }
+                setEffect { AddSentenceContract.Effect.Navigation.BackToWordList }
         }
     }
 
@@ -82,9 +82,7 @@ class AddSentenceViewModel @Inject constructor(
                     success = {
                         withContext(Dispatchers.Main) {
                             setEffect {
-                                AddSentenceContract.Effect.Navigation.BackToSentenceList(
-                                    wordsIdsString
-                                )
+                                AddSentenceContract.Effect.Navigation.BackToWordList
                             }
                         }
                     },

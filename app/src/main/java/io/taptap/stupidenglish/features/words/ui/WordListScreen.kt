@@ -79,7 +79,7 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
-import io.taptap.stupidenglish.ui.ChooseGroupBottomSheetScreen
+import io.taptap.stupidenglish.ui.MenuBottomSheet
 import io.taptap.uikit.AverageTitle
 import io.taptap.uikit.DialogSheetScreen
 import io.taptap.uikit.EmptyListContent
@@ -132,8 +132,8 @@ fun WordListScreen(
                         onEventSent(WordListContract.Event.OnGroupAddingCancel)
                     WordListContract.SheetContentType.Motivation ->
                         onEventSent(WordListContract.Event.OnMotivationCancel)
-                    WordListContract.SheetContentType.RemoveGroup ->
-                        onEventSent(WordListContract.Event.OnGroupRemovingCancel)
+                    WordListContract.SheetContentType.GroupMenu ->
+                        onEventSent(WordListContract.Event.OnGroupMenuCancel)
                 }
                 keyboardController?.hide()
             }
@@ -169,22 +169,33 @@ fun WordListScreen(
                             onEventSent(WordListContract.Event.OnMotivationDeclineClick)
                         }
                     )
-                WordListContract.SheetContentType.RemoveGroup ->
-                    ChooseGroupBottomSheetScreen(
-                        list = state.dialogGroups,
-                        selectedList = state.removedGroups,
-                        buttonRes = R.string.word_remove_group_button,
+                WordListContract.SheetContentType.GroupMenu ->
+                    MenuBottomSheet(
+                        list = state.groupMenuList,
+                        onClick = {
+                            onEventSent(WordListContract.Event.OnGroupMenuItemClick(it))
+                        },
                         titleRes = R.string.word_remove_group_title,
-                        onItemClick = { item ->
-                            onEventSent(WordListContract.Event.OnGroupSelect(item))
-                        },
-                        onButtonClick = {
-                            onEventSent(WordListContract.Event.OnApplyGroupsRemove)
-                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .animateContentSize()
                     )
+//                WordListContract.SheetContentType.RemoveGroup ->
+//                    ChooseGroupBottomSheetScreen(
+//                        list = state.dialogGroups,
+//                        selectedList = state.removedGroups,
+//                        buttonRes = R.string.word_remove_group_button,
+//                        titleRes = R.string.word_remove_group_title,
+//                        onItemClick = { item ->
+//                            onEventSent(WordListContract.Event.OnGroupSelect(item))
+//                        },
+//                        onButtonClick = {
+//                            onEventSent(WordListContract.Event.OnApplyGroupsRemove)
+//                        },
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .animateContentSize()
+//                    )
             }
         },
     ) {
@@ -212,8 +223,8 @@ fun WordListScreen(
                             message = context.getString(effect.errorRes),
                             duration = SnackbarDuration.Short
                         )
-//                    is WordListContract.Effect.Navigation.ToAddSentence ->
-//                        onNavigationRequested(effect)
+                    is WordListContract.Effect.Navigation.ToAddSentence ->
+                        onNavigationRequested(effect)
                     is WordListContract.Effect.Navigation.ToProfile ->
                         onNavigationRequested(effect)
                     is WordListContract.Effect.ShowUnderConstruction ->
@@ -240,6 +251,9 @@ fun WordListScreen(
                             message = context.getString(effect.errorRes),
                             duration = SnackbarDuration.Short
                         )
+                    is WordListContract.Effect.Navigation.ToAddWordWithGroup -> TODO()
+                    is WordListContract.Effect.Navigation.ToFlashCards -> TODO()
+                    is WordListContract.Effect.Navigation.ToGroupDetails -> TODO()
                 }
             }?.collect()
         }

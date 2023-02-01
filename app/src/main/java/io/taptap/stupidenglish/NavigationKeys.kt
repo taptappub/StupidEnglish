@@ -1,12 +1,12 @@
 package io.taptap.stupidenglish
 
 import androidx.annotation.DrawableRes
+import io.taptap.stupidenglish.archive.ArchiveNavigationKeys
 
 object NavigationKeys {
 
     object Arg {
         const val WORDS_IDS = "words_ids"
-        const val SENTENCE_WORDS_ID = "sentence_words_id"
     }
 
     object Route {
@@ -17,7 +17,8 @@ object NavigationKeys {
         const val SE_SETS = "stupid_english_sets"
 //        const val REMEMBER = "stupid_english_remember"
 //        const val SE_REMEMBER = "$REMEMBER/{${Arg.WORDS_ID}}"
-
+        const val ADD_SENTENCE = "stupid_english_add_sentences"
+        const val SE_ADD_SENTENCE = "$ADD_SENTENCE/{${ArchiveNavigationKeys.Arg.WORDS_IDS}}"
         const val SE_IMPORT_WORDS = "stupid_english_import_words"
         const val SE_IMPORT_WORDS_TUTORIAL = "stupid_english_import_words_tutorial"
         const val SE_PROFILE = "stupid_english_profile"
@@ -25,14 +26,6 @@ object NavigationKeys {
         const val SE_TERMS = "stupid_english_terms"
         const val SE_SPLASH = "stupid_english_splash"
     }
-
-    /**
-     * Archive
-     */
-//    const val SENTENCES = "stupid_english_sentences"
-//    const val SE_SENTENCES = "$SENTENCES?${Arg.WORDS_ID}={${Arg.WORDS_ID}}"
-//    const val ADD_SENTENCE = "stupid_english_add_sentences"
-//    const val SE_ADD_SENTENCE = "$ADD_SENTENCE/{${Arg.SENTENCE_WORDS_ID}}"
 
     enum class BottomNavigationScreen(
         val route: String,
@@ -49,10 +42,5 @@ object NavigationKeys {
             title = R.string.main_bottom_bar_sets_title,
             icon = R.drawable.ic_cloud_icon
         )
-//        SE_SENTENCES(
-//            route = Route.SE_SENTENCES,
-//            title = R.string.main_bottom_bar_sentences_title,
-//            icon = R.drawable.ic_cloud_icon
-//        )
     }
 }

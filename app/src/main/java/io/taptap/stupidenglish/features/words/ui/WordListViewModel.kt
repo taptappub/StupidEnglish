@@ -16,6 +16,7 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
+import io.taptap.stupidenglish.ui.MenuItem
 import io.taptap.uikit.group.GroupItemUI
 import io.taptap.uikit.group.GroupListItemsModels
 import io.taptap.uikit.group.GroupListModels
@@ -58,8 +59,14 @@ class WordListViewModel @Inject constructor(
     override fun setInitialState() = WordListContract.State(
         wordList = listOf(),
         isLoading = true,
-        dialogGroups = listOf(),
-        removedGroups = listOf(),
+        groupMenuList = listOf(
+            MenuItem(0, R.string.word_menu_open),
+            MenuItem(1, R.string.word_menu_add_word),
+            MenuItem(2, R.string.word_menu_flashcards),
+            MenuItem(3, R.string.word_menu_learn),
+            MenuItem(4, R.string.word_menu_remove)
+        ),
+        longClickedGroup = null,
         currentGroup = NoGroup,
         sheetContentType = WordListContract.SheetContentType.Motivation,
         deletedWordIds = mutableListOf(),
@@ -76,7 +83,7 @@ class WordListViewModel @Inject constructor(
             }
             is WordListContract.Event.OnOnboardingClick -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    val randomWords = getRandomWords()
+                    val randomWords = getRandomWords(viewState.value.currentGroup.id)
                     withContext(Dispatchers.Main) {
                         if (randomWords == null) {
                             setEffect {
@@ -85,9 +92,12 @@ class WordListViewModel @Inject constructor(
                                 )
                             }
                         } else {
-//                            setEffect {
-//                                WordListContract.Effect.Navigation.ToAddSentence(randomWords)
-//                            }
+                            setEffect {
+                                WordListContract.Effect.Navigation.ToAddSentence(
+                                    group = viewState.value.currentGroup,
+                                    wordIds = randomWords
+                                )
+                            }
                         }
                     }
                 }
@@ -98,7 +108,7 @@ class WordListViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
 
-                    val randomWords = getRandomWords()
+                    val randomWords = getRandomWords(viewState.value.currentGroup.id)
                     withContext(Dispatchers.Main) {
                         if (randomWords != null) {
 //                            setEffect {
@@ -124,7 +134,7 @@ class WordListViewModel @Inject constructor(
 
                 setEffect { WordListContract.Effect.HideBottomSheet }
             }
-            is WordListContract.Event.OnGroupRemovingCancel -> {
+            is WordListContract.Event.OnGroupMenuCancel -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 setNewGroupName("")
                 setState {
@@ -169,28 +179,33 @@ class WordListViewModel @Inject constructor(
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
                 setEffect { WordListContract.Effect.ShowBottomSheet }
 
-                val selectedGroups = ArrayList(viewState.value.removedGroups)
-                selectedGroups.add(event.group)
-
                 setState {
                     copy(
-                        removedGroups = selectedGroups,
-                        sheetContentType = WordListContract.SheetContentType.RemoveGroup
+                        sheetContentType = WordListContract.SheetContentType.GroupMenu,
+                        longClickedGroup = event.group
                     )
                 }
             }
-            is WordListContract.Event.OnGroupSelect -> {
-                val selectedGroups = ArrayList(viewState.value.removedGroups)
-                if (selectedGroups.contains(event.item)) {
-                    selectedGroups.remove(event.item)
-                } else {
-                    selectedGroups.add(event.item)
-                }
-                setState { copy(removedGroups = selectedGroups) }
-            }
-            is WordListContract.Event.OnApplyGroupsRemove -> {
+            is WordListContract.Event.OnGroupMenuItemClick -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
-                removeGroups(viewState.value.removedGroups)
+                handleMenuItem(event.item)
+                setEffect { WordListContract.Effect.HideBottomSheet }
+                setState {
+                    copy(
+                        sheetContentType = WordListContract.SheetContentType.Motivation,
+                        longClickedGroup = null
+                    )
+                }
+            }
+            is WordListContract.Event.OnGroupMenuCancel -> {
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
+                setEffect { WordListContract.Effect.HideBottomSheet }
+                setState {
+                    copy(
+                        sheetContentType = WordListContract.SheetContentType.Motivation,
+                        longClickedGroup = null
+                    )
+                }
             }
             is WordListContract.Event.OnApplySentenceDismiss -> {
                 viewModelScope.launch(Dispatchers.IO) {
@@ -219,6 +234,48 @@ class WordListViewModel @Inject constructor(
             }
             is WordListContract.Event.OnProfileClick ->
                 setEffect { WordListContract.Effect.Navigation.ToProfile }
+        }
+    }
+
+    private fun handleMenuItem(item: MenuItem) {
+        val currentGroup = requireNotNull(viewState.value.longClickedGroup)
+        when (item.id) {
+            0 -> setEffect { WordListContract.Effect.Navigation.ToGroupDetails(group = currentGroup) }
+            1 -> setEffect { WordListContract.Effect.Navigation.ToAddWordWithGroup(group = currentGroup) }
+            2 -> setEffect { WordListContract.Effect.Navigation.ToFlashCards(group = currentGroup) }
+            3 -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val randomWords = getRandomWords(currentGroup.id)
+                    withContext(Dispatchers.Main) {
+                        if (randomWords == null) {
+                            setEffect {
+                                WordListContract.Effect.GetRandomWordsError(
+                                    R.string.word_get_random_words_error
+                                )
+                            }
+                        } else {
+                            setEffect {
+                                WordListContract.Effect.Navigation.ToAddSentence(
+                                    currentGroup,
+                                    randomWords
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            4 -> removeGroups(listOf(currentGroup))
+            else -> error("there is no such menu element")
+            /* MenuItem(0, R.string.word_menu_open),
+             MenuItem(1, R.string.word_menu_add_word),
+             MenuItem(2, R.string.word_menu_flashcards),
+             MenuItem(3, R.string.word_menu_learn),
+             MenuItem(4, R.string.word_menu_remove)*/
+
+//            data class ToGroupDetails(val group: GroupListItemsModels) : WordListContract.Effect.Navigation()
+//            data class ToAddWordWithGroup(val group: GroupListItemsModels) : WordListContract.Effect.Navigation()
+//            data class ToFlashCards(val group: GroupListItemsModels) : WordListContract.Effect.Navigation()
+//            data class ToAddSentence(val group: GroupListItemsModels, val wordIds: List<Long>) : WordListContract.Effect.Navigation()
         }
     }
 
@@ -254,12 +311,10 @@ class WordListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun deleteWord(item: WordListItemUI) {
-        repository.deleteWord(item.id)
-    }
-
-    private suspend fun getRandomWords(): List<Long>? {
-        return repository.getRandomWords(3)
+    private suspend fun getRandomWords(
+        groupId: Long
+    ): List<Long>? {
+        return repository.getRandomWords(3, groupId)
             .map { list ->
                 list.map { it.id }
             }
@@ -346,19 +401,14 @@ class WordListViewModel @Inject constructor(
         )
 
         mainList.add(WordListDynamicTitleUI(currentGroup = currentGroup))
-//        mainList.add(WordListTitleUI(valueRes = R.string.word_list_list_title))
         if (filteredList.isEmpty()) {
             mainList.add(WordListEmptyUI(descriptionRes = R.string.word_empty_list_description))
         } else {
             mainList.addAll(filteredList)
         }
 
-        val dialogGroups = groupsList.toMutableList().apply {
-            remove(NoGroup)
-        }
-
         setState {
-            copy(wordList = mainList, isLoading = false, dialogGroups = dialogGroups)
+            copy(wordList = mainList, isLoading = false)
         }
     }
 
@@ -398,30 +448,16 @@ class WordListViewModel @Inject constructor(
     private fun removeGroups(removedGroups: List<GroupListModels>) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.removeGroups(removedGroups.map { it.id })
-                .handle(
-                    success = {
-                        withContext(Dispatchers.Main) {
-                            setState {
-                                copy(
-                                    sheetContentType = WordListContract.SheetContentType.Motivation,
-                                    removedGroups = emptyList()
-                                )
-                            }
-                            setEffect { WordListContract.Effect.HideBottomSheet }
+                .doOnComplete {
+                    withContext(Dispatchers.Main) {
+                        setState {
+                            copy(
+                                sheetContentType = WordListContract.SheetContentType.Motivation,
+                            )
                         }
-                    },
-                    error = {
-                        withContext(Dispatchers.Main) {
-                            setState {
-                                copy(
-                                    sheetContentType = WordListContract.SheetContentType.Motivation,
-                                    removedGroups = emptyList()
-                                )
-                            }
-                            setEffect { WordListContract.Effect.HideBottomSheet }
-                        }
+                        setEffect { WordListContract.Effect.HideBottomSheet }
                     }
-                )
+                }
         }
     }
 

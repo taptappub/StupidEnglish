@@ -65,51 +65,8 @@ private fun StupidApp() {
                     onEventSent = { /*event -> mainViewModel.setEvent(event)*/ }
                 )
             }
-            composable(
-                route = ArchiveNavigationKeys.Route.SE_ADD_SENTENCE,
-                deepLinks = listOf(navDeepLink {
-                    uriPattern =
-                        "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}={${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
-                }),
-                enterTransition = {
-                    fadeIn()
-                },
-                exitTransition = {
-                    fadeOut()
-                }
-            ) {
-                AddSentenceDestination(navController)
-            }
         }
     }
-}
-
-@Composable
-private fun AddSentenceDestination(navController: NavHostController) {
-    val addSentenceViewModel: AddSentenceViewModel = hiltViewModel()
-    val addSentenceState by addSentenceViewModel.viewState.collectAsState()
-    val sentence = addSentenceViewModel.sentence
-
-    AddSentenceScreen(
-        context = LocalContext.current,
-        state = addSentenceState,
-        sentence = sentence,
-        onSentenceChanged = addSentenceViewModel::setSentence,
-        effectFlow = addSentenceViewModel.effect,
-        onEventSent = { event -> addSentenceViewModel.setEvent(event) },
-        onNavigationRequested = { navigationEffect ->
-            if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
-                navController.backQueue.removeIf {
-                    it.destination.route == ArchiveNavigationKeys.Route.SE_ADD_SENTENCE
-                    //|| it.destination.route == NavigationKeys.Route.SE_REMEMBER
-                }
-                navController.navigateToTab(route = SENTENCES) {
-                    popUpTo(route = ArchiveNavigationKeys.Route.SE_ADD_SENTENCE) {
-                        inclusive = true
-                    }
-                }
-            }
-        })
 }
 
 
@@ -134,7 +91,7 @@ private fun SentenceListDestination(
         onNavigationRequested = { navigationEffect ->
             if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
                 val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                navController.navigate("${ArchiveNavigationKeys.Route.ADD_SENTENCE}/${ids}")
+                navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${ids}")
 //                navController.navigate("${NavigationKeys.Route.REMEMBER}/${ids}")
             }
         }

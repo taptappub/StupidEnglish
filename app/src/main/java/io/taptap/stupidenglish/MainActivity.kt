@@ -65,6 +65,11 @@ import io.taptap.uikit.theme.StupidEnglishTheme
 import javax.inject.Inject
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.navigation.navDeepLink
+import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
+import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
+import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceScreen
+import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceViewModel
 
 const val URI = "https://stupidenglish.app"
 
@@ -197,6 +202,21 @@ class MainActivity : ComponentActivity() {
                     route = NavigationKeys.Route.SE_AUTH
                 ) {
                     AuthDestination(navController)
+                }
+                composable(
+                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
+                    deepLinks = listOf(navDeepLink {
+                        uriPattern =
+                            "$URI/${NavigationKeys.Arg.WORDS_IDS}={${NavigationKeys.Arg.WORDS_IDS}}"
+                    }),
+                    enterTransition = {
+                        fadeIn()
+                    },
+                    exitTransition = {
+                        fadeOut()
+                    }
+                ) {
+                    AddSentenceDestination(navController)
                 }
                 /*composable(
                     route = NavigationKeys.Route.SE_REMEMBER,
@@ -448,6 +468,35 @@ private fun StackDestination(navController: NavHostController) {
         })
 }
 
+@Composable
+private fun AddSentenceDestination(navController: NavHostController) {
+    val addSentenceViewModel: AddSentenceViewModel = hiltViewModel()
+    val addSentenceState by addSentenceViewModel.viewState.collectAsState()
+    val sentence = addSentenceViewModel.sentence
+
+    AddSentenceScreen(
+        context = LocalContext.current,
+        state = addSentenceState,
+        sentence = sentence,
+        onSentenceChanged = addSentenceViewModel::setSentence,
+        effectFlow = addSentenceViewModel.effect,
+        onEventSent = { event -> addSentenceViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToWordList) {
+                navController.popBackStack()
+//                navController.backQueue.removeIf {
+//                    it.destination.route == NavigationKeys.Route.SE_ADD_SENTENCE
+//                    //|| it.destination.route == NavigationKeys.Route.SE_REMEMBER
+//                }
+//                navController.navigateToTab(route = ArchiveNavigationKeys.Route.SENTENCES) {
+//                    popUpTo(route = NavigationKeys.Route.SE_ADD_SENTENCE) {
+//                        inclusive = true
+//                    }
+//                }
+            }
+        })
+}
+
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
@@ -483,18 +532,22 @@ private fun WordListDestination(
                 is WordListContract.Effect.Navigation.ToAddWord -> {
                     navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
                 }
-//                is WordListContract.Effect.Navigation.ToAddSentence -> {
-//                    val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-//                    navController.navigateToTab(
-//                        route = "$SENTENCES?${NavigationKeys.Arg.WORDS_IDS}=$ids"
-//                    )
-//                }
                 is WordListContract.Effect.Navigation.ToImportWords -> {
                     navController.navigate(NavigationKeys.Route.SE_IMPORT_WORDS)
                 }
                 is WordListContract.Effect.Navigation.ToProfile -> {
                     navController.navigate(NavigationKeys.Route.SE_PROFILE)
                 }
+                is WordListContract.Effect.Navigation.ToAddSentence -> {
+                    val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
+                    navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${ids}")
+                }
+
+
+
+                is WordListContract.Effect.Navigation.ToAddWordWithGroup -> TODO()
+                is WordListContract.Effect.Navigation.ToFlashCards -> TODO()
+                is WordListContract.Effect.Navigation.ToGroupDetails -> TODO()
             }
         })
 }
@@ -586,9 +639,13 @@ fun NavController.navigateToTab(
 //7) https://stackoverflow.com/questions/67252538/jetpack-compose-update-composable-when-list-changes
 
 
+
+//RemoveGroup - перенести в архив
 //переверстай AddWordScreen, чтобы не прыгало ничего (Не забудь добавить Галочку "Принять" в верхний правый угол)
-//показывать контекстное меню по лонгклику по группе
+//если добавляешь слово через группу, то группа, должна быть там выбрана по-умолчанию (передавать группу на экран)
 //5) Обучение карточками или предложениями
 //поправить диалог добавления группы
 //реализовать view all с группами
 //Ты сломал OnOnboardingClick и OnMotivationConfirmClick
+//придется переделать связь Group и Word, т.к. должно быть многие ко многим
+//alarmStart - подумать как лучше доставать рандомные слова

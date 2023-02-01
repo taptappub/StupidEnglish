@@ -63,7 +63,7 @@ fun AddSentenceScreen(
     LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
         effectFlow?.onEach { effect ->
             when (effect) {
-                is AddSentenceContract.Effect.Navigation.BackToSentenceList -> onNavigationRequested(
+                is AddSentenceContract.Effect.Navigation.BackToWordList -> onNavigationRequested(
                     effect
                 )
                 is AddSentenceContract.Effect.SaveError ->

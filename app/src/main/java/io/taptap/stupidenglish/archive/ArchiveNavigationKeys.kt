@@ -7,7 +7,6 @@ object ArchiveNavigationKeys {
 
     object Arg {
         const val WORDS_IDS = "words_ids"
-        const val SENTENCE_WORDS_ID = "sentence_words_id"
     }
 
     object Route {
@@ -16,8 +15,6 @@ object ArchiveNavigationKeys {
 
         const val SENTENCES = "stupid_english_sentences"
         const val SE_SENTENCES = "$SENTENCES?${Arg.WORDS_IDS}={${Arg.WORDS_IDS}}"
-        const val ADD_SENTENCE = "stupid_english_add_sentences"
-        const val SE_ADD_SENTENCE = "$ADD_SENTENCE/{${Arg.SENTENCE_WORDS_ID}}"
     }
 
     enum class BottomNavigationScreen(

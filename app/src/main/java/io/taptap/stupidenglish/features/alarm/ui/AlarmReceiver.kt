@@ -6,10 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.util.Log
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.core.app.TaskStackBuilder
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import dagger.hilt.android.AndroidEntryPoint
 import io.taptap.notify.Notify
@@ -86,7 +83,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val string = words.joinToString(",") { it.id.toString() }
         val taskDetailIntent = Intent(
             Intent.ACTION_VIEW,
-            "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}=$string".toUri(),
+            "$URI/${NavigationKeys.Arg.WORDS_IDS}=$string".toUri(),
             context,
             MainActivity::class.java
         )
