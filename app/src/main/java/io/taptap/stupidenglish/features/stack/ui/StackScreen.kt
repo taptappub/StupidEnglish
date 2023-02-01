@@ -81,9 +81,6 @@ fun StackScreen(
                 is StackContract.Effect.Navigation.BackToSentenceList -> onNavigationRequested(
                     effect
                 )
-                is StackContract.Effect.Navigation.ToAddSentence -> onNavigationRequested(
-                    effect
-                )
             }
         }?.collect()
     }

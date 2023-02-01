@@ -225,6 +225,8 @@ fun WordListScreen(
                         )
                     is WordListContract.Effect.Navigation.ToAddSentence ->
                         onNavigationRequested(effect)
+                    is WordListContract.Effect.Navigation.ToFlashCards ->
+                        onNavigationRequested(effect)
                     is WordListContract.Effect.Navigation.ToProfile ->
                         onNavigationRequested(effect)
                     is WordListContract.Effect.ShowUnderConstruction ->
@@ -252,7 +254,6 @@ fun WordListScreen(
                             duration = SnackbarDuration.Short
                         )
                     is WordListContract.Effect.Navigation.ToAddWordWithGroup -> TODO()
-                    is WordListContract.Effect.Navigation.ToFlashCards -> TODO()
                     is WordListContract.Effect.Navigation.ToGroupDetails -> TODO()
                 }
             }?.collect()

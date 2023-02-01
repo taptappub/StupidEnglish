@@ -74,7 +74,7 @@ class WordListContract {
 
             data class ToGroupDetails(val group: GroupListItemsModels) : Navigation()
             data class ToAddWordWithGroup(val group: GroupListItemsModels) : Navigation()
-            data class ToFlashCards(val group: GroupListItemsModels) : Navigation()
+            data class ToFlashCards(val group: GroupListItemsModels, val wordIds: List<Long>) : Navigation()
             data class ToAddSentence(val group: GroupListItemsModels, val wordIds: List<Long>) : Navigation()
         }
 

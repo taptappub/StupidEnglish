@@ -36,7 +36,6 @@ class StackContract {
         data class SaveError(val errorRes: Int) : Effect()
 
         sealed class Navigation : Effect() {
-            data class ToAddSentence(val wordIds: List<Long>) : Navigation()
             object BackToSentenceList : Navigation()
         }
     }

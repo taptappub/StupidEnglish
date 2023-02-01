@@ -28,6 +28,8 @@ class StackViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.WORDS_IDS)
                 ?: error("No wordsIds was passed to AddSentenceViewModel.")
+            val currentGroupId = stateHandle.get<String>(NavigationKeys.Arg.GROUP_ID)?.toLong()
+                ?: error("No group was passed to AddSentenceViewModel.")
 
             val wordsIds = addSentenceArgumentsMapper.mapFrom(wordsIdsString)
             val words = repository.getWordsById(wordsIds!!).takeOrReturn {
@@ -68,8 +70,7 @@ class StackViewModel @Inject constructor(
             }
             is StackContract.Event.OnCardDisappeared -> {
                 if (event.position == viewState.value.words.size - 1) {
-                    val wordsIds = viewState.value.words.map { it.id }
-                    setEffect { StackContract.Effect.Navigation.ToAddSentence(wordsIds) }
+                    setEffect { StackContract.Effect.Navigation.BackToSentenceList }
                 }
             }
             is StackContract.Event.OnBackClick ->

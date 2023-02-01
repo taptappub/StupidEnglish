@@ -65,6 +65,8 @@ import io.taptap.uikit.theme.StupidEnglishTheme
 import javax.inject.Inject
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
@@ -207,8 +209,20 @@ class MainActivity : ComponentActivity() {
                     route = NavigationKeys.Route.SE_ADD_SENTENCE,
                     deepLinks = listOf(navDeepLink {
                         uriPattern =
-                            "$URI/${NavigationKeys.Arg.WORDS_IDS}={${NavigationKeys.Arg.WORDS_IDS}}"
+                            "$URI" +
+                                    "/${NavigationKeys.Arg.WORDS_IDS}={${NavigationKeys.Arg.WORDS_IDS}}" +
+                                    "/${NavigationKeys.Arg.GROUP_ID}={${NavigationKeys.Arg.GROUP_ID}}"
                     }),
+//                    arguments = listOf(
+//                        navArgument(NavigationKeys.Arg.WORDS_IDS) {
+//                            type = NavType.StringType
+//                            nullable = true
+//                        },
+//                        navArgument(NavigationKeys.Arg.GROUP_ID) {
+//                            type = NavType.LongType
+//                            nullable = true
+//                        },
+//                    ),
                     enterTransition = {
                         fadeIn()
                     },
@@ -218,11 +232,13 @@ class MainActivity : ComponentActivity() {
                 ) {
                     AddSentenceDestination(navController)
                 }
-                /*composable(
+                composable(
                     route = NavigationKeys.Route.SE_REMEMBER,
                     deepLinks = listOf(navDeepLink {
                         uriPattern =
-                            "$URI/${NavigationKeys.Arg.WORDS_ID}={${NavigationKeys.Arg.WORDS_ID}}"
+                            "$URI" +
+                                    "/${NavigationKeys.Arg.WORDS_IDS}={${NavigationKeys.Arg.WORDS_IDS}}" +
+                                    "/${NavigationKeys.Arg.GROUP_ID}={${NavigationKeys.Arg.GROUP_ID}}"
                     }),
                     enterTransition = {
                         fadeIn()
@@ -232,7 +248,7 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     StackDestination(navController)
-                }*/
+                }
             }
 
             if (mainState.shouldShowBottomBar(navController)) {
@@ -339,7 +355,7 @@ private fun ImportWordsDestination(
         group = importWordsViewModel.group,
         link = importWordsViewModel.link,
         onLinkChange = importWordsViewModel::setLink,
-        onGroupChange= importWordsViewModel::setGroup,
+        onGroupChange = importWordsViewModel::setGroup,
         effectFlow = importWordsViewModel.effect,
         onEventSent = { event -> importWordsViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
@@ -461,9 +477,6 @@ private fun StackDestination(navController: NavHostController) {
                 is StackContract.Effect.Navigation.BackToSentenceList -> {
                     navController.popBackStack()
                 }
-                is StackContract.Effect.Navigation.ToAddSentence -> {
-                    throw IllegalStateException("Ты не доделал...")
-                }
             }
         })
 }
@@ -540,13 +553,17 @@ private fun WordListDestination(
                 }
                 is WordListContract.Effect.Navigation.ToAddSentence -> {
                     val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                    navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${ids}")
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${ids}/${groupId}")
+                }
+                is WordListContract.Effect.Navigation.ToFlashCards -> {
+                    val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.REMEMBER}/${ids}/${groupId}")
                 }
 
 
-
                 is WordListContract.Effect.Navigation.ToAddWordWithGroup -> TODO()
-                is WordListContract.Effect.Navigation.ToFlashCards -> TODO()
                 is WordListContract.Effect.Navigation.ToGroupDetails -> TODO()
             }
         })
@@ -640,6 +657,8 @@ fun NavController.navigateToTab(
 
 
 
+
+//Убрать RandomWords, сделать всегда передачу группы, а Random words будут доставаться на месте
 //RemoveGroup - перенести в архив
 //переверстай AddWordScreen, чтобы не прыгало ничего (Не забудь добавить Галочку "Принять" в верхний правый угол)
 //если добавляешь слово через группу, то группа, должна быть там выбрана по-умолчанию (передавать группу на экран)
@@ -649,3 +668,5 @@ fun NavController.navigateToTab(
 //Ты сломал OnOnboardingClick и OnMotivationConfirmClick
 //придется переделать связь Group и Word, т.к. должно быть многие ко многим
 //alarmStart - подумать как лучше доставать рандомные слова
+//сделать недоступными кнопки обучения для Группы без слов
+//писать на AddSentenceScreen что это за группа (StackView использовать) - теперь нельзя поделиться группой

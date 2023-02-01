@@ -242,7 +242,27 @@ class WordListViewModel @Inject constructor(
         when (item.id) {
             0 -> setEffect { WordListContract.Effect.Navigation.ToGroupDetails(group = currentGroup) }
             1 -> setEffect { WordListContract.Effect.Navigation.ToAddWordWithGroup(group = currentGroup) }
-            2 -> setEffect { WordListContract.Effect.Navigation.ToFlashCards(group = currentGroup) }
+            2 -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val randomWords = getRandomWords(currentGroup.id)
+                    withContext(Dispatchers.Main) {
+                        if (randomWords == null) {
+                            setEffect {
+                                WordListContract.Effect.GetRandomWordsError(
+                                    R.string.word_get_random_words_error
+                                )
+                            }
+                        } else {
+                            setEffect {
+                                WordListContract.Effect.Navigation.ToFlashCards(
+                                    group = currentGroup,
+                                    wordIds = randomWords
+                                )
+                            }
+                        }
+                    }
+                }
+            }
             3 -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     val randomWords = getRandomWords(currentGroup.id)

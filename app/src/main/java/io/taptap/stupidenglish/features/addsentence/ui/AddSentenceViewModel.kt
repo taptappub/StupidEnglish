@@ -39,6 +39,9 @@ class AddSentenceViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.WORDS_IDS)
                 ?: error("No wordsIds was passed to AddSentenceViewModel.")
+            val currentGroupId = stateHandle.get<String>(NavigationKeys.Arg.GROUP_ID)?.toLong()
+                ?: error("No group was passed to AddSentenceViewModel.")
+
             val wordsIds = addSentenceArgumentsMapper.mapFrom(wordsIdsString)
             val words = repository.getWordsById(wordsIds!!).takeOrReturn {
                 withContext(Dispatchers.Main) {
