@@ -7,6 +7,6 @@ import taptap.pub.Reaction
 interface IRandomWordsDataSource {
     suspend fun getRandomWords(
         maxCount: Int,
-        group: Long = NoGroup.id
+        groupId: Long = NoGroup.id
     ): Reaction<List<Word>>
 }

@@ -1,22 +1,17 @@
 package io.taptap.stupidenglish.features.stack.data
 
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
-import io.taptap.stupidenglish.base.logic.mapper.toWord
-import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.base.logic.sources.words.read.IReadWordsDataSource
+import io.taptap.stupidenglish.base.logic.sources.words.read.ReadWordsDataSource
 import taptap.pub.Reaction
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class StackRepository @Inject constructor(
+    private val readReadWordsDataSource: ReadWordsDataSource,
     private val wordDao: WordDao
-) {
-    suspend fun getWordsById(wordsIds: List<Long>): Reaction<List<Word>> = Reaction.on {
-        wordsIds.map {
-            wordDao.getWordDto(it)?.toWord()
-                ?: error("There is no word with id = $it")
-        }
-    }
+) : IReadWordsDataSource by readReadWordsDataSource {
 
     suspend fun rememberWord(wordId: Long): Reaction<Unit> = Reaction.on {
         val wordDto = wordDao.getWordDto(wordId)

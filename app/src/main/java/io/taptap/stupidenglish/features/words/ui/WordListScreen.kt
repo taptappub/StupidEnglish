@@ -213,11 +213,6 @@ fun WordListScreen(
                         onNavigationRequested(effect)
                     is WordListContract.Effect.Navigation.ToImportWords ->
                         onNavigationRequested(effect)
-                    is WordListContract.Effect.GetRandomWordsError ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(effect.errorRes),
-                            duration = SnackbarDuration.Short
-                        )
                     is WordListContract.Effect.GetWordsError ->
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(effect.errorRes),

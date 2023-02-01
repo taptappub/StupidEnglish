@@ -64,12 +64,12 @@ dependencies {
     //accompanist
     api "com.google.accompanist:accompanist-systemuicontroller:0.29.0-alpha"
     api "com.google.accompanist:accompanist-insets:0.26.0-alpha"
-    api "com.google.accompanist:accompanist-navigation-material:0.26.0-alpha"
-    api "com.google.accompanist:accompanist-navigation-animation:0.26.0-alpha"
+    api "com.google.accompanist:accompanist-navigation-material:0.29.0-alpha"
+    api "com.google.accompanist:accompanist-navigation-animation:0.29.0-alpha"
     api "com.google.accompanist:accompanist-flowlayout:0.26.0-alpha"
     api "com.google.accompanist:accompanist-pager:0.26.0-alpha"
     api "com.google.accompanist:accompanist-pager-indicators:0.29.0-alpha"
-    api "com.google.accompanist:accompanist-webview:0.26.0-alpha"
+    api "com.google.accompanist:accompanist-webview:0.29.0-alpha"
 
     // Stack view
     api "com.yuyakaido.android:card-stack-view:2.3.4"

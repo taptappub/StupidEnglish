@@ -5,17 +5,21 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.util.Log
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import dagger.hilt.android.AndroidEntryPoint
 import io.taptap.notify.Notify
+import io.taptap.stupidenglish.AUTHORITY
 import io.taptap.stupidenglish.MainActivity
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
+import io.taptap.stupidenglish.SCHEME
 import io.taptap.stupidenglish.URI
 import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.alarm.data.AlarmRepository
+import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.*
 import taptap.pub.takeOrNull
 import javax.inject.Inject
@@ -43,7 +47,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private fun alarmStart(context: Context) {
         coroutineScope.launch {
-            val words = alarmRepository.getRandomWords(3).takeOrNull()
+            val words = alarmRepository.getRandomWords(2).takeOrNull()
             if (words != null) {
                 withContext(Dispatchers.Main) {
                     showPushNotification(context, words)
@@ -81,12 +85,32 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private fun createPendingIntent(context: Context, words: List<Word>): PendingIntent {
         val string = words.joinToString(",") { it.id.toString() }
+
+        val uri: Uri = Uri.Builder().apply {
+            scheme(SCHEME)
+            authority(AUTHORITY)
+            appendPath("learn")
+            appendPath(NoGroup.id.toString())
+            appendQueryParameter(NavigationKeys.Arg.WORDS_IDS, string)
+        }.build()
+
+        val builder: Uri.Builder = Uri.Builder()
+        builder.scheme(SCHEME)
+            .authority(AUTHORITY)
+            .appendPath("learn")
+            .appendPath(NoGroup.id.toString())
+            .appendQueryParameter(NavigationKeys.Arg.WORDS_IDS, string)
+        val newUri: Uri = builder.build()
+
         val taskDetailIntent = Intent(
             Intent.ACTION_VIEW,
-            "$URI/${NavigationKeys.Arg.WORDS_IDS}=$string".toUri(),
+            // working "$URI/${NavigationKeys.Arg.WORDS_IDS}=$string".toUri(),
+            newUri,
             context,
             MainActivity::class.java
-        )
+        ).apply {
+            this.putExtra(NavigationKeys.Arg.WORDS_IDS, string)
+        }
 
         val requestCode = 231
 

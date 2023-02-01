@@ -17,14 +17,12 @@ import javax.inject.Singleton
 
 @Singleton
 class WordListRepository @Inject constructor(
-    randomWordsDataSource: IRandomWordsDataSource,
     readGroupsDataSource: IReadGroupsDataSource,
     writeGroupsDataSource: IWriteGroupsDataSource,
     readUserDataSource: IReadUserDataSource,
     private val wordDao: WordDao,
     private val settings: Settings
-) : IRandomWordsDataSource by randomWordsDataSource,
-    IReadGroupsDataSource by readGroupsDataSource,
+) : IReadGroupsDataSource by readGroupsDataSource,
     IWriteGroupsDataSource by writeGroupsDataSource,
     IReadUserDataSource by readUserDataSource {
 

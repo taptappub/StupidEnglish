@@ -25,18 +25,10 @@ private const val SENTENCES_FOR_MOTIVATION = 2
 class SentencesListViewModel @Inject constructor(
     private val repository: SentencesListRepository,
     private val shareUtil: ShareUtil,
-    stateHandle: SavedStateHandle,
-    addSentenceArgumentsMapper: AddSentenceArgumentsMapper
+    stateHandle: SavedStateHandle
 ) : BaseViewModel<SentencesListContract.Event, SentencesListContract.State, SentencesListContract.Effect>() {
 
     init {
-        val wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.WORDS_IDS)
-        val wordsIds = addSentenceArgumentsMapper.mapFrom(wordsIdsString)
-
-        if (wordsIds != null) {
-            setEffect { SentencesListContract.Effect.Navigation.ToAddSentence(wordsIds) }
-        }
-
         viewModelScope.launch(Dispatchers.IO) { observeSentenceList() }
         viewModelScope.launch(Dispatchers.IO) { motivationShare() }
     }

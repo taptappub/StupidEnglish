@@ -7,7 +7,6 @@ import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.model.Word
-import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.stack.data.StackRepository
 import io.taptap.stupidenglish.features.stack.ui.adapter.CardStackModel
 import kotlinx.coroutines.Dispatchers
@@ -20,26 +19,27 @@ import javax.inject.Inject
 @HiltViewModel
 class StackViewModel @Inject constructor(
     private val stateHandle: SavedStateHandle,
-    private val repository: StackRepository,
-    private val addSentenceArgumentsMapper: AddSentenceArgumentsMapper
+    private val repository: StackRepository
 ) : BaseViewModel<StackContract.Event, StackContract.State, StackContract.Effect>() {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val wordsIdsString = stateHandle.get<String>(NavigationKeys.Arg.WORDS_IDS)
-                ?: error("No wordsIds was passed to AddSentenceViewModel.")
             val currentGroupId = stateHandle.get<String>(NavigationKeys.Arg.GROUP_ID)?.toLong()
                 ?: error("No group was passed to AddSentenceViewModel.")
 
-            val wordsIds = addSentenceArgumentsMapper.mapFrom(wordsIdsString)
-            val words = repository.getWordsById(wordsIds!!).takeOrReturn {
+            val words = repository.getWordsByGroupId(currentGroupId).takeOrReturn {
                 withContext(Dispatchers.Main) {
                     setEffect { StackContract.Effect.GetWordsError(R.string.adds_get_words_error) }
                 }
                 return@launch
             }
 
-            setState { copy(words = words.toStackAdapterModels(), topWordId = words.first().id) }
+            setState {
+                copy(
+                    words = words.shuffled().toStackAdapterModels(),
+                    topWordId = words.first().id
+                )
+            }
         }
     }
 

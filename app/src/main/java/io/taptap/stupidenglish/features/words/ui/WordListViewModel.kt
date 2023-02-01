@@ -28,7 +28,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import taptap.pub.doOnComplete
 import taptap.pub.handle
-import taptap.pub.map
 import taptap.pub.takeOrNull
 import taptap.pub.takeOrReturn
 import javax.inject.Inject
@@ -66,7 +65,7 @@ class WordListViewModel @Inject constructor(
             MenuItem(3, R.string.word_menu_learn),
             MenuItem(4, R.string.word_menu_remove)
         ),
-        longClickedGroup = null,
+        longClickedGroup = NoGroup,
         currentGroup = NoGroup,
         sheetContentType = WordListContract.SheetContentType.Motivation,
         deletedWordIds = mutableListOf(),
@@ -83,22 +82,10 @@ class WordListViewModel @Inject constructor(
             }
             is WordListContract.Event.OnOnboardingClick -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    val randomWords = getRandomWords(viewState.value.currentGroup.id)
-                    withContext(Dispatchers.Main) {
-                        if (randomWords == null) {
-                            setEffect {
-                                WordListContract.Effect.GetRandomWordsError(
-                                    R.string.word_get_random_words_error
-                                )
-                            }
-                        } else {
-                            setEffect {
-                                WordListContract.Effect.Navigation.ToAddSentence(
-                                    group = viewState.value.currentGroup,
-                                    wordIds = randomWords
-                                )
-                            }
-                        }
+                    setEffect {
+                        WordListContract.Effect.Navigation.ToAddSentence(
+                            group = viewState.value.longClickedGroup,
+                        )
                     }
                 }
             }
@@ -107,14 +94,10 @@ class WordListViewModel @Inject constructor(
                 setEffect { WordListContract.Effect.HideBottomSheet }
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.isSentenceMotivationShown = true
-
-                    val randomWords = getRandomWords(viewState.value.currentGroup.id)
-                    withContext(Dispatchers.Main) {
-                        if (randomWords != null) {
-//                            setEffect {
-//                                WordListContract.Effect.Navigation.ToAddSentence(randomWords)
-//                            }
-                        }
+                    setEffect {
+                        WordListContract.Effect.Navigation.ToAddSentence(
+                            group = viewState.value.longClickedGroup,
+                        )
                     }
                 }
             }
@@ -193,7 +176,7 @@ class WordListViewModel @Inject constructor(
                 setState {
                     copy(
                         sheetContentType = WordListContract.SheetContentType.Motivation,
-                        longClickedGroup = null
+                        longClickedGroup = NoGroup
                     )
                 }
             }
@@ -203,7 +186,7 @@ class WordListViewModel @Inject constructor(
                 setState {
                     copy(
                         sheetContentType = WordListContract.SheetContentType.Motivation,
-                        longClickedGroup = null
+                        longClickedGroup = NoGroup
                     )
                 }
             }
@@ -242,48 +225,8 @@ class WordListViewModel @Inject constructor(
         when (item.id) {
             0 -> setEffect { WordListContract.Effect.Navigation.ToGroupDetails(group = currentGroup) }
             1 -> setEffect { WordListContract.Effect.Navigation.ToAddWordWithGroup(group = currentGroup) }
-            2 -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    val randomWords = getRandomWords(currentGroup.id)
-                    withContext(Dispatchers.Main) {
-                        if (randomWords == null) {
-                            setEffect {
-                                WordListContract.Effect.GetRandomWordsError(
-                                    R.string.word_get_random_words_error
-                                )
-                            }
-                        } else {
-                            setEffect {
-                                WordListContract.Effect.Navigation.ToFlashCards(
-                                    group = currentGroup,
-                                    wordIds = randomWords
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-            3 -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    val randomWords = getRandomWords(currentGroup.id)
-                    withContext(Dispatchers.Main) {
-                        if (randomWords == null) {
-                            setEffect {
-                                WordListContract.Effect.GetRandomWordsError(
-                                    R.string.word_get_random_words_error
-                                )
-                            }
-                        } else {
-                            setEffect {
-                                WordListContract.Effect.Navigation.ToAddSentence(
-                                    currentGroup,
-                                    randomWords
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            2 -> setEffect { WordListContract.Effect.Navigation.ToFlashCards(currentGroup) }
+            3 -> setEffect { WordListContract.Effect.Navigation.ToAddSentence(currentGroup) }
             4 -> removeGroups(listOf(currentGroup))
             else -> error("there is no such menu element")
             /* MenuItem(0, R.string.word_menu_open),
@@ -291,11 +234,6 @@ class WordListViewModel @Inject constructor(
              MenuItem(2, R.string.word_menu_flashcards),
              MenuItem(3, R.string.word_menu_learn),
              MenuItem(4, R.string.word_menu_remove)*/
-
-//            data class ToGroupDetails(val group: GroupListItemsModels) : WordListContract.Effect.Navigation()
-//            data class ToAddWordWithGroup(val group: GroupListItemsModels) : WordListContract.Effect.Navigation()
-//            data class ToFlashCards(val group: GroupListItemsModels) : WordListContract.Effect.Navigation()
-//            data class ToAddSentence(val group: GroupListItemsModels, val wordIds: List<Long>) : WordListContract.Effect.Navigation()
         }
     }
 
@@ -329,16 +267,6 @@ class WordListViewModel @Inject constructor(
                 it.groupsIds.contains(group.id)
             }
         }
-    }
-
-    private suspend fun getRandomWords(
-        groupId: Long
-    ): List<Long>? {
-        return repository.getRandomWords(3, groupId)
-            .map { list ->
-                list.map { it.id }
-            }
-            .takeOrNull()
     }
 
     private suspend fun showMotivation() {

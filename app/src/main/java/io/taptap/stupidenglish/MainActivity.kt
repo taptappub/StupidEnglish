@@ -73,7 +73,9 @@ import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceScreen
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceViewModel
 
-const val URI = "https://stupidenglish.app"
+const val SCHEME = "https"
+const val AUTHORITY = "stupidenglish.app"
+const val URI = "$SCHEME://$AUTHORITY"
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -208,21 +210,30 @@ class MainActivity : ComponentActivity() {
                 composable(
                     route = NavigationKeys.Route.SE_ADD_SENTENCE,
                     deepLinks = listOf(navDeepLink {
-                        uriPattern =
-                            "$URI" +
-                                    "/${NavigationKeys.Arg.WORDS_IDS}={${NavigationKeys.Arg.WORDS_IDS}}" +
-                                    "/${NavigationKeys.Arg.GROUP_ID}={${NavigationKeys.Arg.GROUP_ID}}"
+                        uriPattern = "$URI/learn/{${NavigationKeys.Arg.GROUP_ID}}?${NavigationKeys.Arg.WORDS_IDS}={${NavigationKeys.Arg.WORDS_IDS}}"
                     }),
-//                    arguments = listOf(
-//                        navArgument(NavigationKeys.Arg.WORDS_IDS) {
-//                            type = NavType.StringType
-//                            nullable = true
-//                        },
-//                        navArgument(NavigationKeys.Arg.GROUP_ID) {
-//                            type = NavType.LongType
-//                            nullable = true
-//                        },
-//                    ),
+                    arguments = listOf(navArgument(NavigationKeys.Arg.WORDS_IDS) {
+                        type = NavType.StringType
+                        nullable = true
+                    }),
+                    enterTransition = {
+                        fadeIn()
+                    },
+                    exitTransition = {
+                        fadeOut()
+                    }
+                ) {
+                    AddSentenceDestination(navController)
+                }
+                composable(
+                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
+                    deepLinks = listOf(navDeepLink {
+                        uriPattern = "$URI/learn/{${NavigationKeys.Arg.GROUP_ID}}"
+                    }),
+                    arguments = listOf(navArgument(NavigationKeys.Arg.WORDS_IDS) {
+                        type = NavType.StringType
+                        nullable = true
+                    }),
                     enterTransition = {
                         fadeIn()
                     },
@@ -235,10 +246,7 @@ class MainActivity : ComponentActivity() {
                 composable(
                     route = NavigationKeys.Route.SE_REMEMBER,
                     deepLinks = listOf(navDeepLink {
-                        uriPattern =
-                            "$URI" +
-                                    "/${NavigationKeys.Arg.WORDS_IDS}={${NavigationKeys.Arg.WORDS_IDS}}" +
-                                    "/${NavigationKeys.Arg.GROUP_ID}={${NavigationKeys.Arg.GROUP_ID}}"
+                        uriPattern = "$URI/flash/{${NavigationKeys.Arg.GROUP_ID}}"
                     }),
                     enterTransition = {
                         fadeIn()
@@ -552,14 +560,13 @@ private fun WordListDestination(
                     navController.navigate(NavigationKeys.Route.SE_PROFILE)
                 }
                 is WordListContract.Effect.Navigation.ToAddSentence -> {
-                    val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
                     val groupId = navigationEffect.group.id
-                    navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${ids}/${groupId}")
+                    navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${groupId}")
+//                    navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${groupId}?${NavigationKeys.Arg.WORDS_IDS}=${testIds}")
                 }
                 is WordListContract.Effect.Navigation.ToFlashCards -> {
-                    val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
                     val groupId = navigationEffect.group.id
-                    navController.navigate("${NavigationKeys.Route.REMEMBER}/${ids}/${groupId}")
+                    navController.navigate("${NavigationKeys.Route.REMEMBER}/${groupId}")
                 }
 
 
@@ -658,11 +665,11 @@ fun NavController.navigateToTab(
 
 
 
-//Убрать RandomWords, сделать всегда передачу группы, а Random words будут доставаться на месте
+
+
 //RemoveGroup - перенести в архив
 //переверстай AddWordScreen, чтобы не прыгало ничего (Не забудь добавить Галочку "Принять" в верхний правый угол)
 //если добавляешь слово через группу, то группа, должна быть там выбрана по-умолчанию (передавать группу на экран)
-//5) Обучение карточками или предложениями
 //поправить диалог добавления группы
 //реализовать view all с группами
 //Ты сломал OnOnboardingClick и OnMotivationConfirmClick
@@ -670,3 +677,6 @@ fun NavController.navigateToTab(
 //alarmStart - подумать как лучше доставать рандомные слова
 //сделать недоступными кнопки обучения для Группы без слов
 //писать на AddSentenceScreen что это за группа (StackView использовать) - теперь нельзя поделиться группой
+//Переделать StackView экран, писать что за группа и сколько слов
+//Сейчас достаются ВСЕ слова, а потом сортируются согласно groupId. Это херня. Надо по группе доставать
+//alarmStart Слова в нотификации и в AddSentence не совпадают

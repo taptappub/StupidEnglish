@@ -45,7 +45,7 @@ class WordListContract {
         val sheetContentType: SheetContentType,
         val deletedWordIds: MutableList<Long>,
         val avatar: String?,
-        val longClickedGroup: GroupListItemsModels?,
+        val longClickedGroup: GroupListItemsModels,
         val groupMenuList: List<MenuItem>
     ) : ViewState
 
@@ -56,7 +56,6 @@ class WordListContract {
     }
 
     sealed class Effect : ViewSideEffect {
-        data class GetRandomWordsError(@StringRes val errorRes: Int) : Effect()
         data class GetWordsError(@StringRes val errorRes: Int) : Effect()
         data class GetUserError(@StringRes val errorRes: Int) : Effect()
 
@@ -74,8 +73,8 @@ class WordListContract {
 
             data class ToGroupDetails(val group: GroupListItemsModels) : Navigation()
             data class ToAddWordWithGroup(val group: GroupListItemsModels) : Navigation()
-            data class ToFlashCards(val group: GroupListItemsModels, val wordIds: List<Long>) : Navigation()
-            data class ToAddSentence(val group: GroupListItemsModels, val wordIds: List<Long>) : Navigation()
+            data class ToFlashCards(val group: GroupListItemsModels) : Navigation()
+            data class ToAddSentence(val group: GroupListItemsModels) : Navigation()
         }
 
         /*MenuItem(0, R.string.word_menu_open),
