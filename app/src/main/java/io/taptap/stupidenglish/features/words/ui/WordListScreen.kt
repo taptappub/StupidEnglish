@@ -180,22 +180,6 @@ fun WordListScreen(
                             .fillMaxWidth()
                             .animateContentSize()
                     )
-//                WordListContract.SheetContentType.RemoveGroup ->
-//                    ChooseGroupBottomSheetScreen(
-//                        list = state.dialogGroups,
-//                        selectedList = state.removedGroups,
-//                        buttonRes = R.string.word_remove_group_button,
-//                        titleRes = R.string.word_remove_group_title,
-//                        onItemClick = { item ->
-//                            onEventSent(WordListContract.Event.OnGroupSelect(item))
-//                        },
-//                        onButtonClick = {
-//                            onEventSent(WordListContract.Event.OnApplyGroupsRemove)
-//                        },
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .animateContentSize()
-//                    )
             }
         },
     ) {
@@ -224,6 +208,10 @@ fun WordListScreen(
                         onNavigationRequested(effect)
                     is WordListContract.Effect.Navigation.ToProfile ->
                         onNavigationRequested(effect)
+                    is WordListContract.Effect.Navigation.ToAddWordWithGroup ->
+                        onNavigationRequested(effect)
+                    is WordListContract.Effect.Navigation.ToGroupDetails ->
+                        onNavigationRequested(effect)
                     is WordListContract.Effect.ShowUnderConstruction ->
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(R.string.under_construction),
@@ -248,8 +236,6 @@ fun WordListScreen(
                             message = context.getString(effect.errorRes),
                             duration = SnackbarDuration.Short
                         )
-                    is WordListContract.Effect.Navigation.ToAddWordWithGroup -> TODO()
-                    is WordListContract.Effect.Navigation.ToGroupDetails -> TODO()
                 }
             }?.collect()
         }

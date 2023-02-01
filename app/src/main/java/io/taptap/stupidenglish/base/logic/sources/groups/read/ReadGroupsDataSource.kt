@@ -28,4 +28,11 @@ class ReadGroupsDataSource @Inject constructor(
                 groupDto.toGroup()
             }
     }
+
+    override suspend fun getGroupsById(ids: List<Long>): Reaction<List<Group>> = Reaction.on {
+        wordDao.getGroups(ids)
+            .map { groupDto ->
+                groupDto.toGroup()
+            }
+    }
 }

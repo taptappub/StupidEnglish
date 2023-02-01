@@ -160,5 +160,14 @@ interface WordDao {
         FROM GroupTable
         """
     )
-    fun getGroups(): List<GroupDto>
+    suspend fun getGroups(): List<GroupDto>
+
+    @Query(
+        """
+        SELECT *
+        FROM GroupTable
+        WHERE GroupTable.id in (:groupIds)
+        """
+    )
+    suspend fun getGroups(groupIds: List<Long>): List<GroupDto>
 }

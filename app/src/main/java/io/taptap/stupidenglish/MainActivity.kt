@@ -171,6 +171,10 @@ class MainActivity : ComponentActivity() {
                 }
                 composable(
                     route = NavigationKeys.Route.SE_ADD_WORD,
+                    arguments = listOf(navArgument(NavigationKeys.Arg.GROUP_ID) {
+                        type = NavType.StringType
+                        nullable = true
+                    }),
                     enterTransition = {
                         fadeIn()
 //                        slideInVertically(initialOffsetY = { 1000 })
@@ -553,6 +557,10 @@ private fun WordListDestination(
                 is WordListContract.Effect.Navigation.ToAddWord -> {
                     navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
                 }
+                is WordListContract.Effect.Navigation.ToAddWordWithGroup -> {
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.ADD_WORD}?${NavigationKeys.Arg.GROUP_ID}=${groupId}")
+                }
                 is WordListContract.Effect.Navigation.ToImportWords -> {
                     navController.navigate(NavigationKeys.Route.SE_IMPORT_WORDS)
                 }
@@ -568,9 +576,6 @@ private fun WordListDestination(
                     val groupId = navigationEffect.group.id
                     navController.navigate("${NavigationKeys.Route.REMEMBER}/${groupId}")
                 }
-
-
-                is WordListContract.Effect.Navigation.ToAddWordWithGroup -> TODO()
                 is WordListContract.Effect.Navigation.ToGroupDetails -> TODO()
             }
         })
@@ -664,19 +669,12 @@ fun NavController.navigateToTab(
 
 
 
-
-
-
-//RemoveGroup - перенести в архив
-//переверстай AddWordScreen, чтобы не прыгало ничего (Не забудь добавить Галочку "Принять" в верхний правый угол)
 //если добавляешь слово через группу, то группа, должна быть там выбрана по-умолчанию (передавать группу на экран)
+//переверстай AddWordScreen, чтобы не прыгало ничего (Не забудь добавить Галочку "Принять" в верхний правый угол)
 //поправить диалог добавления группы
 //реализовать view all с группами
-//Ты сломал OnOnboardingClick и OnMotivationConfirmClick
 //придется переделать связь Group и Word, т.к. должно быть многие ко многим
-//alarmStart - подумать как лучше доставать рандомные слова
 //сделать недоступными кнопки обучения для Группы без слов
 //писать на AddSentenceScreen что это за группа (StackView использовать) - теперь нельзя поделиться группой
 //Переделать StackView экран, писать что за группа и сколько слов
 //Сейчас достаются ВСЕ слова, а потом сортируются согласно groupId. Это херня. Надо по группе доставать
-//alarmStart Слова в нотификации и в AddSentence не совпадают

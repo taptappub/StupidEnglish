@@ -3,8 +3,10 @@ package io.taptap.stupidenglish.features.addword.ui
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.ui.helpers.GroupViewModelHelper
@@ -20,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddWordViewModel @Inject constructor(
+    private val stateHandle: SavedStateHandle,
     private val repository: AddWordRepository
 ) : BaseViewModel<AddWordContract.Event, AddWordContract.State, AddWordContract.Effect>(),
     IGroupViewModelHelper by GroupViewModelHelper(repository, repository) {
@@ -27,6 +30,16 @@ class AddWordViewModel @Inject constructor(
     init {
         setCoroutineScope(viewModelScope)
         getGroupsList()
+
+        val currentGroupId = stateHandle.get<String>(NavigationKeys.Arg.GROUP_ID)?.toLong()
+        if (currentGroupId != null) {
+            getGroupsById(
+                ids = listOf(currentGroupId),
+                doOnSuccess = {
+                    setState { copy(selectedGroups = it) }
+                }
+            )
+        }
     }
 
     var word by mutableStateOf("")
