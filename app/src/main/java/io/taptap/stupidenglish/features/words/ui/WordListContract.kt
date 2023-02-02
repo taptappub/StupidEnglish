@@ -55,6 +55,12 @@ class WordListContract {
         Motivation
     }
 
+    enum class MenuType {
+        Enabled,
+        Disabled,
+        AllWords
+    }
+
     sealed class Effect : ViewSideEffect {
         data class GetWordsError(@StringRes val errorRes: Int) : Effect()
         data class GetUserError(@StringRes val errorRes: Int) : Effect()

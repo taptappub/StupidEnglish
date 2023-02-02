@@ -58,7 +58,7 @@ class WordListViewModel @Inject constructor(
     override fun setInitialState() = WordListContract.State(
         wordList = listOf(),
         isLoading = true,
-        groupMenuList = getGroupMenu(isEnabled = true),
+        groupMenuList = getGroupMenu(WordListContract.MenuType.Enabled),
         longClickedGroup = NoGroup,
         currentGroup = NoGroup,
         sheetContentType = WordListContract.SheetContentType.Motivation,
@@ -66,14 +66,30 @@ class WordListViewModel @Inject constructor(
         avatar = null
     )
 
-    private fun getGroupMenu(isEnabled: Boolean): List<MenuItem> {
-        return listOf(
-            MenuItem(0, R.string.word_menu_open),
-            MenuItem(1, R.string.word_menu_add_word),
-            MenuItem(2, R.string.word_menu_flashcards, isEnabled),
-            MenuItem(3, R.string.word_menu_learn, isEnabled),
-            MenuItem(4, R.string.word_menu_remove)
-        )
+    private fun getGroupMenu(menuType: WordListContract.MenuType): List<MenuItem> {
+        return when(menuType) {
+            WordListContract.MenuType.Enabled -> listOf(
+                MenuItem(0, R.string.word_menu_open),
+                MenuItem(1, R.string.word_menu_add_word),
+                MenuItem(2, R.string.word_menu_flashcards, true),
+                MenuItem(3, R.string.word_menu_learn, true),
+                MenuItem(4, R.string.word_menu_remove)
+            )
+            WordListContract.MenuType.Disabled -> listOf(
+                MenuItem(0, R.string.word_menu_open),
+                MenuItem(1, R.string.word_menu_add_word),
+                MenuItem(2, R.string.word_menu_flashcards, false),
+                MenuItem(3, R.string.word_menu_learn, false),
+                MenuItem(4, R.string.word_menu_remove)
+            )
+            WordListContract.MenuType.AllWords -> listOf(
+                MenuItem(0, R.string.word_menu_open),
+                MenuItem(1, R.string.word_menu_add_word),
+                MenuItem(2, R.string.word_menu_flashcards),
+                MenuItem(3, R.string.word_menu_learn),
+                MenuItem(4, R.string.word_menu_remove, false)
+            )
+        }
     }
 
     override suspend fun handleEvents(event: WordListContract.Event) {
@@ -166,33 +182,7 @@ class WordListViewModel @Inject constructor(
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
                 setEffect { WordListContract.Effect.ShowBottomSheet }
 
-                viewModelScope.launch(Dispatchers.IO) {
-                    repository.getWordsCountInGroup(event.group.id)
-                        .handle(
-                            success = { count ->
-                                if (count == 0) {
-                                    setState {
-                                        copy(
-                                            sheetContentType = WordListContract.SheetContentType.GroupMenu,
-                                            longClickedGroup = event.group,
-                                            groupMenuList = getGroupMenu(isEnabled = false)
-                                        )
-                                    }
-                                } else {
-                                    setState {
-                                        copy(
-                                            sheetContentType = WordListContract.SheetContentType.GroupMenu,
-                                            longClickedGroup = event.group,
-                                            groupMenuList = getGroupMenu(isEnabled = true)
-                                        )
-                                    }
-                                }
-                            },
-                            error = {
-                                setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
-                            }
-                        )
-                }
+                handleMenuCreation(event.group)
             }
             is WordListContract.Event.OnGroupMenuItemClick -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
@@ -242,6 +232,46 @@ class WordListViewModel @Inject constructor(
             }
             is WordListContract.Event.OnProfileClick ->
                 setEffect { WordListContract.Effect.Navigation.ToProfile }
+        }
+    }
+
+    private fun handleMenuCreation(group: GroupListItemsModels) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (group == NoGroup) {
+                setState {
+                    copy(
+                        sheetContentType = WordListContract.SheetContentType.GroupMenu,
+                        longClickedGroup = group,
+                        groupMenuList = getGroupMenu(WordListContract.MenuType.AllWords)
+                    )
+                }
+            } else {
+                repository.getWordsCountInGroup(group.id)
+                    .handle(
+                        success = { count ->
+                            if (count == 0) {
+                                setState {
+                                    copy(
+                                        sheetContentType = WordListContract.SheetContentType.GroupMenu,
+                                        longClickedGroup = group,
+                                        groupMenuList = getGroupMenu(WordListContract.MenuType.Disabled)
+                                    )
+                                }
+                            } else {
+                                setState {
+                                    copy(
+                                        sheetContentType = WordListContract.SheetContentType.GroupMenu,
+                                        longClickedGroup = group,
+                                        groupMenuList = getGroupMenu(WordListContract.MenuType.Enabled)
+                                    )
+                                }
+                            }
+                        },
+                        error = {
+                            setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
+                        }
+                    )
+            }
         }
     }
 
@@ -419,17 +449,16 @@ class WordListViewModel @Inject constructor(
     }
 
     private fun removeGroups(removedGroups: List<GroupListModels>) {
+        setState {
+            copy(
+                sheetContentType = WordListContract.SheetContentType.Motivation,
+                currentGroup = NoGroup,
+            )
+        }
         viewModelScope.launch(Dispatchers.IO) {
             repository.removeGroups(removedGroups.map { it.id })
                 .doOnComplete {
-                    withContext(Dispatchers.Main) {
-                        setState {
-                            copy(
-                                sheetContentType = WordListContract.SheetContentType.Motivation,
-                            )
-                        }
-                        setEffect { WordListContract.Effect.HideBottomSheet }
-                    }
+                    setEffect { WordListContract.Effect.HideBottomSheet }
                 }
         }
     }
