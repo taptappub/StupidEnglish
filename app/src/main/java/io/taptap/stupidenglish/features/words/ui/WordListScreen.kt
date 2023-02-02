@@ -175,7 +175,7 @@ fun WordListScreen(
                         onClick = {
                             onEventSent(WordListContract.Event.OnGroupMenuItemClick(it))
                         },
-                        titleRes = R.string.word_remove_group_title,
+                        titleRes = R.string.word_group_menu_title,
                         modifier = Modifier
                             .fillMaxWidth()
                             .animateContentSize()

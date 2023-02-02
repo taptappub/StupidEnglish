@@ -57,7 +57,7 @@
     </plurals>
     <string name="addw_get_groups_error">Возникла ошибка в момент получения слов</string>
     <string name="word_remove_group_button">Удалить</string>
-    <string name="word_remove_group_title">Выбери группы для удаления</string>
+    <string name="word_group_menu_title">Меню группы</string>
     <string name="stns_delete_message">Точно удалить?</string>
     <string name="stns_recover">Восстановить</string>
     <string name="word_delete_message">Точно удалить?</string>
@@ -107,4 +107,10 @@
     <string name="prof_feedback">Написать нам на "taptap4pub@gmail.com"</string>
     <string name="imwt_back_button">Вернуться к Импорту</string>
     <string name="addw_bottom_button_text">Новое слово</string>
+
+    <string name="word_menu_open">Открыть</string>
+    <string name="word_menu_add_word">Добавить слово</string>
+    <string name="word_menu_flashcards">Обучение карточками</string>
+    <string name="word_menu_learn">Обучение предложениями</string>
+    <string name="word_menu_remove">Удалить группу</string>
 </resources>
