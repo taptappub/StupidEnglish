@@ -179,15 +179,9 @@ private fun GroupItem(
             fontSize = 28.sp,
             modifier = Modifier
                 .size(56.dp)
-                .then(
-                    if (group == NoGroup) {
-                        Modifier.clickable { onGroupClicked(group) }
-                    } else {
-                        Modifier.combinedClickable(
-                            onClick = { onGroupClicked(group) },
-                            onLongClick = { onGroupLongClicked(group) },
-                        )
-                    }
+                .combinedClickable(
+                    onClick = { onGroupClicked(group) },
+                    onLongClick = { onGroupLongClicked(group) },
                 )
         )
         Text(
