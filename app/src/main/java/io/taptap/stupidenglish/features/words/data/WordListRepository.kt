@@ -8,6 +8,8 @@ import io.taptap.stupidenglish.base.logic.prefs.Settings
 import io.taptap.stupidenglish.base.logic.randomwords.IRandomWordsDataSource
 import io.taptap.stupidenglish.base.logic.sources.groups.write.IWriteGroupsDataSource
 import io.taptap.stupidenglish.base.logic.sources.user.read.IReadUserDataSource
+import io.taptap.stupidenglish.base.logic.sources.words.read.IReadWordsDataSource
+import io.taptap.stupidenglish.base.logic.sources.words.read.ReadWordsDataSource
 import io.taptap.stupidenglish.base.model.Word
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -20,11 +22,13 @@ class WordListRepository @Inject constructor(
     readGroupsDataSource: IReadGroupsDataSource,
     writeGroupsDataSource: IWriteGroupsDataSource,
     readUserDataSource: IReadUserDataSource,
+    readWordsDataSource: IReadWordsDataSource,
     private val wordDao: WordDao,
     private val settings: Settings
 ) : IReadGroupsDataSource by readGroupsDataSource,
     IWriteGroupsDataSource by writeGroupsDataSource,
-    IReadUserDataSource by readUserDataSource {
+    IReadUserDataSource by readUserDataSource,
+    IReadWordsDataSource by readWordsDataSource{
 
     var isSentenceMotivationShown: Boolean
         get() {

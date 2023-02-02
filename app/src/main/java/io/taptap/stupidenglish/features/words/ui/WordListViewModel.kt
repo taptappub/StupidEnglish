@@ -58,19 +58,23 @@ class WordListViewModel @Inject constructor(
     override fun setInitialState() = WordListContract.State(
         wordList = listOf(),
         isLoading = true,
-        groupMenuList = listOf(
-            MenuItem(0, R.string.word_menu_open),
-            MenuItem(1, R.string.word_menu_add_word),
-            MenuItem(2, R.string.word_menu_flashcards),
-            MenuItem(3, R.string.word_menu_learn),
-            MenuItem(4, R.string.word_menu_remove)
-        ),
+        groupMenuList = getGroupMenu(isEnabled = true),
         longClickedGroup = NoGroup,
         currentGroup = NoGroup,
         sheetContentType = WordListContract.SheetContentType.Motivation,
         deletedWordIds = mutableListOf(),
         avatar = null
     )
+
+    private fun getGroupMenu(isEnabled: Boolean): List<MenuItem> {
+        return listOf(
+            MenuItem(0, R.string.word_menu_open),
+            MenuItem(1, R.string.word_menu_add_word),
+            MenuItem(2, R.string.word_menu_flashcards, isEnabled),
+            MenuItem(3, R.string.word_menu_learn, isEnabled),
+            MenuItem(4, R.string.word_menu_remove)
+        )
+    }
 
     override suspend fun handleEvents(event: WordListContract.Event) {
         when (event) {
@@ -162,11 +166,32 @@ class WordListViewModel @Inject constructor(
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
                 setEffect { WordListContract.Effect.ShowBottomSheet }
 
-                setState {
-                    copy(
-                        sheetContentType = WordListContract.SheetContentType.GroupMenu,
-                        longClickedGroup = event.group
-                    )
+                viewModelScope.launch(Dispatchers.IO) {
+                    repository.getWordsCountInGroup(event.group.id)
+                        .handle(
+                            success = { count ->
+                                if (count == 0) {
+                                    setState {
+                                        copy(
+                                            sheetContentType = WordListContract.SheetContentType.GroupMenu,
+                                            longClickedGroup = event.group,
+                                            groupMenuList = getGroupMenu(isEnabled = false)
+                                        )
+                                    }
+                                } else {
+                                    setState {
+                                        copy(
+                                            sheetContentType = WordListContract.SheetContentType.GroupMenu,
+                                            longClickedGroup = event.group,
+                                            groupMenuList = getGroupMenu(isEnabled = true)
+                                        )
+                                    }
+                                }
+                            },
+                            error = {
+                                setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
+                            }
+                        )
                 }
             }
             is WordListContract.Event.OnGroupMenuItemClick -> {

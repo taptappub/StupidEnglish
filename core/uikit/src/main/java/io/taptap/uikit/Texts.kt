@@ -18,12 +18,14 @@ fun LargeTitle(
     maxLines: Int = 2,
     textAlign: TextAlign = TextAlign.Center,
     color: Color = MaterialTheme.colorScheme.onSurface,
-    style: TextStyle = MaterialTheme.typography.labelLarge
+    style: TextStyle = MaterialTheme.typography.labelLarge,
+    isEnabled: Boolean = true,
+    isDisabledColor: Color = MaterialTheme.colorScheme.secondary,
 ) {
     Text(
         text = text,
         textAlign = textAlign,
-        color = color,
+        color = if (isEnabled) color else isDisabledColor,
         style = style,
         maxLines = maxLines,
         overflow = TextOverflow.Ellipsis,

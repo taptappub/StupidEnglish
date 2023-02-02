@@ -28,7 +28,8 @@ import io.taptap.uikit.theme.StupidEnglishTheme
 
 data class MenuItem(
     val id: Int,
-    @StringRes val stringId: Int
+    @StringRes val stringId: Int,
+    val enabled: Boolean = true
 )
 
 @Composable
@@ -95,11 +96,16 @@ private fun MenuItemRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .clickable {
-                onClick(item)
-            }
+            .then(
+                if (item.enabled) {
+                    Modifier.clickable { onClick(item) }
+                } else {
+                    Modifier
+                }
+            )
     ) {
         LargeTitle(
+            isEnabled = item.enabled,
             text = stringResource(id = item.stringId),
             modifier = Modifier
                 .weight(1.0f, true)

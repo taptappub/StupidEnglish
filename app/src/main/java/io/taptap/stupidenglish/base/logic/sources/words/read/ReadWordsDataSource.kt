@@ -7,6 +7,7 @@ import io.taptap.stupidenglish.base.logic.mapper.toWords
 import io.taptap.stupidenglish.base.model.Word
 import io.taptap.uikit.group.NoGroup
 import taptap.pub.Reaction
+import taptap.pub.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,6 +28,10 @@ class ReadWordsDataSource @Inject constructor(
             }
         }
         wordsByGroup.toWords()
+    }
+
+    override suspend fun getWordsCountInGroup(groupId: Long): Reaction<Int> {
+        return getWordsByGroupId(groupId).map { it.size }
     }
 
     override suspend fun getWordsById(wordsIds: List<Long>): Reaction<List<Word>> = Reaction.on {
