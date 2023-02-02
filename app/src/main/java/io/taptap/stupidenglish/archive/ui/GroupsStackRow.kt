@@ -26,13 +26,13 @@ import io.taptap.uikit.AverageTitle
 import io.taptap.uikit.Divider
 import io.taptap.uikit.LetterRoundView
 import io.taptap.uikit.group.GroupItemUI
-import io.taptap.uikit.group.GroupListItemsModels
+import io.taptap.uikit.group.GroupListItemsModel
 import io.taptap.uikit.group.getTitle
 import io.taptap.uikit.theme.StupidEnglishTheme
 
 @Composable
 fun GroupsStackRow(
-    groups: List<GroupListItemsModels>,
+    groups: List<GroupListItemsModel>,
     onClick: () -> Unit,
     modifier: Modifier
 ) {
@@ -69,7 +69,7 @@ fun GroupsStackRow(
 }
 
 @Composable
-private fun ManyGroups(groups: List<GroupListItemsModels>, text: String) {
+private fun ManyGroups(groups: List<GroupListItemsModel>, text: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.wrapContentWidth()
@@ -86,7 +86,7 @@ private fun ManyGroups(groups: List<GroupListItemsModels>, text: String) {
 }
 
 @Composable
-private fun StackRowOfGroups(groups: List<GroupListItemsModels>) {
+private fun StackRowOfGroups(groups: List<GroupListItemsModel>) {
     Row(
         horizontalArrangement = Arrangement.spacedBy((-14).dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -113,7 +113,7 @@ private fun StackRowOfGroups(groups: List<GroupListItemsModels>) {
 }
 
 @Composable
-private fun OneGroup(first: GroupListItemsModels) {
+private fun OneGroup(first: GroupListItemsModel) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.wrapContentWidth()

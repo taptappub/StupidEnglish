@@ -56,10 +56,6 @@ class WordListRepository @Inject constructor(
         wordDao.deleteWord(id)
     }
 
-    suspend fun removeGroups(groups: List<Long>): Reaction<Unit> = Reaction.on {
-        wordDao.deleteGroups(groups)
-    }
-
     suspend fun deleteWords(list: List<Long>): Reaction<Unit> = Reaction.on {
         wordDao.deleteWords(list)
     }

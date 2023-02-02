@@ -4,7 +4,7 @@ import io.taptap.stupidenglish.base.logic.sources.groups.read.IReadGroupsDataSou
 import io.taptap.stupidenglish.base.logic.sources.groups.write.IWriteGroupsDataSource
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.uikit.group.GroupItemUI
-import io.taptap.uikit.group.GroupListItemsModels
+import io.taptap.uikit.group.GroupListItemsModel
 import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,7 @@ class GroupViewModelHelper(
 
     override fun getGroupsList(
         onError: (exception: Exception) -> Unit,
-        collect: (groups: List<GroupListItemsModels>) -> Unit
+        collect: (groups: List<GroupListItemsModel>) -> Unit
     ) {
         coroutineScope.launch(Dispatchers.IO) {
             readGroupsDataSource.observeGroupList()
@@ -47,20 +47,6 @@ class GroupViewModelHelper(
         }
     }
 
-    private fun List<Group>.toGroupsList(): List<GroupListItemsModels> {
-        val groupList = mutableListOf<GroupListItemsModels>()
-        groupList.add(NoGroup)
-
-        groupList.addAll(this.map {
-            GroupItemUI(
-                id = it.id,
-                name = it.name
-            )
-        })
-
-        return groupList
-    }
-
     override fun saveGroup(group: String, doOnComplete: () -> Unit) {
         val trimGroup = group.trim()
         coroutineScope.launch(Dispatchers.IO) {
@@ -69,11 +55,25 @@ class GroupViewModelHelper(
         }
     }
 
-    override fun getGroupsById(ids: List<Long>, doOnSuccess: (List<GroupListItemsModels>) -> Unit) {
+    override fun getGroupsById(ids: List<Long>, doOnSuccess: (List<GroupListItemsModel>) -> Unit) {
         coroutineScope.launch(Dispatchers.IO) {
             readGroupsDataSource.getGroupsById(ids)
                 .map { it.toGroupsList() }
                 .doOnSuccess { doOnSuccess(it) }
         }
     }
+}
+
+private fun List<Group>.toGroupsList(): List<GroupListItemsModel> {
+    val groupList = mutableListOf<GroupListItemsModel>()
+    groupList.add(NoGroup)
+
+    groupList.addAll(this.map {
+        GroupItemUI(
+            id = it.id,
+            name = it.name
+        )
+    })
+
+    return groupList
 }

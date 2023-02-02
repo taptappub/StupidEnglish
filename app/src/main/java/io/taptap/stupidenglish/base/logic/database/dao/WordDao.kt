@@ -110,7 +110,7 @@ interface WordDao {
         WHERE SentenceTable.id in (:sentenceIds)
         """
     )
-    suspend fun deleteSentences(sentenceIds: List<Long>)
+    suspend fun removeSentences(sentenceIds: List<Long>)
 
     //-----------------Group-----------------
 

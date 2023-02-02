@@ -47,6 +47,7 @@
     <string name="word_menu_add_word">Add word</string>
     <string name="word_menu_flashcards">Flashcards</string>
     <string name="word_menu_learn">Learn</string>
+    <string name="word_menu_share">Share</string>
     <string name="word_menu_remove">Remove</string>
 
     <!-- Sentences List -->
@@ -57,6 +58,11 @@
     <string name="stns_empty_list_description">Time to the first stupid sentence!</string>
     <string name="stns_delete_message">Are you sure?</string>
     <string name="stns_recover">Recover</string>
+
+    <!-- Group List -->
+    <string name="grps_get_groups_error">Error while getting sets</string>
+    <string name="grps_list_list_title">Set list</string>
+    <string name="grps_list_title">Sets</string>
 
     <!-- Add Word -->
     <string name="addw_save_error">Error while saving</string>

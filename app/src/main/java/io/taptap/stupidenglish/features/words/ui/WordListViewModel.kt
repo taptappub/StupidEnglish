@@ -18,14 +18,13 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.ui.MenuItem
 import io.taptap.uikit.group.GroupItemUI
-import io.taptap.uikit.group.GroupListItemsModels
-import io.taptap.uikit.group.GroupListModels
+import io.taptap.uikit.group.GroupListItemsModel
+import io.taptap.uikit.group.GroupListModel
 import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import taptap.pub.doOnComplete
 import taptap.pub.handle
 import taptap.pub.takeOrNull
@@ -40,7 +39,7 @@ class WordListViewModel @Inject constructor(
 ) : BaseViewModel<WordListContract.Event, WordListContract.State, WordListContract.Effect>() {
 
     private lateinit var words: List<WordListItemUI>
-    private lateinit var groups: List<GroupListItemsModels>
+    private lateinit var groups: List<GroupListItemsModel>
 
     var groupName by mutableStateOf("")
         private set
@@ -73,21 +72,24 @@ class WordListViewModel @Inject constructor(
                 MenuItem(1, R.string.word_menu_add_word),
                 MenuItem(2, R.string.word_menu_flashcards, true),
                 MenuItem(3, R.string.word_menu_learn, true),
-                MenuItem(4, R.string.word_menu_remove)
+                MenuItem(4, R.string.word_menu_share, false),
+                MenuItem(5, R.string.word_menu_remove)
             )
             WordListContract.MenuType.Disabled -> listOf(
                 MenuItem(0, R.string.word_menu_open),
                 MenuItem(1, R.string.word_menu_add_word),
                 MenuItem(2, R.string.word_menu_flashcards, false),
                 MenuItem(3, R.string.word_menu_learn, false),
-                MenuItem(4, R.string.word_menu_remove)
+                MenuItem(4, R.string.word_menu_share, false),
+                MenuItem(5, R.string.word_menu_remove)
             )
             WordListContract.MenuType.AllWords -> listOf(
                 MenuItem(0, R.string.word_menu_open),
                 MenuItem(1, R.string.word_menu_add_word),
                 MenuItem(2, R.string.word_menu_flashcards),
                 MenuItem(3, R.string.word_menu_learn),
-                MenuItem(4, R.string.word_menu_remove, false)
+                MenuItem(4, R.string.word_menu_share, false),
+                MenuItem(5, R.string.word_menu_remove, false)
             )
         }
     }
@@ -96,6 +98,9 @@ class WordListViewModel @Inject constructor(
         when (event) {
             is WordListContract.Event.OnAddWordClick -> {
                 setEffect { WordListContract.Effect.Navigation.ToAddWord }
+            }
+            is WordListContract.Event.OnViewAllClick -> {
+                setEffect { WordListContract.Effect.Navigation.ToGroupList }
             }
             is WordListContract.Event.OnImportWordsClick -> {
                 setEffect { WordListContract.Effect.Navigation.ToImportWords }
@@ -235,7 +240,7 @@ class WordListViewModel @Inject constructor(
         }
     }
 
-    private fun handleMenuCreation(group: GroupListItemsModels) {
+    private fun handleMenuCreation(group: GroupListItemsModel) {
         viewModelScope.launch(Dispatchers.IO) {
             if (group == NoGroup) {
                 setState {
@@ -282,13 +287,9 @@ class WordListViewModel @Inject constructor(
             1 -> setEffect { WordListContract.Effect.Navigation.ToAddWordWithGroup(group = currentGroup) }
             2 -> setEffect { WordListContract.Effect.Navigation.ToFlashCards(currentGroup) }
             3 -> setEffect { WordListContract.Effect.Navigation.ToAddSentence(currentGroup) }
-            4 -> removeGroups(listOf(currentGroup))
+            4 -> error("Собирай статистику =)")
+            5 -> removeGroups(listOf(currentGroup))
             else -> error("there is no such menu element")
-            /* MenuItem(0, R.string.word_menu_open),
-             MenuItem(1, R.string.word_menu_add_word),
-             MenuItem(2, R.string.word_menu_flashcards),
-             MenuItem(3, R.string.word_menu_learn),
-             MenuItem(4, R.string.word_menu_remove)*/
         }
     }
 
@@ -313,7 +314,7 @@ class WordListViewModel @Inject constructor(
 
     private fun filterWordListByGroup(
         words: List<WordListItemUI>,
-        group: GroupListModels
+        group: GroupListModel
     ): List<WordListItemUI> {
         return if (group == NoGroup) {
             words
@@ -385,8 +386,8 @@ class WordListViewModel @Inject constructor(
 
     private fun makeMainList(
         list: List<WordListItemUI>,
-        groupsList: List<GroupListItemsModels>,
-        currentGroup: GroupListItemsModels
+        groupsList: List<GroupListItemsModel>,
+        currentGroup: GroupListItemsModel
     ) {
         val filteredList = filterWordListByGroup(list, currentGroup)
 
@@ -415,8 +416,8 @@ class WordListViewModel @Inject constructor(
         }
     }
 
-    private fun makeGroupsList(groupsList: List<Group>): List<GroupListItemsModels> {
-        val groupList = mutableListOf<GroupListItemsModels>()
+    private fun makeGroupsList(groupsList: List<Group>): List<GroupListItemsModel> {
+        val groupList = mutableListOf<GroupListItemsModel>()
         groupList.add(NoGroup)
         groupList.addAll(groupsList.map {
             GroupItemUI(
@@ -448,7 +449,7 @@ class WordListViewModel @Inject constructor(
         }
     }
 
-    private fun removeGroups(removedGroups: List<GroupListModels>) {
+    private fun removeGroups(removedGroups: List<GroupListModel>) {
         setState {
             copy(
                 sheetContentType = WordListContract.SheetContentType.Motivation,

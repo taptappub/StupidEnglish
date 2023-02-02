@@ -19,6 +19,7 @@ object NavigationKeys {
         const val SE_AUTH = "stupid_english_auth"
         const val SE_TERMS = "stupid_english_terms"
         const val SE_SPLASH = "stupid_english_splash"
+        const val SE_GROUPS = "stupid_english_groups"
 
         const val REMEMBER = "stupid_english_remember"
         const val SE_REMEMBER = "$REMEMBER/{${Arg.GROUP_ID}}"

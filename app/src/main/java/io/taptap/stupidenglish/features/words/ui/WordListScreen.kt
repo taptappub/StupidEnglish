@@ -95,7 +95,7 @@ import io.taptap.uikit.fab.FabOption
 import io.taptap.uikit.fab.MultiFabItem
 import io.taptap.uikit.fab.MultiFloatingActionButton
 import io.taptap.uikit.group.GroupItemRow
-import io.taptap.uikit.group.GroupListItemsModels
+import io.taptap.uikit.group.GroupListItemsModel
 import io.taptap.uikit.group.getTitle
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
@@ -202,6 +202,8 @@ fun WordListScreen(
                             message = context.getString(effect.errorRes),
                             duration = SnackbarDuration.Short
                         )
+                    is WordListContract.Effect.Navigation.ToGroupList ->
+                        onNavigationRequested(effect)
                     is WordListContract.Effect.Navigation.ToAddSentence ->
                         onNavigationRequested(effect)
                     is WordListContract.Effect.Navigation.ToFlashCards ->
@@ -321,7 +323,7 @@ fun WordListScreen(
 @Composable
 private fun MainList(
     wordItems: List<WordListListModels>,
-    group: GroupListItemsModels?,
+    group: GroupListItemsModel?,
     listState: LazyListState,
     onEventSent: (event: WordListContract.Event) -> Unit,
     deletedWordIds: MutableList<Long>
@@ -381,7 +383,7 @@ private fun MainList(
                     list = item.groups,
                     currentGroup = group,
                     onButtonClicked = {
-                        onEventSent(WordListContract.Event.OnAddGroupClick)
+                        onEventSent(WordListContract.Event.OnViewAllClick)
                     },
                     onGroupClicked = { group ->
                         onEventSent(WordListContract.Event.OnGroupClick(group))

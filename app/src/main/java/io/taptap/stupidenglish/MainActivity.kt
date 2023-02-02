@@ -68,10 +68,12 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceScreen
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceViewModel
+import io.taptap.stupidenglish.features.groups.ui.GroupListContract
+import io.taptap.stupidenglish.features.groups.ui.GroupListScreen
+import io.taptap.stupidenglish.features.groups.ui.GroupListViewModel
 
 const val SCHEME = "https"
 const val AUTHORITY = "stupidenglish.app"
@@ -185,6 +187,11 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     AddWordDestination(navController)
+                }
+                composable(
+                    route = NavigationKeys.Route.SE_GROUPS
+                ) {
+                    GroupListDestination(navController)
                 }
                 composable(
                     route = NavigationKeys.Route.SE_IMPORT_WORDS
@@ -325,6 +332,30 @@ private fun SplashDestination(
                 }
             }
         })
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@ExperimentalMaterialApi
+@Composable
+private fun GroupListDestination(
+    navController: NavHostController
+) {
+    val groupListViewModel: GroupListViewModel = hiltViewModel()
+    val groupListState by groupListViewModel.viewState.collectAsState()
+
+    GroupListScreen(
+        context = LocalContext.current,
+        state = groupListState,
+        effectFlow = groupListViewModel.effect,
+        onEventSent = { event -> groupListViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            when (navigationEffect) {
+                is GroupListContract.Effect.Navigation.BackToWordList ->
+                    navController.popBackStack()
+                is GroupListContract.Effect.Navigation.ToGroupDetails -> TODO()
+            }
+        }
+    )
 }
 
 @ExperimentalMaterialApi
@@ -576,6 +607,9 @@ private fun WordListDestination(
                     val groupId = navigationEffect.group.id
                     navController.navigate("${NavigationKeys.Route.REMEMBER}/${groupId}")
                 }
+                is WordListContract.Effect.Navigation.ToGroupList -> {
+                    navController.navigate(NavigationKeys.Route.SE_GROUPS)
+                }
                 is WordListContract.Effect.Navigation.ToGroupDetails -> TODO()
             }
         })
@@ -673,3 +707,5 @@ fun NavController.navigateToTab(
 //придется переделать связь Group и Word, т.к. должно быть многие ко многим
 //писать на AddSentenceScreen что это за группа (StackView использовать) - теперь нельзя поделиться группой
 //Переделать StackView экран, писать что за группа и сколько слов
+//расшаривание групп
+//GroupList добавить поиск сверху как в Quizlet

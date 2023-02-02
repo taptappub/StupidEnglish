@@ -21,8 +21,8 @@ class SentencesListContract {
         object OnApplySentenceDismiss : Event()
     }
 
-    data class State @OptIn(ExperimentalMaterialApi::class) constructor(
-        val sentenceList: List<SentencesListListModels> = listOf(),
+    data class State (
+        val sentenceList: List<SentencesListListModels>,
         val isLoading: Boolean,
         val deletedSentenceIds: MutableList<Long>
     ) : ViewState

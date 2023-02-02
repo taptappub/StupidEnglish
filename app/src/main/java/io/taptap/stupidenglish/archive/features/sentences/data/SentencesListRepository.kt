@@ -43,6 +43,6 @@ class SentencesListRepository @Inject constructor(
     }
 
     suspend fun deleteSentences(list: List<Long>): Reaction<Unit> = Reaction.on {
-        wordDao.deleteSentences(list)
+        wordDao.removeSentences(list)
     }
 }

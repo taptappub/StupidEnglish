@@ -113,4 +113,8 @@
     <string name="word_menu_flashcards">Обучение карточками</string>
     <string name="word_menu_learn">Обучение предложениями</string>
     <string name="word_menu_remove">Удалить группу</string>
+    <string name="word_menu_share">Поделиться</string>
+    <string name="grps_get_groups_error">Возникла ошибка в момент получения групп</string>
+    <string name="grps_list_title">Группы</string>
+    <string name="grps_list_list_title">Список групп</string>
 </resources>

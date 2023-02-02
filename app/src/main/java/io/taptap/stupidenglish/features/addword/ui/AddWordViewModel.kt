@@ -12,7 +12,7 @@ import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.ui.helpers.GroupViewModelHelper
 import io.taptap.stupidenglish.base.ui.helpers.IGroupViewModelHelper
 import io.taptap.stupidenglish.features.addword.data.AddWordRepository
-import io.taptap.uikit.group.GroupListModels
+import io.taptap.uikit.group.GroupListModel
 import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -155,7 +155,7 @@ class AddWordViewModel @Inject constructor(
     private fun saveWord(
         word: String,
         description: String,
-        groups: List<GroupListModels>,
+        groups: List<GroupListModel>,
         onSuccess: () -> Unit
     ) {
         val trimWord = word.trim()

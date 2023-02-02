@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -59,7 +58,7 @@ import io.taptap.uikit.complex.AddGroupBottomSheetScreen
 import io.taptap.uikit.fab.NextButton
 import io.taptap.uikit.group.GroupItemHeader
 import io.taptap.uikit.group.GroupItemUI
-import io.taptap.uikit.group.GroupListItemsModels
+import io.taptap.uikit.group.GroupListItemsModel
 import io.taptap.uikit.group.NoGroup
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
@@ -429,8 +428,8 @@ private fun HasWordScreen(
 private fun HasDescriptionScreen(
     word: String,
     description: String,
-    groups: List<GroupListItemsModels>,
-    selectedGroups: List<GroupListItemsModels>,
+    groups: List<GroupListItemsModel>,
+    selectedGroups: List<GroupListItemsModel>,
     onEventSent: (event: AddWordContract.Event) -> Unit,
     modifier: Modifier
 ) {

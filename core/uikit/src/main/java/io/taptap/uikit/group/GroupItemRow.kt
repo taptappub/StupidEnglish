@@ -39,11 +39,11 @@ import io.taptap.uikit.theme.StupidEnglishTheme
 fun GroupItemRow(
     title: String,
     button: String,
-    currentGroup: GroupListItemsModels?,
-    list: List<GroupListItemsModels>,
+    currentGroup: GroupListItemsModel?,
+    list: List<GroupListItemsModel>,
     onButtonClicked: () -> Unit,
-    onGroupClicked: (GroupListItemsModels) -> Unit,
-    onGroupLongClicked: (GroupListItemsModels) -> Unit,
+    onGroupClicked: (GroupListItemsModel) -> Unit,
+    onGroupLongClicked: (GroupListItemsModel) -> Unit,
     isPlusEnabled: Boolean = true,
     onPlusClicked: () -> Unit = {}
 ) {
@@ -70,18 +70,18 @@ fun GroupItemRow(
 
 @Composable
 private fun GroupItemGroupsRow(
-    list: List<GroupListItemsModels>,
-    currentGroup: GroupListItemsModels?,
-    onGroupClicked: (GroupListItemsModels) -> Unit,
-    onGroupLongClicked: (GroupListItemsModels) -> Unit,
+    list: List<GroupListItemsModel>,
+    currentGroup: GroupListItemsModel?,
+    onGroupClicked: (GroupListItemsModel) -> Unit,
+    onGroupLongClicked: (GroupListItemsModel) -> Unit,
     isPlusEnabled: Boolean,
     onPlusClicked: () -> Unit
 ) {
     val listState = rememberLazyListState()
 
-    val newList: List<GroupListModels> = if (isPlusEnabled) {
+    val newList: List<GroupListModel> = if (isPlusEnabled) {
         list
-            .map { it as GroupListModels }
+            .map { it as GroupListModel }
             .toMutableList()
             .apply {
                 add(0, PlusGroup)
@@ -163,10 +163,10 @@ private fun PlusGroupItem(
 @Composable
 private fun GroupItem(
     title: String,
-    group: GroupListItemsModels,
+    group: GroupListItemsModel,
     selected: Boolean,
-    onGroupClicked: (GroupListItemsModels) -> Unit,
-    onGroupLongClicked: (GroupListItemsModels) -> Unit
+    onGroupClicked: (GroupListItemsModel) -> Unit,
+    onGroupLongClicked: (GroupListItemsModel) -> Unit
 ) {
     Column(
         modifier = Modifier

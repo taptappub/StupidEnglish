@@ -7,8 +7,7 @@ import io.taptap.stupidenglish.base.ViewState
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.ui.MenuItem
-import io.taptap.uikit.group.GroupListItemsModels
-import io.taptap.uikit.group.GroupListModels
+import io.taptap.uikit.group.GroupListItemsModel
 
 class WordListContract {
     sealed class Event : ViewEvent {
@@ -32,20 +31,21 @@ class WordListContract {
         object OnApplyGroup : Event()
         object OnGroupAddingCancel : Event()
 
+        object OnViewAllClick : Event()
         object OnGroupMenuCancel : Event()
         data class OnGroupMenuItemClick(val item: MenuItem) : Event()
-        data class OnGroupClick(val group: GroupListItemsModels) : Event()
-        data class OnGroupLongClick(val group: GroupListItemsModels) : Event()
+        data class OnGroupClick(val group: GroupListItemsModel) : Event()
+        data class OnGroupLongClick(val group: GroupListItemsModel) : Event()
     }
 
     data class State(
         val wordList: List<WordListListModels>,
         val isLoading: Boolean = false,
-        val currentGroup: GroupListItemsModels,
+        val currentGroup: GroupListItemsModel,
         val sheetContentType: SheetContentType,
         val deletedWordIds: MutableList<Long>,
         val avatar: String?,
-        val longClickedGroup: GroupListItemsModels,
+        val longClickedGroup: GroupListItemsModel,
         val groupMenuList: List<MenuItem>
     ) : ViewState
 
@@ -75,18 +75,12 @@ class WordListContract {
             object ToAddWord : Navigation()
             object ToImportWords : Navigation()
             object ToProfile : Navigation()
-//            data class ToAddSentence(val wordIds: List<Long>) : Navigation()
+            object ToGroupList : Navigation()
 
-            data class ToGroupDetails(val group: GroupListItemsModels) : Navigation()
-            data class ToAddWordWithGroup(val group: GroupListItemsModels) : Navigation()
-            data class ToFlashCards(val group: GroupListItemsModels) : Navigation()
-            data class ToAddSentence(val group: GroupListItemsModels) : Navigation()
+            data class ToGroupDetails(val group: GroupListItemsModel) : Navigation()
+            data class ToAddWordWithGroup(val group: GroupListItemsModel) : Navigation()
+            data class ToFlashCards(val group: GroupListItemsModel) : Navigation()
+            data class ToAddSentence(val group: GroupListItemsModel) : Navigation()
         }
-
-        /*MenuItem(0, R.string.word_menu_open),
-        MenuItem(1, R.string.word_menu_add_word),
-        MenuItem(2, R.string.word_menu_flashcards),
-        MenuItem(3, R.string.word_menu_learn),
-        MenuItem(4, R.string.word_menu_remove)*/
     }
 }

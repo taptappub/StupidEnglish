@@ -1,7 +1,12 @@
 package io.taptap.uikit
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -11,8 +16,10 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
@@ -99,5 +106,33 @@ fun SecondaryButton() {
             text = "Ass2",
             onClick = {}
         )
+    }
+}
+
+@Composable
+fun GradientButton(
+    gradient: Brush,
+    contentPadding: PaddingValues,
+    shape: RoundedCornerShape,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = { },
+    content: @Composable (RowScope.() -> Unit)
+) {
+    Button(
+        modifier = modifier,
+        shape = shape,
+        contentPadding = contentPadding,
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+        onClick = { onClick() },
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .background(gradient)
+                .then(modifier),
+        ) {
+            content()
+        }
     }
 }

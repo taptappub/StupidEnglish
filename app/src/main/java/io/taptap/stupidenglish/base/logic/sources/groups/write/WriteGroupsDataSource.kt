@@ -14,4 +14,8 @@ class WriteGroupsDataSource @Inject constructor(
     override suspend fun saveGroup(group: String): Reaction<Long> = Reaction.on {
         wordDao.insertGroup(GroupDto(name = group))
     }
+
+    override suspend fun removeGroups(groupsIds: List<Long>): Reaction<Unit> = Reaction.on {
+        wordDao.deleteGroups(groupsIds)
+    }
 }

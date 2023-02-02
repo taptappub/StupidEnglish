@@ -20,21 +20,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.taptap.stupidenglish.R
 import io.taptap.uikit.group.GroupItemUI
-import io.taptap.uikit.group.GroupListModels
 import io.taptap.uikit.group.NoGroup
 import io.taptap.uikit.group.getTitle
 import io.taptap.uikit.AverageText
 import io.taptap.uikit.Divider
 import io.taptap.uikit.LetterRoundView
-import io.taptap.uikit.group.GroupListItemsModels
+import io.taptap.uikit.group.GroupListItemsModel
 import io.taptap.uikit.theme.StupidEnglishTheme
 
 @Composable
 fun ChooseGroupContent(
-    list: List<GroupListItemsModels>,
-    selectedList: List<GroupListItemsModels>,
+    list: List<GroupListItemsModel>,
+    selectedList: List<GroupListItemsModel>,
     modifier: Modifier,
-    onItemClick: (GroupListItemsModels) -> Unit
+    onItemClick: (GroupListItemsModel) -> Unit
 ) {
     val listState = rememberLazyListState()
     LazyColumn(
@@ -58,7 +57,7 @@ fun ChooseGroupContent(
 
 @Composable
 private fun GroupItemRow(
-    item: GroupListItemsModels,
+    item: GroupListItemsModel,
     isSelected: Boolean,
     onItemClick: () -> Unit
 ) {
