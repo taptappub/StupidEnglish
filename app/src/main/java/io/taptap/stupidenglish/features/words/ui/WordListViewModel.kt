@@ -210,7 +210,7 @@ class WordListViewModel @Inject constructor(
                     )
                 }
             }
-            is WordListContract.Event.OnApplySentenceDismiss -> {
+            is WordListContract.Event.OnApplyDismiss -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     deleteWords()
                 }

@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -22,13 +24,19 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import dagger.hilt.android.AndroidEntryPoint
+import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
+import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceScreen
+import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceViewModel
 import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.stupidenglish.features.addword.ui.AddWordScreen
 import io.taptap.stupidenglish.features.addword.ui.AddWordViewModel
@@ -36,6 +44,12 @@ import io.taptap.stupidenglish.features.alarm.ui.AlarmScheduler
 import io.taptap.stupidenglish.features.auth.ui.AuthContract
 import io.taptap.stupidenglish.features.auth.ui.AuthScreen
 import io.taptap.stupidenglish.features.auth.ui.AuthViewModel
+import io.taptap.stupidenglish.features.groupdetails.ui.GroupDetailsContract
+import io.taptap.stupidenglish.features.groupdetails.ui.GroupDetailsScreen
+import io.taptap.stupidenglish.features.groupdetails.ui.GroupDetailsViewModel
+import io.taptap.stupidenglish.features.groups.ui.GroupListContract
+import io.taptap.stupidenglish.features.groups.ui.GroupListScreen
+import io.taptap.stupidenglish.features.groups.ui.GroupListViewModel
 import io.taptap.stupidenglish.features.importwords.ui.ImportWordsContract
 import io.taptap.stupidenglish.features.importwords.ui.ImportWordsScreen
 import io.taptap.stupidenglish.features.importwords.ui.ImportWordsViewModel
@@ -62,18 +76,8 @@ import io.taptap.stupidenglish.features.words.ui.WordListViewModel
 import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
+import java.util.*
 import javax.inject.Inject
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
-import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
-import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceScreen
-import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceViewModel
-import io.taptap.stupidenglish.features.groups.ui.GroupListContract
-import io.taptap.stupidenglish.features.groups.ui.GroupListScreen
-import io.taptap.stupidenglish.features.groups.ui.GroupListViewModel
 
 const val SCHEME = "https"
 const val AUTHORITY = "stupidenglish.app"
@@ -221,7 +225,8 @@ class MainActivity : ComponentActivity() {
                 composable(
                     route = NavigationKeys.Route.SE_ADD_SENTENCE,
                     deepLinks = listOf(navDeepLink {
-                        uriPattern = "$URI/learn/{${NavigationKeys.Arg.GROUP_ID}}?${NavigationKeys.Arg.WORDS_IDS}={${NavigationKeys.Arg.WORDS_IDS}}"
+                        uriPattern =
+                            "$URI/learn/{${NavigationKeys.Arg.GROUP_ID}}?${NavigationKeys.Arg.WORDS_IDS}={${NavigationKeys.Arg.WORDS_IDS}}"
                     }),
                     arguments = listOf(navArgument(NavigationKeys.Arg.WORDS_IDS) {
                         type = NavType.StringType
@@ -241,7 +246,7 @@ class MainActivity : ComponentActivity() {
                     deepLinks = listOf(navDeepLink {
                         uriPattern = "$URI/learn/{${NavigationKeys.Arg.GROUP_ID}}"
                     }),
-                    arguments = listOf(navArgument(NavigationKeys.Arg.WORDS_IDS) {
+                    arguments = listOf(navArgument(NavigationKeys.Arg.GROUP_ID) {
                         type = NavType.StringType
                         nullable = true
                     }),
@@ -259,6 +264,10 @@ class MainActivity : ComponentActivity() {
                     deepLinks = listOf(navDeepLink {
                         uriPattern = "$URI/flash/{${NavigationKeys.Arg.GROUP_ID}}"
                     }),
+                    arguments = listOf(navArgument(NavigationKeys.Arg.GROUP_ID) {
+                        type = NavType.StringType
+                        nullable = true
+                    }),
                     enterTransition = {
                         fadeIn()
                     },
@@ -267,6 +276,18 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     StackDestination(navController)
+                }
+                composable(
+                    route = NavigationKeys.Route.SE_GROUP_DETAILS,
+                    deepLinks = listOf(navDeepLink {
+                        uriPattern = "$URI/details/{${NavigationKeys.Arg.GROUP_ID}}"
+                    }),
+                    arguments = listOf(navArgument(NavigationKeys.Arg.GROUP_ID) {
+                        type = NavType.StringType
+                        nullable = true
+                    }),
+                ) {
+                    GroupDetailsDestination(navController)
                 }
             }
 
@@ -352,7 +373,10 @@ private fun GroupListDestination(
             when (navigationEffect) {
                 is GroupListContract.Effect.Navigation.BackToWordList ->
                     navController.popBackStack()
-                is GroupListContract.Effect.Navigation.ToGroupDetails -> TODO()
+                is GroupListContract.Effect.Navigation.ToGroupDetails -> {
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.GROUP_DETAILS}/${groupId}")
+                }
             }
         }
     )
@@ -411,6 +435,32 @@ private fun ImportWordsDestination(
                 }
             }
         })
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@ExperimentalMaterialApi
+@Composable
+private fun GroupDetailsDestination(
+    navController: NavHostController
+) {
+    val groupDetailsViewModel: GroupDetailsViewModel = hiltViewModel()
+    val groupDetailsState by groupDetailsViewModel.viewState.collectAsState()
+
+    GroupDetailsScreen(
+        context = LocalContext.current,
+        state = groupDetailsState,
+        effectFlow = groupDetailsViewModel.effect,
+        onEventSent = { event -> groupDetailsViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            when (navigationEffect) {
+                is GroupDetailsContract.Effect.Navigation.BackTo -> TODO()
+                is GroupDetailsContract.Effect.Navigation.ToAddSentence -> TODO()
+                is GroupDetailsContract.Effect.Navigation.ToAddWordWithGroup -> TODO()
+                is GroupDetailsContract.Effect.Navigation.ToFlashCards -> TODO()
+            }
+        }
+    )
 }
 
 @ExperimentalMaterialApi
@@ -610,7 +660,10 @@ private fun WordListDestination(
                 is WordListContract.Effect.Navigation.ToGroupList -> {
                     navController.navigate(NavigationKeys.Route.SE_GROUPS)
                 }
-                is WordListContract.Effect.Navigation.ToGroupDetails -> TODO()
+                is WordListContract.Effect.Navigation.ToGroupDetails -> {
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.GROUP_DETAILS}/${groupId}")
+                }
             }
         })
 }
@@ -700,7 +753,7 @@ fun NavController.navigateToTab(
 
 
 
-//реализовать view all с группами
+//Экран детайлей группы как в Квизлет
 //переверстай AddWordScreen, чтобы не прыгало ничего (Не забудь добавить Галочку "Принять" в верхний правый угол)
 //поправить диалог добавления группы
 //Сейчас достаются ВСЕ слова, а потом сортируются согласно groupId. Это херня. Надо по группе доставать

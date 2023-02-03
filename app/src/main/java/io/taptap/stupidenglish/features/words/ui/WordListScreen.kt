@@ -229,7 +229,7 @@ fun WordListScreen(
                             actionLabel = context.getString(R.string.word_recover)
                         )
                         when (snackbarResult) {
-                            SnackbarResult.Dismissed -> onEventSent(WordListContract.Event.OnApplySentenceDismiss)
+                            SnackbarResult.Dismissed -> onEventSent(WordListContract.Event.OnApplyDismiss)
                             SnackbarResult.ActionPerformed -> onEventSent(WordListContract.Event.OnRecover)
                         }
                     }

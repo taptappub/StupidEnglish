@@ -6,6 +6,8 @@ import io.taptap.stupidenglish.base.logic.mapper.toWord
 import io.taptap.stupidenglish.base.logic.mapper.toWords
 import io.taptap.stupidenglish.base.model.Word
 import io.taptap.uikit.group.NoGroup
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import taptap.pub.Reaction
 import taptap.pub.map
 import javax.inject.Inject
@@ -16,7 +18,22 @@ class ReadWordsDataSource @Inject constructor(
     private val wordDao: WordDao
 ) : IReadWordsDataSource {
 
-    override suspend fun getWordsByGroupId(
+    override suspend fun observeWordList(groupId: Long): Reaction<Flow<List<Word>>> = Reaction.on {
+        wordDao.observeWords()
+            .map { wordDtos ->
+                val wordsByGroup = if (groupId == NoGroup.id) {
+                    wordDtos
+                } else {
+                    wordDtos.filter {
+                        it.groupsIds.convertGroupsIds().contains(groupId)
+                    }
+                }
+
+                wordsByGroup.toWords()
+            }
+    }
+
+    override suspend fun getWordList(
         groupId: Long
     ): Reaction<List<Word>> = Reaction.on {
         val words = wordDao.getWords()
@@ -31,7 +48,7 @@ class ReadWordsDataSource @Inject constructor(
     }
 
     override suspend fun getWordsCountInGroup(groupId: Long): Reaction<Int> {
-        return getWordsByGroupId(groupId).map { it.size }
+        return getWordList(groupId).map { it.size }
     }
 
     override suspend fun getWordsById(wordsIds: List<Long>): Reaction<List<Word>> = Reaction.on {

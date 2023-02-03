@@ -27,7 +27,7 @@ class StackViewModel @Inject constructor(
             val currentGroupId = stateHandle.get<String>(NavigationKeys.Arg.GROUP_ID)?.toLong()
                 ?: error("No group was passed to AddSentenceViewModel.")
 
-            val words = repository.getWordsByGroupId(currentGroupId).takeOrReturn {
+            val words = repository.getWordList(currentGroupId).takeOrReturn {
                 withContext(Dispatchers.Main) {
                     setEffect { StackContract.Effect.GetWordsError(R.string.adds_get_words_error) }
                 }

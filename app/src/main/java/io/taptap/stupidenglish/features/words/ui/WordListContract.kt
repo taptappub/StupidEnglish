@@ -15,7 +15,7 @@ class WordListContract {
 
         data class OnRecovered(val item: WordListListModels) : Event()
         object OnRecover : Event()
-        object OnApplySentenceDismiss : Event()
+        object OnApplyDismiss : Event()
 
         object OnAddWordClick : Event()
         object OnImportWordsClick : Event()

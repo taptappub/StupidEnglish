@@ -38,4 +38,12 @@ class WriteWordsDataSource @Inject constructor(
         }
         wordDao.insertWords(wordsDto)
     }
+
+    override suspend fun deleteWord(id: Long): Reaction<Unit> = Reaction.on {
+        wordDao.deleteWord(id)
+    }
+
+    override suspend fun deleteWords(list: List<Long>): Reaction<Unit> = Reaction.on {
+        wordDao.deleteWords(list)
+    }
 }

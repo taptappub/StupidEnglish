@@ -15,7 +15,7 @@ class RandomWordsDataSource @Inject constructor(
     IReadWordsDataSource by readWordsDataSource {
 
     override suspend fun getRandomWords(maxCount: Int, groupId: Long): Reaction<List<Word>> {
-        return getWordsByGroupId(groupId)
+        return getWordList(groupId)
             .map { wordsByGroup ->
                 val realCount = when {
                     wordsByGroup.size in 1 until maxCount -> wordsByGroup.size
