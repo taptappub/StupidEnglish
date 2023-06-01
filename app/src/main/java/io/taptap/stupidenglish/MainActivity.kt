@@ -754,6 +754,7 @@ fun NavController.navigateToTab(
 //7) https://stackoverflow.com/questions/67252538/jetpack-compose-update-composable-when-list-changes
 
 
+////-----------------------------------------------------------------
 //Экран детайлей группы как в Квизлет
 //переверстай AddWordScreen, чтобы не прыгало ничего (Не забудь добавить Галочку "Принять" в верхний правый угол)
 //поправить диалог добавления группы
