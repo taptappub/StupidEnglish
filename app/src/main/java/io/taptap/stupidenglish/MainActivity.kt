@@ -455,6 +455,7 @@ private fun GroupDetailsDestination(
         onEventSent = { event -> groupDetailsViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             when (navigationEffect) {
+                is GroupDetailsContract.Effect.Navigation.ToImportWords -> TODO()
                 is GroupDetailsContract.Effect.Navigation.BackTo -> TODO()
                 is GroupDetailsContract.Effect.Navigation.ToAddSentence -> TODO()
                 is GroupDetailsContract.Effect.Navigation.ToAddWordWithGroup -> TODO()
@@ -751,7 +752,6 @@ fun NavController.navigateToTab(
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
 //6) Статистика по изучению
 //7) https://stackoverflow.com/questions/67252538/jetpack-compose-update-composable-when-list-changes
-
 
 
 //Экран детайлей группы как в Квизлет

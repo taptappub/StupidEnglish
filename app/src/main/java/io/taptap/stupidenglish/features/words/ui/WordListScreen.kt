@@ -89,6 +89,7 @@ import io.taptap.uikit.ModalBottomSheetLayout
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.StupidEnglishTopAppBar
 import io.taptap.uikit.complex.AddGroupBottomSheetScreen
+import io.taptap.uikit.complex.WordItemRow
 import io.taptap.uikit.fab.BOTTOM_BAR_MARGIN
 import io.taptap.uikit.fab.FabIcon
 import io.taptap.uikit.fab.FabOption
@@ -357,7 +358,8 @@ private fun MainList(
 
             when (item) {
                 is WordListItemUI -> WordItemRow(
-                    item = item,
+                    word = item.word,
+                    description = item.description,
                     modifier = Modifier.animateItemPlacement(),
                     dismissState = dismissState,
                     onClicked = {
@@ -457,92 +459,5 @@ private fun OnboardingItemRow(
                 )
             }
         }
-    }
-}
-
-@ExperimentalMaterialApi
-@Composable
-private fun WordItemRow(
-    item: WordListItemUI,
-    onClicked: () -> Unit,
-    dismissState: DismissState,
-    modifier: Modifier
-) {
-    SwipeToDismiss(
-        state = dismissState,
-        dismissThresholds = { direction ->
-            FractionalThreshold(0.5f)
-        },
-        modifier = modifier
-            .padding(vertical = 1.dp),
-        directions = setOf(DismissDirection.StartToEnd),
-        background = {
-            val scale by animateFloatAsState(
-                targetValue = if (dismissState.targetValue == Default) 0.6f else 2.2f
-            )
-
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(12.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "icon",
-                    modifier = Modifier.scale(scale)
-                )
-            }
-        }
-    ) {
-        Card(
-            backgroundColor = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(12.dp),
-            elevation = animateDpAsState(
-                if (dismissState.dismissDirection != null) 8.dp else 4.dp
-            ).value,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
-                .clickable {
-                    onClicked()
-                }
-        ) {
-            WordItem(
-                item = item,
-                modifier = Modifier
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 16.dp,
-                        bottom = 16.dp
-                    )
-                    .fillMaxWidth(0.80f)
-                    .align(Alignment.CenterVertically)
-            )
-        }
-    }
-}
-
-@Composable
-private fun WordItem(
-    item: WordListItemUI,
-    modifier: Modifier
-) {
-    Column(modifier = modifier) {
-        AverageTitle(
-            text = item.word,
-            maxLines = 1,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
-        Text(
-            text = item.description,
-            textAlign = TextAlign.Left,
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.bodySmall,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
     }
 }

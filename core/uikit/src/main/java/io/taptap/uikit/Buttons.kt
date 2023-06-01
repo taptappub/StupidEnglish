@@ -28,6 +28,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.taptap.uikit.theme.StupidEnglishTheme
+import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
 
 @Composable
 fun PrimaryButton(
@@ -87,28 +88,6 @@ fun SecondaryButton(
     }
 }
 
-@Preview()
-@Composable
-fun PrimaryButton() {
-    StupidEnglishTheme {
-        PrimaryButton(
-            text = "Ass",
-            onClick = {}
-        )
-    }
-}
-
-@Preview()
-@Composable
-fun SecondaryButton() {
-    StupidEnglishTheme {
-        SecondaryButton(
-            text = "Ass2",
-            onClick = {}
-        )
-    }
-}
-
 @Composable
 fun GradientButton(
     gradient: Brush,
@@ -133,6 +112,49 @@ fun GradientButton(
                 .then(modifier),
         ) {
             content()
+        }
+    }
+}
+
+@Preview()
+@Composable
+fun PrimaryButtonPreview() {
+    StupidEnglishTheme {
+        PrimaryButton(
+            text = "Ass",
+            onClick = {}
+        )
+    }
+}
+
+@Preview()
+@Composable
+fun SecondaryButtonPreview() {
+    StupidEnglishTheme {
+        SecondaryButton(
+            text = "Ass2",
+            onClick = {}
+        )
+    }
+}
+
+@Preview()
+@Composable
+fun GradientButtonPreview() {
+    StupidEnglishTheme {
+        GradientButton(
+            onClick = { },
+            contentPadding = PaddingValues(0.dp),
+            gradient = getStupidLanguageBackgroundRow(),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .size(width = 40.dp, height = 32.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_share),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                contentDescription = null
+            )
         }
     }
 }

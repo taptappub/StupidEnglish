@@ -3,13 +3,12 @@ package io.taptap.stupidenglish.archive.features.sentences.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
+import io.taptap.stupidenglish.archive.features.sentences.data.SentencesListRepository
 import io.taptap.stupidenglish.base.BaseViewModel
+import io.taptap.stupidenglish.base.logic.mapper.toSentenceList
 import io.taptap.stupidenglish.base.logic.share.ShareUtil
 import io.taptap.stupidenglish.base.model.Sentence
-import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
-import io.taptap.stupidenglish.archive.features.sentences.data.SentencesListRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,8 +23,7 @@ private const val SENTENCES_FOR_MOTIVATION = 2
 @HiltViewModel
 class SentencesListViewModel @Inject constructor(
     private val repository: SentencesListRepository,
-    private val shareUtil: ShareUtil,
-    stateHandle: SavedStateHandle
+    private val shareUtil: ShareUtil
 ) : BaseViewModel<SentencesListContract.Event, SentencesListContract.State, SentencesListContract.Effect>() {
 
     init {
@@ -176,12 +174,7 @@ class SentencesListViewModel @Inject constructor(
         if (savedSentenceList.isEmpty()) {
             sentenceList.add(SentencesListEmptyUI(descriptionRes = R.string.stns_empty_list_description))
         } else {
-            sentenceList.addAll(savedSentenceList.map {
-                SentencesListItemUI(
-                    id = it.id,
-                    sentence = it.sentence
-                )
-            })
+            sentenceList.addAll(savedSentenceList.toSentenceList())
         }
 
         return sentenceList

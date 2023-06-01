@@ -9,36 +9,37 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
-import io.taptap.stupidenglish.base.ui.helpers.GroupViewModelHelper
-import io.taptap.stupidenglish.base.ui.helpers.IGroupViewModelHelper
+import io.taptap.stupidenglish.base.logic.mapper.toGroupsList
 import io.taptap.stupidenglish.features.addword.data.AddWordRepository
 import io.taptap.uikit.group.GroupListModel
 import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import taptap.pub.doOnComplete
+import taptap.pub.doOnSuccess
 import taptap.pub.handle
+import taptap.pub.map
 import javax.inject.Inject
 
 @HiltViewModel
 class AddWordViewModel @Inject constructor(
     private val stateHandle: SavedStateHandle,
     private val repository: AddWordRepository
-) : BaseViewModel<AddWordContract.Event, AddWordContract.State, AddWordContract.Effect>(),
-    IGroupViewModelHelper by GroupViewModelHelper(repository, repository) {
+) : BaseViewModel<AddWordContract.Event, AddWordContract.State, AddWordContract.Effect>() {
 
     init {
-        setCoroutineScope(viewModelScope)
-        getGroupsList()
+        viewModelScope.launch(Dispatchers.IO) { getGroupsList() }
 
         val currentGroupId = stateHandle.get<String>(NavigationKeys.Arg.GROUP_ID)?.toLong()
         if (currentGroupId != null) {
-            getGroupsById(
-                ids = listOf(currentGroupId),
-                doOnSuccess = {
-                    setState { copy(selectedGroups = it) }
-                }
-            )
+            viewModelScope.launch(Dispatchers.IO) {
+                repository.getGroupsById(listOf(currentGroupId))
+                    .map { it.toGroupsList(withNoGroup = true) }
+                    .doOnSuccess {
+                        setState { copy(selectedGroups = it) }
+                    }
+            }
         }
     }
 
@@ -180,25 +181,30 @@ class AddWordViewModel @Inject constructor(
         }
     }
 
-    private fun saveGroup(group: String) {
-        saveGroup(group, doOnComplete = {
-            setGroup("")
-            setState { copy(isAddGroup = false) }
-            setEffect { AddWordContract.Effect.HideBottomSheet }
-        })
-    }
-
-    private fun getGroupsList() {
-        getGroupsList(
-            collect = { groups ->
-                setState {
-                    copy(groups = groups)
-                }
-            },
-            onError = {
-                setEffect { AddWordContract.Effect.GetGroupsError(R.string.addw_get_groups_error) }
+    private suspend fun saveGroup(group: String) {
+        val trimGroup = group.trim()
+        repository.saveGroup(trimGroup)
+            .doOnComplete {
+                setGroup("")
+                setState { copy(isAddGroup = false) }
+                setEffect { AddWordContract.Effect.HideBottomSheet }
             }
-        )
     }
 
+    private suspend fun getGroupsList() {
+        repository.observeGroupList()
+            .handle(
+                success = { groupList ->
+                    groupList.collect { list ->
+                        val groups = list.toGroupsList(withNoGroup = true)
+                        setState {
+                            copy(groups = groups)
+                        }
+                    }
+                },
+                error = {
+                    setEffect { AddWordContract.Effect.GetGroupsError(R.string.addw_get_groups_error) }
+                }
+            )
+    }
 }

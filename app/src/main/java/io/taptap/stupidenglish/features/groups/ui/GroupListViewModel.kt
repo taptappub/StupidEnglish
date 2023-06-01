@@ -7,6 +7,7 @@ import io.taptap.stupidenglish.archive.features.sentences.ui.SentencesListEmptyU
 import io.taptap.stupidenglish.archive.features.sentences.ui.SentencesListItemUI
 import io.taptap.stupidenglish.archive.features.sentences.ui.SentencesListTitleUI
 import io.taptap.stupidenglish.base.BaseViewModel
+import io.taptap.stupidenglish.base.logic.mapper.toGroupsList
 import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.features.addword.ui.AddWordContract
 import io.taptap.stupidenglish.features.groups.data.GroupListRepository
@@ -110,17 +111,9 @@ class GroupListViewModel @Inject constructor(
 
     private fun makeGroupsList(groupsList: List<Group>): List<GroupListModel> {
         val groupList = mutableListOf<GroupListModel>()
-
         groupList.add(GroupListTitleUI(valueRes = R.string.grps_list_list_title))
 
-        groupList.add(NoGroup)
-        groupList.addAll(groupsList.reversed().map {
-            GroupItemUI(
-                id = it.id,
-                name = it.name
-            )
-        })
-
+        groupList.addAll(groupsList.toGroupsList(withNoGroup = true))
         return groupList
     }
 }
