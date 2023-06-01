@@ -298,8 +298,9 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val (bottomBar) = createRefs()
                     StupidEnglishBottomBar(
-                        state = mainState,
-                        currentRoute = navController.currentRoute!!,
+                        tabs = mainState.bottomBarTabs,
+                        //TODO move selected tab into state and rely on bottom bar recomposition
+                        selectedTab = mainState.bottomBarTabs.first { it.route == navController.currentRoute!! },
                         effectFlow = mainViewModel.effect,
                         onEventSent = { event -> mainViewModel.setEvent(event) },
                         onNavigationRequested = { navigationEffect ->

@@ -3,7 +3,6 @@ package io.taptap.stupidenglish.ui
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -36,16 +35,15 @@ import kotlinx.coroutines.flow.onEach
 //ver2
 @Composable
 fun StupidEnglishBottomBar(
-    currentRoute: String,
-    modifier: Modifier = Modifier,
-    state: MainContract.State,
+    tabs: List<NavigationKeys.BottomNavigationScreen>,
+    selectedTab: NavigationKeys.BottomNavigationScreen,
     effectFlow: Flow<MainContract.Effect>?,
     onEventSent: (event: MainContract.Event) -> Unit,
-    onNavigationRequested: (navigationEffect: MainContract.Effect.Navigation) -> Unit
+    onNavigationRequested: (navigationEffect: MainContract.Effect.Navigation) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val tabs = state.bottomBarTabs
-    val currentSection = tabs.first { it.route == currentRoute }
 
+    //TODO let's recompose BottomBar instead of listening events?
     // Listen for side effects from the VM
     LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
         effectFlow?.onEach { effect ->
@@ -72,42 +70,15 @@ fun StupidEnglishBottomBar(
         ) {
 
             tabs.forEach { item ->
-                val selected = item == currentSection
-                val tint by animateColorAsState(
-                    if (selected) {
-                        MaterialTheme.colorScheme.tertiary
-                    } else {
-                        MaterialTheme.colorScheme.secondary
-                    }
-                )
+
                 StupidEnglishBottomNavigationItem(
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = item.icon),
-                            contentDescription = stringResource(id = item.title),
-                            tint = tint,
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .padding(6.dp)
-                        )
-                    },
-                    text = {
-                        Text(
-                            text = stringResource(id = item.title),
-                            color = tint,
-                            style = MaterialTheme.typography.headlineSmall,
-                            maxLines = 1,
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .padding(6.dp)
-                        )
-                    },
-                    selected = selected,
+                    item = item,
+                    selected = item == selectedTab,
                     onSelected = {
                         onEventSent(MainContract.Event.OnTabSelected(item))
                     },
                     modifier = Modifier
-                        .height(BOTTOM_BAR_HEIGHT)
+                        .align(Alignment.CenterVertically)
                         .weight(1.0f)
                 )
             }
@@ -117,18 +88,58 @@ fun StupidEnglishBottomBar(
 
 @Composable
 fun StupidEnglishBottomNavigationItem(
-    icon: @Composable RowScope.() -> Unit,
-    text: @Composable RowScope.() -> Unit,
+    item: NavigationKeys.BottomNavigationScreen,
     selected: Boolean,
     onSelected: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.selectable(selected = selected, onClick = onSelected),
         horizontalArrangement = Arrangement.Center
     ) {
-        icon()
-        text()
+
+        val tint by animateColorAsState(
+            if (selected) {
+                MaterialTheme.colorScheme.tertiary
+            } else {
+                MaterialTheme.colorScheme.secondary
+            }
+        )
+
+        Icon(
+            painter = painterResource(id = item.icon),
+            contentDescription = stringResource(id = item.title),
+            tint = tint,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(6.dp)
+        )
+        Text(
+            text = stringResource(id = item.title),
+            color = tint,
+            style = MaterialTheme.typography.headlineSmall,
+            maxLines = 1,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(6.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StupidEnglishBottomBarPreview() {
+    StupidEnglishTheme {
+        StupidEnglishBottomBar(
+            tabs = listOf(
+                NavigationKeys.BottomNavigationScreen.SE_WORDS,
+                NavigationKeys.BottomNavigationScreen.SE_SETS,
+            ),
+            selectedTab = NavigationKeys.BottomNavigationScreen.SE_WORDS,
+            effectFlow = null,
+            onEventSent = {},
+            onNavigationRequested = {}
+        )
     }
 }
 
@@ -136,18 +147,10 @@ fun StupidEnglishBottomNavigationItem(
 @Composable
 fun StupidEnglishBottomNavigationItemPreview() {
     StupidEnglishTheme {
-        StupidEnglishBottomBar(
-            currentRoute = NavigationKeys.BottomNavigationScreen.SE_WORDS.route,
-            state = MainContract.State(
-                isBottomBarShown = false,
-                bottomBarTabs = listOf(
-                    NavigationKeys.BottomNavigationScreen.SE_WORDS,
-                    NavigationKeys.BottomNavigationScreen.SE_SETS
-                )
-            ),
-            effectFlow = null,
-            onEventSent = {},
-            onNavigationRequested = {}
+        StupidEnglishBottomNavigationItem(
+            item = NavigationKeys.BottomNavigationScreen.SE_WORDS,
+            selected = true,
+            onSelected = {},
         )
     }
 }
