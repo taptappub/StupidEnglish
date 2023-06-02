@@ -37,6 +37,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion rootProject.ext.kotlin_compilet_extension_version
     }
+    namespace 'io.taptap.uikit'
 }
 
 dependencies {
