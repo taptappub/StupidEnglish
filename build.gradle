@@ -4,7 +4,7 @@ buildscript {
         compileSdkVersion = 33
         minSdkVersion = 24
         targetSdkVersion = 33
-        buildToolsVersion = "30.0.3"
+        buildToolsVersion = '33.0.2'
 
         reaction_version = "1.0.4"
         appcompat_version = "1.5.1"
