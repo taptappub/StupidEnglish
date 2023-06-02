@@ -7,6 +7,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
     id "io.gitlab.arturbosch.detekt"
+    id 'com.google.devtools.ksp'
 }
 
 android {
@@ -24,14 +25,10 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+    }
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += [
-                        "room.schemaLocation":"$projectDir/schemas".toString(),
-                        "room.incremental":"true"]
-            }
-        }
+    ksp {
+        arg(new RoomSchemaArgProvider(new File(projectDir, "schemas")))
     }
 
     buildTypes {
@@ -103,7 +100,7 @@ dependencies {
 
     //Room
     implementation 'androidx.room:room-runtime:2.5.1'
-    kapt 'androidx.room:room-compiler:2.5.1'
+    ksp 'androidx.room:room-compiler:2.5.1'
 
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation 'androidx.room:room-ktx:2.5.1'
@@ -127,4 +124,20 @@ dependencies {
 
 kapt {
     correctErrorTypes true
+}
+
+class RoomSchemaArgProvider implements CommandLineArgumentProvider {
+
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    File schemaDir
+
+    RoomSchemaArgProvider(File schemaDir) {
+        this.schemaDir = schemaDir
+    }
+
+    @Override
+    Iterable<String> asArguments() {
+        return ["room.schemaLocation=${schemaDir.path}".toString(), "room.incremental=true"]
+    }
 }
