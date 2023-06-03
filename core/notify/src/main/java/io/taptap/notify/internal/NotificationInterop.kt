@@ -1,6 +1,7 @@
 package io.taptap.notify.internal
 
 import android.app.NotificationManager
+import android.graphics.drawable.Icon
 import android.os.Build
 import android.text.Html
 import androidx.annotation.VisibleForTesting
@@ -84,7 +85,7 @@ internal object NotificationInterop {
                 .extend(NotifyExtender().setStacked(true))
 
         // Clear the current set of actions and re-apply the stackable actions.
-        builder.mActions.clear()
+        builder.clearActions()
         payload.stackable.stackableActions?.forEach {
             builder.addAction(it)
         }
@@ -257,7 +258,7 @@ internal object NotificationInterop {
                         .setSummaryText(content.expandedText ?: content.text)
                         // This is the picture below.
                         .bigPicture(content.image)
-                        .bigLargeIcon(null)
+                        .bigLargeIcon(null as Icon?)
 
             }
             is Payload.Content.Message -> {

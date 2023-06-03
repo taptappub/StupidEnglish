@@ -5,12 +5,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdk rootProject.ext.minSdkVersion
         targetSdk rootProject.ext.targetSdkVersion
+        compileSdk rootProject.ext.compileSdkVersion
+        buildToolsVersion = rootProject.ext.buildToolsVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -20,7 +20,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion rootProject.ext.kotlin_compilet_extension_version
+        kotlinCompilerExtensionVersion rootProject.ext.kotlin_compiler_extension_version
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -29,6 +29,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'io.taptap.authorisation'
 }
 
 dependencies {
@@ -36,10 +37,10 @@ dependencies {
     implementation "androidx.compose.ui:ui:$compose_ui_version"
 
     // Firebase
-    implementation platform('com.google.firebase:firebase-bom:30.0.1')
+    implementation platform('com.google.firebase:firebase-bom:32.1.0')
 
     // Auth
-    api 'com.firebaseui:firebase-ui-auth:7.2.0'
+    api 'com.firebaseui:firebase-ui-auth:8.0.2'
 
     implementation "androidx.core:core-ktx:$core_ktx_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"
