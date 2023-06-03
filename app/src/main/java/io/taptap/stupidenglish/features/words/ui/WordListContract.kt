@@ -4,6 +4,9 @@ import androidx.annotation.StringRes
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
+import io.taptap.stupidenglish.base.model.Group
+import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.base.model.WordWithGroups
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.ui.MenuItem
@@ -43,7 +46,7 @@ class WordListContract {
         val isLoading: Boolean = false,
         val currentGroup: GroupListItemsModel,
         val sheetContentType: SheetContentType,
-        val deletedWordIds: MutableList<Long>,
+        val deletedWords: MutableList<WordWithGroups>,
         val avatar: String?,
         val longClickedGroup: GroupListItemsModel,
         val groupMenuList: List<MenuItem>

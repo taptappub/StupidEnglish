@@ -1,8 +1,10 @@
 package io.taptap.stupidenglish.base.logic.sources.words.write
 
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
+import io.taptap.stupidenglish.base.logic.database.dto.GroupDto
 import io.taptap.stupidenglish.base.logic.database.dto.WordDto
-import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.base.logic.database.dto.WordWithGroupsDto
+import io.taptap.stupidenglish.base.model.WordWithGroups
 import taptap.pub.Reaction
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,28 +18,39 @@ class WriteWordsDataSource @Inject constructor(
         word: String,
         description: String,
         groupsIds: List<Long>
-    ): Reaction<Long> = Reaction.on {
-        wordDao.insertWord(
-            WordDto(
-                word = word,
-                description = description,
-                points = 0,
-                groupsIds = groupsIds.joinToString(",")
+    ): Reaction<Unit> = Reaction.on {
+        wordDao.insertWordsWithGroups(
+            groupsIds = groupsIds,
+            words = listOf(
+                WordDto(
+                    word = word,
+                    description = description,
+                    points = 0
+                )
             )
         )
     }
 
-    override suspend fun saveWords(words: List<Word>): Reaction<Unit> = Reaction.on {
-        val wordsDto = words.map {
-            WordDto(
-                word = it.word,
-                description = it.description,
-                points = it.points,
-                groupsIds = it.groupsIds.joinToString(",")
-            )
+    override suspend fun saveWords(words: List<WordWithGroups>): Reaction<Unit> =
+        Reaction.on {
+            val wordWithGroupsDtos = words.map {
+                WordWithGroupsDto(
+                    word = WordDto(
+                        id = it.word.id, //todo Проверить обновляются ли айдишники
+                        word = it.word.word,
+                        description = it.word.description,
+                        points = it.word.points
+                    ),
+                    groups = it.groups.map { group ->
+                        GroupDto(
+                            id = group.id,
+                            name = group.name
+                        )
+                    }
+                )
+            }
+            wordDao.insertWordsWithGroups(wordWithGroupsDtos)
         }
-        wordDao.insertWords(wordsDto)
-    }
 
     override suspend fun deleteWord(id: Long): Reaction<Unit> = Reaction.on {
         wordDao.deleteWord(id)

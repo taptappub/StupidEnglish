@@ -44,21 +44,21 @@ abstract class BaseViewModel<Event : ViewEvent, UiState : ViewState, Effect : Vi
     }
 
     fun setEvent(event: Event) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             Log.d("StupidEnglishState", "event = $event")
             _event.emit(event)
         }
     }
 
     protected fun setState(reducer: UiState.() -> UiState) {
-//        viewModelScope.launch(Dispatchers.Main) {
-//            val newState = viewState.value.reducer()
-//            Log.d("StupidEnglishState", "state = $newState")
-//            _viewState.value = newState
-//        }
         viewModelScope.launch(Dispatchers.Main) {
-            _viewState.update(reducer)
+            val newState = viewState.value.reducer()
+            Log.d("StupidEnglishState", "state = $newState")
+            _viewState.value = newState
         }
+//        viewModelScope.launch(Dispatchers.Main) {
+//            _viewState.update(reducer)
+//        }
     }
 
     protected fun setTemporaryState(

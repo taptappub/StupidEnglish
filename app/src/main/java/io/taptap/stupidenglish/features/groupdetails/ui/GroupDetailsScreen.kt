@@ -63,11 +63,6 @@ fun GroupDetailsScreen(
     LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
         effectFlow?.onEach { effect ->
             when (effect) {
-                is GroupDetailsContract.Effect.GetGroupsError ->
-                    scaffoldState.snackbarHostState.showSnackbar(
-                        message = context.getString(effect.errorRes),
-                        duration = SnackbarDuration.Short
-                    )
                 is GroupDetailsContract.Effect.GetWordsError ->
                     scaffoldState.snackbarHostState.showSnackbar(
                         message = context.getString(effect.errorRes),

@@ -52,7 +52,6 @@ class GroupDetailsContract {
 
     sealed class Effect : ViewSideEffect {
         data class GetWordsError(@StringRes val errorRes: Int) : Effect()
-        data class GetGroupsError(@StringRes val errorRes: Int) : Effect()
         object ShowRecover : Effect()
 
         sealed class Navigation : Effect() {

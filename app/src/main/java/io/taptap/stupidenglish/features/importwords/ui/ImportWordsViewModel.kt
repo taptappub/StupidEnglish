@@ -8,9 +8,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.logic.mapper.toGroupsList
+import io.taptap.stupidenglish.base.model.Group
 import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.base.model.WordWithGroups
 import io.taptap.stupidenglish.features.importwords.domain.ImportWordsInteractor
 import io.taptap.uikit.group.NoGroup
+import io.taptap.uikit.group.getTitle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -141,18 +144,23 @@ class ImportWordsViewModel @Inject constructor(
                 parsingState = ImportWordsContract.ParsingState.InProgress,
             )
         }
-        val groupsIds = viewState.value.selectedGroups.map {
-            it.id
-        }
 
         val newWords = words.map {
-            Word(
-                id = it.id,
-                word = it.word.trim(),
-                description = it.description.trim(),
-                points = it.points,
-                groupsIds = groupsIds
+            WordWithGroups(
+                word = Word(
+                    id = it.id,
+                    word = it.word.trim(),
+                    description = it.description.trim(),
+                    points = it.points
+                ),
+                groups = viewState.value.selectedGroups.map {
+                    Group(
+                        id = it.id,
+                        name = ""//don't use
+                    )
+                }
             )
+
         }
 
         interactor.saveWords(newWords)

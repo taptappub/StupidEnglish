@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
-import io.taptap.stupidenglish.base.logic.mapper.toGroupsList
+import io.taptap.stupidenglish.base.logic.mapper.toGroupItemUI
 import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.groupdetails.data.GroupDetailsRepository
 import io.taptap.stupidenglish.features.groupdetails.ui.model.GroupDetailsButtonUI
@@ -20,8 +20,6 @@ import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import taptap.pub.doOnComplete
-import taptap.pub.handle
-import taptap.pub.map
 import taptap.pub.takeOrReturn
 import javax.inject.Inject
 
@@ -36,8 +34,7 @@ class GroupDetailsViewModel @Inject constructor(
             ?: error("No group was passed to AddSentenceViewModel.")
 
         viewModelScope.launch(Dispatchers.IO) {
-            getGroupsById(listOf(currentGroupId))
-            getWordList(viewState.value.group)
+            getWordList(currentGroupId)
         }
     }
 
@@ -60,11 +57,11 @@ class GroupDetailsViewModel @Inject constructor(
                 deleteWords()
             }
             is GroupDetailsContract.Event.OnRecover -> {
-                val words = repository.getWordList(viewState.value.group.id).takeOrReturn {
+                val words = repository.getGroupWithWords(viewState.value.group.id).takeOrReturn {
                     setEffect { GroupDetailsContract.Effect.GetWordsError(R.string.word_get_list_error) }
                     setState { copy(deletedWordIds = mutableListOf()) }
                     return
-                }
+                }.words
 
                 makeWordList(words.reversed(), viewState.value.group)
             }
@@ -125,35 +122,23 @@ class GroupDetailsViewModel @Inject constructor(
             }
     }
 
-    private suspend fun getGroupsById(listOf: List<Long>) {
-        repository.getGroupsById(listOf)
-            .map { it.toGroupsList(withNoGroup = true) }
-            .handle(
-                success = {
-                    setState { copy(group = it.first()) }
-                },
-                error = {
-                    setEffect { GroupDetailsContract.Effect.GetGroupsError(R.string.grdt_get_groups_error) }
-                }
-            )
-    }
-
-    private suspend fun getWordList(group: GroupListItemsModel) {
-        val wordList = repository.observeWordList(group.id).takeOrReturn {
+    private suspend fun getWordList(groupId: Long) {
+        val groupWithWordsFlow = repository.observeGroupWithWords(groupId).takeOrReturn {
             setEffect { GroupDetailsContract.Effect.GetWordsError(R.string.grps_get_groups_error) }
             return
         }
 
-        wordList.collect {
-            val reversedWordList = it.reversed()
+        groupWithWordsFlow.collect {
+            val group = it.group?.toGroupItemUI() ?: NoGroup
+            setState { copy(group = group) }
+
+            val reversedWordList = it.words.reversed()
             makeWordList(reversedWordList, group)
         }
     }
 
     private fun makeWordList(list: List<Word>, group: GroupListItemsModel) {
         val words: List<GroupDetailsWordItemUI> = list.toWordsList()
-        val filteredList = filterWordListByGroup(words, group.id)
-
         val mainList = mutableListOf<GroupDetailsUIModel>()
 
         mainList.add(
@@ -182,23 +167,14 @@ class GroupDetailsViewModel @Inject constructor(
         )
 
         mainList.add(GroupDetailsDynamicTitleUI(currentGroup = group))
-        if (filteredList.isEmpty()) {
+        if (words.isEmpty()) {
             mainList.add(GroupDetailsEmptyUI(descriptionRes = R.string.word_empty_list_description))
         } else {
-            mainList.addAll(filteredList)
+            mainList.addAll(words)
         }
 
         setState {
             copy(wordList = mainList, isLoading = false)
-        }
-    }
-
-    private fun filterWordListByGroup(
-        list: List<GroupDetailsWordItemUI>,
-        groupId: Long
-    ): List<GroupDetailsUIModel> {
-        return list.filter {
-            it.groupsIds.contains(groupId)
         }
     }
 }
@@ -208,8 +184,7 @@ private fun List<Word>.toWordsList(): List<GroupDetailsWordItemUI> {
         GroupDetailsWordItemUI(
             id = it.id,
             word = it.word,
-            description = it.description,
-            groupsIds = it.groupsIds
+            description = it.description
         )
     }
 }

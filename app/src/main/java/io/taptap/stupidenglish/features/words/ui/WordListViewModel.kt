@@ -9,8 +9,6 @@ import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.logic.mapper.toGroupsList
 import io.taptap.stupidenglish.base.logic.mapper.toWordsList
-import io.taptap.stupidenglish.base.model.Group
-import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.features.words.data.WordListRepository
 import io.taptap.stupidenglish.features.words.ui.model.OnboardingWordUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListDynamicTitleUI
@@ -28,7 +26,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import taptap.pub.doOnComplete
 import taptap.pub.handle
-import taptap.pub.takeOrNull
 import taptap.pub.takeOrReturn
 import javax.inject.Inject
 
@@ -39,8 +36,13 @@ class WordListViewModel @Inject constructor(
     private val repository: WordListRepository
 ) : BaseViewModel<WordListContract.Event, WordListContract.State, WordListContract.Effect>() {
 
-    private lateinit var words: List<WordListItemUI>
-    private lateinit var groups: List<GroupListItemsModel>
+    private val currentGroup: GroupListItemsModel
+        get() = try {
+            viewState.value.currentGroup
+        } catch (e: Exception) {
+            e.printStackTrace()
+            NoGroup
+        }
 
     var groupName by mutableStateOf("")
         private set
@@ -50,7 +52,7 @@ class WordListViewModel @Inject constructor(
     }
 
     init {
-        viewModelScope.launch(Dispatchers.IO) { getMainList() }
+        viewModelScope.launch(Dispatchers.IO) { getMainList(NoGroup) }
         viewModelScope.launch(Dispatchers.IO) { showMotivation() }
         viewModelScope.launch(Dispatchers.IO) { getSavedUser() }
     }
@@ -62,7 +64,7 @@ class WordListViewModel @Inject constructor(
         longClickedGroup = NoGroup,
         currentGroup = NoGroup,
         sheetContentType = WordListContract.SheetContentType.Motivation,
-        deletedWordIds = mutableListOf(),
+        deletedWords = mutableListOf(),
         avatar = null
     )
 
@@ -147,12 +149,12 @@ class WordListViewModel @Inject constructor(
                 setEffect { WordListContract.Effect.ShowUnderConstruction }
             }
             is WordListContract.Event.OnWordDismiss -> {
-                predeleteWord(event.item)
+                deleteWord(event.item)
             }
             is WordListContract.Event.OnGroupClick -> {
-                if (viewState.value.currentGroup != event.group) {
-                    makeMainList(words, groups, event.group)
+                if (currentGroup != event.group) {
                     setState { copy(currentGroup = event.group) }
+                    getMainList(event.group)
                 }
             }
             is WordListContract.Event.OnAddGroupClick -> {
@@ -202,25 +204,14 @@ class WordListViewModel @Inject constructor(
                 }
             }
             is WordListContract.Event.OnApplyDismiss -> {
-                deleteWords()
+                setState { copy(deletedWords = mutableListOf()) }
             }
             is WordListContract.Event.OnRecover -> {
-                val words = repository.getWordList().takeOrReturn {
-                    setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
-                    setState { copy(deletedWordIds = mutableListOf()) }
-                    return
-                }
-
-                val groups = repository.getGroupList().takeOrReturn {
-                    setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
-                    setState { copy(deletedWordIds = mutableListOf()) }
-                    return
-                }
-
-                makeMainListWithMap(words.reversed(), groups.reversed())
+                val mutableDeletedWords = viewState.value.deletedWords
+                repository.saveWords(mutableDeletedWords)
             }
             is WordListContract.Event.OnRecovered -> {
-                setState { copy(deletedWordIds = mutableListOf()) }
+                setState { copy(deletedWords = mutableListOf()) }
             }
             is WordListContract.Event.OnProfileClick ->
                 setEffect { WordListContract.Effect.Navigation.ToProfile }
@@ -280,52 +271,36 @@ class WordListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun predeleteWord(item: WordListItemUI) {
-        val mutableDeletedWordIds = viewState.value.deletedWordIds.toMutableList()
-        mutableDeletedWordIds.add(item.id)
-        val list = viewState.value.wordList.toMutableList()
-        list.remove(item)
-        setState { copy(wordList = list, deletedWordIds = mutableDeletedWordIds) }
+    private suspend fun deleteWord(item: WordListItemUI) {
+        val mutableDeletedWords = viewState.value.deletedWords
+        val wordWithGroups = repository.getWordWithGroups(wordId = item.id).takeOrReturn {
+            setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
+            return
+        }
+        mutableDeletedWords.add(wordWithGroups)
+        repository.deleteWords(listOf(item.id))
+        setState { copy(deletedWords = mutableDeletedWords) }
         setEffect { WordListContract.Effect.ShowRecover }
     }
 
-    private suspend fun deleteWords() {
-        repository.deleteWords(viewState.value.deletedWordIds)
-        setState { copy(deletedWordIds = mutableListOf()) }
-    }
-
-    private fun filterWordListByGroup(
-        words: List<WordListItemUI>,
-        group: GroupListModel
-    ): List<WordListItemUI> {
-        return if (group == NoGroup) {
-            words
-        } else {
-            words.filter {
-                it.groupsIds.contains(group.id)
-            }
-        }
-    }
-
     private suspend fun showMotivation() {
-        val wordsCountFlow = repository.observeWordList().takeOrNull()
+        val wordsCount = repository.getWordsCountInGroup().takeOrReturn {
+            setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
+            return
+        }
 
-        wordsCountFlow?.collect { words ->
-            val size = words.size
-
-            if (size == WORDS_FOR_MOTIVATION && !repository.isSentenceMotivationShown) { //todo придумать время мотивации
-                delay(3000)
-                if (size % WORDS_FOR_MOTIVATION == 0) {
-                    setState { copy(sheetContentType = WordListContract.SheetContentType.Motivation) }
-                    setEffect { WordListContract.Effect.ShowBottomSheet }
-                    setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
-                }
+        if (wordsCount == WORDS_FOR_MOTIVATION && !repository.isSentenceMotivationShown) { //todo придумать время мотивации
+            delay(3000)
+            if (wordsCount % WORDS_FOR_MOTIVATION == 0) {
+                setState { copy(sheetContentType = WordListContract.SheetContentType.Motivation) }
+                setEffect { WordListContract.Effect.ShowBottomSheet }
+                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
             }
         }
     }
 
-    private suspend fun getMainList() {
-        val savedWordList = repository.observeWordList().takeOrReturn {
+    private suspend fun getMainList(currentGroup: GroupListItemsModel) {
+        val savedWordList = repository.observeWordList(currentGroup.id).takeOrReturn {
             setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
             return
         }
@@ -339,35 +314,23 @@ class WordListViewModel @Inject constructor(
             val groupsList = groups.reversed()
             Pair(mainList, groupsList)
         }.collect { pair ->
-            val mainList = pair.first
-            val groupsList = pair.second
+            val words = pair.first.toWordsList()
+            val groups = pair.second.toGroupsList(withNoGroup = true)
 
-            makeMainListWithMap(mainList, groupsList)
+            val mainList = makeMainList(words, groups, currentGroup)
+            setState {
+                copy(wordList = mainList, isLoading = false)
+            }
         }
-    }
-
-    private fun makeMainListWithMap(mainList: List<Word>, groupsList: List<Group>) {
-        words = mainList.toWordsList()
-        groups = groupsList.toGroupsList(withNoGroup = true)
-        val group = try {
-            viewState.value.currentGroup
-        } catch (e: Exception) {
-            e.printStackTrace()
-            NoGroup
-        }
-
-        makeMainList(words, groups, group)
     }
 
     private fun makeMainList(
-        list: List<WordListItemUI>,
+        filteredList: List<WordListItemUI>,
         groupsList: List<GroupListItemsModel>,
         currentGroup: GroupListItemsModel
-    ) {
-        val filteredList = filterWordListByGroup(list, currentGroup)
-
+    ): MutableList<WordListListModels> {
         val mainList = mutableListOf<WordListListModels>()
-        if (showOnboardingLabel(words.size)) {
+        if (showOnboardingLabel(filteredList.size)) {
             mainList.add(OnboardingWordUI)
         }
 
@@ -385,10 +348,7 @@ class WordListViewModel @Inject constructor(
         } else {
             mainList.addAll(filteredList)
         }
-
-        setState {
-            copy(wordList = mainList, isLoading = false)
-        }
+        return mainList
     }
 
     private fun showOnboardingLabel(size: Int): Boolean {

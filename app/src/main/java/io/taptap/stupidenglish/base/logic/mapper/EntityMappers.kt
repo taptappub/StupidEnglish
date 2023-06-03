@@ -16,22 +16,20 @@ fun List<Group>.toGroupsList(withNoGroup: Boolean): List<GroupListItemsModel> {
     }
 
     groupList.addAll(this.map {
-        GroupItemUI(
-            id = it.id,
-            name = it.name
-        )
+        it.toGroupItemUI()
     })
 
     return groupList
 }
+
+fun Group.toGroupItemUI(): GroupItemUI = GroupItemUI(id, name)
 
 fun List<Word>.toWordsList(): List<WordListItemUI> {
     return this.map {
         WordListItemUI(
             id = it.id,
             word = it.word,
-            description = it.description,
-            groupsIds = it.groupsIds
+            description = it.description
         )
     }
 }
