@@ -117,11 +117,6 @@ fun AddWordScreen(
                         message = context.getString(effect.errorRes),
                         duration = SnackbarDuration.Short
                     )
-                is AddWordContract.Effect.GetGroupsError ->
-                    scaffoldState.snackbarHostState.showSnackbar(
-                        message = context.getString(effect.errorRes),
-                        duration = SnackbarDuration.Short
-                    )
             }
         }?.collect()
     }

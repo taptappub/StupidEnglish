@@ -42,9 +42,7 @@ class WordListContract {
     }
 
     data class State(
-        val wordList: List<WordListListModels>,
         val isLoading: Boolean = false,
-        val currentGroup: GroupListItemsModel,
         val sheetContentType: SheetContentType,
         val deletedWords: MutableList<WordWithGroups>,
         val avatar: String?,

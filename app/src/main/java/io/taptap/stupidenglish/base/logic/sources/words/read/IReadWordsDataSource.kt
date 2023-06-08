@@ -9,6 +9,6 @@ import taptap.pub.Reaction
 interface IReadWordsDataSource {
     suspend fun getWordList(groupId: Long = NoGroup.id): Reaction<List<Word>>
     suspend fun getWordWithGroups(wordId: Long): Reaction<WordWithGroups>
-    suspend fun observeWordList(groupId: Long = NoGroup.id): Reaction<Flow<List<Word>>>
+    fun observeWordList(groupId: Long = NoGroup.id): Flow<List<Word>>
     suspend fun getWordsById(wordsIds: List<Long>): Reaction<List<Word>>
 }

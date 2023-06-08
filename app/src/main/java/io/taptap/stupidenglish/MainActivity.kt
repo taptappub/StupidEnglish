@@ -76,6 +76,7 @@ import io.taptap.stupidenglish.features.words.ui.WordListViewModel
 import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.*
 import javax.inject.Inject
 
@@ -624,10 +625,14 @@ private fun WordListDestination(
 ) {
     val wordViewModel: WordListViewModel = hiltViewModel()
     val wordState by wordViewModel.viewState.collectAsState()
+    val wordList by wordViewModel.wordList.collectAsState()
+    val currentGroup by wordViewModel.currentGroupFlow.collectAsState()
 
     WordListScreen(
         context = LocalContext.current,
         state = wordState,
+        wordList = wordList,
+        currentGroup = currentGroup,
         group = wordViewModel.groupName,
         onGroupChange = wordViewModel::setNewGroupName,
         effectFlow = wordViewModel.effect,

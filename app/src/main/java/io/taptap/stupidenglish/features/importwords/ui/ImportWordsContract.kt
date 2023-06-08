@@ -45,8 +45,6 @@ class ImportWordsContract {
         object HideBottomSheet : Effect()
         object ShowBottomSheet : Effect()
 
-        data class GetGroupsError(val errorRes: Int) : Effect()
-
         sealed class Navigation : Effect() {
             object GoToImportTutorial : Navigation()
             object BackToWordList : Navigation()

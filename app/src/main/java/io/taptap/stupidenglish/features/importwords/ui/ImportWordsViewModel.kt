@@ -19,6 +19,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import taptap.pub.doOnComplete
 import taptap.pub.doOnError
@@ -197,18 +199,12 @@ class ImportWordsViewModel @Inject constructor(
 
     private suspend fun getGroupsList() {
         interactor.observeGroupList()
-            .handle(
-                success = { groupList ->
-                    groupList.collect { list ->
-                        val groups = list.toGroupsList(withNoGroup = true)
-                        setState {
-                            copy(groups = groups)
-                        }
-                    }
-                },
-                error = {
-                    setEffect { ImportWordsContract.Effect.GetGroupsError(R.string.impw_get_groups_error) }
+            .onEach { list ->
+                val groups = list.toGroupsList(withNoGroup = true)
+                setState {
+                    copy(groups = groups)
                 }
-            )
+            }
+            .launchIn(viewModelScope)
     }
 }

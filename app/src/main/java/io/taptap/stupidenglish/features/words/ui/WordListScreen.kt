@@ -100,6 +100,8 @@ fun WordListScreen(
     context: Context,
     state: WordListContract.State,
     group: String,
+    currentGroup: GroupListItemsModel?,
+    wordList: List<WordListListModels>,
     onGroupChange: (newGroup: String) -> Unit,
     effectFlow: Flow<WordListContract.Effect>?,
     onEventSent: (event: WordListContract.Event) -> Unit,
@@ -267,9 +269,9 @@ fun WordListScreen(
                 val listState = rememberLazyListState()
 
                 MainList(
-                    wordItems = state.wordList,
+                    wordItems = wordList,
                     deletedWords = state.deletedWords,
-                    group = state.currentGroup,
+                    group = currentGroup,
                     listState = listState,
                     onEventSent = onEventSent
                 )

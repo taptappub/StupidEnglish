@@ -14,6 +14,8 @@ import io.taptap.stupidenglish.features.addword.data.AddWordRepository
 import io.taptap.uikit.group.GroupListModel
 import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import taptap.pub.doOnComplete
@@ -191,18 +193,12 @@ class AddWordViewModel @Inject constructor(
 
     private suspend fun getGroupsList() {
         repository.observeGroupList()
-            .handle(
-                success = { groupList ->
-                    groupList.collect { list ->
-                        val groups = list.toGroupsList(withNoGroup = true)
-                        setState {
-                            copy(groups = groups)
-                        }
-                    }
-                },
-                error = {
-                    setEffect { AddWordContract.Effect.GetGroupsError(R.string.addw_get_groups_error) }
+            .onEach { list ->
+                val groups = list.toGroupsList(withNoGroup = true)
+                setState {
+                    copy(groups = groups)
                 }
-            )
+            }
+            .launchIn(viewModelScope)
     }
 }

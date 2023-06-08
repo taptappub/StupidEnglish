@@ -22,7 +22,12 @@ import io.taptap.uikit.group.GroupListModel
 import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import taptap.pub.doOnComplete
 import taptap.pub.handle
@@ -36,13 +41,24 @@ class WordListViewModel @Inject constructor(
     private val repository: WordListRepository
 ) : BaseViewModel<WordListContract.Event, WordListContract.State, WordListContract.Effect>() {
 
-    private val currentGroup: GroupListItemsModel
-        get() = try {
-            viewState.value.currentGroup
-        } catch (e: Exception) {
-            e.printStackTrace()
-            NoGroup
-        }
+    val currentGroupFlow = MutableStateFlow<GroupListItemsModel>(NoGroup)
+
+    val wordList: StateFlow<List<WordListListModels>> = combine(
+        repository.observeWordList(NoGroup.id),
+        repository.observeGroupList(),
+        currentGroupFlow
+    ) { words, groups, currentGroup:GroupListItemsModel ->
+        val wordList = words.reversed().toWordsList()
+        val groupsList = groups.reversed().toGroupsList(withNoGroup = true)
+        makeMainList(wordList, groupsList, NoGroup)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        initialValue = emptyList<WordListListModels>()
+    )
+
+    var word by mutableStateOf("")
+        private set
 
     var groupName by mutableStateOf("")
         private set
@@ -52,17 +68,14 @@ class WordListViewModel @Inject constructor(
     }
 
     init {
-        viewModelScope.launch(Dispatchers.IO) { getMainList(NoGroup) }
         viewModelScope.launch(Dispatchers.IO) { showMotivation() }
         viewModelScope.launch(Dispatchers.IO) { getSavedUser() }
     }
 
     override fun setInitialState() = WordListContract.State(
-        wordList = listOf(),
         isLoading = true,
         groupMenuList = getGroupMenu(WordListContract.MenuType.Enabled),
         longClickedGroup = NoGroup,
-        currentGroup = NoGroup,
         sheetContentType = WordListContract.SheetContentType.Motivation,
         deletedWords = mutableListOf(),
         avatar = null
@@ -152,9 +165,8 @@ class WordListViewModel @Inject constructor(
                 deleteWord(event.item)
             }
             is WordListContract.Event.OnGroupClick -> {
-                if (currentGroup != event.group) {
-                    setState { copy(currentGroup = event.group) }
-                    getMainList(event.group)
+                if (currentGroupFlow.last() != event.group) {
+                    currentGroupFlow.emit(event.group)
                 }
             }
             is WordListContract.Event.OnAddGroupClick -> {
@@ -299,37 +311,28 @@ class WordListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getMainList(currentGroup: GroupListItemsModel) {
-        val savedWordList = repository.observeWordList(currentGroup.id).takeOrReturn {
-            setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
-            return
-        }
-        val groupList = repository.observeGroupList().takeOrReturn {
-            setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_groups_error) }
-            return
-        }
-
-        savedWordList.combine(groupList) { words, groups ->
-            val mainList = words.reversed()
-            val groupsList = groups.reversed()
-            Pair(mainList, groupsList)
-        }.collect { pair ->
-            val words = pair.first.toWordsList()
-            val groups = pair.second.toGroupsList(withNoGroup = true)
-
-            val mainList = makeMainList(words, groups, currentGroup)
-            setState {
-                copy(wordList = mainList, isLoading = false)
-            }
+    private fun filterWordListByGroup(
+        words: List<WordListItemUI>,
+        group: GroupListItemsModel
+    ): List<WordListItemUI> {
+        return if (group == NoGroup) {
+            words
+        } else {
+            words
+//            words.filter {
+//                it.groupsIds.contains(group.id)
+//            }
         }
     }
 
     private fun makeMainList(
-        filteredList: List<WordListItemUI>,
+        list: List<WordListItemUI>,
         groupsList: List<GroupListItemsModel>,
         currentGroup: GroupListItemsModel
     ): MutableList<WordListListModels> {
         val mainList = mutableListOf<WordListListModels>()
+
+        val filteredList = filterWordListByGroup(list, currentGroup)
         if (showOnboardingLabel(filteredList.size)) {
             mainList.add(OnboardingWordUI)
         }
@@ -375,9 +378,9 @@ class WordListViewModel @Inject constructor(
         setState {
             copy(
                 sheetContentType = WordListContract.SheetContentType.Motivation,
-                currentGroup = NoGroup,
             )
         }
+        currentGroupFlow.emit(NoGroup)
         repository.removeGroups(removedGroups.map { it.id })
             .doOnComplete {
                 setEffect { WordListContract.Effect.HideBottomSheet }
