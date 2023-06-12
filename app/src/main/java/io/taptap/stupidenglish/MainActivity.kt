@@ -458,7 +458,7 @@ private fun GroupDetailsDestination(
         onEventSent = { event -> groupDetailsViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             when (navigationEffect) {
-                is GroupDetailsContract.Effect.Navigation.ToImportWords -> TODO()
+                is GroupDetailsContract.Effect.Navigation.ToImportWords -> TODO() надо сделать эти кнопки как в WordListScreen
                 is GroupDetailsContract.Effect.Navigation.BackTo -> TODO()
                 is GroupDetailsContract.Effect.Navigation.ToAddSentence -> TODO()
                 is GroupDetailsContract.Effect.Navigation.ToAddWordWithGroup -> TODO()
@@ -762,7 +762,6 @@ fun NavController.navigateToTab(
 
 
 ////-----------------------------------------------------------------
-//Экран детайлей группы как в Квизлет
 //переверстай AddWordScreen, чтобы не прыгало ничего (Не забудь добавить Галочку "Принять" в верхний правый угол)
 //поправить диалог добавления группы
 //писать на AddSentenceScreen что это за группа (StackView использовать) - теперь нельзя поделиться группой
@@ -770,5 +769,4 @@ fun NavController.navigateToTab(
 //расшаривание групп
 //GroupList добавить поиск сверху как в Quizlet
 
-//Сейчас достаются ВСЕ слова, а потом сортируются согласно groupId. Это херня. Надо по группе доставать
-//придется переделать связь Group и Word, т.к. должно быть многие ко многим
+//Экран детайлей группы как в Квизлет
