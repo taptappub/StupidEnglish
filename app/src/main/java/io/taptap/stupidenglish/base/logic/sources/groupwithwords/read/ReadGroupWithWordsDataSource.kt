@@ -16,7 +16,7 @@ class ReadGroupWithWordsDataSource @Inject constructor(
     private val wordDao: WordDao
 ) : IReadGroupWithWordsDataSource {
 
-    override suspend fun observeGroupWithWords(groupId: Long): Reaction<Flow<GroupWithWords>> = Reaction.on {
+    override fun observeGroupWithWords(groupId: Long): Flow<GroupWithWords> =
         if (groupId == NoGroup.id) {
             wordDao.observeWords()
                 .map {
@@ -31,7 +31,6 @@ class ReadGroupWithWordsDataSource @Inject constructor(
                     it.toGroupWithWords()
                 }
         }
-    }
 
     override suspend fun getGroupWithWords(groupId: Long): Reaction<GroupWithWords> = Reaction.on {
         if (groupId == NoGroup.id) {

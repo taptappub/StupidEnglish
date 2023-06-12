@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import taptap.pub.Reaction
 
 interface IReadGroupWithWordsDataSource {
-    suspend fun observeGroupWithWords(groupId: Long = NoGroup.id): Reaction<Flow<GroupWithWords>>
+    fun observeGroupWithWords(groupId: Long = NoGroup.id): Flow<GroupWithWords>
     suspend fun getGroupWithWords(groupId: Long = NoGroup.id): Reaction<GroupWithWords>
     suspend fun getWordsCountInGroup(groupId: Long = NoGroup.id): Reaction<Int>
 }

@@ -325,9 +325,9 @@ class WordListViewModel @Inject constructor(
     ): MutableList<WordListListModels> {
         val mainList = mutableListOf<WordListListModels>()
 
-        if (showOnboardingLabel(filteredList.size)) {
+//        if (showOnboardingLabel(filteredList.size)) {
             mainList.add(OnboardingWordUI)
-        }
+//        }
 
         mainList.add(
             WordListGroupUI(

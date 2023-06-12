@@ -17,8 +17,11 @@ import io.taptap.stupidenglish.features.groupdetails.ui.model.GroupDetailsWordIt
 import io.taptap.uikit.group.GroupListItemsModel
 import io.taptap.uikit.group.GroupListModel
 import io.taptap.uikit.group.NoGroup
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import taptap.pub.doOnComplete
 import taptap.pub.takeOrReturn
 import javax.inject.Inject
@@ -29,90 +32,91 @@ class GroupDetailsViewModel @Inject constructor(
     private val repository: GroupDetailsRepository
 ) : BaseViewModel<GroupDetailsContract.Event, GroupDetailsContract.State, GroupDetailsContract.Effect>() {
 
-    init {
-        val currentGroupId = stateHandle.get<String>(NavigationKeys.Arg.GROUP_ID)?.toLong()
-            ?: error("No group was passed to AddSentenceViewModel.")
+    private val currentGroupId = stateHandle.get<String>(NavigationKeys.Arg.GROUP_ID)?.toLong()
+        ?: error("No group was passed to AddSentenceViewModel.")
+    private lateinit var currentGroup: GroupListItemsModel
 
-        viewModelScope.launch(Dispatchers.IO) {
-            getWordList(currentGroupId)
-        }
-    }
+    val mainList: StateFlow<List<GroupDetailsUIModel>> =
+        repository.observeGroupWithWords(currentGroupId)
+            .map {
+                currentGroup = it.group?.toGroupItemUI() ?: NoGroup
+                val reversedWordList = it.words.reversed().toWordsList()
+                makeWordList(reversedWordList, currentGroup)
+            }.onStart {
+                setState { copy(isLoading = false) }
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(),
+                initialValue = emptyList()
+            )
+
 
     override fun setInitialState() = GroupDetailsContract.State(
-        group = NoGroup,
-        wordList = listOf(),
         isLoading = true,
-        deletedWordIds = mutableListOf(),
+        deletedWords = mutableListOf(),
     )
 
     override suspend fun handleEvents(event: GroupDetailsContract.Event) {
         when (event) {
             is GroupDetailsContract.Event.OnDismiss -> {
-                predeleteWord(event.item)
+                deleteWord(event.item)
             }
             is GroupDetailsContract.Event.OnRemoveGroupClick -> {
-                removeGroups(listOf(viewState.value.group))
+                removeGroups(listOf(currentGroup))
             }
             is GroupDetailsContract.Event.OnApplyDismiss -> {
-                deleteWords()
+                setState { copy(deletedWords = mutableListOf()) }
             }
             is GroupDetailsContract.Event.OnRecover -> {
-                val words = repository.getGroupWithWords(viewState.value.group.id).takeOrReturn {
-                    setEffect { GroupDetailsContract.Effect.GetWordsError(R.string.word_get_list_error) }
-                    setState { copy(deletedWordIds = mutableListOf()) }
-                    return
-                }.words
-
-                makeWordList(words.reversed(), viewState.value.group)
+                val mutableDeletedWords = viewState.value.deletedWords
+                repository.saveWords(mutableDeletedWords)
             }
             is GroupDetailsContract.Event.OnBackClick ->
                 setEffect { GroupDetailsContract.Effect.Navigation.BackTo }
             is GroupDetailsContract.Event.OnRecovered -> {
-                setState { copy(deletedWordIds = mutableListOf()) }
+                setState { copy(deletedWords = mutableListOf()) }
             }
             is GroupDetailsContract.Event.OnAddWordClick -> {
                 setEffect {
                     GroupDetailsContract.Effect.Navigation.ToAddWordWithGroup(
-                        group = viewState.value.group
+                        group = currentGroup
                     )
                 }
             }
             is GroupDetailsContract.Event.ToFlashCards -> {
                 setEffect {
                     GroupDetailsContract.Effect.Navigation.ToFlashCards(
-                        group = viewState.value.group
+                        group = currentGroup
                     )
                 }
             }
             is GroupDetailsContract.Event.ToAddSentence -> {
                 setEffect {
                     GroupDetailsContract.Effect.Navigation.ToFlashCards(
-                        group = viewState.value.group
+                        group = currentGroup
                     )
                 }
             }
             is GroupDetailsContract.Event.OnImportWordsClick -> {
                 setEffect {
                     GroupDetailsContract.Effect.Navigation.ToImportWords(
-                        group = viewState.value.group
+                        group = currentGroup
                     )
                 }
             }
         }
     }
 
-    private fun predeleteWord(item: GroupDetailsWordItemUI) {
-        val mutableDeletedWordIds = viewState.value.deletedWordIds.toMutableList()
-        mutableDeletedWordIds.add(item.id)
-        val list = viewState.value.wordList.toMutableList()
-        list.remove(item)
-        setState { copy(wordList = list, deletedWordIds = mutableDeletedWordIds) }
+    private suspend fun deleteWord(item: GroupDetailsWordItemUI) {
+        val mutableDeletedWords = viewState.value.deletedWords.toMutableList()
+        val wordWithGroups = repository.getWordWithGroups(wordId = item.id).takeOrReturn {
+            setEffect { GroupDetailsContract.Effect.GetWordsError(R.string.word_get_list_error) }
+            return
+        }
+        mutableDeletedWords.add(wordWithGroups)
+        repository.deleteWords(listOf(item.id))
+        setState { copy(deletedWords = mutableDeletedWords) }
         setEffect { GroupDetailsContract.Effect.ShowRecover }
-    }
-
-    private suspend fun deleteWords() {
-        repository.deleteWords(viewState.value.deletedWordIds)
-        setState { copy(deletedWordIds = mutableListOf()) }
     }
 
     private suspend fun removeGroups(removedGroups: List<GroupListModel>) {
@@ -122,23 +126,10 @@ class GroupDetailsViewModel @Inject constructor(
             }
     }
 
-    private suspend fun getWordList(groupId: Long) {
-        val groupWithWordsFlow = repository.observeGroupWithWords(groupId).takeOrReturn {
-            setEffect { GroupDetailsContract.Effect.GetWordsError(R.string.grps_get_groups_error) }
-            return
-        }
-
-        groupWithWordsFlow.collect {
-            val group = it.group?.toGroupItemUI() ?: NoGroup
-            setState { copy(group = group) }
-
-            val reversedWordList = it.words.reversed()
-            makeWordList(reversedWordList, group)
-        }
-    }
-
-    private fun makeWordList(list: List<Word>, group: GroupListItemsModel) {
-        val words: List<GroupDetailsWordItemUI> = list.toWordsList()
+    private fun makeWordList(
+        words: List<GroupDetailsWordItemUI>,
+        group: GroupListItemsModel
+    ): List<GroupDetailsUIModel> {
         val mainList = mutableListOf<GroupDetailsUIModel>()
 
         mainList.add(
@@ -173,9 +164,7 @@ class GroupDetailsViewModel @Inject constructor(
             mainList.addAll(words)
         }
 
-        setState {
-            copy(wordList = mainList, isLoading = false)
-        }
+        return mainList
     }
 }
 

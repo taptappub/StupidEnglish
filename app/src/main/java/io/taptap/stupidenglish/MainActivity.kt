@@ -448,10 +448,12 @@ private fun GroupDetailsDestination(
 ) {
     val groupDetailsViewModel: GroupDetailsViewModel = hiltViewModel()
     val groupDetailsState by groupDetailsViewModel.viewState.collectAsState()
+    val mainList by groupDetailsViewModel.mainList.collectAsState()
 
     GroupDetailsScreen(
         context = LocalContext.current,
         state = groupDetailsState,
+        mainList = mainList,
         effectFlow = groupDetailsViewModel.effect,
         onEventSent = { event -> groupDetailsViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
@@ -763,9 +765,10 @@ fun NavController.navigateToTab(
 //Экран детайлей группы как в Квизлет
 //переверстай AddWordScreen, чтобы не прыгало ничего (Не забудь добавить Галочку "Принять" в верхний правый угол)
 //поправить диалог добавления группы
-//Сейчас достаются ВСЕ слова, а потом сортируются согласно groupId. Это херня. Надо по группе доставать
-//придется переделать связь Group и Word, т.к. должно быть многие ко многим
 //писать на AddSentenceScreen что это за группа (StackView использовать) - теперь нельзя поделиться группой
 //Переделать StackView экран, писать что за группа и сколько слов
 //расшаривание групп
 //GroupList добавить поиск сверху как в Quizlet
+
+//Сейчас достаются ВСЕ слова, а потом сортируются согласно groupId. Это херня. Надо по группе доставать
+//придется переделать связь Group и Word, т.к. должно быть многие ко многим

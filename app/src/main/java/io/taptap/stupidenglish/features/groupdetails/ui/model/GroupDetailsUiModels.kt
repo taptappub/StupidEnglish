@@ -21,4 +21,4 @@ data class GroupDetailsDynamicTitleUI(
 data class GroupDetailsButtonUI(
     val buttonId: Int,
     val valueRes: Int
-) : GroupDetailsUIModel(-4)
+) : GroupDetailsUIModel(buttonId.toLong())
