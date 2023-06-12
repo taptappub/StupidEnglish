@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -46,7 +46,7 @@ class WordListViewModel @Inject constructor(
     val currentGroupFlow = MutableStateFlow<GroupListItemsModel>(NoGroup)
 
     val wordList: StateFlow<List<WordListListModels>> = currentGroupFlow
-        .flatMapMerge { currentGroup ->
+        .flatMapLatest { currentGroup ->
             repository.observeWordList(currentGroup.id)
                 .map {
                     currentGroup to it
