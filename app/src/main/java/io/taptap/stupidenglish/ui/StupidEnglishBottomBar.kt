@@ -3,6 +3,7 @@ package io.taptap.stupidenglish.ui
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -78,6 +79,7 @@ fun StupidEnglishBottomBar(
                         onEventSent(MainContract.Event.OnTabSelected(item))
                     },
                     modifier = Modifier
+                        .fillMaxHeight()
                         .align(Alignment.CenterVertically)
                         .weight(1.0f)
                 )
@@ -99,11 +101,12 @@ fun StupidEnglishBottomNavigationItem(
     ) {
 
         val tint by animateColorAsState(
-            if (selected) {
+            targetValue = if (selected) {
                 MaterialTheme.colorScheme.tertiary
             } else {
                 MaterialTheme.colorScheme.secondary
-            }
+            },
+            label = "BottomNavigationItemColorTint"
         )
 
         Icon(
