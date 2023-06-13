@@ -458,7 +458,7 @@ private fun GroupDetailsDestination(
         onEventSent = { event -> groupDetailsViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             when (navigationEffect) {
-                is GroupDetailsContract.Effect.Navigation.ToImportWords -> TODO() надо сделать эти кнопки как в WordListScreen
+                is GroupDetailsContract.Effect.Navigation.ToImportWords -> TODO()
                 is GroupDetailsContract.Effect.Navigation.BackTo -> TODO()
                 is GroupDetailsContract.Effect.Navigation.ToAddSentence -> TODO()
                 is GroupDetailsContract.Effect.Navigation.ToAddWordWithGroup -> TODO()
