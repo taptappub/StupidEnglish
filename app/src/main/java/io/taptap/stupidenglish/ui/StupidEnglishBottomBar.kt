@@ -101,11 +101,12 @@ fun StupidEnglishBottomNavigationItem(
     ) {
 
         val tint by animateColorAsState(
-            if (selected) {
+            targetValue = if (selected) {
                 MaterialTheme.colorScheme.tertiary
             } else {
                 MaterialTheme.colorScheme.secondary
-            }
+            },
+            label = "BottomNavigationItemColorTint"
         )
 
         Icon(
