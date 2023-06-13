@@ -17,6 +17,8 @@ import io.taptap.uikit.group.GroupListModel
 import io.taptap.uikit.group.GroupListTitleUI
 import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import taptap.pub.handle
 import taptap.pub.takeOrReturn
@@ -92,15 +94,12 @@ class GroupListViewModel @Inject constructor(
     }
 
     private suspend fun getGroupList() {
-        val groupList = repository.observeGroupList().takeOrReturn {
-            setEffect { GroupListContract.Effect.GetGroupsError(R.string.grps_get_groups_error) }
-            return
-        }
-
-        groupList.collect {
-            val resultGroupList = makeGroupsList(it)
-            makeGroupList(resultGroupList)
-        }
+        repository.observeGroupList()
+            .onEach {
+                val resultGroupList = makeGroupsList(it)
+                makeGroupList(resultGroupList)
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun makeGroupList(resultGroupList: List<GroupListModel>) {

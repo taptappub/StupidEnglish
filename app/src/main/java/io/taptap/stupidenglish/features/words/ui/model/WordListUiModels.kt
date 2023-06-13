@@ -7,8 +7,7 @@ sealed class WordListListModels(open val id: Long)
 data class WordListItemUI(
     override val id: Long,
     val word: String,
-    val description: String,
-    val groupsIds: List<Long>
+    val description: String
 ) : WordListListModels(id)
 
 data class WordListEmptyUI(

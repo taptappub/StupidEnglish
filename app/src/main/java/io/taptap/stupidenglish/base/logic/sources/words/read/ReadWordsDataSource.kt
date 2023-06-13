@@ -1,15 +1,15 @@
 package io.taptap.stupidenglish.base.logic.sources.words.read
 
 import io.taptap.stupidenglish.base.logic.database.dao.WordDao
-import io.taptap.stupidenglish.base.logic.mapper.convertGroupsIds
 import io.taptap.stupidenglish.base.logic.mapper.toWord
+import io.taptap.stupidenglish.base.logic.mapper.toWordWithGroups
 import io.taptap.stupidenglish.base.logic.mapper.toWords
 import io.taptap.stupidenglish.base.model.Word
+import io.taptap.stupidenglish.base.model.WordWithGroups
 import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import taptap.pub.Reaction
-import taptap.pub.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,37 +18,34 @@ class ReadWordsDataSource @Inject constructor(
     private val wordDao: WordDao
 ) : IReadWordsDataSource {
 
-    override suspend fun observeWordList(groupId: Long): Reaction<Flow<List<Word>>> = Reaction.on {
-        wordDao.observeWords()
-            .map { wordDtos ->
-                val wordsByGroup = if (groupId == NoGroup.id) {
-                    wordDtos
-                } else {
-                    wordDtos.filter {
-                        it.groupsIds.convertGroupsIds().contains(groupId)
-                    }
+    override fun observeWordList(groupId: Long): Flow<List<Word>> =
+        if (groupId == NoGroup.id) {
+            wordDao.observeWords()
+                .map { wordDtos ->
+                    wordDtos.toWords()
                 }
-
-                wordsByGroup.toWords()
-            }
-    }
+        } else {
+            wordDao.observeGroupWithWords(groupId)
+                .map {
+                    it.words.toWords()
+                }
+        }
 
     override suspend fun getWordList(
         groupId: Long
     ): Reaction<List<Word>> = Reaction.on {
-        val words = wordDao.getWords()
-        val wordsByGroup = if (groupId == NoGroup.id) {
-            words
+        if (groupId == NoGroup.id) {
+            wordDao.getWords()
+                .toWords()
         } else {
-            words.filter {
-                it.groupsIds.convertGroupsIds().contains(groupId)
-            }
+            wordDao.getGroupWithWords(groupId)
+                .words
+                .toWords()
         }
-        wordsByGroup.toWords()
     }
 
-    override suspend fun getWordsCountInGroup(groupId: Long): Reaction<Int> {
-        return getWordList(groupId).map { it.size }
+    override suspend fun getWordWithGroups(wordId: Long): Reaction<WordWithGroups> = Reaction.on {
+        wordDao.getWordWithGroups(wordId).toWordWithGroups()
     }
 
     override suspend fun getWordsById(wordsIds: List<Long>): Reaction<List<Word>> = Reaction.on {

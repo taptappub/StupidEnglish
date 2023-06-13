@@ -15,12 +15,10 @@ class ReadGroupsDataSource @Inject constructor(
     private val wordDao: WordDao
 ) : IReadGroupsDataSource {
 
-    override suspend fun observeGroupList(): Reaction<Flow<List<Group>>> = Reaction.on {
-        wordDao.observeGroups()
-            .map { groupDtos ->
-                groupDtos.toGroups()
-            }
-    }
+    override fun observeGroupList(): Flow<List<Group>> = wordDao.observeGroups()
+        .map { groupDtos ->
+            groupDtos.toGroups()
+        }
 
     override suspend fun getGroupList(): Reaction<List<Group>> = Reaction.on {
         wordDao.getGroups()

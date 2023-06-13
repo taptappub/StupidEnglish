@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.base.model.WordWithGroups
 import io.taptap.stupidenglish.features.groupdetails.ui.model.GroupDetailsButtonUI
 import io.taptap.stupidenglish.features.groupdetails.ui.model.GroupDetailsDynamicTitleUI
 import io.taptap.stupidenglish.features.groupdetails.ui.model.GroupDetailsEmptyUI
@@ -53,6 +54,7 @@ import kotlinx.coroutines.flow.onEach
 fun GroupDetailsScreen(
     context: Context,
     state: GroupDetailsContract.State,
+    mainList: List<GroupDetailsUIModel>,
     effectFlow: Flow<GroupDetailsContract.Effect>?,
     onEventSent: (event: GroupDetailsContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: GroupDetailsContract.Effect.Navigation) -> Unit
@@ -63,11 +65,6 @@ fun GroupDetailsScreen(
     LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
         effectFlow?.onEach { effect ->
             when (effect) {
-                is GroupDetailsContract.Effect.GetGroupsError ->
-                    scaffoldState.snackbarHostState.showSnackbar(
-                        message = context.getString(effect.errorRes),
-                        duration = SnackbarDuration.Short
-                    )
                 is GroupDetailsContract.Effect.GetWordsError ->
                     scaffoldState.snackbarHostState.showSnackbar(
                         message = context.getString(effect.errorRes),
@@ -106,6 +103,7 @@ fun GroupDetailsScreen(
     ) {
         ContentScreen(
             state,
+            mainList,
             onEventSent
         )
     }
@@ -115,6 +113,7 @@ fun GroupDetailsScreen(
 @Composable
 fun ContentScreen(
     state: GroupDetailsContract.State,
+    mainList: List<GroupDetailsUIModel>,
     onEventSent: (event: GroupDetailsContract.Event) -> Unit
 ) {
     StupidLanguageBackgroundBox(
@@ -128,8 +127,8 @@ fun ContentScreen(
         val listState = rememberLazyListState()
 
         WordList(
-            groupItems = state.wordList,
-            deletedGroupsIds = state.deletedWordIds,
+            groupItems = mainList,
+            deletedWords = state.deletedWords,
             listState = listState,
             onEventSent = onEventSent
         )
@@ -144,7 +143,7 @@ fun ContentScreen(
 @Composable
 fun WordList(
     groupItems: List<GroupDetailsUIModel>,
-    deletedGroupsIds: MutableList<Long>,
+    deletedWords: List<WordWithGroups>,
     listState: LazyListState,
     onEventSent: (event: GroupDetailsContract.Event) -> Unit
 ) {
@@ -160,7 +159,8 @@ fun WordList(
             key = { it.id }
         ) { item ->
             val dismissState = rememberDismissState()
-            if (deletedGroupsIds.contains(item.id)) { //todo выделить в отдельный класс с возможностью удалять?
+            val canBeRecovered = deletedWords.map { it.word.id }.contains(item.id)
+            if (canBeRecovered) { //todo выделить в отдельный класс с возможностью удалять?
                 if (dismissState.currentValue != DismissValue.Default) {
                     LaunchedEffect(Unit) {
                         dismissState.reset()

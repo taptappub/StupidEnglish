@@ -52,7 +52,6 @@ private fun GoogleTableModel.toWordList(): List<Word> = this.values.map {
         id = -1,
         word = word,
         description = description,
-        groupsIds = listOf(NoGroup.id),
         points = 0
     )
 }

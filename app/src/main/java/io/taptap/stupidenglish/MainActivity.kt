@@ -76,6 +76,7 @@ import io.taptap.stupidenglish.features.words.ui.WordListViewModel
 import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.*
 import javax.inject.Inject
 
@@ -447,10 +448,12 @@ private fun GroupDetailsDestination(
 ) {
     val groupDetailsViewModel: GroupDetailsViewModel = hiltViewModel()
     val groupDetailsState by groupDetailsViewModel.viewState.collectAsState()
+    val mainList by groupDetailsViewModel.mainList.collectAsState()
 
     GroupDetailsScreen(
         context = LocalContext.current,
         state = groupDetailsState,
+        mainList = mainList,
         effectFlow = groupDetailsViewModel.effect,
         onEventSent = { event -> groupDetailsViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
@@ -624,10 +627,14 @@ private fun WordListDestination(
 ) {
     val wordViewModel: WordListViewModel = hiltViewModel()
     val wordState by wordViewModel.viewState.collectAsState()
+    val wordList by wordViewModel.wordList.collectAsState()
+    val currentGroup by wordViewModel.currentGroupFlow.collectAsState()
 
     WordListScreen(
         context = LocalContext.current,
         state = wordState,
+        wordList = wordList,
+        currentGroup = currentGroup,
         group = wordViewModel.groupName,
         onGroupChange = wordViewModel::setNewGroupName,
         effectFlow = wordViewModel.effect,
@@ -754,12 +761,12 @@ fun NavController.navigateToTab(
 //7) https://stackoverflow.com/questions/67252538/jetpack-compose-update-composable-when-list-changes
 
 
-//Экран детайлей группы как в Квизлет
+////-----------------------------------------------------------------
 //переверстай AddWordScreen, чтобы не прыгало ничего (Не забудь добавить Галочку "Принять" в верхний правый угол)
 //поправить диалог добавления группы
-//Сейчас достаются ВСЕ слова, а потом сортируются согласно groupId. Это херня. Надо по группе доставать
-//придется переделать связь Group и Word, т.к. должно быть многие ко многим
 //писать на AddSentenceScreen что это за группа (StackView использовать) - теперь нельзя поделиться группой
 //Переделать StackView экран, писать что за группа и сколько слов
 //расшаривание групп
 //GroupList добавить поиск сверху как в Quizlet
+
+//Экран детайлей группы как в Квизлет

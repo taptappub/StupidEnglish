@@ -1,9 +1,6 @@
 package io.taptap.stupidenglish.base
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -11,9 +8,12 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -33,6 +33,15 @@ abstract class BaseViewModel<Event : ViewEvent, UiState : ViewState, Effect : Vi
 
     private val _viewState: MutableStateFlow<UiState> = MutableStateFlow(initialState)
     val viewState: StateFlow<UiState> = _viewState.asStateFlow()
+//
+//    private val isLoading = MutableStateFlow(false)
+//    private val loggedInUser = MutableStateFlow<Int?>(0)
+//    private val error = MutableStateFlow<String?>(null)
+//
+//    val state: StateFlow<UiState> = combine(isLoading, loggedInUser, error) { loading, user, errorMessage ->
+//        initialState
+//        //LoginState(loading, user, errorMessage)
+//    }. .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), initialValue = initialState)
 
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
 

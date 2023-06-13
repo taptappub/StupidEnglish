@@ -7,8 +7,7 @@ sealed class GroupDetailsUIModel(open val id: Long)
 data class GroupDetailsWordItemUI(
     override val id: Long,
     val word: String,
-    val description: String,
-    val groupsIds: List<Long>
+    val description: String
 ) : GroupDetailsUIModel(id)
 
 data class GroupDetailsEmptyUI(
@@ -22,4 +21,4 @@ data class GroupDetailsDynamicTitleUI(
 data class GroupDetailsButtonUI(
     val buttonId: Int,
     val valueRes: Int
-) : GroupDetailsUIModel(-4)
+) : GroupDetailsUIModel(buttonId.toLong())

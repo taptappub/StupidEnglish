@@ -44,9 +44,10 @@ class AddSentenceViewModel @Inject constructor(
                 ?: error("No group was passed to AddSentenceViewModel.")
 
             //todo Костыль, т.к. в deeplink не прилетают параметры из query
-            val wordsIdsString = stateHandle.get<Intent>("android-support-nav:controller:deepLinkIntent")
-                ?.extras
-                ?.getString(NavigationKeys.Arg.WORDS_IDS)
+            val wordsIdsString =
+                stateHandle.get<Intent>("android-support-nav:controller:deepLinkIntent")
+                    ?.extras
+                    ?.getString(NavigationKeys.Arg.WORDS_IDS)
 
             val words = getWordsByArguments(currentGroupId, wordsIdsString).takeOrReturn {
                 withContext(Dispatchers.Main) {
@@ -96,25 +97,23 @@ class AddSentenceViewModel @Inject constructor(
         }
     }
 
-    private fun saveSentence(sentence: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val wordsIds = viewState.value.words.map { it.id }
-            val trimSentence = sentence.trim()
-            repository.saveSentence(trimSentence, wordsIds)
-                .handle(
-                    success = {
-                        withContext(Dispatchers.Main) {
-                            setEffect {
-                                AddSentenceContract.Effect.Navigation.BackToWordList
-                            }
-                        }
-                    },
-                    error = {
-                        withContext(Dispatchers.Main) {
-                            setEffect { AddSentenceContract.Effect.SaveError(R.string.adds_save_error) }
+    private suspend fun saveSentence(sentence: String) {
+        val wordsIds = viewState.value.words.map { it.id }
+        val trimSentence = sentence.trim()
+        repository.saveSentence(trimSentence, wordsIds)
+            .handle(
+                success = {
+                    withContext(Dispatchers.Main) {
+                        setEffect {
+                            AddSentenceContract.Effect.Navigation.BackToWordList
                         }
                     }
-                )
-        }
+                },
+                error = {
+                    withContext(Dispatchers.Main) {
+                        setEffect { AddSentenceContract.Effect.SaveError(R.string.adds_save_error) }
+                    }
+                }
+            )
     }
 }

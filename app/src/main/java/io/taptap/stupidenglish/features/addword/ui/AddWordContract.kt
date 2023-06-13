@@ -41,8 +41,6 @@ class AddWordContract {
         object HideBottomSheet : Effect()
         object ShowBottomSheet : Effect()
 
-        data class GetGroupsError(val errorRes: Int) : Effect()
-
         data class SaveError(val errorRes: Int) : Effect()
         data class WaitingForDescriptionError(val errorRes: Int) : Effect()
         data class GetWordsError(val errorRes: Int) : Effect()

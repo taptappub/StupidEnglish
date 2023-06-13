@@ -14,6 +14,8 @@ import io.taptap.stupidenglish.features.addword.data.AddWordRepository
 import io.taptap.uikit.group.GroupListModel
 import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import taptap.pub.doOnComplete
@@ -139,7 +141,7 @@ class AddWordViewModel @Inject constructor(
         }
     }
 
-    private fun saveWord(onSuccess: () -> Unit) {
+    private suspend fun saveWord(onSuccess: () -> Unit) {
         val selectedGroups = viewState.value.selectedGroups
         saveWord(word, description, selectedGroups, onSuccess)
 
@@ -153,7 +155,7 @@ class AddWordViewModel @Inject constructor(
         setGroup("")
     }
 
-    private fun saveWord(
+    private suspend fun saveWord(
         word: String,
         description: String,
         groups: List<GroupListModel>,
@@ -161,24 +163,22 @@ class AddWordViewModel @Inject constructor(
     ) {
         val trimWord = word.trim()
         val trimDescription = description.trim()
-        viewModelScope.launch(Dispatchers.IO) {
-            val groupsIds = groups.mapNotNull {
-                if (it.id == NoGroup.id) null else it.id
-            }
-            repository.saveWord(trimWord, trimDescription, groupsIds)
-                .handle(
-                    success = {
-                        withContext(Dispatchers.Main) {
-                            onSuccess()
-                        }
-                    },
-                    error = {
-                        withContext(Dispatchers.Main) {
-                            setEffect { AddWordContract.Effect.SaveError(R.string.addw_save_error) }
-                        }
-                    }
-                )
+        val groupsIds = groups.mapNotNull {
+            if (it.id == NoGroup.id) null else it.id
         }
+        repository.saveWord(trimWord, trimDescription, groupsIds)
+            .handle(
+                success = {
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                },
+                error = {
+                    withContext(Dispatchers.Main) {
+                        setEffect { AddWordContract.Effect.SaveError(R.string.addw_save_error) }
+                    }
+                }
+            )
     }
 
     private suspend fun saveGroup(group: String) {
@@ -193,18 +193,12 @@ class AddWordViewModel @Inject constructor(
 
     private suspend fun getGroupsList() {
         repository.observeGroupList()
-            .handle(
-                success = { groupList ->
-                    groupList.collect { list ->
-                        val groups = list.toGroupsList(withNoGroup = true)
-                        setState {
-                            copy(groups = groups)
-                        }
-                    }
-                },
-                error = {
-                    setEffect { AddWordContract.Effect.GetGroupsError(R.string.addw_get_groups_error) }
+            .onEach { list ->
+                val groups = list.toGroupsList(withNoGroup = true)
+                setState {
+                    copy(groups = groups)
                 }
-            )
+            }
+            .launchIn(viewModelScope)
     }
 }

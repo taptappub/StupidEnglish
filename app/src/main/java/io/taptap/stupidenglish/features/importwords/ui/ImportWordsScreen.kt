@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
@@ -37,7 +36,6 @@ import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
 import io.taptap.stupidenglish.ui.ChooseGroupContent
-import io.taptap.uikit.group.GroupItemHeader
 import io.taptap.uikit.LoadingBar
 import io.taptap.uikit.ModalBottomSheetLayout
 import io.taptap.uikit.ResultNotification
@@ -46,6 +44,7 @@ import io.taptap.uikit.StupidEnglishTopAppBar
 import io.taptap.uikit.TextField
 import io.taptap.uikit.complex.AddGroupBottomSheetScreen
 import io.taptap.uikit.fab.NextButton
+import io.taptap.uikit.group.GroupItemHeader
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -102,11 +101,6 @@ fun ImportWordsScreen(
         LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
             effectFlow?.onEach { effect ->
                 when (effect) {
-                    is ImportWordsContract.Effect.GetGroupsError ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(effect.errorRes),
-                            duration = SnackbarDuration.Short
-                        )
                     is ImportWordsContract.Effect.HideBottomSheet ->
                         modalBottomSheetState.hideSheet(scope)
                     is ImportWordsContract.Effect.ShowBottomSheet -> {
@@ -230,7 +224,7 @@ private fun ImportWordStateScreen(
                         style = SpanStyle(
                             color = MaterialTheme.colorScheme.secondary,
 
-                        )
+                            )
                     ) {
                         append(stringResource(id = R.string.impw_tutorial_header) + "\n")
                     }

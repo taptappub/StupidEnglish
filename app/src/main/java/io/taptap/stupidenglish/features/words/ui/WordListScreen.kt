@@ -2,20 +2,16 @@ package io.taptap.stupidenglish.features.words.ui
 
 import android.content.Context
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
@@ -29,20 +25,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.DismissDirection
-import androidx.compose.material.DismissState
 import androidx.compose.material.DismissValue
-import androidx.compose.material.DismissValue.Default
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FractionalThreshold
-import androidx.compose.material.Icon
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarResult
-import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
@@ -50,13 +39,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -69,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
+import io.taptap.stupidenglish.base.model.WordWithGroups
 import io.taptap.stupidenglish.base.noRippleClickable
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
@@ -112,6 +100,8 @@ fun WordListScreen(
     context: Context,
     state: WordListContract.State,
     group: String,
+    currentGroup: GroupListItemsModel?,
+    wordList: List<WordListListModels>,
     onGroupChange: (newGroup: String) -> Unit,
     effectFlow: Flow<WordListContract.Effect>?,
     onEventSent: (event: WordListContract.Event) -> Unit,
@@ -279,9 +269,9 @@ fun WordListScreen(
                 val listState = rememberLazyListState()
 
                 MainList(
-                    wordItems = state.wordList,
-                    deletedWordIds = state.deletedWordIds,
-                    group = state.currentGroup,
+                    wordItems = wordList,
+                    deletedWords = state.deletedWords,
+                    group = currentGroup,
                     listState = listState,
                     onEventSent = onEventSent
                 )
@@ -327,7 +317,7 @@ private fun MainList(
     group: GroupListItemsModel?,
     listState: LazyListState,
     onEventSent: (event: WordListContract.Event) -> Unit,
-    deletedWordIds: MutableList<Long>
+    deletedWords: List<WordWithGroups>
 ) {
     LazyColumn(
         state = listState,
@@ -341,7 +331,8 @@ private fun MainList(
             key = { it.id }
         ) { item ->
             val dismissState = rememberDismissState()
-            if (deletedWordIds.contains(item.id)) { //todo выделить в отдельный класс с возможностью удалять?
+            val canBeRecovered = deletedWords.map { it.word.id }.contains(item.id)
+            if (canBeRecovered) { //todo выделить в отдельный класс с возможностью удалять?
                 if (dismissState.currentValue != DismissValue.Default) {
                     LaunchedEffect(Unit) {
                         dismissState.reset()
