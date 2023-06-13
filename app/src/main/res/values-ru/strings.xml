@@ -122,6 +122,7 @@
     <string name="grdt_delete_message">Точно удалить?</string>
     <string name="grdt_recover">Восстановить</string>
 
+    <string name="grdt_add_word">Добавить слово</string>
     <string name="grdt_flashcards">Обучение карточками</string>
     <string name="grdt_learn">Обучение предложениями</string>
     <string name="grdt_share">Поделиться</string>

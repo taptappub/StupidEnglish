@@ -76,7 +76,6 @@ import io.taptap.stupidenglish.features.words.ui.WordListViewModel
 import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
-import kotlinx.coroutines.flow.asStateFlow
 import java.util.*
 import javax.inject.Inject
 
@@ -458,11 +457,18 @@ private fun GroupDetailsDestination(
         onEventSent = { event -> groupDetailsViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
             when (navigationEffect) {
-                is GroupDetailsContract.Effect.Navigation.ToImportWords -> TODO()
-                is GroupDetailsContract.Effect.Navigation.BackTo -> TODO()
-                is GroupDetailsContract.Effect.Navigation.ToAddSentence -> TODO()
-                is GroupDetailsContract.Effect.Navigation.ToAddWordWithGroup -> TODO()
-                is GroupDetailsContract.Effect.Navigation.ToFlashCards -> TODO()
+                is GroupDetailsContract.Effect.Navigation.BackTo -> {
+                    navController.popBackStack()
+                }
+                is GroupDetailsContract.Effect.Navigation.ToAddSentence -> Unit
+                is GroupDetailsContract.Effect.Navigation.ToAddWordWithGroup -> {
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.ADD_WORD}?${NavigationKeys.Arg.GROUP_ID}=${groupId}")
+                }
+                is GroupDetailsContract.Effect.Navigation.ToFlashCards -> {
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.REMEMBER}/${groupId}")
+                }
             }
         }
     )

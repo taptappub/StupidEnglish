@@ -1,6 +1,7 @@
 package io.taptap.stupidenglish.features.groupdetails.ui
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -91,11 +92,12 @@ fun GroupDetailsScreen(
                 is GroupDetailsContract.Effect.Navigation.ToFlashCards -> onNavigationRequested(
                     effect
                 )
-                is GroupDetailsContract.Effect.Navigation.ToImportWords -> onNavigationRequested(
-                    effect
-                )
             }
         }?.collect()
+    }
+
+    BackHandler {
+        onEventSent(GroupDetailsContract.Event.OnBackClick)
     }
 
     StupidEnglishScaffold(
@@ -126,7 +128,7 @@ fun ContentScreen(
     ) {
         val listState = rememberLazyListState()
 
-        WordList(
+        MainList(
             groupItems = mainList,
             deletedWords = state.deletedWords,
             listState = listState,
@@ -141,7 +143,7 @@ fun ContentScreen(
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
 @Composable
-fun WordList(
+fun MainList(
     groupItems: List<GroupDetailsUIModel>,
     deletedWords: List<WordWithGroups>,
     listState: LazyListState,
@@ -183,6 +185,7 @@ fun WordList(
                             GroupDetailsContract.ButtonId.remove -> onEventSent(GroupDetailsContract.Event.OnRemoveGroupClick)
                             GroupDetailsContract.ButtonId.flashcards -> onEventSent(GroupDetailsContract.Event.ToFlashCards)
                             GroupDetailsContract.ButtonId.learn -> onEventSent(GroupDetailsContract.Event.ToAddSentence)
+                            GroupDetailsContract.ButtonId.addWord -> onEventSent(GroupDetailsContract.Event.OnAddWordClick)
                         }
                     }
                 )

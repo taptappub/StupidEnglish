@@ -69,6 +69,7 @@
     <string name="grdt_get_groups_error">Error while getting sets</string>
     <string name="grdt_delete_message">Are you sure?</string>
     <string name="grdt_recover">Recover</string>
+    <string name="grdt_add_word">Add word</string>
     <string name="grdt_flashcards">Flashcards</string>
     <string name="grdt_learn">Learn</string>
     <string name="grdt_share">Share</string>

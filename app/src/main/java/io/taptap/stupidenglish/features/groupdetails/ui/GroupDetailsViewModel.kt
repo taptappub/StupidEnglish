@@ -28,7 +28,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GroupDetailsViewModel @Inject constructor(
-    private val stateHandle: SavedStateHandle,
+    stateHandle: SavedStateHandle,
     private val repository: GroupDetailsRepository
 ) : BaseViewModel<GroupDetailsContract.Event, GroupDetailsContract.State, GroupDetailsContract.Effect>() {
 
@@ -41,7 +41,7 @@ class GroupDetailsViewModel @Inject constructor(
             .map {
                 currentGroup = it.group?.toGroupItemUI() ?: NoGroup
                 val reversedWordList = it.words.reversed().toWordsList()
-                makeWordList(reversedWordList, currentGroup)
+                makeMainList(reversedWordList, currentGroup)
             }.onStart {
                 setState { copy(isLoading = false) }
             }.stateIn(
@@ -92,14 +92,7 @@ class GroupDetailsViewModel @Inject constructor(
             }
             is GroupDetailsContract.Event.ToAddSentence -> {
                 setEffect {
-                    GroupDetailsContract.Effect.Navigation.ToFlashCards(
-                        group = currentGroup
-                    )
-                }
-            }
-            is GroupDetailsContract.Event.OnImportWordsClick -> {
-                setEffect {
-                    GroupDetailsContract.Effect.Navigation.ToImportWords(
+                    GroupDetailsContract.Effect.Navigation.ToAddSentence(
                         group = currentGroup
                     )
                 }
@@ -126,12 +119,18 @@ class GroupDetailsViewModel @Inject constructor(
             }
     }
 
-    private fun makeWordList(
+    private fun makeMainList(
         words: List<GroupDetailsWordItemUI>,
         group: GroupListItemsModel
     ): List<GroupDetailsUIModel> {
         val mainList = mutableListOf<GroupDetailsUIModel>()
 
+        mainList.add(
+            GroupDetailsButtonUI(
+                valueRes = R.string.grdt_add_word,
+                buttonId = GroupDetailsContract.ButtonId.addWord
+            )
+        )
         mainList.add(
             GroupDetailsButtonUI(
                 valueRes = R.string.grdt_flashcards,
