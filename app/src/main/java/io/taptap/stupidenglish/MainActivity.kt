@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,10 +11,14 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -34,6 +39,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import dagger.hilt.android.AndroidEntryPoint
+import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceScreen
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceViewModel
@@ -76,6 +82,7 @@ import io.taptap.stupidenglish.features.words.ui.WordListViewModel
 import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
+import kotlinx.coroutines.flow.onEach
 import java.util.*
 import javax.inject.Inject
 
@@ -121,6 +128,14 @@ class MainActivity : ComponentActivity() {
 
         val mainViewModel: MainViewModel = hiltViewModel()
         val mainState by mainViewModel.viewState.collectAsState()
+
+        Будет один LaunchedEffect, сделать вызов AddWordDestination с подстановкой слова
+        LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+            val text = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT).toString()
+            mainViewModel.effect?.onEach { effect ->
+                when (effect) {
+            }
+        }
 
         StupidEnglishScaffold(
             scaffoldState = scaffoldState,

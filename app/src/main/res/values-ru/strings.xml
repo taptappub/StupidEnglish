@@ -128,4 +128,5 @@
     <string name="grdt_share">Поделиться</string>
     <string name="grdt_remove">Удалить группу</string>
     <string name="grdt_empty_list_title">Список пуст</string>
+    <string name="context_menu_item_name">Учить</string>
 </resources>

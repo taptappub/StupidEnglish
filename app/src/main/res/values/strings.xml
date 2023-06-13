@@ -174,4 +174,7 @@
     <!-- Delete this block -->
     <string name="under_construction">Work in progress</string>
 
+    <!-- Add with context menu -->
+    <string name="context_menu_item_name">Learn</string>
+
 </resources>

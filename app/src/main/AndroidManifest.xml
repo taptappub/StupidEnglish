@@ -28,6 +28,7 @@
         android:theme="@style/Theme.StupidEnglish">
         <activity
             android:name=".MainActivity"
+            android:label="@string/stck_button_remember"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -42,6 +43,11 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" android:host="stupidenglish.app" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
 

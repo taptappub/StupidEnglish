@@ -44,6 +44,7 @@ fun StupidEnglishBottomBar(
     modifier: Modifier = Modifier,
 ) {
 
+    переделать на колбэк
     //TODO let's recompose BottomBar instead of listening events?
     // Listen for side effects from the VM
     LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
@@ -52,6 +53,7 @@ fun StupidEnglishBottomBar(
                 is MainContract.Effect.Navigation.OnTabSelected -> {
                     onNavigationRequested(effect)
                 }
+                is MainContract.Effect.Navigation.ToAddWord ->
             }
         }?.collect()
     }
