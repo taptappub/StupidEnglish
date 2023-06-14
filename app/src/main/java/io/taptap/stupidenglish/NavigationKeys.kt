@@ -7,6 +7,7 @@ object NavigationKeys {
     object Arg {
         const val GROUP_ID = "group_id"
         const val WORDS_IDS = "words_ids"
+        const val WORD = "word"
     }
 
     object Route {
@@ -28,7 +29,7 @@ object NavigationKeys {
         const val SE_REMEMBER = "$REMEMBER/{${Arg.GROUP_ID}}"
 
         const val ADD_WORD = "stupid_english_add_word"
-        const val SE_ADD_WORD = "$ADD_WORD?${Arg.GROUP_ID}={${Arg.GROUP_ID}}"
+        const val SE_ADD_WORD = "$ADD_WORD?${Arg.GROUP_ID}={${Arg.GROUP_ID}}&${Arg.WORD}={${Arg.WORD}}"
 
         const val ADD_SENTENCE = "stupid_english_add_sentences"
         const val SE_ADD_SENTENCE = "$ADD_SENTENCE/{${Arg.GROUP_ID}}?${Arg.WORDS_IDS}={${Arg.WORDS_IDS}}"

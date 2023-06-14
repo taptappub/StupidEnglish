@@ -127,8 +127,12 @@ class MainActivity : ComponentActivity() {
         val mainViewModel: MainViewModel = hiltViewModel()
         val mainState by mainViewModel.viewState.collectAsState()
 
+        // вызывается, когда прилетает новый intent
+        LaunchedEffect(intent) {
+            mainViewModel.setEvent(MainContract.Event.OnNewIntent(intent))
+        }
+
         LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-            val text = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT).toString()
             mainViewModel.effect.onEach { effect ->
                 when (effect) {
                     is MainContract.Effect.Navigation.OnTabSelected -> {
@@ -138,7 +142,8 @@ class MainActivity : ComponentActivity() {
                     }
 
                     is MainContract.Effect.Navigation.ToAddWord -> {
-                        TODO("сделать вызов AddWordDestination с подстановкой слова")
+                        val word = effect.word
+                        navController.navigate("${NavigationKeys.Route.ADD_WORD}?${NavigationKeys.Arg.WORD}=${word}")
                     }
                 }
             }.collect()

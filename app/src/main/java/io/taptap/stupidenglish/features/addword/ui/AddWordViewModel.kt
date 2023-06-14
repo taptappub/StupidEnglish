@@ -30,6 +30,9 @@ class AddWordViewModel @Inject constructor(
     private val repository: AddWordRepository
 ) : BaseViewModel<AddWordContract.Event, AddWordContract.State, AddWordContract.Effect>() {
 
+    var word by mutableStateOf("")
+        private set
+
     init {
         viewModelScope.launch(Dispatchers.IO) { getGroupsList() }
 
@@ -43,10 +46,13 @@ class AddWordViewModel @Inject constructor(
                     }
             }
         }
-    }
 
-    var word by mutableStateOf("")
-        private set
+        val word = stateHandle.get<String>(NavigationKeys.Arg.WORD)
+        if (word != null) {
+            setWord(word)
+            setState { copy(addWordState = AddWordContract.AddWordState.HasWord) }
+        }
+    }
 
     @JvmName("setWord1")
     fun setWord(newWord: String) {

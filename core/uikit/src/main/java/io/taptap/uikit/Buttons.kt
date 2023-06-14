@@ -1,5 +1,7 @@
 package io.taptap.uikit
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -50,6 +52,7 @@ fun PrimaryButton(
         if (startImagePainter != null) {
             Image(
                 painter = startImagePainter,
+                colorFilter = ColorFilter.tint(textColor),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(end = 16.dp)
@@ -116,11 +119,24 @@ fun GradientButton(
     }
 }
 
-@Preview()
+@Preview(uiMode = UI_MODE_NIGHT_NO)
 @Composable
 fun PrimaryButtonPreview() {
     StupidEnglishTheme {
         PrimaryButton(
+            startImagePainter = painterResource(id = R.drawable.ic_plus),
+            text = "Ass",
+            onClick = {}
+        )
+    }
+}
+
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun NightPrimaryButtonPreview() {
+    StupidEnglishTheme {
+        PrimaryButton(
+            startImagePainter = painterResource(id = R.drawable.ic_plus),
             text = "Ass",
             onClick = {}
         )
