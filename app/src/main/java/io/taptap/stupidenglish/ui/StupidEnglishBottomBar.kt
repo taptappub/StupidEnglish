@@ -15,7 +15,6 @@ import androidx.compose.material.Text
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,39 +23,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.taptap.stupidenglish.NavigationKeys
-import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
-import io.taptap.stupidenglish.features.main.ui.MainContract
 import io.taptap.uikit.fab.BOTTOM_BAR_HEIGHT
 import io.taptap.uikit.fab.BOTTOM_BAR_VERTICAL_PADDING
 import io.taptap.uikit.theme.StupidEnglishTheme
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 
 //ver2
 @Composable
 fun StupidEnglishBottomBar(
     tabs: List<NavigationKeys.BottomNavigationScreen>,
     selectedTab: NavigationKeys.BottomNavigationScreen,
-    effectFlow: Flow<MainContract.Effect>?,
-    onEventSent: (event: MainContract.Event) -> Unit,
-    onNavigationRequested: (navigationEffect: MainContract.Effect.Navigation) -> Unit,
+    onClick: (tab: NavigationKeys.BottomNavigationScreen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-
-    переделать на колбэк
-    //TODO let's recompose BottomBar instead of listening events?
-    // Listen for side effects from the VM
-    LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-        effectFlow?.onEach { effect ->
-            when (effect) {
-                is MainContract.Effect.Navigation.OnTabSelected -> {
-                    onNavigationRequested(effect)
-                }
-                is MainContract.Effect.Navigation.ToAddWord ->
-            }
-        }?.collect()
-    }
 
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -76,10 +54,8 @@ fun StupidEnglishBottomBar(
 
                 StupidEnglishBottomNavigationItem(
                     item = item,
-                    selected = item == selectedTab,
-                    onSelected = {
-                        onEventSent(MainContract.Event.OnTabSelected(item))
-                    },
+                    isSelected = item == selectedTab,
+                    onClick = { onClick(item) },
                     modifier = Modifier
                         .fillMaxHeight()
                         .align(Alignment.CenterVertically)
@@ -93,17 +69,17 @@ fun StupidEnglishBottomBar(
 @Composable
 fun StupidEnglishBottomNavigationItem(
     item: NavigationKeys.BottomNavigationScreen,
-    selected: Boolean,
-    onSelected: () -> Unit,
+    isSelected: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.selectable(selected = selected, onClick = onSelected),
+        modifier = modifier.selectable(selected = isSelected, onClick = onClick),
         horizontalArrangement = Arrangement.Center
     ) {
 
         val tint by animateColorAsState(
-            targetValue = if (selected) {
+            targetValue = if (isSelected) {
                 MaterialTheme.colorScheme.tertiary
             } else {
                 MaterialTheme.colorScheme.secondary
@@ -141,9 +117,7 @@ fun StupidEnglishBottomBarPreview() {
                 NavigationKeys.BottomNavigationScreen.SE_SETS,
             ),
             selectedTab = NavigationKeys.BottomNavigationScreen.SE_WORDS,
-            effectFlow = null,
-            onEventSent = {},
-            onNavigationRequested = {}
+            onClick = {},
         )
     }
 }
@@ -154,8 +128,8 @@ fun StupidEnglishBottomNavigationItemPreview() {
     StupidEnglishTheme {
         StupidEnglishBottomNavigationItem(
             item = NavigationKeys.BottomNavigationScreen.SE_WORDS,
-            selected = true,
-            onSelected = {},
+            isSelected = true,
+            onClick = {},
         )
     }
 }

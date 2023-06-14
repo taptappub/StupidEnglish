@@ -11,14 +11,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -83,6 +80,7 @@ import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collect
 import java.util.*
 import javax.inject.Inject
 
@@ -129,12 +127,21 @@ class MainActivity : ComponentActivity() {
         val mainViewModel: MainViewModel = hiltViewModel()
         val mainState by mainViewModel.viewState.collectAsState()
 
-        Будет один LaunchedEffect, сделать вызов AddWordDestination с подстановкой слова
         LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
             val text = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT).toString()
-            mainViewModel.effect?.onEach { effect ->
+            mainViewModel.effect.onEach { effect ->
                 when (effect) {
-            }
+                    is MainContract.Effect.Navigation.OnTabSelected -> {
+                        if (effect.route != navController.currentRoute) {
+                            navController.navigateToTab(effect.route)
+                        }
+                    }
+
+                    is MainContract.Effect.Navigation.ToAddWord -> {
+                        TODO("сделать вызов AddWordDestination с подстановкой слова")
+                    }
+                }
+            }.collect()
         }
 
         StupidEnglishScaffold(
@@ -314,16 +321,10 @@ class MainActivity : ComponentActivity() {
                     val (bottomBar) = createRefs()
                     StupidEnglishBottomBar(
                         tabs = mainState.bottomBarTabs,
-                        //TODO move selected tab into state and rely on bottom bar recomposition
                         selectedTab = mainState.bottomBarTabs.first { it.route == navController.currentRoute!! },
-                        effectFlow = mainViewModel.effect,
-                        onEventSent = { event -> mainViewModel.setEvent(event) },
-                        onNavigationRequested = { navigationEffect ->
-                            if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
-                                if (navigationEffect.route != navController.currentRoute) {
-                                    navController.navigateToTab(navigationEffect.route)
-                                }
-                            }
+                        onClick = { tab ->
+                            mainViewModel.setEvent(MainContract.Event.OnTabSelected(tab))
+
                         },
                         modifier = Modifier.constrainAs(bottomBar) {
                             bottom.linkTo(parent.bottom)
