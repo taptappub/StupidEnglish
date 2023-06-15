@@ -3,29 +3,48 @@ package io.taptap.stupidenglish.features.groupdetails.ui
 import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Card
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarResult
+import androidx.compose.material.Text
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
@@ -51,6 +70,7 @@ import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
+import kotlin.math.absoluteValue
 
 
 @ExperimentalFoundationApi
@@ -243,6 +263,103 @@ fun MainListPreview() {
             ),
             listState = rememberLazyListState(),
             onEventSent = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun WordPager(
+    words: List<Pair<String, String>>,
+    modifier: Modifier = Modifier
+) {
+    val pagerState = rememberPagerState {
+        words.size
+    }
+
+    val singlePageWithNeighbourEdges = object : PageSize {
+        private val edgesWidth = 24.dp
+
+        override fun Density.calculateMainAxisPageSize(availableSpace: Int, pageSpacing: Int): Int =
+            availableSpace - edgesWidth.roundToPx()
+    }
+
+    Column {
+        val pagerHeight = 220.dp
+        val pageHeight = 200.dp
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = modifier
+                .height(pagerHeight),
+            pageSize = singlePageWithNeighbourEdges,
+            pageSpacing = 8.dp,
+            contentPadding = PaddingValues(
+                start = 30.dp, //FIXME MAGIC NUMBERS. Подбирал. Почему именно такие?
+                end = 8.dp
+            ),
+        ) { page ->
+            val pageHeightDelta = calculatePageHeightDelta(pagerState, page)
+
+            Card(
+                Modifier
+                    .fillMaxWidth()
+                    .height(pageHeight + pageHeightDelta)
+            ) {
+                Box {
+                    Text(
+                        text = words[page].first,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                    )
+                }
+            }
+        }
+
+        Row(
+            Modifier
+                .height(50.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(words.size) { iteration ->
+                val color =
+                    if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                Box(
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                        .size(8.dp)
+                )
+            }
+        }
+    }
+}
+
+@ExperimentalFoundationApi
+private fun calculatePageHeightDelta(
+    pagerState: PagerState,
+    page: Int
+): Dp = if (page != pagerState.currentPage) {
+    0.dp
+} else {
+    val maxDeltaValue = 10.dp
+    val pageOffset = pagerState.currentPageOffsetFraction.absoluteValue
+    maxDeltaValue * (1f - pageOffset * 2)
+}
+
+@Preview
+@Composable
+fun WordPagerPreview() {
+    StupidEnglishTheme {
+        WordPager(
+            listOf(
+                "Баклан" to "Человек, не разбирающийся в вопросе",
+                "Ёкать" to "Издавать от неожиданности неопределенные отрывистые звуки",
+                "Ёрничать" to "Озорничать, допускать колкости по отношению к другим",
+                "Изюбрь" to "Грациозный благородный олень",
+            )
         )
     }
 }
