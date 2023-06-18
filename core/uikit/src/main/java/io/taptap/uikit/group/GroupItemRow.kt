@@ -1,5 +1,7 @@
 package io.taptap.uikit.group
 
+import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,12 +19,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,6 +42,13 @@ import androidx.compose.ui.unit.sp
 import io.taptap.uikit.LetterRoundView
 import io.taptap.uikit.R
 import io.taptap.uikit.theme.StupidEnglishTheme
+import org.burnoutcrew.reorderable.ItemPosition
+import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.detectReorderAfterLongPress
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+import org.burnoutcrew.reorderable.reorderable
+
+data class ItemData(val title: String, val id: String, val isLocked: Boolean = false)
 
 @Composable
 fun GroupItemRow(
@@ -45,8 +60,13 @@ fun GroupItemRow(
     onGroupClicked: (GroupListItemsModel) -> Unit,
     onGroupLongClicked: (GroupListItemsModel) -> Unit,
     isPlusEnabled: Boolean = true,
-    onPlusClicked: () -> Unit = {}
+    onMove: (ItemPosition, ItemPosition) -> Unit,
+    onPlusClicked: () -> Unit = {},
+
+
+    cats: List<ItemData>
 ) {
+    Log.d("LOGLOGLOG", "way = GroupItemRow")
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -59,11 +79,13 @@ fun GroupItemRow(
         )
         GroupItemGroupsRow(
             list = list,
+            cats = cats,
             isPlusEnabled = isPlusEnabled,
             onPlusClicked = onPlusClicked,
             currentGroup = currentGroup,
             onGroupClicked = onGroupClicked,
-            onGroupLongClicked = onGroupLongClicked
+            onGroupLongClicked = onGroupLongClicked,
+            onMove = onMove
         )
     }
 }
@@ -75,9 +97,45 @@ private fun GroupItemGroupsRow(
     onGroupClicked: (GroupListItemsModel) -> Unit,
     onGroupLongClicked: (GroupListItemsModel) -> Unit,
     isPlusEnabled: Boolean,
-    onPlusClicked: () -> Unit
+    onMove: (ItemPosition, ItemPosition) -> Unit,
+    onPlusClicked: () -> Unit,
+
+
+    cats: List<ItemData>
 ) {
-    val listState = rememberLazyListState()
+    Log.d("LOGLOGLOG", "way = GroupItemGroupsRow")
+
+
+//    val state = rememberReorderableLazyListState(onMove = onMove)
+//    LazyRow(
+//        state = state.listState,
+//        horizontalArrangement = Arrangement.spacedBy(8.dp),
+//        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp),
+//        modifier = Modifier
+//            .reorderable(state)
+//            .detectReorderAfterLongPress(state)
+//    ) {
+//        items(
+//            items = cats,
+//            key = { it.id }
+//        ) { item ->
+//            ReorderableItem(state, key = item.id) { isDragging ->
+//                val scale by animateFloatAsState(if (isDragging) 1.2f else 1f)
+//
+//                GroupItem(
+//                    title = item.title,
+//                    group = GroupItemUI(
+//                        id = 0L,
+//                        name = item.title
+//                    ),
+//                    selected = false,
+//                    onGroupClicked = onGroupClicked,
+//                    onGroupLongClicked = onGroupLongClicked,
+//                    modifier = Modifier.scale(scale)
+//                )
+//            }
+//        }
+//    }
 
     val newList: List<GroupListModel> = if (isPlusEnabled) {
         list
@@ -90,10 +148,14 @@ private fun GroupItemGroupsRow(
         list
     }
 
+    val state = rememberReorderableLazyListState(onMove = onMove)
     LazyRow(
-        state = listState,
+        state = state.listState,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
+        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp),
+        modifier = Modifier
+            .reorderable(state)
+            .detectReorderAfterLongPress(state)
     ) {
         items(
             items = newList,
@@ -104,18 +166,23 @@ private fun GroupItemGroupsRow(
                     title = stringResource(id = item.titleRes),
                     group = item,
                     selected = currentGroup == item,
-                    onGroupClicked = {
-                        onGroupClicked(item as NoGroupItemUI)
-                    },
-                    onGroupLongClicked = onGroupLongClicked
-                )
-                is GroupItemUI -> GroupItem(
-                    title = item.name,
-                    group = item,
-                    selected = currentGroup == item,
                     onGroupClicked = onGroupClicked,
                     onGroupLongClicked = onGroupLongClicked
                 )
+
+                is GroupItemUI -> ReorderableItem(state, key = item.id) { isDragging ->
+                    val scale by animateFloatAsState(if (isDragging) 1.2f else 1f)
+
+                    GroupItem(
+                        title = item.name,
+                        group = item,
+                        selected = currentGroup == item,
+                        onGroupClicked = onGroupClicked,
+                        onGroupLongClicked = onGroupLongClicked,
+                        modifier = Modifier.scale(scale)
+                    )
+                }
+
                 is PlusGroup -> PlusGroupItem(
                     onPlusClicked = onPlusClicked
                 )
@@ -149,12 +216,13 @@ private fun PlusGroupItem(
                 }
         )
 
-        Box(modifier = Modifier
-            .padding(start = 18.dp, end = 8.dp)
-            .background(color = MaterialTheme.colorScheme.tertiary)
-            .height(26.dp)
-            .align(CenterVertically)
-            .width(2.dp)
+        Box(
+            modifier = Modifier
+                .padding(start = 18.dp, end = 8.dp)
+                .background(color = MaterialTheme.colorScheme.tertiary)
+                .height(26.dp)
+                .align(CenterVertically)
+                .width(2.dp)
         )
     }
 }
@@ -166,10 +234,12 @@ private fun GroupItem(
     group: GroupListItemsModel,
     selected: Boolean,
     onGroupClicked: (GroupListItemsModel) -> Unit,
-    onGroupLongClicked: (GroupListItemsModel) -> Unit
+    onGroupLongClicked: (GroupListItemsModel) -> Unit,
+    modifier: Modifier = Modifier
 ) {
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .width(60.dp)
             .padding(horizontal = 2.dp)
     ) {
@@ -181,7 +251,7 @@ private fun GroupItem(
                 .size(56.dp)
                 .combinedClickable(
                     onClick = { onGroupClicked(group) },
-                    onLongClick = { onGroupLongClicked(group) },
+//                    onLongClick = { onGroupLongClicked(group) },
                 )
         )
         Text(
@@ -207,21 +277,24 @@ private fun GroupItem(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GroupItemRow() {
-    StupidEnglishTheme {
-        GroupItemRow(
-            title = "Groups",
-            button = "Add",
-            currentGroup = null,
-            onButtonClicked = {},
-            list = emptyList(),
-            onGroupClicked = {},
-            onGroupLongClicked = {}
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun GroupItemRow() {
+//    StupidEnglishTheme {
+//        GroupItemRow(
+//            title = "Groups",
+//            button = "Add",
+//            currentGroup = null,
+//            onButtonClicked = {},
+//            list = emptyList(),
+//            onGroupClicked = {},
+//            onGroupLongClicked = {},
+//            onMove = { a, b ->
+//
+//            }
+//        )
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable

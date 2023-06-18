@@ -19,6 +19,7 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.ui.MenuItem
 import io.taptap.uikit.group.GroupListItemsModel
 import io.taptap.uikit.group.GroupListModel
+import io.taptap.uikit.group.ItemData
 import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.burnoutcrew.reorderable.ItemPosition
 import taptap.pub.doOnComplete
 import taptap.pub.handle
 import taptap.pub.takeOrReturn
@@ -40,22 +42,22 @@ private const val WORDS_FOR_MOTIVATION = 1
 
 @HiltViewModel
 class WordListViewModel @Inject constructor(
-    private val repository: WordListRepository
+    private val repository: WordListRepository,
 ) : BaseViewModel<WordListContract.Event, WordListContract.State, WordListContract.Effect>() {
 
     val currentGroupFlow = MutableStateFlow<GroupListItemsModel>(NoGroup)
 
-    val wordList: StateFlow<List<WordListListModels>> = currentGroupFlow
-        .flatMapLatest { currentGroup ->
-            repository.observeWordList(currentGroup.id)
-                .map {
-                    currentGroup to it
-                }
-        }.combine(repository.observeGroupList()) { pair, groups ->
-            val wordList = pair.second.reversed().toWordsList()
-            val currentGroup = pair.first
-            val groupsList = groups.reversed().toGroupsList(withNoGroup = true)
-            makeMainList(wordList, groupsList, currentGroup)
+    var cats by mutableStateOf(List(20) { ItemData("Cat $it", "id$it") })
+
+    fun moveCat(from: ItemPosition, to: ItemPosition) {
+        cats = cats.toMutableList().apply {
+            add(to.index, removeAt(from.index))
+        }
+    }
+
+    val groups: StateFlow<List<GroupListItemsModel>> = repository.observeGroupList()
+        .map { groups ->
+            groups.reversed().toGroupsList(withNoGroup = true)
         }.onStart {
             setState { copy(isLoading = false) }
         }.stateIn(
@@ -63,6 +65,25 @@ class WordListViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(),
             initialValue = emptyList()
         )
+
+//    val wordList: StateFlow<List<WordListListModels>> = currentGroupFlow
+//        .flatMapLatest { currentGroup ->
+//            repository.observeWordList(currentGroup.id)
+//                .map {
+//                    currentGroup to it
+//                }
+//        }.combine(repository.observeGroupList()) { pair, groups ->
+//            val wordList = pair.second.reversed().toWordsList()
+//            val currentGroup = pair.first
+//            val groupsList = groups.reversed().toGroupsList(withNoGroup = true)
+//            makeMainList(wordList, groupsList, currentGroup)
+//        }.onStart {
+//            setState { copy(isLoading = false) }
+//        }.stateIn(
+//            viewModelScope,
+//            SharingStarted.WhileSubscribed(),
+//            initialValue = emptyList()
+//        )
 
     var word by mutableStateOf("")
         private set
@@ -234,6 +255,18 @@ class WordListViewModel @Inject constructor(
             }
             is WordListContract.Event.OnProfileClick ->
                 setEffect { WordListContract.Effect.Navigation.ToProfile }
+
+            is WordListContract.Event.OnGroupMove -> {
+                //moveGroup(event.fromItemId, event.toItemId)
+            }
+        }
+    }
+
+    fun moveGroup(from: ItemPosition, to: ItemPosition) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val fromItemId = requireNotNull(from.key) as Long
+            val toItemId = requireNotNull(to.key) as Long
+            repository.rearrangeGroups(fromItemId, toItemId)
         }
     }
 
@@ -344,10 +377,6 @@ class WordListViewModel @Inject constructor(
             mainList.addAll(filteredList)
         }
         return mainList
-    }
-
-    private fun showOnboardingLabel(size: Int): Boolean {
-        return size > 0
     }
 
     private fun saveGroup(group: String) {

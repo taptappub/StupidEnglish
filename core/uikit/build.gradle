@@ -64,6 +64,8 @@ dependencies {
     api "androidx.activity:activity-compose:$activity_compose_version"
     api 'androidx.compose.material3:material3:1.2.0-alpha02'
 
+    api 'org.burnoutcrew.composereorderable:reorderable:0.9.6'
+
     //accompanist
     api 'com.google.accompanist:accompanist-systemuicontroller:0.31.3-beta'
     api 'com.google.accompanist:accompanist-insets:0.31.3-beta'
