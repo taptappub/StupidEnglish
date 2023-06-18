@@ -4,8 +4,6 @@ import androidx.annotation.StringRes
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
-import io.taptap.stupidenglish.base.model.Group
-import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.base.model.WordWithGroups
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
@@ -39,6 +37,7 @@ class WordListContract {
         data class OnGroupMenuItemClick(val item: MenuItem) : Event()
         data class OnGroupClick(val group: GroupListItemsModel) : Event()
         data class OnGroupLongClick(val group: GroupListItemsModel) : Event()
+        data class OnGroupMove(val fromItemId: Long, val toItemId: Long) : Event()
     }
 
     data class State(

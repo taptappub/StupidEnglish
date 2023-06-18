@@ -2,6 +2,7 @@ package io.taptap.stupidenglish.base.logic.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -150,10 +151,33 @@ interface WordDao {
 
     //-----------------Group-----------------
 
+    @Query("")
+    @Transaction
+    suspend fun rearrangeGroups(from: Long, to: Long) {
+        val fromGroupDto = getGroup(from)
+        val toGroupDto = getGroup(to)
+        val newFrom = fromGroupDto.copy(index = toGroupDto.index)
+        val newTo = toGroupDto.copy(index = fromGroupDto.index)
+//        deleteGroup(from)
+//        updateGroup(newTo)
+//        insertGroup(newFrom)
+//        insertGroup(newFrom)
+        updateGroup(newFrom)
+        updateGroup(newTo)
+    }
+
+    @Query("")
+    @Transaction
+    suspend fun insertGroup(groupName: String): Long {
+        val maxIndex = getGroupsMaxIndex()
+        val newGroup = GroupDto(name = groupName, index = maxIndex + 1)
+        return insertGroup(newGroup)
+    }
+
     @Insert
     suspend fun insertGroup(group: GroupDto): Long
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateGroup(group: GroupDto)
 
     @Query(
@@ -176,6 +200,7 @@ interface WordDao {
         """
         SELECT *
         FROM GroupTable
+        ORDER by GroupTable.`index` ASC
         """
     )
     fun observeGroups(): Flow<List<GroupDto>>
@@ -187,6 +212,23 @@ interface WordDao {
         """
     )
     suspend fun getGroups(): List<GroupDto>
+
+    @Query(
+        """
+        SELECT *
+        FROM GroupTable
+        WHERE GroupTable.groupId = :groupId
+        """
+    )
+    suspend fun getGroup(groupId: Long): GroupDto
+
+    @Query(
+        """
+        SELECT MAX(GroupTable.`index`)
+        FROM GroupTable
+        """
+    )
+    suspend fun getGroupsMaxIndex(): Int
 
     @Query(
         """

@@ -44,7 +44,8 @@ class WriteWordsDataSource @Inject constructor(
                     groups = it.groups.map { group ->
                         GroupDto(
                             id = group.id,
-                            name = group.name
+                            name = group.name,
+                            index = group.index
                         )
                     }
                 )
