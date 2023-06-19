@@ -2,6 +2,9 @@ package io.taptap.stupidenglish.features.groupdetails.ui
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,10 +39,15 @@ import androidx.compose.material.rememberDismissState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -301,19 +309,12 @@ fun WordPager(
         ) { page ->
             val pageHeightDelta = calculatePageHeightDelta(pagerState, page)
 
-            Card(
-                Modifier
+            RotatablePage(
+                word = words[page],
+                modifier = Modifier
                     .fillMaxWidth()
                     .height(pageHeight + pageHeightDelta)
-            ) {
-                Box {
-                    Text(
-                        text = words[page].first,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                    )
-                }
-            }
+            )
         }
 
         Row(
@@ -360,6 +361,64 @@ fun WordPagerPreview() {
                 "Ёрничать" to "Озорничать, допускать колкости по отношению к другим",
                 "Изюбрь" to "Грациозный благородный олень",
             )
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun RotatablePage(
+    word: Pair<String, String>,
+    modifier: Modifier = Modifier,
+) {
+    val (text, description) = word
+    var angle by remember {
+        mutableFloatStateOf(0f)
+    }
+
+    val rotation = animateFloatAsState(
+        targetValue = angle,
+        animationSpec = tween(
+            durationMillis = 400,
+            easing = FastOutSlowInEasing,
+        ),
+        label = "Page rotation"
+    )
+
+    Card(
+        modifier = modifier
+            .graphicsLayer {
+                rotationX = rotation.value
+            },
+        onClick = {
+            angle = (angle + 180) % 360
+        }
+    ) {
+        Box(
+            modifier = Modifier.graphicsLayer {
+                //rotate content back
+                rotationX = -rotation.value
+            }
+        ) {
+            Text(
+                text = if (rotation.value > 90f) description else text,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(all = 16.dp)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun RotatablePagePreview() {
+    StupidEnglishTheme {
+        RotatablePage(
+            word = "Баклан" to "Человек, не разбирающийся в вопросе",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
         )
     }
 }
