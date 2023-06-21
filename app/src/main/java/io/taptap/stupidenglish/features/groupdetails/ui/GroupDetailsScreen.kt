@@ -9,6 +9,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -77,6 +78,7 @@ import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.StupidEnglishTopAppBar
 import io.taptap.uikit.complex.WordItemRow
 import io.taptap.uikit.fab.BOTTOM_BAR_MARGIN
+import io.taptap.uikit.group.GroupItemUI
 import io.taptap.uikit.group.getTitle
 import io.taptap.uikit.theme.StupidEnglishTheme
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
@@ -186,6 +188,7 @@ fun MainList(
 ) {
     LazyColumn(
         state = listState,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(
             top = WindowInsets.navigationBars.getTop(LocalDensity.current).dp,
             bottom = WindowInsets.navigationBars.getBottom(LocalDensity.current).dp + 12.dp + BOTTOM_BAR_MARGIN
@@ -226,12 +229,16 @@ fun MainList(
                             ButtonId.learn -> onEventSent(Event.ToAddSentence)
                             ButtonId.addWord -> onEventSent(Event.OnAddWordClick)
                         }
-                    }
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth()
                 )
 
                 is GroupDetailsDynamicTitleUI -> AverageTitle(
                     text = item.currentGroup.getTitle(),
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp)
                 )
 
                 is GroupDetailsEmptyUI -> EmptyListContent(
@@ -243,7 +250,9 @@ fun MainList(
                 is GroupDetailsWordItemUI -> WordItemRow(
                     word = item.word,
                     description = item.description,
-                    modifier = Modifier.animateItemPlacement(),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .animateItemPlacement(),
                     dismissState = dismissState,
                     onClicked = {}
                 )
