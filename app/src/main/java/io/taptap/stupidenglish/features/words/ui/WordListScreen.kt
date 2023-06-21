@@ -351,7 +351,9 @@ private fun MainList(
                 is WordListItemUI -> WordItemRow(
                     word = item.word,
                     description = item.description,
-                    modifier = Modifier.animateItemPlacement(),
+                    modifier = Modifier
+                        .animateItemPlacement()
+                        .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp),
                     dismissState = dismissState,
                     onClicked = {
                         onEventSent(WordListContract.Event.OnWordClick)
