@@ -2,24 +2,27 @@ package io.taptap.stupidenglish.features.groupdetails.ui
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -31,6 +34,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarResult
@@ -279,11 +283,11 @@ fun MainListPreview() {
 @Composable
 fun WordPager(
     words: List<Pair<String, String>>,
+    pagerState: PagerState,
     modifier: Modifier = Modifier
 ) {
-    val pagerState = rememberPagerState {
-        words.size
-    }
+    val pagerHeight = 220.dp
+    val pageHeight = 200.dp
 
     val singlePageWithNeighbourEdges = object : PageSize {
         private val edgesWidth = 24.dp
@@ -292,49 +296,25 @@ fun WordPager(
             availableSpace - edgesWidth.roundToPx()
     }
 
-    Column {
-        val pagerHeight = 220.dp
-        val pageHeight = 200.dp
+    HorizontalPager(
+        state = pagerState,
+        modifier = modifier
+            .height(pagerHeight),
+        pageSize = singlePageWithNeighbourEdges,
+        pageSpacing = 8.dp,
+        contentPadding = PaddingValues(
+            start = 30.dp, //FIXME MAGIC NUMBERS. Подбирал. Почему именно такие?
+            end = 8.dp
+        ),
+    ) { page ->
+        val pageHeightDelta = calculatePageHeightDelta(pagerState, page)
 
-        HorizontalPager(
-            state = pagerState,
-            modifier = modifier
-                .height(pagerHeight),
-            pageSize = singlePageWithNeighbourEdges,
-            pageSpacing = 8.dp,
-            contentPadding = PaddingValues(
-                start = 30.dp, //FIXME MAGIC NUMBERS. Подбирал. Почему именно такие?
-                end = 8.dp
-            ),
-        ) { page ->
-            val pageHeightDelta = calculatePageHeightDelta(pagerState, page)
-
-            RotatablePage(
-                word = words[page],
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(pageHeight + pageHeightDelta)
-            )
-        }
-
-        Row(
-            Modifier
-                .height(50.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            repeat(words.size) { iteration ->
-                val color =
-                    if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
-                Box(
-                    modifier = Modifier
-                        .padding(2.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                        .size(8.dp)
-                )
-            }
-        }
+        RotatablePage(
+            word = words[page],
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(pageHeight + pageHeightDelta)
+        )
     }
 }
 
@@ -350,18 +330,80 @@ private fun calculatePageHeightDelta(
     maxDeltaValue * (1f - pageOffset * 2)
 }
 
+@Composable
+fun PagerIndicator(
+    totalDots: Int,
+    selectedIndex: Int,
+    modifier: Modifier = Modifier
+) {
+    LazyRow(
+        modifier = modifier
+            .wrapContentWidth()
+            .wrapContentHeight(),
+        verticalAlignment = Alignment.CenterVertically,
+        userScrollEnabled = false,
+    ) {
+        items(totalDots) { index ->
+            //draw selected & 2 neighbour dots
+            if ((selectedIndex - index).absoluteValue > 2) {
+                return@items
+            }
+
+            //FIXME анимации изменения цвета и размера не работают в превью
+            val colorAnimation by animateColorAsState(
+                targetValue = when (selectedIndex) {
+                    index -> MaterialTheme.colors.primary
+                    else -> Color.LightGray
+                },
+                label = "Pager indicator dot color"
+            )
+            val sizeAnimation by animateDpAsState(
+                targetValue = when {
+                    (selectedIndex - index).absoluteValue <= 1 -> 6.dp
+                    else -> 3.dp
+                },
+                label = "Pager indicator dot size"
+            )
+
+            Box(
+                modifier = Modifier
+                    .padding(2.dp)
+                    .clip(CircleShape)
+                    .background(colorAnimation)
+                    .size(sizeAnimation)
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Preview
 @Composable
 fun WordPagerPreview() {
     StupidEnglishTheme {
-        WordPager(
-            listOf(
-                "Баклан" to "Человек, не разбирающийся в вопросе",
-                "Ёкать" to "Издавать от неожиданности неопределенные отрывистые звуки",
-                "Ёрничать" to "Озорничать, допускать колкости по отношению к другим",
-                "Изюбрь" to "Грациозный благородный олень",
-            )
+        val words = listOf(
+            "Баклан" to "Человек, не разбирающийся в вопросе",
+            "Ёкать" to "Издавать от неожиданности неопределенные отрывистые звуки",
+            "Ёрничать" to "Озорничать, допускать колкости по отношению к другим",
+            "Изюбрь" to "Грациозный благородный олень",
         )
+
+        Column {
+            val pagerState = rememberPagerState {
+                words.size
+            }
+
+            WordPager(
+                pagerState = pagerState,
+                words = words,
+            )
+            PagerIndicator(
+                totalDots = pagerState.pageCount,
+                selectedIndex = pagerState.currentPage,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
     }
 }
 
@@ -371,11 +413,11 @@ fun RotatablePage(
     word: Pair<String, String>,
     modifier: Modifier = Modifier,
 ) {
-    val (text, description) = word
     var angle by remember {
         mutableFloatStateOf(0f)
     }
 
+    //FIXME переворот карты не работает в превью
     val rotation = animateFloatAsState(
         targetValue = angle,
         animationSpec = tween(
@@ -395,11 +437,13 @@ fun RotatablePage(
         }
     ) {
         Box(
-            modifier = Modifier.graphicsLayer {
-                //rotate content back
-                rotationX = -rotation.value
-            }
+            modifier = Modifier
+                .graphicsLayer {
+                    //rotate content back
+                    rotationX = -rotation.value
+                }
         ) {
+            val (text, description) = word
             Text(
                 text = if (rotation.value > 90f) description else text,
                 modifier = Modifier
