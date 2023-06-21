@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -164,6 +165,7 @@ fun ContentScreen(
             groupItems = mainList,
             deletedWords = state.deletedWords,
             listState = listState,
+            isWordPagerEnabled = true,
             onEventSent = onEventSent
         )
         if (state.isLoading) {
@@ -179,6 +181,7 @@ fun MainList(
     groupItems: List<GroupDetailsUIModel>,
     deletedWords: List<WordWithGroups>,
     listState: LazyListState,
+    isWordPagerEnabled: Boolean,
     onEventSent: (event: Event) -> Unit
 ) {
     LazyColumn(
@@ -188,6 +191,10 @@ fun MainList(
             bottom = WindowInsets.navigationBars.getBottom(LocalDensity.current).dp + 12.dp + BOTTOM_BAR_MARGIN
         )
     ) {
+        if (isWordPagerEnabled) {
+            addWordPager(groupItems)
+        }
+
         items(
             items = groupItems,
             key = { it.id }
@@ -245,6 +252,38 @@ fun MainList(
     }
 }
 
+@ExperimentalFoundationApi
+private fun LazyListScope.addWordPager(groupItems: List<GroupDetailsUIModel>) {
+    val words = groupItems.mapNotNull {
+        (it as? GroupDetailsWordItemUI)?.run {
+            word to description
+        }
+    }
+
+    if (words.isEmpty()) {
+        return
+    }
+
+    item("WordPager") {
+        val pagerState = rememberPagerState {
+            words.size
+        }
+        Column {
+            WordPager(
+                words = words,
+                pagerState = pagerState
+            )
+            if (words.size > 1) {
+                PagerIndicator(
+                    totalDots = pagerState.pageCount,
+                    selectedIndex = pagerState.currentPage,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
+        }
+    }
+}
 
 @Preview
 @ExperimentalMaterialApi
@@ -274,6 +313,7 @@ fun MainListPreview() {
                 )
             ),
             listState = rememberLazyListState(),
+            isWordPagerEnabled = true,
             onEventSent = {},
         )
     }
