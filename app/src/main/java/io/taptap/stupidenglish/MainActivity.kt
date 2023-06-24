@@ -626,18 +626,12 @@ private fun WordListDestination(
 ) {
     val wordViewModel: WordListViewModel = hiltViewModel()
     val wordState by wordViewModel.viewState.collectAsState()
-//    val wordList by wordViewModel.wordList.collectAsState()
     val currentGroup by wordViewModel.currentGroupFlow.collectAsState()
 
     WordListScreen(
         wordViewModel = wordViewModel,
-
-
-
-
         context = LocalContext.current,
         state = wordState,
-//        wordList = wordList,
         currentGroup = currentGroup,
         group = wordViewModel.groupName,
         onGroupChange = wordViewModel::setNewGroupName,

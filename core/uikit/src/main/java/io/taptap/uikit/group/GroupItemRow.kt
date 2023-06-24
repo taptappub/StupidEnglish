@@ -48,8 +48,6 @@ import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 
-data class ItemData(val title: String, val id: String, val isLocked: Boolean = false)
-
 @Composable
 fun GroupItemRow(
     title: String,
@@ -62,9 +60,6 @@ fun GroupItemRow(
     isPlusEnabled: Boolean = true,
     onMove: (ItemPosition, ItemPosition) -> Unit,
     onPlusClicked: () -> Unit = {},
-
-
-    cats: List<ItemData>
 ) {
     Log.d("LOGLOGLOG", "way = GroupItemRow")
     Column(
@@ -79,7 +74,6 @@ fun GroupItemRow(
         )
         GroupItemGroupsRow(
             list = list,
-            cats = cats,
             isPlusEnabled = isPlusEnabled,
             onPlusClicked = onPlusClicked,
             currentGroup = currentGroup,
@@ -98,45 +92,8 @@ private fun GroupItemGroupsRow(
     onGroupLongClicked: (GroupListItemsModel) -> Unit,
     isPlusEnabled: Boolean,
     onMove: (ItemPosition, ItemPosition) -> Unit,
-    onPlusClicked: () -> Unit,
-
-
-    cats: List<ItemData>
+    onPlusClicked: () -> Unit
 ) {
-    Log.d("LOGLOGLOG", "way = GroupItemGroupsRow")
-
-
-//    val state = rememberReorderableLazyListState(onMove = onMove)
-//    LazyRow(
-//        state = state.listState,
-//        horizontalArrangement = Arrangement.spacedBy(8.dp),
-//        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp),
-//        modifier = Modifier
-//            .reorderable(state)
-//            .detectReorderAfterLongPress(state)
-//    ) {
-//        items(
-//            items = cats,
-//            key = { it.id }
-//        ) { item ->
-//            ReorderableItem(state, key = item.id) { isDragging ->
-//                val scale by animateFloatAsState(if (isDragging) 1.2f else 1f)
-//
-//                GroupItem(
-//                    title = item.title,
-//                    group = GroupItemUI(
-//                        id = 0L,
-//                        name = item.title
-//                    ),
-//                    selected = false,
-//                    onGroupClicked = onGroupClicked,
-//                    onGroupLongClicked = onGroupLongClicked,
-//                    modifier = Modifier.scale(scale)
-//                )
-//            }
-//        }
-//    }
-
     val newList: List<GroupListModel> = if (isPlusEnabled) {
         list
             .map { it as GroupListModel }

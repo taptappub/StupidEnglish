@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.base.logic.database.dao
 
+import android.content.ClipData.Item
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -13,6 +14,7 @@ import io.taptap.stupidenglish.base.logic.database.dto.WordDto
 import io.taptap.stupidenglish.base.logic.database.dto.WordGroupCrossRef
 import io.taptap.stupidenglish.base.logic.database.dto.WordWithGroupsDto
 import kotlinx.coroutines.flow.Flow
+
 
 @Dao
 interface WordDao {
@@ -158,12 +160,7 @@ interface WordDao {
         val toGroupDto = getGroup(to)
         val newFrom = fromGroupDto.copy(index = toGroupDto.index)
         val newTo = toGroupDto.copy(index = fromGroupDto.index)
-//        deleteGroup(from)
-//        updateGroup(newTo)
-//        insertGroup(newFrom)
-//        insertGroup(newFrom)
-        updateGroup(newFrom)
-        updateGroup(newTo)
+        updateGroups(listOf(newFrom, newTo))
     }
 
     @Query("")
@@ -179,6 +176,9 @@ interface WordDao {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateGroup(group: GroupDto)
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateGroups(items: List<GroupDto>)
 
     @Query(
         """

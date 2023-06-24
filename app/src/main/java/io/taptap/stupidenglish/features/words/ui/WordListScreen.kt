@@ -1,7 +1,6 @@
 package io.taptap.stupidenglish.features.words.ui
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -36,6 +35,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -68,7 +68,6 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListDynamicTitleUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
-import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import io.taptap.stupidenglish.ui.MenuBottomSheet
 import io.taptap.uikit.AverageTitle
@@ -88,7 +87,6 @@ import io.taptap.uikit.fab.MultiFabItem
 import io.taptap.uikit.fab.MultiFloatingActionButton
 import io.taptap.uikit.group.GroupItemRow
 import io.taptap.uikit.group.GroupListItemsModel
-import io.taptap.uikit.group.NoGroup
 import io.taptap.uikit.group.getTitle
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import io.taptap.uikit.theme.getStupidLanguageBackgroundRow
@@ -105,17 +103,12 @@ fun WordListScreen(
     state: WordListContract.State,
     group: String,
     currentGroup: GroupListItemsModel?,
-//    wordList: List<WordListListModels>,
     onGroupChange: (newGroup: String) -> Unit,
     effectFlow: Flow<WordListContract.Effect>?,
     onEventSent: (event: WordListContract.Event) -> Unit,
     onChangeBottomSheetVisibility: (visibility: Boolean) -> Unit,
     onNavigationRequested: (navigationEffect: WordListContract.Effect.Navigation) -> Unit,
-
-
-
-
-    wordViewModel: WordListViewModel
+    wordViewModel: WordListViewModel,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -130,8 +123,10 @@ fun WordListScreen(
                 when (state.sheetContentType) {
                     WordListContract.SheetContentType.AddGroup ->
                         onEventSent(WordListContract.Event.OnGroupAddingCancel)
+
                     WordListContract.SheetContentType.Motivation ->
                         onEventSent(WordListContract.Event.OnMotivationCancel)
+
                     WordListContract.SheetContentType.GroupMenu ->
                         onEventSent(WordListContract.Event.OnGroupMenuCancel)
                 }
@@ -154,6 +149,7 @@ fun WordListScreen(
                             }
                         }
                     )
+
                 WordListContract.SheetContentType.Motivation ->
                     DialogSheetScreen(
                         painter = painterResource(R.drawable.ic_pen),
@@ -169,6 +165,7 @@ fun WordListScreen(
                             onEventSent(WordListContract.Event.OnMotivationDeclineClick)
                         }
                     )
+
                 WordListContract.SheetContentType.GroupMenu ->
                     MenuBottomSheet(
                         list = state.groupMenuList,
@@ -191,37 +188,50 @@ fun WordListScreen(
                 when (effect) {
                     is WordListContract.Effect.HideBottomSheet ->
                         modalBottomSheetState.hideSheet(scope)
+
                     is WordListContract.Effect.ShowBottomSheet ->
                         modalBottomSheetState.showSheet(scope)
+
                     is WordListContract.Effect.Navigation.ToAddWord ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.Navigation.ToImportWords ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.GetWordsError ->
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(effect.errorRes),
                             duration = SnackbarDuration.Short
                         )
+
                     is WordListContract.Effect.Navigation.ToGroupList ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.Navigation.ToAddSentence ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.Navigation.ToFlashCards ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.Navigation.ToProfile ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.Navigation.ToAddWordWithGroup ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.Navigation.ToGroupDetails ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.ShowUnderConstruction ->
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(R.string.under_construction),
                             duration = SnackbarDuration.Short
                         )
+
                     is WordListContract.Effect.ChangeBottomBarVisibility -> {
                         onChangeBottomSheetVisibility(effect.isShown)
                     }
+
                     is WordListContract.Effect.ShowRecover -> {
                         val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(R.string.word_delete_message),
@@ -233,6 +243,7 @@ fun WordListScreen(
                             SnackbarResult.ActionPerformed -> onEventSent(WordListContract.Event.OnRecover)
                         }
                     }
+
                     is WordListContract.Effect.GetUserError ->
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(effect.errorRes),
@@ -277,47 +288,13 @@ fun WordListScreen(
             ) {
                 val listState = rememberLazyListState()
 
-                val groups by wordViewModel.groups.collectAsState()
-
-                GroupItemRow(
-                    title = stringResource(id = R.string.default_web_client_id),
-                    button = stringResource(id = R.string.default_web_client_id),
-                    list = groups,
-                    cats = wordViewModel.cats,
-                    currentGroup = NoGroup,
-                    onButtonClicked = {
-                        onEventSent(WordListContract.Event.OnViewAllClick)
-                    },
-                    onGroupClicked = { group ->
-                        onEventSent(WordListContract.Event.OnGroupClick(group))
-                    },
-                    onGroupLongClicked = { group ->
-                        onEventSent(WordListContract.Event.OnGroupLongClick(group))
-                    },
-                    onPlusClicked = {
-                        onEventSent(WordListContract.Event.OnAddGroupClick)
-                    },
-//                    onMove = wordViewModel::moveCat,
-                    onMove = wordViewModel::moveGroup,
-//                    onMove = { from, to ->
-//                        wordViewModel.moveGroup(from, to)
-//                        onEventSent(WordListContract.Event.OnGroupMove(fromItemId, fromItem))
-//                    }
+                MainList(
+                    wordViewModel = wordViewModel,
+                    deletedWords = state.deletedWords,
+                    group = currentGroup,
+                    listState = listState,
+                    onEventSent = onEventSent
                 )
-//                MainList(
-//                    wordViewModel = wordViewModel,
-//
-//
-//
-//
-//
-//
-////                    wordItems = wordList,
-//                    deletedWords = state.deletedWords,
-//                    group = currentGroup,
-//                    listState = listState,
-//                    onEventSent = onEventSent
-//                )
                 if (state.isLoading) {
                     LoadingBar()
                 }
@@ -352,108 +329,107 @@ fun WordListScreen(
     }
 }
 
-//@ExperimentalFoundationApi
-//@ExperimentalMaterialApi
-//@Composable
-//private fun MainList(
-////    wordItems: List<WordListListModels>,
-//    group: GroupListItemsModel?,
-//    listState: LazyListState,
-//    onEventSent: (event: WordListContract.Event) -> Unit,
-//    deletedWords: List<WordWithGroups>,
-//
-//
-//    wordViewModel: WordListViewModel
-//) {
-//    Log.d("LOGLOGLOG", "way = MainList")
-//    val list by wordViewModel.wordList.collectAsState()
-//
-//    LazyColumn(
-//        state = listState,
-//        contentPadding = PaddingValues(
-//            top = WindowInsets.navigationBars.getTop(LocalDensity.current).dp,
-//            bottom = WindowInsets.navigationBars.getBottom(LocalDensity.current).dp + 12.dp + BOTTOM_BAR_MARGIN
-//        )
-//    ) {
-//        items(
-//            items = list,
-//            key = { it.id }
-//        ) { item ->
-//            val dismissState = rememberDismissState()
-//            val canBeRecovered = deletedWords.map { it.word.id }.contains(item.id)
-//            if (canBeRecovered) { //todo выделить в отдельный класс с возможностью удалять?
-//                if (dismissState.currentValue != DismissValue.Default) {
-//                    LaunchedEffect(Unit) {
-//                        dismissState.reset()
-//                        onEventSent(WordListContract.Event.OnRecovered(item))
-//                    }
-//                }
-//            } else {
-//                if (item is WordListItemUI) {
-//                    if (dismissState.isDismissed(DismissDirection.StartToEnd)) {
-//                        onEventSent(WordListContract.Event.OnWordDismiss(item))
-//                    }
-//                }
-//            }
-//
-//            when (item) {
-//                is WordListItemUI -> WordItemRow(
-//                    word = item.word,
-//                    description = item.description,
-//                    modifier = Modifier.animateItemPlacement(),
-//                    dismissState = dismissState,
-//                    onClicked = {
-//                        onEventSent(WordListContract.Event.OnWordClick)
-//                    }
-//                )
-//                is WordListDynamicTitleUI -> AverageTitle(
-//                    text = item.currentGroup.getTitle(),
-//                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
-//                )
-//                is WordListTitleUI -> AverageTitle(
-//                    text = stringResource(id = item.valueRes),
-//                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
-//                )
-//                is OnboardingWordUI -> OnboardingItemRow(
-//                    onClicked = {
-//                        onEventSent(WordListContract.Event.OnOnboardingClick)
-//                    }
-//                )
-//                is WordListGroupUI -> GroupItemRow(
-//                    title = stringResource(id = item.titleRes),
-//                    button = stringResource(id = item.buttonRes),
-//                    list = item.groups,
-//                    cats = wordViewModel.cats,
-//                    currentGroup = group,
-//                    onButtonClicked = {
-//                        onEventSent(WordListContract.Event.OnViewAllClick)
-//                    },
-//                    onGroupClicked = { group ->
-//                        onEventSent(WordListContract.Event.OnGroupClick(group))
-//                    },
-//                    onGroupLongClicked = { group ->
-//                        onEventSent(WordListContract.Event.OnGroupLongClick(group))
-//                    },
-//                    onPlusClicked = {
-//                        onEventSent(WordListContract.Event.OnAddGroupClick)
-//                    },
-////                    onMove = wordViewModel::moveCat,
-//                    isPlusEnabled = false,
-//                    onMove = wordViewModel::moveGroup,
-////                    onMove = { from, to ->
-////                        wordViewModel.moveGroup(from, to)
-////                        onEventSent(WordListContract.Event.OnGroupMove(fromItemId, fromItem))
-////                    }
-//                )
-//                is WordListEmptyUI -> EmptyListContent(
-//                    title = stringResource(id = R.string.word_empty_list_title),
-//                    description = stringResource(id = item.descriptionRes),
-//                    modifier = Modifier.height(300.dp)
-//                )
-//            }
-//        }
-//    }
-//}
+@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalFoundationApi
+@ExperimentalMaterialApi
+@Composable
+private fun MainList(
+    group: GroupListItemsModel?,
+    listState: LazyListState,
+    onEventSent: (event: WordListContract.Event) -> Unit,
+    deletedWords: List<WordWithGroups>,
+    wordViewModel: WordListViewModel
+) {
+    val list by wordViewModel.wordList.collectAsState()
+
+    LazyColumn(
+        state = listState,
+        contentPadding = PaddingValues(
+            top = WindowInsets.navigationBars.getTop(LocalDensity.current).dp,
+            bottom = WindowInsets.navigationBars.getBottom(LocalDensity.current).dp + 12.dp + BOTTOM_BAR_MARGIN
+        )
+    ) {
+        items(
+            items = list,
+            key = { it.id }
+        ) { item ->
+            val dismissState = rememberDismissState()
+            val canBeRecovered = deletedWords.map { it.word.id }.contains(item.id)
+            if (canBeRecovered) { //todo выделить в отдельный класс с возможностью удалять?
+                if (dismissState.currentValue != DismissValue.Default) {
+                    LaunchedEffect(Unit) {
+                        dismissState.reset()
+                        onEventSent(WordListContract.Event.OnRecovered(item))
+                    }
+                }
+            } else {
+                if (item is WordListItemUI) {
+                    if (dismissState.isDismissed(DismissDirection.StartToEnd)) {
+                        onEventSent(WordListContract.Event.OnWordDismiss(item))
+                    }
+                }
+            }
+
+            when (item) {
+                is WordListItemUI -> WordItemRow(
+                    word = item.word,
+                    description = item.description,
+                    modifier = Modifier.animateItemPlacement(),
+                    dismissState = dismissState,
+                    onClicked = {
+                        onEventSent(WordListContract.Event.OnWordClick)
+                    }
+                )
+
+                is WordListDynamicTitleUI -> AverageTitle(
+                    text = item.currentGroup.getTitle(),
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+                )
+
+                is WordListTitleUI -> AverageTitle(
+                    text = stringResource(id = item.valueRes),
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+                )
+
+                is OnboardingWordUI -> OnboardingItemRow(
+                    onClicked = {
+                        onEventSent(WordListContract.Event.OnOnboardingClick)
+                    }
+                )
+
+                is WordListGroupUI -> GroupItemRow(
+                    title = stringResource(id = item.titleRes),
+                    button = stringResource(id = item.buttonRes),
+                    list = item.groups,
+                    currentGroup = group,
+                    onButtonClicked = {
+                        onEventSent(WordListContract.Event.OnViewAllClick)
+                    },
+                    onGroupClicked = { group ->
+                        onEventSent(WordListContract.Event.OnGroupClick(group))
+                    },
+                    onGroupLongClicked = { group ->
+                        onEventSent(WordListContract.Event.OnGroupLongClick(group))
+                    },
+                    onPlusClicked = {
+                        onEventSent(WordListContract.Event.OnAddGroupClick)
+                    },
+                    onMove = { from, to ->
+                        val fromItemId = requireNotNull(from.key) as Long
+                        val fromItem = requireNotNull(to.key) as Long
+                        onEventSent(WordListContract.Event.OnGroupMove(fromItemId, fromItem))
+                    }
+                )
+
+                is WordListEmptyUI -> EmptyListContent(
+                    title = stringResource(id = R.string.word_empty_list_title),
+                    description = stringResource(id = item.descriptionRes),
+                    modifier = Modifier.height(300.dp)
+                )
+            }
+        }
+    }
+}
 
 @ExperimentalMaterialApi
 @Composable
