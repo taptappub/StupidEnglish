@@ -37,7 +37,7 @@
     <string name="main_bottom_bar_sets_title">Сеты</string>
     <string name="main_bottom_bar_sentences_title">Предложения</string>
     <string name="stck_hint_button_text">Я не помню!</string>
-    <string name="word_fab_text">Добавить слово</string>
+    <string name="word_fab_text">Редактировать</string>
     <string name="stns_fab_text">Добавить предложение</string>
     <string name="under_construction">В разработке</string>
     <string name="stck_button_remember">Помню!</string>
@@ -129,4 +129,5 @@
     <string name="grdt_remove">Удалить группу</string>
     <string name="grdt_empty_list_title">Список пуст</string>
     <string name="context_menu_item_name">Учить</string>
+    <string name="grdt_import_words">Импорт слов</string>
 </resources>

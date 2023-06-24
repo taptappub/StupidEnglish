@@ -18,8 +18,7 @@ class WordListContract {
         object OnRecover : Event()
         object OnApplyDismiss : Event()
 
-        object OnAddWordClick : Event()
-        object OnImportWordsClick : Event()
+        object OnEditGroupClick : Event()
         object OnOnboardingClick : Event()
         object OnWordClick : Event()
         object OnProfileClick : Event()
@@ -33,10 +32,8 @@ class WordListContract {
         object OnGroupAddingCancel : Event()
 
         object OnViewAllClick : Event()
-        object OnGroupMenuCancel : Event()
-        data class OnGroupMenuItemClick(val item: MenuItem) : Event()
-        data class OnGroupClick(val group: GroupListItemsModel) : Event()
         data class OnGroupLongClick(val group: GroupListItemsModel) : Event()
+        data class OnGroupClick(val group: GroupListItemsModel) : Event()
         data class OnGroupMove(val fromItemId: Long, val toItemId: Long) : Event()
     }
 
@@ -45,20 +42,12 @@ class WordListContract {
         val sheetContentType: SheetContentType,
         val deletedWords: MutableList<WordWithGroups>,
         val avatar: String?,
-        val longClickedGroup: GroupListItemsModel,
-        val groupMenuList: List<MenuItem>
+        val longClickedGroup: GroupListItemsModel
     ) : ViewState
 
     enum class SheetContentType {
         AddGroup,
-        GroupMenu,
         Motivation
-    }
-
-    enum class MenuType {
-        Enabled,
-        Disabled,
-        AllWords
     }
 
     sealed class Effect : ViewSideEffect {
@@ -72,15 +61,10 @@ class WordListContract {
         data class ChangeBottomBarVisibility(val isShown: Boolean) : Effect()
 
         sealed class Navigation : Effect() {
-            object ToAddWord : Navigation()
-            object ToImportWords : Navigation()
             object ToProfile : Navigation()
             object ToGroupList : Navigation()
 
             data class ToGroupDetails(val group: GroupListItemsModel) : Navigation()
-            data class ToAddWordWithGroup(val group: GroupListItemsModel) : Navigation()
-            data class ToFlashCards(val group: GroupListItemsModel) : Navigation()
-            data class ToAddSentence(val group: GroupListItemsModel) : Navigation()
         }
     }
 }

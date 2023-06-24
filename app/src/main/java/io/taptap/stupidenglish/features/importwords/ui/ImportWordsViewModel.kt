@@ -3,8 +3,10 @@ package io.taptap.stupidenglish.features.importwords.ui
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.base.logic.mapper.toGroupsList
@@ -25,10 +27,12 @@ import taptap.pub.doOnComplete
 import taptap.pub.doOnError
 import taptap.pub.doOnSuccess
 import taptap.pub.fold
+import taptap.pub.map
 import javax.inject.Inject
 
 @HiltViewModel
 class ImportWordsViewModel @Inject constructor(
+    private val stateHandle: SavedStateHandle,
     private val interactor: ImportWordsInteractor
 ) : BaseViewModel<ImportWordsContract.Event, ImportWordsContract.State, ImportWordsContract.Effect>() {
 
@@ -54,6 +58,17 @@ class ImportWordsViewModel @Inject constructor(
     }
 
     init {
+        val currentGroupId = stateHandle.get<String>(NavigationKeys.Arg.GROUP_ID)?.toLong()
+        if (currentGroupId != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                interactor.getGroupsById(listOf(currentGroupId))
+                    .map { it.toGroupsList(withNoGroup = true) }
+                    .doOnSuccess {
+                        setState { copy(selectedGroups = it) }
+                    }
+            }
+        }
+
         if (!interactor.isImportTutorialShown) {
             setEffect { ImportWordsContract.Effect.Navigation.GoToImportTutorial }
             interactor.isImportTutorialShown = true

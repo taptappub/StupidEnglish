@@ -81,79 +81,43 @@ class WordListViewModel @Inject constructor(
 
     override fun setInitialState() = WordListContract.State(
         isLoading = true,
-        groupMenuList = getGroupMenu(WordListContract.MenuType.Enabled),
         longClickedGroup = NoGroup,
         sheetContentType = WordListContract.SheetContentType.Motivation,
         deletedWords = mutableListOf(),
         avatar = null
     )
 
-    private fun getGroupMenu(menuType: WordListContract.MenuType): List<MenuItem> {
-        return when (menuType) {
-            WordListContract.MenuType.Enabled -> listOf(
-                MenuItem(0, R.string.word_menu_open),
-                MenuItem(1, R.string.word_menu_add_word),
-                MenuItem(2, R.string.word_menu_flashcards, true),
-                MenuItem(3, R.string.word_menu_learn, true),
-                MenuItem(4, R.string.word_menu_share, false),
-                MenuItem(5, R.string.word_menu_remove)
-            )
-
-            WordListContract.MenuType.Disabled -> listOf(
-                MenuItem(0, R.string.word_menu_open),
-                MenuItem(1, R.string.word_menu_add_word),
-                MenuItem(2, R.string.word_menu_flashcards, false),
-                MenuItem(3, R.string.word_menu_learn, false),
-                MenuItem(4, R.string.word_menu_share, false),
-                MenuItem(5, R.string.word_menu_remove)
-            )
-
-            WordListContract.MenuType.AllWords -> listOf(
-                MenuItem(0, R.string.word_menu_open),
-                MenuItem(1, R.string.word_menu_add_word),
-                MenuItem(2, R.string.word_menu_flashcards),
-                MenuItem(3, R.string.word_menu_learn),
-                MenuItem(4, R.string.word_menu_share, false),
-                MenuItem(5, R.string.word_menu_remove, false)
-            )
-        }
-    }
-
     override suspend fun handleEvents(event: WordListContract.Event) {
         when (event) {
-            is WordListContract.Event.OnAddWordClick -> {
-                setEffect { WordListContract.Effect.Navigation.ToAddWord }
+            is WordListContract.Event.OnEditGroupClick -> {
+                setEffect { WordListContract.Effect.Navigation.ToGroupDetails(group = currentGroupFlow.value) }
             }
 
             is WordListContract.Event.OnViewAllClick -> {
                 setEffect { WordListContract.Effect.Navigation.ToGroupList }
             }
 
-            is WordListContract.Event.OnImportWordsClick -> {
-                setEffect { WordListContract.Effect.Navigation.ToImportWords }
-            }
-
             is WordListContract.Event.OnOnboardingClick -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    setEffect {
-                        WordListContract.Effect.Navigation.ToAddSentence(
-                            group = viewState.value.longClickedGroup,
-                        )
-                    }
-                }
+//                viewModelScope.launch(Dispatchers.IO) {
+//                    setEffect {
+//                        WordListContract.Effect.Navigation.ToAddSentence(
+//                            group = viewState.value.longClickedGroup,
+//                        )
+//                    }
+//                }
             }
 
             WordListContract.Event.OnMotivationConfirmClick -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 setEffect { WordListContract.Effect.HideBottomSheet }
-                viewModelScope.launch(Dispatchers.IO) {
-                    repository.isSentenceMotivationShown = true
-                    setEffect {
-                        WordListContract.Effect.Navigation.ToAddSentence(
-                            group = viewState.value.longClickedGroup,
-                        )
-                    }
-                }
+//                viewModelScope.launch(Dispatchers.IO) {
+//                    repository.isSentenceMotivationShown = true
+//                    setEffect {
+//                        WordListContract.Effect.Navigation.ToAddSentence(
+//                            group = viewState.value.longClickedGroup,
+//                        )
+//                    }
+//                }
             }
 
             WordListContract.Event.OnMotivationDeclineClick -> {
@@ -210,34 +174,10 @@ class WordListViewModel @Inject constructor(
             }
 
             is WordListContract.Event.OnGroupLongClick -> {
-                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
-                setEffect { WordListContract.Effect.ShowBottomSheet }
-
-                handleMenuCreation(event.group)
-            }
-
-            is WordListContract.Event.OnGroupMenuItemClick -> {
-                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
-                handleMenuItem(event.item)
-                setEffect { WordListContract.Effect.HideBottomSheet }
-                setState {
-                    copy(
-                        sheetContentType = WordListContract.SheetContentType.Motivation,
-                        longClickedGroup = NoGroup
-                    )
-                }
-            }
-
-            is WordListContract.Event.OnGroupMenuCancel -> {
-                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
-                setEffect { WordListContract.Effect.HideBottomSheet }
-                setNewGroupName("")
-                setState {
-                    copy(
-                        sheetContentType = WordListContract.SheetContentType.Motivation,
-                        longClickedGroup = NoGroup
-                    )
-                }
+//                setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
+//                setEffect { WordListContract.Effect.ShowBottomSheet }
+//
+//                handleMenuCreation(event.group)
             }
 
             is WordListContract.Event.OnApplyDismiss -> {
@@ -263,62 +203,7 @@ class WordListViewModel @Inject constructor(
     }
 
     private suspend fun moveGroup(from: Long, to: Long) {
-//        val fromItemId = requireNotNull(from.key) as Long
-//        val toItemId = requireNotNull(to.key) as Long
         repository.rearrangeGroups(from, to)
-    }
-
-    private fun handleMenuCreation(group: GroupListItemsModel) {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (group == NoGroup) {
-                setState {
-                    copy(
-                        sheetContentType = WordListContract.SheetContentType.GroupMenu,
-                        longClickedGroup = group,
-                        groupMenuList = getGroupMenu(WordListContract.MenuType.AllWords)
-                    )
-                }
-            } else {
-                repository.getWordsCountInGroup(group.id)
-                    .handle(
-                        success = { count ->
-                            if (count == 0) {
-                                setState {
-                                    copy(
-                                        sheetContentType = WordListContract.SheetContentType.GroupMenu,
-                                        longClickedGroup = group,
-                                        groupMenuList = getGroupMenu(WordListContract.MenuType.Disabled)
-                                    )
-                                }
-                            } else {
-                                setState {
-                                    copy(
-                                        sheetContentType = WordListContract.SheetContentType.GroupMenu,
-                                        longClickedGroup = group,
-                                        groupMenuList = getGroupMenu(WordListContract.MenuType.Enabled)
-                                    )
-                                }
-                            }
-                        },
-                        error = {
-                            setEffect { WordListContract.Effect.GetWordsError(R.string.word_get_list_error) }
-                        }
-                    )
-            }
-        }
-    }
-
-    private suspend fun handleMenuItem(item: MenuItem) {
-        val currentGroup = requireNotNull(viewState.value.longClickedGroup)
-        when (item.id) {
-            0 -> setEffect { WordListContract.Effect.Navigation.ToGroupDetails(group = currentGroup) }
-            1 -> setEffect { WordListContract.Effect.Navigation.ToAddWordWithGroup(group = currentGroup) }
-            2 -> setEffect { WordListContract.Effect.Navigation.ToFlashCards(currentGroup) }
-            3 -> setEffect { WordListContract.Effect.Navigation.ToAddSentence(currentGroup) }
-            4 -> error("Собирай статистику =)")
-            5 -> removeGroups(listOf(currentGroup))
-            else -> error("there is no such menu element")
-        }
     }
 
     private suspend fun deleteWord(item: WordListItemUI) {

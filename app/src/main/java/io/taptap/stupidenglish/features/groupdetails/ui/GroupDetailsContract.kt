@@ -6,6 +6,7 @@ import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
 import io.taptap.stupidenglish.base.model.WordWithGroups
 import io.taptap.stupidenglish.features.groupdetails.ui.model.GroupDetailsWordItemUI
+import io.taptap.stupidenglish.features.words.ui.WordListContract
 import io.taptap.uikit.group.GroupListItemsModel
 
 class GroupDetailsContract {
@@ -16,9 +17,11 @@ class GroupDetailsContract {
         object OnRecover : Event()
         object OnApplyDismiss : Event()
 
+        object OnAddWord : Event()
+
         object OnBackClick : Event()
 
-        object OnAddWordClick : Event()
+        object OnImportWordsClick : Event()
         object OnRemoveGroupClick : Event()
         object ToFlashCards : Event()
         object ToAddSentence : Event()
@@ -33,7 +36,7 @@ class GroupDetailsContract {
         const val learn: Int = -1001
         const val share: Int = -1002
         const val remove: Int = -1003
-        const val addWord = -1004
+        const val import = -1004
     }
 
     sealed class Effect : ViewSideEffect {
@@ -43,6 +46,7 @@ class GroupDetailsContract {
         sealed class Navigation : Effect() {
             object BackTo : Navigation()
 
+            data class ToImportWords(val group: GroupListItemsModel) : Navigation()
             data class ToAddWordWithGroup(val group: GroupListItemsModel) : Navigation()
             data class ToFlashCards(val group: GroupListItemsModel) : Navigation()
             data class ToAddSentence(val group: GroupListItemsModel) : Navigation()

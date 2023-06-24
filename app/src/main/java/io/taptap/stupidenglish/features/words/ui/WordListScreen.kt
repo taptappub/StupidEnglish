@@ -81,10 +81,7 @@ import io.taptap.uikit.StupidEnglishTopAppBar
 import io.taptap.uikit.complex.AddGroupBottomSheetScreen
 import io.taptap.uikit.complex.WordItemRow
 import io.taptap.uikit.fab.BOTTOM_BAR_MARGIN
-import io.taptap.uikit.fab.FabIcon
-import io.taptap.uikit.fab.FabOption
-import io.taptap.uikit.fab.MultiFabItem
-import io.taptap.uikit.fab.MultiFloatingActionButton
+import io.taptap.uikit.fab.Fab
 import io.taptap.uikit.group.GroupItemRow
 import io.taptap.uikit.group.GroupListItemsModel
 import io.taptap.uikit.group.getTitle
@@ -126,9 +123,6 @@ fun WordListScreen(
 
                     WordListContract.SheetContentType.Motivation ->
                         onEventSent(WordListContract.Event.OnMotivationCancel)
-
-                    WordListContract.SheetContentType.GroupMenu ->
-                        onEventSent(WordListContract.Event.OnGroupMenuCancel)
                 }
                 keyboardController?.hide()
             }
@@ -165,18 +159,6 @@ fun WordListScreen(
                             onEventSent(WordListContract.Event.OnMotivationDeclineClick)
                         }
                     )
-
-                WordListContract.SheetContentType.GroupMenu ->
-                    MenuBottomSheet(
-                        list = state.groupMenuList,
-                        onClick = {
-                            onEventSent(WordListContract.Event.OnGroupMenuItemClick(it))
-                        },
-                        titleRes = R.string.word_group_menu_title,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .animateContentSize()
-                    )
             }
         },
     ) {
@@ -192,12 +174,6 @@ fun WordListScreen(
                     is WordListContract.Effect.ShowBottomSheet ->
                         modalBottomSheetState.showSheet(scope)
 
-                    is WordListContract.Effect.Navigation.ToAddWord ->
-                        onNavigationRequested(effect)
-
-                    is WordListContract.Effect.Navigation.ToImportWords ->
-                        onNavigationRequested(effect)
-
                     is WordListContract.Effect.GetWordsError ->
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(effect.errorRes),
@@ -207,16 +183,7 @@ fun WordListScreen(
                     is WordListContract.Effect.Navigation.ToGroupList ->
                         onNavigationRequested(effect)
 
-                    is WordListContract.Effect.Navigation.ToAddSentence ->
-                        onNavigationRequested(effect)
-
-                    is WordListContract.Effect.Navigation.ToFlashCards ->
-                        onNavigationRequested(effect)
-
                     is WordListContract.Effect.Navigation.ToProfile ->
-                        onNavigationRequested(effect)
-
-                    is WordListContract.Effect.Navigation.ToAddWordWithGroup ->
                         onNavigationRequested(effect)
 
                     is WordListContract.Effect.Navigation.ToGroupDetails ->
@@ -298,38 +265,18 @@ fun WordListScreen(
                 if (state.isLoading) {
                     LoadingBar()
                 }
-                MultiFloatingActionButton(
+                Fab(
                     enlarged = listState.firstVisibleItemIndex == 0,
-                    fabIcon = FabIcon(
-                        iconRes = R.drawable.ic_plus,
-                        iconRotate = 45f,
-                        text = stringResource(id = R.string.word_fab_text)
-                    ),
-                    fabOption = FabOption(showLabels = true),
-                    items = listOf(
-                        MultiFabItem(
-                            id = 1,
-                            label = stringResource(id = R.string.word_minifab_manual),
-                            onClicked = {
-                                onEventSent(WordListContract.Event.OnAddWordClick)
-                            }
-                        ),
-                        MultiFabItem(
-                            id = 2,
-                            label = stringResource(id = R.string.word_minifab_import),
-                            onClicked = {
-                                onEventSent(WordListContract.Event.OnImportWordsClick)
-                            }
-                        )
-                    ),
-                    modifier = Modifier.align(Alignment.BottomEnd)
+                    modifier = Modifier.align(Alignment.BottomEnd),
+                    iconRes = R.drawable.ic_pen,
+                    text = stringResource(id = R.string.word_fab_text),
+                    onFabClicked = { onEventSent(WordListContract.Event.OnEditGroupClick) }
                 )
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable

@@ -43,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -316,6 +317,7 @@ private fun GroupItemRow(
             ).value,
             modifier = Modifier
                 .fillMaxWidth()
+                .shadow(1.dp, RoundedCornerShape(12.dp))
                 .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
                 .clickable { onClicked() }
         ) {

@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -77,6 +78,7 @@ fun WordItemRow(
             ).value,
             modifier = Modifier
                 .fillMaxWidth()
+                .shadow(1.dp, RoundedCornerShape(12.dp))
                 .clickable {
                     onClicked()
                 }

@@ -28,3 +28,5 @@ ehthumbs.db
 Thumbs.db
 /.idea/
 /app/prod/
+/app/release/
+/app/schemas/

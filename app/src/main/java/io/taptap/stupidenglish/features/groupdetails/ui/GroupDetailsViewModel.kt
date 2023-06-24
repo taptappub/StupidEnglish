@@ -76,11 +76,14 @@ class GroupDetailsViewModel @Inject constructor(
             is GroupDetailsContract.Event.OnRecovered -> {
                 setState { copy(deletedWords = mutableListOf()) }
             }
-            is GroupDetailsContract.Event.OnAddWordClick -> {
+            is GroupDetailsContract.Event.OnAddWord -> {
                 setEffect {
-                    GroupDetailsContract.Effect.Navigation.ToAddWordWithGroup(
-                        group = currentGroup
-                    )
+                    GroupDetailsContract.Effect.Navigation.ToAddWordWithGroup(currentGroup)
+                }
+            }
+            is GroupDetailsContract.Event.OnImportWordsClick -> {
+                setEffect {
+                    GroupDetailsContract.Effect.Navigation.ToImportWords(currentGroup)
                 }
             }
             is GroupDetailsContract.Event.ToFlashCards -> {
@@ -129,8 +132,8 @@ class GroupDetailsViewModel @Inject constructor(
 
         mainList.add(
             GroupDetailsButtonUI(
-                valueRes = R.string.grdt_add_word,
-                buttonId = GroupDetailsContract.ButtonId.addWord
+                valueRes = R.string.grdt_import_words,
+                buttonId = GroupDetailsContract.ButtonId.import
             )
         )
         mainList.add(

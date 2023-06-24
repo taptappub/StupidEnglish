@@ -14,7 +14,6 @@ object NavigationKeys {
         const val SE_MAIN = "stupid_english_main"
         const val SE_WORDS = "stupid_english_words"
         const val SE_SETS = "stupid_english_sets"
-        const val SE_IMPORT_WORDS = "stupid_english_import_words"
         const val SE_IMPORT_WORDS_TUTORIAL = "stupid_english_import_words_tutorial"
         const val SE_PROFILE = "stupid_english_profile"
         const val SE_AUTH = "stupid_english_auth"
@@ -27,6 +26,9 @@ object NavigationKeys {
 
         const val REMEMBER = "stupid_english_remember"
         const val SE_REMEMBER = "$REMEMBER/{${Arg.GROUP_ID}}"
+
+        const val IMPORT_WORDS = "stupid_english_import_words"
+        const val SE_IMPORT_WORDS = "$IMPORT_WORDS?${Arg.GROUP_ID}={${Arg.GROUP_ID}}"
 
         const val ADD_WORD = "stupid_english_add_word"
         const val SE_ADD_WORD = "$ADD_WORD?${Arg.GROUP_ID}={${Arg.GROUP_ID}}&${Arg.WORD}={${Arg.WORD}}"

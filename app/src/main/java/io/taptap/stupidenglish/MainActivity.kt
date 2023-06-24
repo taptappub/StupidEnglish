@@ -1,12 +1,13 @@
 package io.taptap.stupidenglish
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -79,8 +80,8 @@ import io.taptap.stupidenglish.features.words.ui.WordListViewModel
 import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import java.util.*
 import javax.inject.Inject
 
@@ -210,11 +211,11 @@ class MainActivity : ComponentActivity() {
                     }),
                     enterTransition = {
                         fadeIn()
-//                        slideInVertically(initialOffsetY = { 1000 })
+//                        slideInHorizontally()
                     },
                     exitTransition = {
                         fadeOut()
-//                        slideOutVertically(targetOffsetY = { 1000 })
+//                        slideOutHorizontally()
                     }
                 ) {
                     AddWordDestination(navController)
@@ -313,6 +314,14 @@ class MainActivity : ComponentActivity() {
                         type = NavType.StringType
                         nullable = true
                     }),
+                    enterTransition = {
+                        fadeIn()
+//                        slideInHorizontally()
+                    },
+                    exitTransition = {
+                        fadeOut()
+//                        slideOutHorizontally()
+                    }
                 ) {
                     GroupDetailsDestination(navController)
                 }
@@ -326,16 +335,9 @@ class MainActivity : ComponentActivity() {
                     val (bottomBar) = createRefs()
                     StupidEnglishBottomBar(
                         tabs = mainState.bottomBarTabs,
-                        //TODO move selected tab into state and rely on bottom bar recomposition
                         selectedTab = mainState.bottomBarTabs.first { it.route == navController.currentRoute!! },
-                        effectFlow = mainViewModel.effect,
-                        onEventSent = { event -> mainViewModel.setEvent(event) },
-                        onNavigationRequested = { navigationEffect ->
-                            if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
-                                if (navigationEffect.route != navController.currentRoute) {
-                                    navController.navigateToTab(navigationEffect.route)
-                                }
-                            }
+                        onClick = { tab ->
+                            mainViewModel.setEvent(MainContract.Event.OnTabSelected(tab))
                         },
                         modifier = Modifier.constrainAs(bottomBar) {
                             bottom.linkTo(parent.bottom)
@@ -372,6 +374,7 @@ private fun SplashDestination(
                         }
                     }
                 }
+
                 is SplashContract.Effect.Navigation.ToWordListScreen -> {
                     navController.navigate(route = NavigationKeys.Route.SE_MAIN) {
                         popUpTo(route = NavigationKeys.Route.SE_SPLASH) {
@@ -401,6 +404,7 @@ private fun GroupListDestination(
             when (navigationEffect) {
                 is GroupListContract.Effect.Navigation.BackToWordList ->
                     navController.popBackStack()
+
                 is GroupListContract.Effect.Navigation.ToGroupDetails -> {
                     val groupId = navigationEffect.group.id
                     navController.navigate("${NavigationKeys.Route.GROUP_DETAILS}/${groupId}")
@@ -458,6 +462,7 @@ private fun ImportWordsDestination(
                 is ImportWordsContract.Effect.Navigation.BackToWordList -> {
                     navController.popBackStack()
                 }
+
                 is ImportWordsContract.Effect.Navigation.GoToImportTutorial -> {
                     navController.navigate(NavigationKeys.Route.SE_IMPORT_WORDS_TUTORIAL)
                 }
@@ -487,14 +492,21 @@ private fun GroupDetailsDestination(
                 is GroupDetailsContract.Effect.Navigation.BackTo -> {
                     navController.popBackStack()
                 }
+
                 is GroupDetailsContract.Effect.Navigation.ToAddSentence -> Unit
                 is GroupDetailsContract.Effect.Navigation.ToAddWordWithGroup -> {
                     val groupId = navigationEffect.group.id
                     navController.navigate("${NavigationKeys.Route.ADD_WORD}?${NavigationKeys.Arg.GROUP_ID}=${groupId}")
                 }
+
                 is GroupDetailsContract.Effect.Navigation.ToFlashCards -> {
                     val groupId = navigationEffect.group.id
                     navController.navigate("${NavigationKeys.Route.REMEMBER}/${groupId}")
+                }
+
+                is GroupDetailsContract.Effect.Navigation.ToImportWords -> {
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.IMPORT_WORDS}?${NavigationKeys.Arg.GROUP_ID}=${groupId}")
                 }
             }
         }
@@ -562,6 +574,7 @@ private fun ProfileDestination(
                 is ProfileContract.Effect.Navigation.BackToWordsList -> {
                     navController.popBackStack()
                 }
+
                 is ProfileContract.Effect.Navigation.GoToTermsAndConditions -> {
                     navController.navigate(NavigationKeys.Route.SE_TERMS)
                 }
@@ -676,31 +689,14 @@ private fun WordListDestination(
         },
         onNavigationRequested = { navigationEffect ->
             when (navigationEffect) {
-                is WordListContract.Effect.Navigation.ToAddWord -> {
-                    navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
-                }
-                is WordListContract.Effect.Navigation.ToAddWordWithGroup -> {
-                    val groupId = navigationEffect.group.id
-                    navController.navigate("${NavigationKeys.Route.ADD_WORD}?${NavigationKeys.Arg.GROUP_ID}=${groupId}")
-                }
-                is WordListContract.Effect.Navigation.ToImportWords -> {
-                    navController.navigate(NavigationKeys.Route.SE_IMPORT_WORDS)
-                }
                 is WordListContract.Effect.Navigation.ToProfile -> {
                     navController.navigate(NavigationKeys.Route.SE_PROFILE)
                 }
-                is WordListContract.Effect.Navigation.ToAddSentence -> {
-                    val groupId = navigationEffect.group.id
-                    navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${groupId}")
-//                    navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${groupId}?${NavigationKeys.Arg.WORDS_IDS}=${testIds}")
-                }
-                is WordListContract.Effect.Navigation.ToFlashCards -> {
-                    val groupId = navigationEffect.group.id
-                    navController.navigate("${NavigationKeys.Route.REMEMBER}/${groupId}")
-                }
+
                 is WordListContract.Effect.Navigation.ToGroupList -> {
                     navController.navigate(NavigationKeys.Route.SE_GROUPS)
                 }
+
                 is WordListContract.Effect.Navigation.ToGroupDetails -> {
                     val groupId = navigationEffect.group.id
                     navController.navigate("${NavigationKeys.Route.GROUP_DETAILS}/${groupId}")
@@ -801,4 +797,4 @@ fun NavController.navigateToTab(
 //расшаривание групп
 //GroupList добавить поиск сверху как в Quizlet
 
-//Экран детайлей группы как в Квизлет
+//Сделать WordListContract.Event.OnOnboardingClick и OnMotivationConfirmClick
