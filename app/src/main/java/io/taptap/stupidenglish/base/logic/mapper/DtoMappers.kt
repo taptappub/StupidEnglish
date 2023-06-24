@@ -29,13 +29,15 @@ fun List<SentenceDto>.toSentences(): List<Sentence> = map { it.toSentence() }
 
 fun GroupDto.toGroup(): Group = Group(
     id = id,
-    name = name
+    name = name,
+    index = index
 )
 
 fun GroupWithWordsDto.toGroupWithWords(): GroupWithWords = GroupWithWords(
     group = Group(
         id = this.group.id,
-        name = this.group.name
+        name = this.group.name,
+        index = this.group.index
     ),
     words = this.words.toWords()
 )

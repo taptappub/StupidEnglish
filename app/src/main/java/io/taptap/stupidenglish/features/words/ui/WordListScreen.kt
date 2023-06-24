@@ -35,10 +35,13 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -65,7 +68,6 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListDynamicTitleUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
-import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
 import io.taptap.stupidenglish.features.words.ui.model.WordListTitleUI
 import io.taptap.stupidenglish.ui.MenuBottomSheet
 import io.taptap.uikit.AverageTitle
@@ -101,12 +103,12 @@ fun WordListScreen(
     state: WordListContract.State,
     group: String,
     currentGroup: GroupListItemsModel?,
-    wordList: List<WordListListModels>,
     onGroupChange: (newGroup: String) -> Unit,
     effectFlow: Flow<WordListContract.Effect>?,
     onEventSent: (event: WordListContract.Event) -> Unit,
     onChangeBottomSheetVisibility: (visibility: Boolean) -> Unit,
-    onNavigationRequested: (navigationEffect: WordListContract.Effect.Navigation) -> Unit
+    onNavigationRequested: (navigationEffect: WordListContract.Effect.Navigation) -> Unit,
+    wordViewModel: WordListViewModel,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -121,8 +123,10 @@ fun WordListScreen(
                 when (state.sheetContentType) {
                     WordListContract.SheetContentType.AddGroup ->
                         onEventSent(WordListContract.Event.OnGroupAddingCancel)
+
                     WordListContract.SheetContentType.Motivation ->
                         onEventSent(WordListContract.Event.OnMotivationCancel)
+
                     WordListContract.SheetContentType.GroupMenu ->
                         onEventSent(WordListContract.Event.OnGroupMenuCancel)
                 }
@@ -145,6 +149,7 @@ fun WordListScreen(
                             }
                         }
                     )
+
                 WordListContract.SheetContentType.Motivation ->
                     DialogSheetScreen(
                         painter = painterResource(R.drawable.ic_pen),
@@ -160,6 +165,7 @@ fun WordListScreen(
                             onEventSent(WordListContract.Event.OnMotivationDeclineClick)
                         }
                     )
+
                 WordListContract.SheetContentType.GroupMenu ->
                     MenuBottomSheet(
                         list = state.groupMenuList,
@@ -182,37 +188,50 @@ fun WordListScreen(
                 when (effect) {
                     is WordListContract.Effect.HideBottomSheet ->
                         modalBottomSheetState.hideSheet(scope)
+
                     is WordListContract.Effect.ShowBottomSheet ->
                         modalBottomSheetState.showSheet(scope)
+
                     is WordListContract.Effect.Navigation.ToAddWord ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.Navigation.ToImportWords ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.GetWordsError ->
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(effect.errorRes),
                             duration = SnackbarDuration.Short
                         )
+
                     is WordListContract.Effect.Navigation.ToGroupList ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.Navigation.ToAddSentence ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.Navigation.ToFlashCards ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.Navigation.ToProfile ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.Navigation.ToAddWordWithGroup ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.Navigation.ToGroupDetails ->
                         onNavigationRequested(effect)
+
                     is WordListContract.Effect.ShowUnderConstruction ->
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(R.string.under_construction),
                             duration = SnackbarDuration.Short
                         )
+
                     is WordListContract.Effect.ChangeBottomBarVisibility -> {
                         onChangeBottomSheetVisibility(effect.isShown)
                     }
+
                     is WordListContract.Effect.ShowRecover -> {
                         val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(R.string.word_delete_message),
@@ -224,6 +243,7 @@ fun WordListScreen(
                             SnackbarResult.ActionPerformed -> onEventSent(WordListContract.Event.OnRecover)
                         }
                     }
+
                     is WordListContract.Effect.GetUserError ->
                         scaffoldState.snackbarHostState.showSnackbar(
                             message = context.getString(effect.errorRes),
@@ -269,7 +289,7 @@ fun WordListScreen(
                 val listState = rememberLazyListState()
 
                 MainList(
-                    wordItems = wordList,
+                    wordViewModel = wordViewModel,
                     deletedWords = state.deletedWords,
                     group = currentGroup,
                     listState = listState,
@@ -309,16 +329,19 @@ fun WordListScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
 private fun MainList(
-    wordItems: List<WordListListModels>,
     group: GroupListItemsModel?,
     listState: LazyListState,
     onEventSent: (event: WordListContract.Event) -> Unit,
-    deletedWords: List<WordWithGroups>
+    deletedWords: List<WordWithGroups>,
+    wordViewModel: WordListViewModel
 ) {
+    val list by wordViewModel.wordList.collectAsState()
+
     LazyColumn(
         state = listState,
         contentPadding = PaddingValues(
@@ -327,7 +350,7 @@ private fun MainList(
         )
     ) {
         items(
-            items = wordItems,
+            items = list,
             key = { it.id }
         ) { item ->
             val dismissState = rememberDismissState()
@@ -359,19 +382,23 @@ private fun MainList(
                         onEventSent(WordListContract.Event.OnWordClick)
                     }
                 )
+
                 is WordListDynamicTitleUI -> AverageTitle(
                     text = item.currentGroup.getTitle(),
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
                 )
+
                 is WordListTitleUI -> AverageTitle(
                     text = stringResource(id = item.valueRes),
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
                 )
+
                 is OnboardingWordUI -> OnboardingItemRow(
                     onClicked = {
                         onEventSent(WordListContract.Event.OnOnboardingClick)
                     }
                 )
+
                 is WordListGroupUI -> GroupItemRow(
                     title = stringResource(id = item.titleRes),
                     button = stringResource(id = item.buttonRes),
@@ -388,8 +415,14 @@ private fun MainList(
                     },
                     onPlusClicked = {
                         onEventSent(WordListContract.Event.OnAddGroupClick)
+                    },
+                    onMove = { from, to ->
+                        val fromItemId = requireNotNull(from.key) as Long
+                        val fromItem = requireNotNull(to.key) as Long
+                        onEventSent(WordListContract.Event.OnGroupMove(fromItemId, fromItem))
                     }
                 )
+
                 is WordListEmptyUI -> EmptyListContent(
                     title = stringResource(id = R.string.word_empty_list_title),
                     description = stringResource(id = item.descriptionRes),

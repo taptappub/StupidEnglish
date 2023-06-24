@@ -40,7 +40,7 @@ private const val WORDS_FOR_MOTIVATION = 1
 
 @HiltViewModel
 class WordListViewModel @Inject constructor(
-    private val repository: WordListRepository
+    private val repository: WordListRepository,
 ) : BaseViewModel<WordListContract.Event, WordListContract.State, WordListContract.Effect>() {
 
     val currentGroupFlow = MutableStateFlow<GroupListItemsModel>(NoGroup)
@@ -98,6 +98,7 @@ class WordListViewModel @Inject constructor(
                 MenuItem(4, R.string.word_menu_share, false),
                 MenuItem(5, R.string.word_menu_remove)
             )
+
             WordListContract.MenuType.Disabled -> listOf(
                 MenuItem(0, R.string.word_menu_open),
                 MenuItem(1, R.string.word_menu_add_word),
@@ -106,6 +107,7 @@ class WordListViewModel @Inject constructor(
                 MenuItem(4, R.string.word_menu_share, false),
                 MenuItem(5, R.string.word_menu_remove)
             )
+
             WordListContract.MenuType.AllWords -> listOf(
                 MenuItem(0, R.string.word_menu_open),
                 MenuItem(1, R.string.word_menu_add_word),
@@ -122,12 +124,15 @@ class WordListViewModel @Inject constructor(
             is WordListContract.Event.OnAddWordClick -> {
                 setEffect { WordListContract.Effect.Navigation.ToAddWord }
             }
+
             is WordListContract.Event.OnViewAllClick -> {
                 setEffect { WordListContract.Effect.Navigation.ToGroupList }
             }
+
             is WordListContract.Event.OnImportWordsClick -> {
                 setEffect { WordListContract.Effect.Navigation.ToImportWords }
             }
+
             is WordListContract.Event.OnOnboardingClick -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     setEffect {
@@ -137,6 +142,7 @@ class WordListViewModel @Inject constructor(
                     }
                 }
             }
+
             WordListContract.Event.OnMotivationConfirmClick -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 setEffect { WordListContract.Effect.HideBottomSheet }
@@ -149,6 +155,7 @@ class WordListViewModel @Inject constructor(
                     }
                 }
             }
+
             WordListContract.Event.OnMotivationDeclineClick -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 viewModelScope.launch(Dispatchers.IO) {
@@ -157,6 +164,7 @@ class WordListViewModel @Inject constructor(
 
                 setEffect { WordListContract.Effect.HideBottomSheet }
             }
+
             is WordListContract.Event.OnMotivationCancel -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 viewModelScope.launch(Dispatchers.IO) {
@@ -165,26 +173,32 @@ class WordListViewModel @Inject constructor(
 
                 setEffect { WordListContract.Effect.HideBottomSheet }
             }
+
             is WordListContract.Event.OnWordClick -> {
                 setEffect { WordListContract.Effect.ShowUnderConstruction }
             }
+
             is WordListContract.Event.OnWordDismiss -> {
                 deleteWord(event.item)
             }
+
             is WordListContract.Event.OnGroupClick -> {
                 if (currentGroupFlow.value != event.group) {
                     currentGroupFlow.emit(event.group)
                 }
             }
+
             is WordListContract.Event.OnAddGroupClick -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
                 setState { copy(sheetContentType = WordListContract.SheetContentType.AddGroup) }
                 setEffect { WordListContract.Effect.ShowBottomSheet }
             }
+
             is WordListContract.Event.OnApplyGroup -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 saveGroup(groupName)
             }
+
             is WordListContract.Event.OnGroupAddingCancel -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 setNewGroupName("")
@@ -194,12 +208,14 @@ class WordListViewModel @Inject constructor(
                     )
                 }
             }
+
             is WordListContract.Event.OnGroupLongClick -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = false) }
                 setEffect { WordListContract.Effect.ShowBottomSheet }
 
                 handleMenuCreation(event.group)
             }
+
             is WordListContract.Event.OnGroupMenuItemClick -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 handleMenuItem(event.item)
@@ -211,6 +227,7 @@ class WordListViewModel @Inject constructor(
                     )
                 }
             }
+
             is WordListContract.Event.OnGroupMenuCancel -> {
                 setEffect { WordListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 setEffect { WordListContract.Effect.HideBottomSheet }
@@ -222,19 +239,33 @@ class WordListViewModel @Inject constructor(
                     )
                 }
             }
+
             is WordListContract.Event.OnApplyDismiss -> {
                 setState { copy(deletedWords = mutableListOf()) }
             }
+
             is WordListContract.Event.OnRecover -> {
                 val mutableDeletedWords = viewState.value.deletedWords
                 repository.saveWords(mutableDeletedWords)
             }
+
             is WordListContract.Event.OnRecovered -> {
                 setState { copy(deletedWords = mutableListOf()) }
             }
+
             is WordListContract.Event.OnProfileClick ->
                 setEffect { WordListContract.Effect.Navigation.ToProfile }
+
+            is WordListContract.Event.OnGroupMove -> {
+                moveGroup(event.fromItemId, event.toItemId)
+            }
         }
+    }
+
+    private suspend fun moveGroup(from: Long, to: Long) {
+//        val fromItemId = requireNotNull(from.key) as Long
+//        val toItemId = requireNotNull(to.key) as Long
+        repository.rearrangeGroups(from, to)
     }
 
     private fun handleMenuCreation(group: GroupListItemsModel) {
@@ -326,7 +357,7 @@ class WordListViewModel @Inject constructor(
         val mainList = mutableListOf<WordListListModels>()
 
 //        if (showOnboardingLabel(filteredList.size)) {
-            mainList.add(OnboardingWordUI)
+        mainList.add(OnboardingWordUI)
 //        }
 
         mainList.add(
@@ -344,10 +375,6 @@ class WordListViewModel @Inject constructor(
             mainList.addAll(filteredList)
         }
         return mainList
-    }
-
-    private fun showOnboardingLabel(size: Int): Boolean {
-        return size > 0
     }
 
     private fun saveGroup(group: String) {

@@ -1,6 +1,5 @@
 package io.taptap.stupidenglish.base.logic.sources.words.write
 
-import io.taptap.stupidenglish.base.model.GroupWithWords
 import io.taptap.stupidenglish.base.model.WordWithGroups
 import taptap.pub.Reaction
 

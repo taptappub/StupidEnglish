@@ -326,10 +326,16 @@ class MainActivity : ComponentActivity() {
                     val (bottomBar) = createRefs()
                     StupidEnglishBottomBar(
                         tabs = mainState.bottomBarTabs,
+                        //TODO move selected tab into state and rely on bottom bar recomposition
                         selectedTab = mainState.bottomBarTabs.first { it.route == navController.currentRoute!! },
-                        onClick = { tab ->
-                            mainViewModel.setEvent(MainContract.Event.OnTabSelected(tab))
-
+                        effectFlow = mainViewModel.effect,
+                        onEventSent = { event -> mainViewModel.setEvent(event) },
+                        onNavigationRequested = { navigationEffect ->
+                            if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
+                                if (navigationEffect.route != navController.currentRoute) {
+                                    navController.navigateToTab(navigationEffect.route)
+                                }
+                            }
                         },
                         modifier = Modifier.constrainAs(bottomBar) {
                             bottom.linkTo(parent.bottom)
@@ -654,13 +660,12 @@ private fun WordListDestination(
 ) {
     val wordViewModel: WordListViewModel = hiltViewModel()
     val wordState by wordViewModel.viewState.collectAsState()
-    val wordList by wordViewModel.wordList.collectAsState()
     val currentGroup by wordViewModel.currentGroupFlow.collectAsState()
 
     WordListScreen(
+        wordViewModel = wordViewModel,
         context = LocalContext.current,
         state = wordState,
-        wordList = wordList,
         currentGroup = currentGroup,
         group = wordViewModel.groupName,
         onGroupChange = wordViewModel::setNewGroupName,

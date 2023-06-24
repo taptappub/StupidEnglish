@@ -13,7 +13,6 @@ import io.taptap.stupidenglish.base.model.Word
 import io.taptap.stupidenglish.base.model.WordWithGroups
 import io.taptap.stupidenglish.features.importwords.domain.ImportWordsInteractor
 import io.taptap.uikit.group.NoGroup
-import io.taptap.uikit.group.getTitle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -26,7 +25,6 @@ import taptap.pub.doOnComplete
 import taptap.pub.doOnError
 import taptap.pub.doOnSuccess
 import taptap.pub.fold
-import taptap.pub.handle
 import javax.inject.Inject
 
 @HiltViewModel
@@ -83,24 +81,30 @@ class ImportWordsViewModel @Inject constructor(
                 }
                 setState { copy(selectedGroups = selectedGroups) }
             }
+
             is ImportWordsContract.Event.OnImportClick ->
                 viewModelScope.launch(Dispatchers.IO) {
                     importWords()
                 }
+
             is ImportWordsContract.Event.OnAddGroupClick -> {
                 setState { copy(isAddGroup = true) }
                 setEffect { ImportWordsContract.Effect.ShowBottomSheet }
             }
+
             is ImportWordsContract.Event.OnApplyGroup -> {
                 saveGroup(group)
             }
+
             is ImportWordsContract.Event.OnGroupAddingCancel -> {
                 group = ""
                 setState { copy(isAddGroup = false) }
             }
+
             is ImportWordsContract.Event.OnTutorialClick -> {
                 setEffect { ImportWordsContract.Effect.Navigation.GoToImportTutorial }
             }
+
             is ImportWordsContract.Event.OnBackClick ->
                 setEffect { ImportWordsContract.Effect.Navigation.BackToWordList }
         }
@@ -114,6 +118,7 @@ class ImportWordsViewModel @Inject constructor(
                 setImportWordState(ImportWordsContract.ImportWordState.None)
                 debounceJob?.cancel()
             }
+
             interactor.check(link) -> {
                 setImportWordState(ImportWordsContract.ImportWordState.InProgress)
 
@@ -129,6 +134,7 @@ class ImportWordsViewModel @Inject constructor(
                         .let { state -> setImportWordState(state) }
                 }
             }
+
             else -> {
                 setImportWordState(ImportWordsContract.ImportWordState.Error(R.string.impw_incorrect_link_error))
             }
@@ -158,11 +164,11 @@ class ImportWordsViewModel @Inject constructor(
                 groups = viewState.value.selectedGroups.map {
                     Group(
                         id = it.id,
-                        name = ""//don't use
+                        name = "",//don't used,
+                        index = -1 //don't used
                     )
                 }
             )
-
         }
 
         interactor.saveWords(newWords)
