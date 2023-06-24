@@ -20,6 +20,7 @@ import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,8 +29,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.taptap.uikit.AverageTitle
+import io.taptap.uikit.theme.StupidEnglishTheme
 
 @ExperimentalMaterialApi
 @Composable
@@ -45,8 +48,7 @@ fun WordItemRow(
         dismissThresholds = { direction ->
             FractionalThreshold(0.5f)
         },
-        modifier = modifier
-            .padding(vertical = 1.dp),
+        modifier = modifier,
         directions = setOf(DismissDirection.StartToEnd),
         background = {
             val scale by animateFloatAsState(
@@ -75,7 +77,6 @@ fun WordItemRow(
             ).value,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
                 .clickable {
                     onClicked()
                 }
@@ -94,6 +95,21 @@ fun WordItemRow(
                     .align(Alignment.CenterVertically)
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview
+@Composable
+fun WordItemRowPreview() {
+    StupidEnglishTheme {
+        WordItemRow(
+            word = "Word",
+            description = "Description",
+            onClicked = { },
+            dismissState = rememberDismissState(),
+            modifier = Modifier
+        )
     }
 }
 

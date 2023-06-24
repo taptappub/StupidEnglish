@@ -125,6 +125,8 @@ class GroupDetailsViewModel @Inject constructor(
     ): List<GroupDetailsUIModel> {
         val mainList = mutableListOf<GroupDetailsUIModel>()
 
+        mainList.add(GroupDetailsDynamicTitleUI(currentGroup = group))
+
         mainList.add(
             GroupDetailsButtonUI(
                 valueRes = R.string.grdt_add_word,
@@ -156,7 +158,6 @@ class GroupDetailsViewModel @Inject constructor(
             )
         )
 
-        mainList.add(GroupDetailsDynamicTitleUI(currentGroup = group))
         if (words.isEmpty()) {
             mainList.add(GroupDetailsEmptyUI(descriptionRes = R.string.word_empty_list_description))
         } else {
