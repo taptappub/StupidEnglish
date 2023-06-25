@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import taptap.pub.doOnComplete
@@ -51,7 +52,11 @@ class WordListViewModel @Inject constructor(
                 .map {
                     currentGroup to it
                 }
-        }.combine(repository.observeGroupList()) { pair, groups ->
+        }.retry {
+            currentGroupFlow.emit(NoGroup)
+            true
+        }
+        .combine(repository.observeGroupList()) { pair, groups ->
             val wordList = pair.second.reversed().toWordsList()
             val currentGroup = pair.first
             val groupsList = groups.reversed().toGroupsList(withNoGroup = true)
@@ -276,19 +281,6 @@ class WordListViewModel @Inject constructor(
                     setEffect { WordListContract.Effect.HideBottomSheet }
                 }
         }
-    }
-
-    private suspend fun removeGroups(removedGroups: List<GroupListModel>) {
-        setState {
-            copy(
-                sheetContentType = WordListContract.SheetContentType.Motivation,
-            )
-        }
-        currentGroupFlow.emit(NoGroup)
-        repository.removeGroups(removedGroups.map { it.id })
-            .doOnComplete {
-                setEffect { WordListContract.Effect.HideBottomSheet }
-            }
     }
 
     private suspend fun getSavedUser() {
