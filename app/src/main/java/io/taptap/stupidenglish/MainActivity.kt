@@ -146,6 +146,11 @@ class MainActivity : ComponentActivity() {
                         val word = effect.word
                         navController.navigate("${NavigationKeys.Route.ADD_WORD}?${NavigationKeys.Arg.WORD}=${word}")
                     }
+
+                    is MainContract.Effect.Navigation.ToFlashCards -> {
+                        val groupId = effect.group.id
+                        navController.navigate("${NavigationKeys.Route.REMEMBER}/${groupId}")
+                    }
                 }
             }.collect()
         }
@@ -759,7 +764,6 @@ fun NavController.navigateToTab(
 }
 
 //todo
-//3) Добавление одинаковых слов
 //5) Сохранения слова без подсказки
 //6) Добавление картинки, как подсказки
 //7) Редактирование
@@ -767,9 +771,13 @@ fun NavController.navigateToTab(
 //10) A/b тестирование
 //11) Перетаскивание в папку слов драг энд дропом. Список групп вылезает сбоку, с анимацией волны, и ты перетягиваешь слово в нужную папку
 //12) импорт из Quizlet по ссылке модуля
-//13) Можно создавать имя группы при импорте из названия страницы
 //4) механизм переключения темы (темная, светлая или системная)
 //6) Сделать магазин с карточками, чтобы можно было себе оттуда добавлять уже готовые наборы
+//7) Подцепить сервер
+//8) Добавить телеграмм бот
+//9) Статистика по обучению
+//10) обучение через нотфикацию
+//11) ЗАменить икони из https://fonts.google.com/icons?icon.style=Sharp&icon.set=Material+Icons&icon.platform=android&selected=Material+Icons+Sharp:school:&icon.query=learning (не забудь про меню из лонгклика)
 
 
 //Гугл аналитика без play service'ов
@@ -794,7 +802,5 @@ fun NavController.navigateToTab(
 //поправить диалог добавления группы
 //писать на AddSentenceScreen что это за группа (StackView использовать) - теперь нельзя поделиться группой
 //Переделать StackView экран, писать что за группа и сколько слов
-//расшаривание групп
-//GroupList добавить поиск сверху как в Quizlet
 
 //Сделать WordListContract.Event.OnOnboardingClick и OnMotivationConfirmClick

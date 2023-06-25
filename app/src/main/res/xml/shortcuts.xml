@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="add_word"
+        android:enabled="true"
+        android:icon="@drawable/ic_plus"
+        android:shortcutShortLabel="@string/grdt_add_word"
+        android:shortcutLongLabel="@string/grdt_add_word"
+        android:shortcutDisabledMessage="@string/grdt_add_word">
+        <intent
+            android:action="add_word"
+            android:targetPackage="io.taptap.stupidenglish"
+            android:targetClass="io.taptap.stupidenglish.MainActivity" />
+        <!-- If your shortcut is associated with multiple intents, include them
+             here. The last intent in the list determines what the user sees when
+             they launch this shortcut. -->
+        <categories android:name="android.shortcut.conversation" />
+        <capability-binding android:key="actions.intent.CREATE_MESSAGE" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="learn"
+        android:enabled="true"
+        android:icon="@drawable/ic_plus"
+        android:shortcutShortLabel="@string/grdt_learn"
+        android:shortcutLongLabel="@string/grdt_learn"
+        android:shortcutDisabledMessage="@string/grdt_learn">
+        <intent
+            android:action="learn"
+            android:targetPackage="io.taptap.stupidenglish"
+            android:targetClass="io.taptap.stupidenglish.MainActivity" />
+        <categories android:name="android.shortcut.conversation" />
+        <capability-binding android:key="actions.intent.CREATE_MESSAGE" />
+    </shortcut>
+    <!-- Specify more shortcuts here. -->
+</shortcuts>

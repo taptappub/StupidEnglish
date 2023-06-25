@@ -5,7 +5,7 @@ import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
-import io.taptap.stupidenglish.features.words.ui.WordListContract
+import io.taptap.uikit.group.GroupListItemsModel
 
 class MainContract {
     sealed class Event : ViewEvent {
@@ -23,7 +23,8 @@ class MainContract {
 
         sealed class Navigation : Effect() {
             data class OnTabSelected(val route: String) : Navigation()
-            data class ToAddWord(val word: String) : Navigation()
+            data class ToAddWord(val word: String = "") : Navigation()
+            data class ToFlashCards(val group: GroupListItemsModel) : Navigation()
         }
     }
 }

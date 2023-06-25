@@ -48,7 +48,7 @@ class AddWordViewModel @Inject constructor(
         }
 
         val word = stateHandle.get<String>(NavigationKeys.Arg.WORD)
-        if (word != null) {
+        if (!word.isNullOrEmpty()) {
             setWord(word)
             setState { copy(addWordState = AddWordContract.AddWordState.HasWord) }
         }

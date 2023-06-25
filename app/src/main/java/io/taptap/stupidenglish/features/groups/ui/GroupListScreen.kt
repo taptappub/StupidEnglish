@@ -233,6 +233,7 @@ private fun NoRemovableGroupItemRow(
         modifier = modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
+            .shadow(1.dp, RoundedCornerShape(12.dp))
             .clickable { onClicked() }
     ) {
         Row(
@@ -317,8 +318,8 @@ private fun GroupItemRow(
             ).value,
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(1.dp, RoundedCornerShape(12.dp))
                 .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
+                .shadow(1.dp, RoundedCornerShape(12.dp))
                 .clickable { onClicked() }
         ) {
             Row(
