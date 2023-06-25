@@ -504,7 +504,7 @@ private fun HasDescriptionScreen(
 fun ContentScreenPreview() {
     StupidEnglishTheme {
         ContentScreen(
-            word = "Unknown word",
+            word = "Type your word",
             description = "Asss",
             onWordChanged = {},
             onDescriptionChanged = {},

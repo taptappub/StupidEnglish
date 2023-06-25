@@ -41,7 +41,7 @@ class MainViewModel @Inject constructor(
                     val effect = when (event.intent.action) {
                         "add_word" -> MainContract.Effect.Navigation.ToAddWord()
                         "learn" -> MainContract.Effect.Navigation.ToFlashCards(NoGroup)
-                        else -> error("No action in xml/shortcuts.xml")
+                        else -> return
                     }
                     setEffect { effect }
                 }
