@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import taptap.pub.doOnComplete
 import taptap.pub.takeOrReturn
 import javax.inject.Inject
 
@@ -112,6 +111,8 @@ class GroupDetailsViewModel @Inject constructor(
                     )
                 }
             }
+
+            is GroupDetailsContract.Event.OnShareClick -> TODO()
         }
     }
 

@@ -1,6 +1,5 @@
 package io.taptap.stupidenglish.archive.features.sentences.ui
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.R
@@ -53,10 +52,12 @@ class SentencesListViewModel @Inject constructor(
                     }
                 }
             }
+
             is SentencesListContract.Event.OnShareClick -> {
                 //todo добавь какой-то счетчик потом
                 shareUtil.share(event.sentence.sentence)
             }
+
             is SentencesListContract.Event.OnMotivationConfirmClick -> {
                 setEffect { SentencesListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 setEffect { SentencesListContract.Effect.HideMotivation }
@@ -69,6 +70,7 @@ class SentencesListViewModel @Inject constructor(
                     .first()
                 shareUtil.share(first.sentence)
             }
+
             is SentencesListContract.Event.OnMotivationDeclineClick -> {
                 setEffect { SentencesListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 viewModelScope.launch(Dispatchers.IO) {
@@ -76,6 +78,7 @@ class SentencesListViewModel @Inject constructor(
                 }
                 setEffect { SentencesListContract.Effect.HideMotivation }
             }
+
             is SentencesListContract.Event.OnMotivationCancel -> {
                 setEffect { SentencesListContract.Effect.ChangeBottomBarVisibility(isShown = true) }
                 viewModelScope.launch(Dispatchers.IO) {
@@ -83,19 +86,23 @@ class SentencesListViewModel @Inject constructor(
                 }
                 setEffect { SentencesListContract.Effect.HideMotivation }
             }
+
             is SentencesListContract.Event.OnSentenceClick -> {
                 setEffect { SentencesListContract.Effect.ShowUnderConstruction }
             }
+
             is SentencesListContract.Event.OnSentenceDismiss -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     predeleteSentence(event.item)
                 }
             }
+
             is SentencesListContract.Event.OnApplySentenceDismiss -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     deleteSentences()
                 }
             }
+
             is SentencesListContract.Event.OnRecover -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.getSentenceList()
@@ -116,6 +123,7 @@ class SentencesListViewModel @Inject constructor(
                         )
                 }
             }
+
             is SentencesListContract.Event.OnRecovered -> {
                 setState { copy(deletedSentenceIds = mutableListOf()) }
             }

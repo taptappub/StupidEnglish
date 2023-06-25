@@ -20,6 +20,7 @@ class GroupDetailsContract {
 
         object OnBackClick : Event()
 
+        object OnShareClick : Event()
         object OnImportWordsClick : Event()
         object OnRemoveGroupClick : Event()
         object ToFlashCards : Event()
