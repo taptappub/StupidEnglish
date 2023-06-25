@@ -19,6 +19,7 @@ import io.taptap.uikit.group.GroupListModel
 import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -44,6 +45,8 @@ class GroupDetailsViewModel @Inject constructor(
                 makeMainList(reversedWordList, currentGroup)
             }.onStart {
                 setState { copy(isLoading = false) }
+            }.catch {
+                setEffect { GroupDetailsContract.Effect.Navigation.BackTo }
             }.stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(),
@@ -61,31 +64,39 @@ class GroupDetailsViewModel @Inject constructor(
             is GroupDetailsContract.Event.OnDismiss -> {
                 deleteWord(event.item)
             }
+
             is GroupDetailsContract.Event.OnRemoveGroupClick -> {
                 removeGroups(listOf(currentGroup))
             }
+
             is GroupDetailsContract.Event.OnApplyDismiss -> {
                 setState { copy(deletedWords = mutableListOf()) }
             }
+
             is GroupDetailsContract.Event.OnRecover -> {
                 val mutableDeletedWords = viewState.value.deletedWords
                 repository.saveWords(mutableDeletedWords)
             }
+
             is GroupDetailsContract.Event.OnBackClick ->
                 setEffect { GroupDetailsContract.Effect.Navigation.BackTo }
+
             is GroupDetailsContract.Event.OnRecovered -> {
                 setState { copy(deletedWords = mutableListOf()) }
             }
+
             is GroupDetailsContract.Event.OnAddWord -> {
                 setEffect {
                     GroupDetailsContract.Effect.Navigation.ToAddWordWithGroup(currentGroup)
                 }
             }
+
             is GroupDetailsContract.Event.OnImportWordsClick -> {
                 setEffect {
                     GroupDetailsContract.Effect.Navigation.ToImportWords(currentGroup)
                 }
             }
+
             is GroupDetailsContract.Event.ToFlashCards -> {
                 setEffect {
                     GroupDetailsContract.Effect.Navigation.ToFlashCards(
@@ -93,6 +104,7 @@ class GroupDetailsViewModel @Inject constructor(
                     )
                 }
             }
+
             is GroupDetailsContract.Event.ToAddSentence -> {
                 setEffect {
                     GroupDetailsContract.Effect.Navigation.ToAddSentence(
@@ -117,9 +129,6 @@ class GroupDetailsViewModel @Inject constructor(
 
     private suspend fun removeGroups(removedGroups: List<GroupListModel>) {
         repository.removeGroups(removedGroups.map { it.id })
-            .doOnComplete {
-                setEffect { GroupDetailsContract.Effect.Navigation.BackTo }
-            }
     }
 
     private fun makeMainList(
