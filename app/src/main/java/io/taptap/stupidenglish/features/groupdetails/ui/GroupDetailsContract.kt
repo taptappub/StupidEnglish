@@ -6,7 +6,6 @@ import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
 import io.taptap.stupidenglish.base.model.WordWithGroups
 import io.taptap.stupidenglish.features.groupdetails.ui.model.GroupDetailsWordItemUI
-import io.taptap.stupidenglish.features.words.ui.WordListContract
 import io.taptap.uikit.group.GroupListItemsModel
 
 class GroupDetailsContract {
@@ -28,7 +27,8 @@ class GroupDetailsContract {
     }
 
     data class State(
-        val isLoading: Boolean = false, val deletedWords: List<WordWithGroups>
+        val isLoading: Boolean = false,
+        val deletedWords: List<WordWithGroups>
     ) : ViewState
 
     object ButtonId {

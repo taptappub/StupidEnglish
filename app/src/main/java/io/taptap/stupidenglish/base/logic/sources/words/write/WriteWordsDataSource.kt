@@ -36,7 +36,7 @@ class WriteWordsDataSource @Inject constructor(
             val wordWithGroupsDtos = words.map {
                 WordWithGroupsDto(
                     word = WordDto(
-                        id = it.word.id, //todo Проверить обновляются ли айдишники
+                        id = it.word.id,
                         word = it.word.word,
                         description = it.word.description,
                         points = it.word.points
