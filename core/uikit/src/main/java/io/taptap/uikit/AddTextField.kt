@@ -51,7 +51,8 @@ fun AddTextField(
             Text(
                 text = placeholder,
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
             )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(

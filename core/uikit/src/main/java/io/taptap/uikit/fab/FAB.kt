@@ -82,7 +82,6 @@ fun Fab(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MultiFloatingActionButton(
     modifier: Modifier = Modifier,
@@ -161,7 +160,6 @@ fun MultiFloatingActionButton(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MiniFabItem(
     item: MultiFabItem,

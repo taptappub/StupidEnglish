@@ -2,7 +2,7 @@ package io.taptap.stupidenglish.features.importwords.data
 
 import io.taptap.stupidenglish.base.logic.prefs.Settings
 import io.taptap.stupidenglish.base.logic.sources.groups.read.IReadGroupsDataSource
-import io.taptap.stupidenglish.base.logic.sources.groups.read.NoGroup
+import io.taptap.uikit.group.NoGroup
 import io.taptap.stupidenglish.base.logic.sources.groups.write.IWriteGroupsDataSource
 import io.taptap.stupidenglish.base.logic.sources.keys.IKeysDataSource
 import io.taptap.stupidenglish.base.logic.sources.words.write.IWriteWordsDataSource
@@ -52,7 +52,6 @@ private fun GoogleTableModel.toWordList(): List<Word> = this.values.map {
         id = -1,
         word = word,
         description = description,
-        groupsIds = listOf(NoGroup.id),
         points = 0
     )
 }

@@ -6,12 +6,17 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -22,6 +27,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
@@ -31,8 +37,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import dagger.hilt.android.AndroidEntryPoint
-import io.taptap.stupidenglish.NavigationKeys.Route.SENTENCES
-import io.taptap.stupidenglish.features.addsentence.navigation.AddSentenceArgumentsMapper
+import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceContract
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceScreen
 import io.taptap.stupidenglish.features.addsentence.ui.AddSentenceViewModel
@@ -43,6 +48,12 @@ import io.taptap.stupidenglish.features.alarm.ui.AlarmScheduler
 import io.taptap.stupidenglish.features.auth.ui.AuthContract
 import io.taptap.stupidenglish.features.auth.ui.AuthScreen
 import io.taptap.stupidenglish.features.auth.ui.AuthViewModel
+import io.taptap.stupidenglish.features.groupdetails.ui.GroupDetailsContract
+import io.taptap.stupidenglish.features.groupdetails.ui.GroupDetailsScreen
+import io.taptap.stupidenglish.features.groupdetails.ui.GroupDetailsViewModel
+import io.taptap.stupidenglish.features.groups.ui.GroupListContract
+import io.taptap.stupidenglish.features.groups.ui.GroupListScreen
+import io.taptap.stupidenglish.features.groups.ui.GroupListViewModel
 import io.taptap.stupidenglish.features.importwords.ui.ImportWordsContract
 import io.taptap.stupidenglish.features.importwords.ui.ImportWordsScreen
 import io.taptap.stupidenglish.features.importwords.ui.ImportWordsViewModel
@@ -54,9 +65,6 @@ import io.taptap.stupidenglish.features.main.ui.MainViewModel
 import io.taptap.stupidenglish.features.profile.ui.ProfileContract
 import io.taptap.stupidenglish.features.profile.ui.ProfileScreen
 import io.taptap.stupidenglish.features.profile.ui.ProfileViewModel
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListContract
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListScreen
-import io.taptap.stupidenglish.features.sentences.ui.SentencesListViewModel
 import io.taptap.stupidenglish.features.splash.ui.SplashContract
 import io.taptap.stupidenglish.features.splash.ui.SplashScreen
 import io.taptap.stupidenglish.features.splash.ui.SplashViewModel
@@ -72,9 +80,14 @@ import io.taptap.stupidenglish.features.words.ui.WordListViewModel
 import io.taptap.stupidenglish.ui.StupidEnglishBottomBar
 import io.taptap.uikit.StupidEnglishScaffold
 import io.taptap.uikit.theme.StupidEnglishTheme
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+import java.util.*
 import javax.inject.Inject
 
-const val URI = "https://stupidenglish.app"
+const val SCHEME = "https"
+const val AUTHORITY = "stupidenglish.app"
+const val URI = "$SCHEME://$AUTHORITY"
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -113,7 +126,29 @@ class MainActivity : ComponentActivity() {
         val scaffoldState = rememberScaffoldState()
 
         val mainViewModel: MainViewModel = hiltViewModel()
-        val mainState = mainViewModel.viewState.value
+        val mainState by mainViewModel.viewState.collectAsState()
+
+        // вызывается, когда прилетает новый intent
+        LaunchedEffect(intent) {
+            mainViewModel.setEvent(MainContract.Event.OnNewIntent(intent))
+        }
+
+        LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+            mainViewModel.effect.onEach { effect ->
+                when (effect) {
+                    is MainContract.Effect.Navigation.OnTabSelected -> {
+                        if (effect.route != navController.currentRoute) {
+                            navController.navigateToTab(effect.route)
+                        }
+                    }
+
+                    is MainContract.Effect.Navigation.ToAddWord -> {
+                        val word = effect.word
+                        navController.navigate("${NavigationKeys.Route.ADD_WORD}?${NavigationKeys.Arg.WORD}=${word}")
+                    }
+                }
+            }.collect()
+        }
 
         StupidEnglishScaffold(
             scaffoldState = scaffoldState,
@@ -159,14 +194,10 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(
-                        route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route,
-                        arguments = listOf(navArgument(NavigationKeys.Arg.WORDS_ID) {
-                            nullable = true
-                            defaultValue = null
-                        }),
+                        route = NavigationKeys.BottomNavigationScreen.SE_SETS.route,
                         enterTransition = null
                     ) {
-                        SentenceListDestination(
+                        SetsListDestination(
                             navController = navController,
                             onEventSent = { event -> mainViewModel.setEvent(event) }
                         )
@@ -174,16 +205,25 @@ class MainActivity : ComponentActivity() {
                 }
                 composable(
                     route = NavigationKeys.Route.SE_ADD_WORD,
+                    arguments = listOf(navArgument(NavigationKeys.Arg.GROUP_ID) {
+                        type = NavType.StringType
+                        nullable = true
+                    }),
                     enterTransition = {
                         fadeIn()
-//                        slideInVertically(initialOffsetY = { 1000 })
+//                        slideInHorizontally()
                     },
                     exitTransition = {
                         fadeOut()
-//                        slideOutVertically(targetOffsetY = { 1000 })
+//                        slideOutHorizontally()
                     }
                 ) {
                     AddWordDestination(navController)
+                }
+                composable(
+                    route = NavigationKeys.Route.SE_GROUPS
+                ) {
+                    GroupListDestination(navController)
                 }
                 composable(
                     route = NavigationKeys.Route.SE_IMPORT_WORDS
@@ -210,11 +250,51 @@ class MainActivity : ComponentActivity() {
                 ) {
                     AuthDestination(navController)
                 }
-                /*composable(
-                    route = NavigationKeys.Route.SE_REMEMBER,
+                composable(
+                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
                     deepLinks = listOf(navDeepLink {
                         uriPattern =
-                            "$URI/${NavigationKeys.Arg.WORDS_ID}={${NavigationKeys.Arg.WORDS_ID}}"
+                            "$URI/learn/{${NavigationKeys.Arg.GROUP_ID}}?${NavigationKeys.Arg.WORDS_IDS}={${NavigationKeys.Arg.WORDS_IDS}}"
+                    }),
+                    arguments = listOf(navArgument(NavigationKeys.Arg.WORDS_IDS) {
+                        type = NavType.StringType
+                        nullable = true
+                    }),
+                    enterTransition = {
+                        fadeIn()
+                    },
+                    exitTransition = {
+                        fadeOut()
+                    }
+                ) {
+                    AddSentenceDestination(navController)
+                }
+                composable(
+                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
+                    deepLinks = listOf(navDeepLink {
+                        uriPattern = "$URI/learn/{${NavigationKeys.Arg.GROUP_ID}}"
+                    }),
+                    arguments = listOf(navArgument(NavigationKeys.Arg.GROUP_ID) {
+                        type = NavType.StringType
+                        nullable = true
+                    }),
+                    enterTransition = {
+                        fadeIn()
+                    },
+                    exitTransition = {
+                        fadeOut()
+                    }
+                ) {
+                    AddSentenceDestination(navController)
+                }
+                composable(
+                    route = NavigationKeys.Route.SE_REMEMBER,
+                    deepLinks = listOf(navDeepLink {
+                        uriPattern = "$URI/flash/{${NavigationKeys.Arg.GROUP_ID}}"
+                    }),
+                    arguments = listOf(navArgument(NavigationKeys.Arg.GROUP_ID) {
+                        type = NavType.StringType
+                        nullable = true
                     }),
                     enterTransition = {
                         fadeIn()
@@ -224,23 +304,26 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     StackDestination(navController)
-                }*/
+                }
                 composable(
-                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
+                    route = NavigationKeys.Route.SE_GROUP_DETAILS,
                     deepLinks = listOf(navDeepLink {
-                        uriPattern =
-                            "$URI/${NavigationKeys.Arg.SENTENCE_WORDS_ID}={${NavigationKeys.Arg.SENTENCE_WORDS_ID}}"
+                        uriPattern = "$URI/details/{${NavigationKeys.Arg.GROUP_ID}}"
+                    }),
+                    arguments = listOf(navArgument(NavigationKeys.Arg.GROUP_ID) {
+                        type = NavType.StringType
+                        nullable = true
                     }),
                     enterTransition = {
                         fadeIn()
-//                        slideInVertically(initialOffsetY = { 1000 })
+//                        slideInHorizontally()
                     },
                     exitTransition = {
                         fadeOut()
-//                        slideOutVertically(targetOffsetY = { 1000 })
+//                        slideOutHorizontally()
                     }
                 ) {
-                    AddSentenceDestination(navController)
+                    GroupDetailsDestination(navController)
                 }
             }
 
@@ -251,16 +334,10 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val (bottomBar) = createRefs()
                     StupidEnglishBottomBar(
-                        state = mainState,
-                        currentRoute = navController.currentRoute!!,
-                        effectFlow = mainViewModel.effect,
-                        onEventSent = { event -> mainViewModel.setEvent(event) },
-                        onNavigationRequested = { navigationEffect ->
-                            if (navigationEffect is MainContract.Effect.Navigation.OnTabSelected) {
-                                if (navigationEffect.route != navController.currentRoute) {
-                                    navController.navigateToTab(navigationEffect.route)
-                                }
-                            }
+                        tabs = mainState.bottomBarTabs,
+                        selectedTab = mainState.bottomBarTabs.first { it.route == navController.currentRoute!! },
+                        onClick = { tab ->
+                            mainViewModel.setEvent(MainContract.Event.OnTabSelected(tab))
                         },
                         modifier = Modifier.constrainAs(bottomBar) {
                             bottom.linkTo(parent.bottom)
@@ -281,7 +358,7 @@ private fun SplashDestination(
     navController: NavHostController
 ) {
     val splashViewModel: SplashViewModel = hiltViewModel()
-    val splashState = splashViewModel.viewState.value
+    val splashState by splashViewModel.viewState.collectAsState()
 
     SplashScreen(
         context = LocalContext.current,
@@ -297,6 +374,7 @@ private fun SplashDestination(
                         }
                     }
                 }
+
                 is SplashContract.Effect.Navigation.ToWordListScreen -> {
                     navController.navigate(route = NavigationKeys.Route.SE_MAIN) {
                         popUpTo(route = NavigationKeys.Route.SE_SPLASH) {
@@ -308,17 +386,51 @@ private fun SplashDestination(
         })
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@ExperimentalMaterialApi
+@Composable
+private fun GroupListDestination(
+    navController: NavHostController
+) {
+    val groupListViewModel: GroupListViewModel = hiltViewModel()
+    val groupListState by groupListViewModel.viewState.collectAsState()
+
+    GroupListScreen(
+        context = LocalContext.current,
+        state = groupListState,
+        effectFlow = groupListViewModel.effect,
+        onEventSent = { event -> groupListViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            when (navigationEffect) {
+                is GroupListContract.Effect.Navigation.BackToWordList ->
+                    navController.popBackStack()
+
+                is GroupListContract.Effect.Navigation.ToGroupDetails -> {
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.GROUP_DETAILS}/${groupId}")
+                }
+            }
+        }
+    )
+}
+
 @ExperimentalMaterialApi
 @Composable
 private fun AddWordDestination(
     navController: NavHostController
 ) {
     val addWordViewModel: AddWordViewModel = hiltViewModel()
-    val addWordState = addWordViewModel.viewState.value
+    val addWordState by addWordViewModel.viewState.collectAsState()
 
     AddWordScreen(
         context = LocalContext.current,
         state = addWordState,
+        word = addWordViewModel.word,
+        onWordChanged = addWordViewModel::setWord,
+        description = addWordViewModel.description,
+        onDescriptionChanged = addWordViewModel::setDescription,
+        group = addWordViewModel.group,
+        onGroupChange = addWordViewModel::setGroup,
         effectFlow = addWordViewModel.effect,
         onEventSent = { event -> addWordViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
@@ -334,11 +446,15 @@ private fun ImportWordsDestination(
     navController: NavHostController
 ) {
     val importWordsViewModel: ImportWordsViewModel = hiltViewModel()
-    val importWordsState = importWordsViewModel.viewState.value
+    val importWordsState by importWordsViewModel.viewState.collectAsState()
 
     ImportWordsScreen(
         context = LocalContext.current,
         state = importWordsState,
+        group = importWordsViewModel.group,
+        link = importWordsViewModel.link,
+        onLinkChange = importWordsViewModel::setLink,
+        onGroupChange = importWordsViewModel::setGroup,
         effectFlow = importWordsViewModel.effect,
         onEventSent = { event -> importWordsViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
@@ -346,11 +462,55 @@ private fun ImportWordsDestination(
                 is ImportWordsContract.Effect.Navigation.BackToWordList -> {
                     navController.popBackStack()
                 }
+
                 is ImportWordsContract.Effect.Navigation.GoToImportTutorial -> {
                     navController.navigate(NavigationKeys.Route.SE_IMPORT_WORDS_TUTORIAL)
                 }
             }
         })
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@ExperimentalMaterialApi
+@Composable
+private fun GroupDetailsDestination(
+    navController: NavHostController
+) {
+    val groupDetailsViewModel: GroupDetailsViewModel = hiltViewModel()
+    val groupDetailsState by groupDetailsViewModel.viewState.collectAsState()
+    val mainList by groupDetailsViewModel.mainList.collectAsState()
+
+    GroupDetailsScreen(
+        context = LocalContext.current,
+        state = groupDetailsState,
+        mainList = mainList,
+        effectFlow = groupDetailsViewModel.effect,
+        onEventSent = { event -> groupDetailsViewModel.setEvent(event) },
+        onNavigationRequested = { navigationEffect ->
+            when (navigationEffect) {
+                is GroupDetailsContract.Effect.Navigation.BackTo -> {
+                    navController.popBackStack()
+                }
+
+                is GroupDetailsContract.Effect.Navigation.ToAddSentence -> Unit
+                is GroupDetailsContract.Effect.Navigation.ToAddWordWithGroup -> {
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.ADD_WORD}?${NavigationKeys.Arg.GROUP_ID}=${groupId}")
+                }
+
+                is GroupDetailsContract.Effect.Navigation.ToFlashCards -> {
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.REMEMBER}/${groupId}")
+                }
+
+                is GroupDetailsContract.Effect.Navigation.ToImportWords -> {
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.IMPORT_WORDS}?${NavigationKeys.Arg.GROUP_ID}=${groupId}")
+                }
+            }
+        }
+    )
 }
 
 @ExperimentalMaterialApi
@@ -359,7 +519,7 @@ private fun TermsDestination(
     navController: NavHostController
 ) {
     val termsViewModel: TermsViewModel = hiltViewModel()
-    val termsState = termsViewModel.viewState.value
+    val termsState by termsViewModel.viewState.collectAsState()
 
     TermsScreen(
         context = LocalContext.current,
@@ -382,7 +542,7 @@ private fun ImportWordsTutorialDestination(
     navController: NavHostController
 ) {
     val importWordsTutorialViewModel: ImportWordsTutorialViewModel = hiltViewModel()
-    val importWordsTutorialState = importWordsTutorialViewModel.viewState.value
+    val importWordsTutorialState by importWordsTutorialViewModel.viewState.collectAsState()
 
     ImportWordsTutorialScreen(
         context = LocalContext.current,
@@ -402,7 +562,7 @@ private fun ProfileDestination(
     navController: NavHostController
 ) {
     val profileViewModel: ProfileViewModel = hiltViewModel()
-    val profileState = profileViewModel.viewState.value
+    val profileState by profileViewModel.viewState.collectAsState()
 
     ProfileScreen(
         context = LocalContext.current,
@@ -414,6 +574,7 @@ private fun ProfileDestination(
                 is ProfileContract.Effect.Navigation.BackToWordsList -> {
                     navController.popBackStack()
                 }
+
                 is ProfileContract.Effect.Navigation.GoToTermsAndConditions -> {
                     navController.navigate(NavigationKeys.Route.SE_TERMS)
                 }
@@ -428,7 +589,7 @@ private fun AuthDestination(
     navController: NavHostController
 ) {
     val authViewModel: AuthViewModel = hiltViewModel()
-    val authState = authViewModel.viewState.value
+    val authState by authViewModel.viewState.collectAsState()
 
     AuthScreen(
         context = LocalContext.current,
@@ -448,7 +609,7 @@ private fun AuthDestination(
 @Composable
 private fun StackDestination(navController: NavHostController) {
     val stackViewModel: StackViewModel = hiltViewModel()
-    val stackState = stackViewModel.viewState.value
+    val stackState by stackViewModel.viewState.collectAsState()
 
     StackScreen(
         context = LocalContext.current,
@@ -460,12 +621,6 @@ private fun StackDestination(navController: NavHostController) {
                 is StackContract.Effect.Navigation.BackToSentenceList -> {
                     navController.popBackStack()
                 }
-                is StackContract.Effect.Navigation.ToAddSentence -> {
-                    val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                    navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${ids}") {
-                        popUpTo(route = NavigationKeys.BottomNavigationScreen.SE_SENTENCES.route)
-                    }
-                }
             }
         })
 }
@@ -473,26 +628,40 @@ private fun StackDestination(navController: NavHostController) {
 @Composable
 private fun AddSentenceDestination(navController: NavHostController) {
     val addSentenceViewModel: AddSentenceViewModel = hiltViewModel()
-    val addSentenceState = addSentenceViewModel.viewState.value
+    val addSentenceState by addSentenceViewModel.viewState.collectAsState()
+    val sentence = addSentenceViewModel.sentence
 
     AddSentenceScreen(
         context = LocalContext.current,
         state = addSentenceState,
+        sentence = sentence,
+        onSentenceChanged = addSentenceViewModel::setSentence,
         effectFlow = addSentenceViewModel.effect,
         onEventSent = { event -> addSentenceViewModel.setEvent(event) },
         onNavigationRequested = { navigationEffect ->
-            if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToSentenceList) {
-                navController.backQueue.removeIf {
-                    it.destination.route == NavigationKeys.Route.SE_ADD_SENTENCE
-                            //|| it.destination.route == NavigationKeys.Route.SE_REMEMBER
-                }
-                navController.navigateToTab(route = SENTENCES) {
-                    popUpTo(route = NavigationKeys.Route.SE_ADD_SENTENCE) {
-                        inclusive = true
-                    }
-                }
+            if (navigationEffect is AddSentenceContract.Effect.Navigation.BackToWordList) {
+                navController.popBackStack()
+//                navController.backQueue.removeIf {
+//                    it.destination.route == NavigationKeys.Route.SE_ADD_SENTENCE
+//                    //|| it.destination.route == NavigationKeys.Route.SE_REMEMBER
+//                }
+//                navController.navigateToTab(route = ArchiveNavigationKeys.Route.SENTENCES) {
+//                    popUpTo(route = NavigationKeys.Route.SE_ADD_SENTENCE) {
+//                        inclusive = true
+//                    }
+//                }
             }
         })
+}
+
+@ExperimentalFoundationApi
+@ExperimentalMaterialApi
+@Composable
+private fun SetsListDestination(
+    navController: NavHostController,
+    onEventSent: (event: MainContract.Event) -> Unit
+) {
+
 }
 
 @ExperimentalFoundationApi
@@ -503,11 +672,16 @@ private fun WordListDestination(
     onEventSent: (event: MainContract.Event) -> Unit
 ) {
     val wordViewModel: WordListViewModel = hiltViewModel()
-    val wordState = wordViewModel.viewState.value
+    val wordState by wordViewModel.viewState.collectAsState()
+    val currentGroup by wordViewModel.currentGroupFlow.collectAsState()
 
     WordListScreen(
+        wordViewModel = wordViewModel,
         context = LocalContext.current,
         state = wordState,
+        currentGroup = currentGroup,
+        group = wordViewModel.groupName,
+        onGroupChange = wordViewModel::setNewGroupName,
         effectFlow = wordViewModel.effect,
         onEventSent = { event -> wordViewModel.setEvent(event) },
         onChangeBottomSheetVisibility = { visibility ->
@@ -515,51 +689,20 @@ private fun WordListDestination(
         },
         onNavigationRequested = { navigationEffect ->
             when (navigationEffect) {
-                is WordListContract.Effect.Navigation.ToAddWord -> {
-                    navController.navigate(NavigationKeys.Route.SE_ADD_WORD)
-                }
-                is WordListContract.Effect.Navigation.ToAddSentence -> {
-                    val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                    navController.navigateToTab(
-                        route = "$SENTENCES?${NavigationKeys.Arg.WORDS_ID}=$ids"
-                    )
-                }
-                is WordListContract.Effect.Navigation.ToImportWords -> {
-                    navController.navigate(NavigationKeys.Route.SE_IMPORT_WORDS)
-                }
                 is WordListContract.Effect.Navigation.ToProfile -> {
                     navController.navigate(NavigationKeys.Route.SE_PROFILE)
                 }
+
+                is WordListContract.Effect.Navigation.ToGroupList -> {
+                    navController.navigate(NavigationKeys.Route.SE_GROUPS)
+                }
+
+                is WordListContract.Effect.Navigation.ToGroupDetails -> {
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.GROUP_DETAILS}/${groupId}")
+                }
             }
         })
-}
-
-@ExperimentalFoundationApi
-@ExperimentalMaterialApi
-@Composable
-private fun SentenceListDestination(
-    navController: NavHostController,
-    onEventSent: (event: MainContract.Event) -> Unit
-) {
-    val sentenceViewModel: SentencesListViewModel = hiltViewModel()
-    val sentenceState = sentenceViewModel.viewState.value
-
-    SentencesListScreen(
-        context = LocalContext.current,
-        state = sentenceState,
-        effectFlow = sentenceViewModel.effect,
-        onEventSent = { event -> sentenceViewModel.setEvent(event) },
-        onChangeBottomSheetVisibility = { visibility ->
-            onEventSent(MainContract.Event.ChangeBottomSheetVisibility(visibility))
-        },
-        onNavigationRequested = { navigationEffect ->
-            if (navigationEffect is SentencesListContract.Effect.Navigation.ToAddSentence) {
-                val ids = AddSentenceArgumentsMapper.mapTo(navigationEffect.wordIds)
-                navController.navigate("${NavigationKeys.Route.ADD_SENTENCE}/${ids}")
-//                navController.navigate("${NavigationKeys.Route.REMEMBER}/${ids}")
-            }
-        }
-    )
 }
 
 private val NavGraph.startDestination: NavDestination?
@@ -595,7 +738,7 @@ private fun List<String>.containsRoute(curRoute: String?): Boolean {
     return false
 }
 
-private fun NavController.navigateToTab(
+fun NavController.navigateToTab(
     route: String,
     builder: (NavOptionsBuilder.() -> Unit)? = null
 ) {
@@ -626,7 +769,6 @@ private fun NavController.navigateToTab(
 //12) импорт из Quizlet по ссылке модуля
 //13) Можно создавать имя группы при импорте из названия страницы
 //4) механизм переключения темы (темная, светлая или системная)
-//5) Обучение карточками
 //6) Сделать магазин с карточками, чтобы можно было себе оттуда добавлять уже готовые наборы
 
 
@@ -643,8 +785,16 @@ private fun NavController.navigateToTab(
 //Следующий билд
 //2) https://stackoverflow.com/questions/64362801/how-to-handle-visibility-of-a-text-in-jetpack-compose ДЛЯ экрана импорта
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
-//2) Авторизация и сохранение слов в firebase storage
-//4) “Новое слово” - подсказка, буквы не регистрируются при вводе
-//5) Диалог подтверждения удаления группы
 //6) Статистика по изучению
-//11) При удалении слова есть возможность его восстановить какое-то время, а при удалении группы такой возможности нет. Может тоже стоит поповер выводить, а то если нечаянно удалишь всю группу с кучей слов, будет очень обидно
+//7) https://stackoverflow.com/questions/67252538/jetpack-compose-update-composable-when-list-changes
+
+
+////-----------------------------------------------------------------
+//переверстай AddWordScreen, чтобы не прыгало ничего (Не забудь добавить Галочку "Принять" в верхний правый угол)
+//поправить диалог добавления группы
+//писать на AddSentenceScreen что это за группа (StackView использовать) - теперь нельзя поделиться группой
+//Переделать StackView экран, писать что за группа и сколько слов
+//расшаривание групп
+//GroupList добавить поиск сверху как в Quizlet
+
+//Сделать WordListContract.Event.OnOnboardingClick и OnMotivationConfirmClick

@@ -8,14 +8,12 @@ import io.taptap.stupidenglish.base.model.Word
 class AddSentenceContract {
     sealed class Event : ViewEvent {
         object OnWaitingSentenceError : Event()
-        data class OnSentenceChanging(val value: String) : AddSentenceContract.Event()
         object OnSaveSentence : Event()
         data class OnChipClick(val word: Word) : Event()
         object OnBackClick : Event()
     }
 
     data class State(
-        val sentence: String,
         val words: List<Word>
     ) : ViewState
 
@@ -27,7 +25,7 @@ class AddSentenceContract {
         data class ShowDescription(val description: String) : Effect()
 
         sealed class Navigation : Effect() {
-            data class BackToSentenceList(val ids: String?) : Navigation()
+            object BackToWordList : Navigation()
         }
     }
 }

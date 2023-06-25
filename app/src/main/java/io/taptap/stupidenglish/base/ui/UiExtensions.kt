@@ -9,17 +9,18 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterialApi
 fun ModalBottomSheetState.hideSheet(scope: CoroutineScope) {
     scope.launch {
-        if (!isAnimationRunning) {
+//        if (!isAnimationRunning) {
             hide()
-        }
+//        }
     }
 }
 
 @ExperimentalMaterialApi
 fun ModalBottomSheetState.showSheet(scope: CoroutineScope) {
     scope.launch {
-        if (!isAnimationRunning) {
-            animateTo(ModalBottomSheetValue.Expanded)
-        }
+//        if (!isAnimationRunning) {
+        show()
+//            animateTo(ModalBottomSheetValue.Expanded)
+//        }
     }
 }

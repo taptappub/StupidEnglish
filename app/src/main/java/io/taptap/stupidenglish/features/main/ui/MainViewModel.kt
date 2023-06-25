@@ -1,5 +1,6 @@
 package io.taptap.stupidenglish.features.main.ui
 
+import android.content.Intent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.base.BaseViewModel
@@ -15,7 +16,7 @@ class MainViewModel @Inject constructor(
         isBottomBarShown = true,
         bottomBarTabs = listOf(
             NavigationKeys.BottomNavigationScreen.SE_WORDS,
-            NavigationKeys.BottomNavigationScreen.SE_SENTENCES
+            NavigationKeys.BottomNavigationScreen.SE_SETS
         )
     )
 
@@ -27,6 +28,13 @@ class MainViewModel @Inject constructor(
             }
             is MainContract.Event.ChangeBottomSheetVisibility ->
                 setState { copy(isBottomBarShown = event.visibility) }
+
+            is MainContract.Event.OnNewIntent -> {
+                val word: String? = event.intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString()
+                if (word != null) {
+                    setEffect { MainContract.Effect.Navigation.ToAddWord(word) }
+                }
+            }
         }
     }
 }

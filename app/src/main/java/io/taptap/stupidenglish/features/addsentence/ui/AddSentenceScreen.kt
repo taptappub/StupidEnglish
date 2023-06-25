@@ -47,11 +47,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
-
 @Composable
 fun AddSentenceScreen(
     context: Context,
     state: AddSentenceContract.State,
+    sentence: String,
+    onSentenceChanged: (sentence: String) -> Unit,
     effectFlow: Flow<AddSentenceContract.Effect>?,
     onEventSent: (event: AddSentenceContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: AddSentenceContract.Effect.Navigation) -> Unit
@@ -62,9 +63,8 @@ fun AddSentenceScreen(
     LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
         effectFlow?.onEach { effect ->
             when (effect) {
-                is AddSentenceContract.Effect.Navigation.BackToSentenceList -> onNavigationRequested(
-                    effect
-                )
+                is AddSentenceContract.Effect.Navigation.BackToWordList ->
+                    onNavigationRequested(effect)
                 is AddSentenceContract.Effect.SaveError ->
                     scaffoldState.snackbarHostState.showSnackbar(
                         message = context.getString(effect.errorRes),
@@ -94,6 +94,8 @@ fun AddSentenceScreen(
     ) {
         ContentScreen(
             state,
+            sentence,
+            onSentenceChanged,
             onEventSent
         )
     }
@@ -102,6 +104,8 @@ fun AddSentenceScreen(
 @Composable
 private fun ContentScreen(
     state: AddSentenceContract.State,
+    sentence: String,
+    onSentenceChanged: (sentence: String) -> Unit,
     onEventSent: (event: AddSentenceContract.Event) -> Unit
 ) {
     StupidLanguageBackgroundBox(
@@ -118,14 +122,14 @@ private fun ContentScreen(
                 .imePadding()
                 .fillMaxSize()
         ) {
-            val (sentence, words, button, hint) = createRefs()
+            val (sentenceRef, wordsRef, buttonRef, hintRef) = createRefs()
 
             AverageText(
                 text = stringResource(id = R.string.adds_main_hint),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 38.dp)
-                    .constrainAs(hint) {
+                    .constrainAs(hintRef) {
                         top.linkTo(parent.top)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
@@ -137,11 +141,11 @@ private fun ContentScreen(
                 mutableStateOf(FocusRequester())
             }
             val focusManager = LocalFocusManager.current
+
             AddTextField(
-                value = state.sentence,
-                onValueChange = { text ->
-                    onEventSent(AddSentenceContract.Event.OnSentenceChanging(text))
-                },
+//                value = state.sentence,
+                value = sentence,
+                onValueChange = onSentenceChanged,
                 placeholder = stringResource(id = R.string.adds_sentence_placeholder),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     capitalization = KeyboardCapitalization.Sentences,
@@ -151,7 +155,7 @@ private fun ContentScreen(
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        if (state.sentence.isNotEmpty()) {
+                        if (sentence.isNotEmpty()) {
                             focusManager.clearFocus()
                             onEventSent(AddSentenceContract.Event.OnSaveSentence)
                         } else {
@@ -161,7 +165,7 @@ private fun ContentScreen(
                 ),
                 modifier = Modifier
                     .focusRequester(focusRequester)
-                    .constrainAs(sentence) {
+                    .constrainAs(sentenceRef) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
@@ -181,7 +185,7 @@ private fun ContentScreen(
                     .fillMaxWidth()
                     .navigationBarsPadding()
                     .imePadding()
-                    .constrainAs(words) {
+                    .constrainAs(wordsRef) {
                         bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
@@ -191,16 +195,16 @@ private fun ContentScreen(
             Box(
                 modifier = Modifier
                     .wrapContentSize()
-                    .constrainAs(button) {
+                    .constrainAs(buttonRef) {
                         bottom.linkTo(parent.bottom, 16.dp)
                         end.linkTo(parent.end, 16.dp)
                     }) {
                 val focusManager = LocalFocusManager.current
 
                 NextButton(
-                    visibility = state.sentence.isNotEmpty(),
+                    visibility = sentence.isNotEmpty(),
                     onClick = {
-                        if (state.sentence.isNotEmpty()) {
+                        if (sentence.isNotEmpty()) {
                             focusManager.clearFocus()
                             onEventSent(AddSentenceContract.Event.OnSaveSentence)
                         } else {
@@ -251,20 +255,3 @@ private fun CustomChip(
         )
     }
 }
-
-/*
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    StupidEnglishTheme {
-        AddSentenceScreen(
-            LocalContext.current,
-            AddSentenceContract.State(
-                sentence = "",
-                words = emptyList()
-            ),
-            null,
-            { },
-            { })
-    }
-}*/

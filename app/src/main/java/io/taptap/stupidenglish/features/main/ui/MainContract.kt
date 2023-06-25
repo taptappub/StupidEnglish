@@ -1,14 +1,17 @@
 package io.taptap.stupidenglish.features.main.ui
 
+import android.content.Intent
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.base.ViewEvent
 import io.taptap.stupidenglish.base.ViewSideEffect
 import io.taptap.stupidenglish.base.ViewState
+import io.taptap.stupidenglish.features.words.ui.WordListContract
 
 class MainContract {
     sealed class Event : ViewEvent {
         data class OnTabSelected(val item: NavigationKeys.BottomNavigationScreen) : Event()
         data class ChangeBottomSheetVisibility(val visibility: Boolean) : Event()
+        data class OnNewIntent(val intent: Intent) : Event()
     }
 
     data class State(
@@ -20,6 +23,7 @@ class MainContract {
 
         sealed class Navigation : Effect() {
             data class OnTabSelected(val route: String) : Navigation()
+            data class ToAddWord(val word: String) : Navigation()
         }
     }
 }

@@ -14,12 +14,16 @@ import io.taptap.stupidenglish.base.logic.sources.groups.read.IReadGroupsDataSou
 import io.taptap.stupidenglish.base.logic.sources.groups.read.ReadGroupsDataSource
 import io.taptap.stupidenglish.base.logic.sources.groups.write.IWriteGroupsDataSource
 import io.taptap.stupidenglish.base.logic.sources.groups.write.WriteGroupsDataSource
+import io.taptap.stupidenglish.base.logic.sources.groupwithwords.read.IReadGroupWithWordsDataSource
+import io.taptap.stupidenglish.base.logic.sources.groupwithwords.read.ReadGroupWithWordsDataSource
 import io.taptap.stupidenglish.base.logic.sources.keys.IKeysDataSource
 import io.taptap.stupidenglish.base.logic.sources.keys.KeysDataSource
 import io.taptap.stupidenglish.base.logic.sources.user.read.IReadUserDataSource
 import io.taptap.stupidenglish.base.logic.sources.user.read.ReadUserDataSource
 import io.taptap.stupidenglish.base.logic.sources.user.write.IWriteUserDataSource
 import io.taptap.stupidenglish.base.logic.sources.user.write.WriteUserDataSource
+import io.taptap.stupidenglish.base.logic.sources.words.read.IReadWordsDataSource
+import io.taptap.stupidenglish.base.logic.sources.words.read.ReadWordsDataSource
 import io.taptap.stupidenglish.base.logic.sources.words.write.IWriteWordsDataSource
 import io.taptap.stupidenglish.base.logic.sources.words.write.WriteWordsDataSource
 import javax.inject.Singleton
@@ -30,8 +34,8 @@ class DataSourcesProvider {
 
     @Provides
     @Singleton
-    fun provideRandomWordsDataSource(wordDao : WordDao): IRandomWordsDataSource =
-        RandomWordsDataSource(wordDao)
+    fun provideRandomWordsDataSource(source: IReadGroupWithWordsDataSource): IRandomWordsDataSource =
+        RandomWordsDataSource(source)
 
     @Provides
     @Singleton
@@ -50,16 +54,26 @@ class DataSourcesProvider {
 
     @Provides
     @Singleton
-    fun provideWriteGroupsDataSource(wordDao : WordDao): IWriteGroupsDataSource =
+    fun provideWriteGroupsDataSource(wordDao: WordDao): IWriteGroupsDataSource =
         WriteGroupsDataSource(wordDao)
 
     @Provides
     @Singleton
-    fun provideReadGroupsDataSource(wordDao : WordDao): IReadGroupsDataSource =
+    fun provideReadGroupsDataSource(wordDao: WordDao): IReadGroupsDataSource =
         ReadGroupsDataSource(wordDao)
 
     @Provides
     @Singleton
-    fun provideWordsDataSource(wordDao : WordDao): IWriteWordsDataSource =
+    fun provideWordsDataSource(wordDao: WordDao): IWriteWordsDataSource =
         WriteWordsDataSource(wordDao)
+
+    @Provides
+    @Singleton
+    fun provideReadWordsDataSource(wordDao: WordDao): IReadWordsDataSource =
+        ReadWordsDataSource(wordDao)
+
+    @Provides
+    @Singleton
+    fun provideReadGroupWithWordsDataSource(wordDao: WordDao): IReadGroupWithWordsDataSource =
+        ReadGroupWithWordsDataSource(wordDao)
 }

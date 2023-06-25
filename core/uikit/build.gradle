@@ -2,17 +2,16 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-parcelize'
-    id 'kotlin-kapt'
     id "io.gitlab.arturbosch.detekt"
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdk rootProject.ext.minSdkVersion
         targetSdk rootProject.ext.targetSdkVersion
+        compileSdk rootProject.ext.compileSdkVersion
+        buildToolsVersion = rootProject.ext.buildToolsVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -31,12 +30,16 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
     buildFeatures {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion rootProject.ext.kotlin_compilet_extension_version
+        kotlinCompilerExtensionVersion rootProject.ext.kotlin_compiler_extension_version
     }
+    namespace 'io.taptap.uikit'
 }
 
 dependencies {
@@ -44,32 +47,34 @@ dependencies {
     implementation "androidx.core:core-ktx:$core_ktx_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     implementation project(path: ':core:prefs')
 
-    api 'com.google.android.material:material:1.6.1'
-    api "androidx.compose.ui:ui:1.2.0"
-    api "androidx.compose.ui:ui-util:1.2.0"
-    api "androidx.compose.material:material:1.2.0"
-    api "androidx.compose.ui:ui-tooling:1.2.0"
-    api "androidx.compose.ui:ui-tooling-preview:1.2.0"
+    api "com.google.android.material:material:$material_version"
+    api "androidx.compose.ui:ui:$compose_ui_version"
+    api 'androidx.compose.ui:ui-util:1.4.3'
+    api 'androidx.compose.material:material:1.4.3'
+    api 'androidx.compose.ui:ui-tooling:1.4.3'
+    api 'androidx.compose.ui:ui-tooling-preview:1.4.3'
     api "androidx.constraintlayout:constraintlayout:2.1.4"
     api "androidx.constraintlayout:constraintlayout-compose:1.0.1"
-    api 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
-    api 'androidx.activity:activity-compose:1.5.1'
-    api "androidx.compose.material3:material3:1.0.0-alpha15"
+    api 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
+    api "androidx.activity:activity-compose:$activity_compose_version"
+    api 'androidx.compose.material3:material3:1.2.0-alpha02'
+
+    api 'org.burnoutcrew.composereorderable:reorderable:0.9.6'
 
     //accompanist
-    api "com.google.accompanist:accompanist-systemuicontroller:0.26.0-alpha"
-    api "com.google.accompanist:accompanist-insets:0.26.0-alpha"
-    api "com.google.accompanist:accompanist-navigation-material:0.26.0-alpha"
-    api "com.google.accompanist:accompanist-navigation-animation:0.26.0-alpha"
-    api "com.google.accompanist:accompanist-flowlayout:0.26.0-alpha"
-    api "com.google.accompanist:accompanist-pager:0.26.0-alpha"
-    api "com.google.accompanist:accompanist-pager-indicators:0.26.0-alpha"
-    api "com.google.accompanist:accompanist-webview:0.26.0-alpha"
+    api 'com.google.accompanist:accompanist-systemuicontroller:0.31.3-beta'
+    api 'com.google.accompanist:accompanist-insets:0.31.3-beta'
+    api 'com.google.accompanist:accompanist-navigation-material:0.31.3-beta'
+    api 'com.google.accompanist:accompanist-navigation-animation:0.31.3-beta'
+    api 'com.google.accompanist:accompanist-flowlayout:0.31.3-beta'
+    api 'com.google.accompanist:accompanist-pager:0.31.3-beta'
+    api 'com.google.accompanist:accompanist-pager-indicators:0.31.3-beta'
+    api 'com.google.accompanist:accompanist-webview:0.31.3-beta'
 
     // Stack view
     api "com.yuyakaido.android:card-stack-view:2.3.4"

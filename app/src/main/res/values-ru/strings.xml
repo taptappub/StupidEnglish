@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="word_list_list_title">Мои слова</string>
     <string name="word_get_random_words_error">Не хватает слов для создание предложения</string>
     <string name="word_get_list_error">Возникла ошибка в момент получения слов</string>
     <string name="word_onboarding_text">Пора написать очень глупое предложение!</string>
@@ -35,16 +34,16 @@
     <string name="adds_motivation_confirm">Поделиться</string>
     <string name="adds_motivation_decline">Позже</string>
     <string name="main_bottom_bar_words_title">Слова</string>
+    <string name="main_bottom_bar_sets_title">Сеты</string>
     <string name="main_bottom_bar_sentences_title">Предложения</string>
     <string name="stck_hint_button_text">Я не помню!</string>
-    <string name="word_fab_text">Добавить слово</string>
+    <string name="word_fab_text">Редактировать</string>
     <string name="stns_fab_text">Добавить предложение</string>
     <string name="under_construction">В разработке</string>
     <string name="stck_button_remember">Помню!</string>
     <string name="word_get_groups_error">Возникла ошибка в момент получения групп</string>
     <string name="word_group_title">Группы</string>
-    <string name="word_group_button">Добавить</string>
-    <string name="word_group_no_group_name">Все слова</string>
+    <string name="word_group_button">Показать все</string>
     <string name="word_group_add_group_title">Новая группа</string>
     <string name="word_empty_list_title">Список пуст</string>
     <string name="word_empty_list_description">Добавь слова в эту группу</string>
@@ -58,7 +57,7 @@
     </plurals>
     <string name="addw_get_groups_error">Возникла ошибка в момент получения слов</string>
     <string name="word_remove_group_button">Удалить</string>
-    <string name="word_remove_group_title">Выбери группы для удаления</string>
+    <string name="word_group_menu_title">Меню группы</string>
     <string name="stns_delete_message">Точно удалить?</string>
     <string name="stns_recover">Восстановить</string>
     <string name="word_delete_message">Точно удалить?</string>
@@ -107,4 +106,28 @@
     <string name="prof_share_us">Поделиться приложением</string>
     <string name="prof_feedback">Написать нам на "taptap4pub@gmail.com"</string>
     <string name="imwt_back_button">Вернуться к Импорту</string>
+    <string name="addw_bottom_button_text">Новое слово</string>
+
+    <string name="word_menu_open">Открыть</string>
+    <string name="word_menu_add_word">Добавить слово</string>
+    <string name="word_menu_flashcards">Обучение карточками</string>
+    <string name="word_menu_learn">Обучение предложениями</string>
+    <string name="word_menu_remove">Удалить группу</string>
+    <string name="word_menu_share">Поделиться</string>
+    <string name="grps_get_groups_error">Возникла ошибка в момент получения групп</string>
+    <string name="grps_list_title">Группы</string>
+    <string name="grps_list_list_title">Список групп</string>
+    <string name="grdt_get_groups_error">Возникла ошибка в момент получения групп</string>
+    <string name="grps_get_words_error">Возникла ошибка в момент получения слов</string>
+    <string name="grdt_delete_message">Точно удалить?</string>
+    <string name="grdt_recover">Восстановить</string>
+
+    <string name="grdt_add_word">Добавить слово</string>
+    <string name="grdt_flashcards">Обучение карточками</string>
+    <string name="grdt_learn">Обучение предложениями</string>
+    <string name="grdt_share">Поделиться</string>
+    <string name="grdt_remove">Удалить группу</string>
+    <string name="grdt_empty_list_title">Список пуст</string>
+    <string name="context_menu_item_name">Учить</string>
+    <string name="grdt_import_words">Импорт слов</string>
 </resources>

@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
     tableName = "GroupTable"
 )
 data class GroupDto(
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Long = 0,
-    @ColumnInfo(name = "name") val name: String
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "groupId") val id: Long = 0,
+    @ColumnInfo(name = "name") val name: String,
+    @ColumnInfo(name = "index") val index: Int
 )

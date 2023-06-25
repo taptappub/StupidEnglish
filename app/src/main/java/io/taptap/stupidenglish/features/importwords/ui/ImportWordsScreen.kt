@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
@@ -36,9 +35,7 @@ import io.taptap.stupidenglish.R
 import io.taptap.stupidenglish.base.LAUNCH_LISTEN_FOR_EFFECTS
 import io.taptap.stupidenglish.base.ui.hideSheet
 import io.taptap.stupidenglish.base.ui.showSheet
-import io.taptap.stupidenglish.features.stack.ui.StackContract
 import io.taptap.stupidenglish.ui.ChooseGroupContent
-import io.taptap.stupidenglish.ui.GroupItemHeader
 import io.taptap.uikit.LoadingBar
 import io.taptap.uikit.ModalBottomSheetLayout
 import io.taptap.uikit.ResultNotification
@@ -47,6 +44,7 @@ import io.taptap.uikit.StupidEnglishTopAppBar
 import io.taptap.uikit.TextField
 import io.taptap.uikit.complex.AddGroupBottomSheetScreen
 import io.taptap.uikit.fab.NextButton
+import io.taptap.uikit.group.GroupItemHeader
 import io.taptap.uikit.theme.StupidLanguageBackgroundBox
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -57,6 +55,10 @@ import kotlinx.coroutines.flow.onEach
 fun ImportWordsScreen(
     context: Context,
     state: ImportWordsContract.State,
+    link: String,
+    onLinkChange: (newUrl: String) -> Unit,
+    group: String,
+    onGroupChange: (newGroup: String) -> Unit,
     effectFlow: Flow<ImportWordsContract.Effect>?,
     onEventSent: (event: ImportWordsContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: ImportWordsContract.Effect.Navigation) -> Unit
@@ -83,10 +85,10 @@ fun ImportWordsScreen(
         sheetContent = {
             AddGroupBottomSheetScreen(
                 sheetTitle = stringResource(id = R.string.impw_group_add_group_title),
-                group = { state.group },
-                onGroupNameChange = { onEventSent(ImportWordsContract.Event.OnGroupChanging(it)) },
+                group = group,
+                onGroupNameChange = onGroupChange,
                 onAddGroup = {
-                    if (state.group.isNotEmpty()) {
+                    if (group.isNotEmpty()) {
                         onEventSent(ImportWordsContract.Event.OnApplyGroup)
                     }
                 }
@@ -99,11 +101,6 @@ fun ImportWordsScreen(
         LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
             effectFlow?.onEach { effect ->
                 when (effect) {
-                    is ImportWordsContract.Effect.GetGroupsError ->
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.getString(effect.errorRes),
-                            duration = SnackbarDuration.Short
-                        )
                     is ImportWordsContract.Effect.HideBottomSheet ->
                         modalBottomSheetState.hideSheet(scope)
                     is ImportWordsContract.Effect.ShowBottomSheet -> {
@@ -122,6 +119,8 @@ fun ImportWordsScreen(
             scaffoldState = scaffoldState
         ) {
             ContentScreen(
+                link,
+                onLinkChange,
                 state,
                 onEventSent
             )
@@ -131,6 +130,8 @@ fun ImportWordsScreen(
 
 @Composable
 private fun ContentScreen(
+    link: String,
+    onLinkChange: (newUrl: String) -> Unit,
     state: ImportWordsContract.State,
     onEventSent: (event: ImportWordsContract.Event) -> Unit
 ) {
@@ -152,6 +153,8 @@ private fun ContentScreen(
 
             ImportWordStateScreen(
                 state = state,
+                link = link,
+                onLinkChange = onLinkChange,
                 onEventSent = onEventSent,
                 modifier = Modifier
                     .constrainAs(content) {
@@ -189,6 +192,8 @@ private fun ContentScreen(
 @Composable
 private fun ImportWordStateScreen(
     state: ImportWordsContract.State,
+    link: String,
+    onLinkChange: (newUrl: String) -> Unit,
     modifier: Modifier,
     onEventSent: (event: ImportWordsContract.Event) -> Unit
 ) {
@@ -198,7 +203,7 @@ private fun ImportWordStateScreen(
         modifier = modifier.fillMaxSize()
     ) {
         TextField(
-            value = state.link,
+            value = link,
             isOnFocus = false,
             labelValue = stringResource(id = R.string.impw_textfield_label),
             hintValue = if (state.importWordState is ImportWordsContract.ImportWordState.Error) {
@@ -206,9 +211,7 @@ private fun ImportWordStateScreen(
             } else {
                 ""
             },
-            onValueChange = { text ->
-                onEventSent(ImportWordsContract.Event.OnLinkChanging(text))
-            },
+            onValueChange = onLinkChange,
             isError = state.importWordState is ImportWordsContract.ImportWordState.Error,
             modifier = modifier
                 .fillMaxWidth()
@@ -221,7 +224,7 @@ private fun ImportWordStateScreen(
                         style = SpanStyle(
                             color = MaterialTheme.colorScheme.secondary,
 
-                        )
+                            )
                     ) {
                         append(stringResource(id = R.string.impw_tutorial_header) + "\n")
                     }
@@ -255,9 +258,15 @@ private fun ImportWordStateScreen(
                     onEventSent(ImportWordsContract.Event.OnAddGroupClick)
                 }
             )
-            GroupsChooserScreen(
-                state = state,
-                onEventSent = onEventSent
+            ChooseGroupContent(
+                list = state.groups,
+                selectedList = state.selectedGroups,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                onItemClick = { item ->
+                    onEventSent(ImportWordsContract.Event.OnGroupSelect(item))
+                }
             )
         }
     }
@@ -265,23 +274,6 @@ private fun ImportWordStateScreen(
     if (state.importWordState == ImportWordsContract.ImportWordState.InProgress) {
         LoadingBar()
     }
-}
-
-@Composable
-fun GroupsChooserScreen(
-    state: ImportWordsContract.State,
-    onEventSent: (event: ImportWordsContract.Event) -> Unit
-) {
-    ChooseGroupContent(
-        list = state.groups,
-        selectedList = state.selectedGroups,
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        onItemClick = { item ->
-            onEventSent(ImportWordsContract.Event.OnGroupSelect(item))
-        }
-    )
 }
 
 private fun ImportWordsContract.ParsingState.toResultNotificationState(): ResultNotification.State {

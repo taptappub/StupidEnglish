@@ -50,13 +50,12 @@ class CardStackAdapter(
                 .setDuration(500)
                 .alpha(0.0f)
                 .setListener(object : Animator.AnimatorListener {
-                    override fun onAnimationStart(animation: Animator?) {}
-                    override fun onAnimationEnd(animation: Animator?) {
+                    override fun onAnimationStart(animator: Animator) {}
+                    override fun onAnimationEnd(animator: Animator) {
                         visibility = View.GONE
                     }
-
-                    override fun onAnimationCancel(animation: Animator?) {}
-                    override fun onAnimationRepeat(animation: Animator?) {}
+                    override fun onAnimationCancel(animator: Animator) {}
+                    override fun onAnimationRepeat(animator: Animator) {}
                 })
 
             setOnClickListener(null)

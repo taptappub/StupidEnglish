@@ -1,8 +1,12 @@
 package io.taptap.stupidenglish.base.logic.randomwords
 
 import io.taptap.stupidenglish.base.model.Word
+import io.taptap.uikit.group.NoGroup
 import taptap.pub.Reaction
 
 interface IRandomWordsDataSource {
-    suspend fun getRandomWords(maxCount: Int): Reaction<List<Word>>
+    suspend fun getRandomWords(
+        maxCount: Int,
+        groupId: Long = NoGroup.id
+    ): Reaction<List<Word>>
 }

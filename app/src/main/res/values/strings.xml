@@ -17,33 +17,38 @@
 
     <!-- Main -->
     <string name="main_bottom_bar_words_title">Words</string>
+    <string name="main_bottom_bar_sets_title">Sets</string>
     <string name="main_bottom_bar_sentences_title">Sentences</string>
 
     <!-- Word List -->
-    <string name="word_list_list_title">My words</string>
     <string name="word_get_random_words_error">Can\'t find random words</string>
     <string name="word_get_list_error">Error while getting words</string>
-    <string name="word_get_groups_error">Error while getting groups</string>
+    <string name="word_get_groups_error">Error while getting sets</string>
     <string name="word_onboarding_text">Make the most stupid sentence from your words</string>
     <string name="word_motivation_title">Is it time to make a sentence?</string>
 <!--    <string name="word_motivation_message">Let\'s make some sentences with your words. Once per month we choose the funniest and the most stupid sentence and make a picture with it!</string>-->
     <string name="word_motivation_message">Let\'s make some sentences with your words</string>
     <string name="word_motivation_confirm">Let\'s do it!</string>
     <string name="word_motivation_decline">Nope</string>
-    <string name="word_fab_text">Add word</string>
+    <string name="word_fab_text">Open group</string>
     <string name="word_group_title">Groups</string>
-    <string name="word_group_button">Add</string>
-    <string name="word_group_no_group_name">All words</string>
+    <string name="word_group_button">View all</string>
     <string name="word_group_add_group_title">New group</string>
     <string name="word_empty_list_title">List is empty</string>
     <string name="word_empty_list_description">Add some words to the group</string>
-    <string name="word_remove_group_title">Choose groups for removing</string>
+    <string name="word_group_menu_title">Group\'s menu</string>
     <string name="word_remove_group_button">Remove</string>
     <string name="word_delete_message">Are you sure?</string>
     <string name="word_recover">Recover</string>
     <string name="word_minifab_manual">Manual</string>
     <string name="word_minifab_import">Import</string>
     <string name="word_get_user_error">Error while getting user</string>
+    <string name="word_menu_open">Open Group</string>
+    <string name="word_menu_add_word">Add word</string>
+    <string name="word_menu_flashcards">Flashcards</string>
+    <string name="word_menu_learn">Learn</string>
+    <string name="word_menu_share">Share</string>
+    <string name="word_menu_remove">Remove</string>
 
     <!-- Sentences List -->
     <string name="stns_list_list_title">Stupid sentences</string>
@@ -54,18 +59,37 @@
     <string name="stns_delete_message">Are you sure?</string>
     <string name="stns_recover">Recover</string>
 
+    <!-- Group List -->
+    <string name="grps_get_groups_error">Error while getting sets</string>
+    <string name="grps_get_words_error">Error while getting words</string>
+    <string name="grps_list_list_title">Set list</string>
+    <string name="grps_list_title">Sets</string>
+
+    <!-- Group Details -->
+    <string name="grdt_get_groups_error">Error while getting sets</string>
+    <string name="grdt_delete_message">Are you sure?</string>
+    <string name="grdt_recover">Recover</string>
+    <string name="grdt_add_word">Add word</string>
+    <string name="grdt_import_words">Import</string>
+    <string name="grdt_flashcards">Flashcards</string>
+    <string name="grdt_learn">Learn</string>
+    <string name="grdt_share">Share</string>
+    <string name="grdt_remove">Remove</string>
+    <string name="grdt_empty_list_title">List is empty</string>
+
     <!-- Add Word -->
     <string name="addw_save_error">Error while saving</string>
     <string name="addw_word_placeholder">Unknown word</string>
     <string name="addw_description_placeholder">Your hint for word above</string>
     <string name="addw_description_not_found_error">Add your hint, please =)</string>
-    <string name="addw_group_choose_group_title">Choose groups for the word</string>
+    <string name="addw_group_choose_group_title">Choose sets for the word</string>
     <string name="addw_group_button">Apply</string>
     <string name="addw_topbar_title">New word</string>
-    <string name="addw_get_groups_error">Error while getting groups</string>
+    <string name="addw_bottom_button_text">One more word</string>
+    <string name="addw_get_groups_error">Error while getting sets</string>
     <plurals name="addw_group_count">
-        <item quantity="one">%d group</item>
-        <item quantity="other">%d groups</item>
+        <item quantity="one">%d set</item>
+        <item quantity="other">%d sets</item>
     </plurals>
 
     <!-- Add Sentence -->
@@ -82,12 +106,12 @@
     <string name="adds_topbar_title">New sentence</string>
 
     <!-- Import Words -->
-    <string name="impw_get_groups_error">Error while getting groups</string>
+    <string name="impw_get_groups_error">Error while getting sets</string>
     <string name="impw_textfield_label">Link to Google Sheet</string>
     <string name="impw_incorrect_link_error">Incorrect link</string>
-    <string name="impw_choose_groups_label">Choose groups</string>
-    <string name="impw_choose_groups_button">Add group</string>
-    <string name="impw_group_add_group_title">New group</string>
+    <string name="impw_choose_groups_label">Choose sets</string>
+    <string name="impw_choose_groups_button">Add set</string>
+    <string name="impw_group_add_group_title">New set</string>
     <string name="impw_network_error">Server connection error</string>
     <string name="impw_tutorial_header">Do not forget to share your spreadsheet</string>
     <string name="impw_tutorial_link">Help me with it</string>
@@ -150,5 +174,8 @@
 
     <!-- Delete this block -->
     <string name="under_construction">Work in progress</string>
+
+    <!-- Add with context menu -->
+    <string name="context_menu_item_name">Learn</string>
 
 </resources>
