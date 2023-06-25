@@ -17,13 +17,13 @@
 
     <!-- Main -->
     <string name="main_bottom_bar_words_title">Words</string>
-    <string name="main_bottom_bar_sets_title">Sets</string>
+    <string name="main_bottom_bar_sets_title">Groups</string>
     <string name="main_bottom_bar_sentences_title">Sentences</string>
 
     <!-- Word List -->
     <string name="word_get_random_words_error">Can\'t find random words</string>
     <string name="word_get_list_error">Error while getting words</string>
-    <string name="word_get_groups_error">Error while getting sets</string>
+    <string name="word_get_groups_error">Error while getting groups</string>
     <string name="word_onboarding_text">Make the most stupid sentence from your words</string>
     <string name="word_motivation_title">Is it time to make a sentence?</string>
 <!--    <string name="word_motivation_message">Let\'s make some sentences with your words. Once per month we choose the funniest and the most stupid sentence and make a picture with it!</string>-->
@@ -60,13 +60,13 @@
     <string name="stns_recover">Recover</string>
 
     <!-- Group List -->
-    <string name="grps_get_groups_error">Error while getting sets</string>
+    <string name="grps_get_groups_error">Error while getting groups</string>
     <string name="grps_get_words_error">Error while getting words</string>
-    <string name="grps_list_list_title">Set list</string>
-    <string name="grps_list_title">Sets</string>
+    <string name="grps_list_list_title">Group list</string>
+    <string name="grps_list_title">Groups</string>
 
     <!-- Group Details -->
-    <string name="grdt_get_groups_error">Error while getting sets</string>
+    <string name="grdt_get_groups_error">Error while getting groups</string>
     <string name="grdt_delete_message">Are you sure?</string>
     <string name="grdt_recover">Recover</string>
     <string name="grdt_add_word">Add word</string>
@@ -82,14 +82,14 @@
     <string name="addw_word_placeholder">Unknown word</string>
     <string name="addw_description_placeholder">Your hint for word above</string>
     <string name="addw_description_not_found_error">Add your hint, please =)</string>
-    <string name="addw_group_choose_group_title">Choose sets for the word</string>
+    <string name="addw_group_choose_group_title">Choose groups for the word</string>
     <string name="addw_group_button">Apply</string>
     <string name="addw_topbar_title">New word</string>
     <string name="addw_bottom_button_text">One more word</string>
-    <string name="addw_get_groups_error">Error while getting sets</string>
+    <string name="addw_get_groups_error">Error while getting groups</string>
     <plurals name="addw_group_count">
-        <item quantity="one">%d set</item>
-        <item quantity="other">%d sets</item>
+        <item quantity="one">%d group</item>
+        <item quantity="other">%d groups</item>
     </plurals>
 
     <!-- Add Sentence -->
@@ -106,12 +106,12 @@
     <string name="adds_topbar_title">New sentence</string>
 
     <!-- Import Words -->
-    <string name="impw_get_groups_error">Error while getting sets</string>
+    <string name="impw_get_groups_error">Error while getting groups</string>
     <string name="impw_textfield_label">Link to Google Sheet</string>
     <string name="impw_incorrect_link_error">Incorrect link</string>
-    <string name="impw_choose_groups_label">Choose sets</string>
-    <string name="impw_choose_groups_button">Add set</string>
-    <string name="impw_group_add_group_title">New set</string>
+    <string name="impw_choose_groups_label">Choose groups</string>
+    <string name="impw_choose_groups_button">Add group</string>
+    <string name="impw_group_add_group_title">New group</string>
     <string name="impw_network_error">Server connection error</string>
     <string name="impw_tutorial_header">Do not forget to share your spreadsheet</string>
     <string name="impw_tutorial_link">Help me with it</string>

@@ -5,6 +5,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.taptap.stupidenglish.NavigationKeys
 import io.taptap.stupidenglish.base.BaseViewModel
 import io.taptap.stupidenglish.features.main.data.MainRepository
+import io.taptap.uikit.group.NoGroup
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,15 +27,27 @@ class MainViewModel @Inject constructor(
                 val route = event.item.route
                 setEffect { MainContract.Effect.Navigation.OnTabSelected(route) }
             }
+
             is MainContract.Event.ChangeBottomSheetVisibility ->
                 setState { copy(isBottomBarShown = event.visibility) }
 
             is MainContract.Event.OnNewIntent -> {
-                val word: String? = event.intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString()
+                val word: String? =
+                    event.intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString()
                 if (word != null) {
                     setEffect { MainContract.Effect.Navigation.ToAddWord(word) }
+                } else {
+                    //Look into xml/shortcuts.xml
+                    val effect = when (event.intent.action) {
+                        "add_word" -> MainContract.Effect.Navigation.ToAddWord()
+                        "learn" -> MainContract.Effect.Navigation.ToFlashCards(NoGroup)
+                        else -> error("No action in xml/shortcuts.xml")
+                    }
+                    setEffect { effect }
                 }
             }
         }
     }
 }
+
+//Переход на добавление из группы не тащит засобой группу

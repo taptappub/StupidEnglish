@@ -146,6 +146,11 @@ class MainActivity : ComponentActivity() {
                         val word = effect.word
                         navController.navigate("${NavigationKeys.Route.ADD_WORD}?${NavigationKeys.Arg.WORD}=${word}")
                     }
+
+                    is MainContract.Effect.Navigation.ToFlashCards -> {
+                        val groupId = effect.group.id
+                        navController.navigate("${NavigationKeys.Route.REMEMBER}/${groupId}")
+                    }
                 }
             }.collect()
         }

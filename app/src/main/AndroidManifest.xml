@@ -36,6 +36,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -50,7 +52,6 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-
         <receiver
             android:name=".features.alarm.ui.AlarmReceiver"
             android:enabled="false"
