@@ -1,26 +1,16 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" ?>
 <SmellBaseline>
-  <ManuallySuppressedIssues/>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
-    <ID>ComplexMethod:NotificationInterop.kt$NotificationInterop$fun buildNotification(notify: Notify, payload: RawNotification): NotificationCompat.Builder</ID>
     <ID>ForbiddenComment:NotificationInterop.kt$NotificationInterop$// TODO: Test API nuances.</ID>
     <ID>LongMethod:NotificationInterop.kt$NotificationInterop$fun buildNotification(notify: Notify, payload: RawNotification): NotificationCompat.Builder</ID>
     <ID>MagicNumber:NotificationChannelInterop.kt$NotificationChannelInterop$3</ID>
     <ID>MagicNumber:NotificationInterop.kt$NotificationInterop$100</ID>
     <ID>MagicNumber:NotificationInterop.kt$NotificationInterop$2000</ID>
     <ID>MagicNumber:NotificationInterop.kt$NotificationInterop$500</ID>
-    <ID>MaxLineLength:NotificationChannelInterop.kt$NotificationChannelInterop$val</ID>
-    <ID>MaxLineLength:NotificationInterop.kt$NotificationInterop$.</ID>
-    <ID>MaxLineLength:NotificationInterop.kt$NotificationInterop$fun</ID>
     <ID>MaxLineLength:NotificationInterop.kt$NotificationInterop$private</ID>
-    <ID>MaxLineLength:NotificationInterop.kt$NotificationInterop$val bigText: CharSequence = Html.fromHtml(formattedExpandedText + content.bigText?.replace("\n".toRegex(), "&lt;br>"))</ID>
-    <ID>MaxLineLength:Notify.kt$Notify$defaultConfig.notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager</ID>
-    <ID>MaxLineLength:Notify.kt$Notify.Companion$@</ID>
-    <ID>MaxLineLength:Notify.kt$Notify.Companion$defaultConfig.notificationManager = context.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager</ID>
-    <ID>MaxLineLength:NotifyCreator.kt$NotifyCreator$@</ID>
-    <ID>MaxLineLength:Payload.kt$Payload.Alerts$@NotificationCompat.NotificationVisibility</ID>
     <ID>ReturnCount:NotificationChannelInterop.kt$NotificationChannelInterop$@SuppressLint("WrongConstant") fun with(alerting: Payload.Alerts): Boolean</ID>
-    <ID>ReturnCount:NotificationInterop.kt$NotificationInterop$private fun buildStackedNotification(groupedNotifications: List&lt;NotifyExtender>, builder: NotificationCompat.Builder, payload: RawNotification): NotificationCompat.InboxStyle?</ID>
+    <ID>ReturnCount:NotificationInterop.kt$NotificationInterop$private fun buildStackedNotification(groupedNotifications: List&lt;NotifyExtender&gt;, builder: NotificationCompat.Builder, payload: RawNotification): NotificationCompat.InboxStyle?</ID>
     <ID>TooManyFunctions:NotifyCreator.kt$NotifyCreator</ID>
   </CurrentIssues>
 </SmellBaseline>

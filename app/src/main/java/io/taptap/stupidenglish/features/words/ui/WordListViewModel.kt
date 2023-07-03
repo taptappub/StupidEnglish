@@ -16,11 +16,10 @@ import io.taptap.stupidenglish.features.words.ui.model.WordListEmptyUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListGroupUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListItemUI
 import io.taptap.stupidenglish.features.words.ui.model.WordListListModels
-import io.taptap.stupidenglish.ui.MenuItem
 import io.taptap.uikit.group.GroupListItemsModel
-import io.taptap.uikit.group.GroupListModel
 import io.taptap.uikit.group.NoGroup
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -46,6 +45,7 @@ class WordListViewModel @Inject constructor(
 
     val currentGroupFlow = MutableStateFlow<GroupListItemsModel>(NoGroup)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val wordList: StateFlow<List<WordListListModels>> = currentGroupFlow
         .flatMapLatest { currentGroup ->
             repository.observeWordList(currentGroup.id)
@@ -92,6 +92,7 @@ class WordListViewModel @Inject constructor(
         avatar = null
     )
 
+    @Suppress
     override suspend fun handleEvents(event: WordListContract.Event) {
         when (event) {
             is WordListContract.Event.OnEditGroupClick -> {
@@ -230,7 +231,7 @@ class WordListViewModel @Inject constructor(
         }
 
         if (wordsCount == WORDS_FOR_MOTIVATION && !repository.isSentenceMotivationShown) { //todo придумать время мотивации
-            delay(3000)
+//            delay(3000)
             if (wordsCount % WORDS_FOR_MOTIVATION == 0) {
                 setState { copy(sheetContentType = WordListContract.SheetContentType.Motivation) }
                 setEffect { WordListContract.Effect.ShowBottomSheet }

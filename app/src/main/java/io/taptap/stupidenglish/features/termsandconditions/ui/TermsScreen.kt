@@ -1,6 +1,6 @@
 package io.taptap.stupidenglish.features.termsandconditions.ui
 
-import android.content.Context
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun TermsScreen(
-    context: Context,
     state: TermsContract.State,
     effectFlow: Flow<TermsContract.Effect>?,
     onEventSent: (event: TermsContract.Event) -> Unit,
@@ -51,17 +50,16 @@ fun TermsScreen(
             }
         ) {
             ContentScreen(
-                state = state,
-                onEventSent = onEventSent
+                state = state
             )
         }
     }
 }
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 private fun ContentScreen(
-    state: TermsContract.State,
-    onEventSent: (event: TermsContract.Event) -> Unit
+    state: TermsContract.State
 ) {
     val webViewState = rememberWebViewState(state.termsUrl)
     WebView(

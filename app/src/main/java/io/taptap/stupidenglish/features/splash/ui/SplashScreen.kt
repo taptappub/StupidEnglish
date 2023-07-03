@@ -1,20 +1,15 @@
-@file:OptIn(ExperimentalAnimationApi::class)
-
 package io.taptap.stupidenglish.features.splash.ui
 
-import android.content.Context
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,7 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,7 +43,6 @@ import kotlinx.coroutines.flow.onEach
 @ExperimentalMaterialApi
 @Composable
 fun SplashScreen(
-    context: Context,
     state: SplashContract.State,
     effectFlow: Flow<SplashContract.Effect>?,
     onEventSent: (event: SplashContract.Event) -> Unit,
@@ -62,6 +56,7 @@ fun SplashScreen(
             when (effect) {
                 is SplashContract.Effect.Navigation.ToAuthScreen ->
                     onNavigationRequested(effect)
+
                 is SplashContract.Effect.Navigation.ToWordListScreen ->
                     onNavigationRequested(effect)
             }
@@ -86,7 +81,7 @@ private fun ContentScreen(
     state: SplashContract.State,
     onEventSent: (event: SplashContract.Event) -> Unit
 ) {
-    var languages by remember { mutableStateOf(0) }
+    var languages by remember { mutableIntStateOf(0) }
     val languageCounter by animateIntAsState(
         targetValue = languages,
         animationSpec = tween(
@@ -133,7 +128,7 @@ private fun ContentScreen(
                 AnimatedContent(
                     targetState = languageCounter,
                     transitionSpec = {
-                        (slideInVertically { height -> -height } + fadeIn() with
+                        (slideInVertically { height -> -height } + fadeIn() togetherWith
                                 slideOutVertically { height -> height } + fadeOut())
                             .using(
                                 // Disable clipping since the faded slide-in/out should
