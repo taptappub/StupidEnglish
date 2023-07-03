@@ -18,14 +18,15 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.0.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21"
         classpath "com.google.dagger:hilt-android-gradle-plugin:2.46.1"
         classpath 'com.google.gms:google-services:4.3.15'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.5'
-        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.21.0"
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.6'
+        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.0"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -43,10 +44,16 @@ ext {
 }
 
 detekt {
+    toolVersion = "1.23.0"
     buildUponDefaultConfig = true // preconfigure defaults
     allRules = false // activate all available (even unstable) rules.
-    config = files("$projectDir/config/detekt.yml") // point to your custom config defining rules to run, overwriting default behavior
-    //baseline = file("$projectDir/config/baseline.xml") // a way of suppressing issues before introducing detekt
+    baseline = file("$rootDir/detekt-baseline.xml")
+    config.setFrom("$rootDir/config/detekt/detekt.yml")
+    ignoredBuildTypes = ["release"]
+    // Android: Don't create tasks for the specified build flavor (e.g. "production")
+    ignoredFlavors = ["production"]
+    // Android: Don't create tasks for the specified build variants (e.g. "productionRelease")
+    ignoredVariants = ["productionRelease"]
 }
 
 //tasks.withType(Detekt).configureEach {

@@ -366,7 +366,6 @@ private fun SplashDestination(
     val splashState by splashViewModel.viewState.collectAsState()
 
     SplashScreen(
-        context = LocalContext.current,
         state = splashState,
         effectFlow = splashViewModel.effect,
         onEventSent = { event -> splashViewModel.setEvent(event) },
@@ -527,7 +526,6 @@ private fun TermsDestination(
     val termsState by termsViewModel.viewState.collectAsState()
 
     TermsScreen(
-        context = LocalContext.current,
         state = termsState,
         effectFlow = termsViewModel.effect,
         onEventSent = { event -> termsViewModel.setEvent(event) },

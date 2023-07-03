@@ -1,27 +1,10 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" ?>
 <SmellBaseline>
-  <ManuallySuppressedIssues/>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
-    <ID>LongMethod:AddGroupBottomSheetScreen.kt$@OptIn(ExperimentalComposeUiApi::class) @Composable fun AddGroupBottomSheetScreen( sheetTitle: String, modifier: Modifier = Modifier .fillMaxWidth() .navigationBarsPadding() .imePadding() .height(300.dp), onGroupNameChange: (String) -> Unit, onAddGroup: () -> Unit, group: () -> String )</ID>
-    <ID>LongMethod:FAB.kt$@OptIn(ExperimentalAnimationApi::class) @Composable fun MultiFloatingActionButton( modifier: Modifier = Modifier, items: List&lt;MultiFabItem>, fabState: MutableState&lt;MultiFabState> = rememberMultiFabState(), fabIcon: FabIcon, enlarged: Boolean, fabOption: FabOption = FabOption(), stateChanged: (fabState: MultiFabState) -> Unit = {} )</ID>
-    <ID>LongParameterList:AddTextField.kt$( value: String, onValueChange: (String) -> Unit, enabled: Boolean = true, placeholder: String, keyboardOptions: KeyboardOptions, keyboardActions: KeyboardActions, modifier: Modifier )</ID>
-    <ID>LongParameterList:Buttons.kt$( modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.primary, textColor: Color = MaterialTheme.colorScheme.onPrimary, text: String, startImagePainter: Painter? = null, textStyle: TextStyle = MaterialTheme.typography.titleSmall, onClick: () -> Unit )</ID>
-    <ID>LongParameterList:Buttons.kt$( modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.secondaryContainer, textColor: Color = MaterialTheme.colorScheme.onSecondaryContainer, style: TextStyle = MaterialTheme.typography.titleSmall, text: String, onClick: () -> Unit )</ID>
-    <ID>LongParameterList:DialogSheetScreen.kt$( painter: Painter, title: String, message: String, modifier: Modifier = Modifier, okButtonText: String, cancelButtonText: String, onOkButtonClick: () -> Unit, onCancelButtonClick: () -> Unit )</ID>
-    <ID>LongParameterList:FAB.kt$( enlarged: Boolean, iconRes: Int, text: String, containerColor: Color = MaterialTheme.colorScheme.primary, contentColor: Color = MaterialTheme.colorScheme.onPrimary, modifier: Modifier = Modifier, onFabClicked: () -> Unit )</ID>
-    <ID>LongParameterList:FAB.kt$( modifier: Modifier = Modifier, items: List&lt;MultiFabItem>, fabState: MutableState&lt;MultiFabState> = rememberMultiFabState(), fabIcon: FabIcon, enlarged: Boolean, fabOption: FabOption = FabOption(), stateChanged: (fabState: MultiFabState) -> Unit = {} )</ID>
-    <ID>LongParameterList:LetterRoundView.kt$( letter: Char, selected: Boolean, textColor: Color = if (selected) { MaterialTheme.colorScheme.onPrimary } else { MaterialTheme.colorScheme.secondary }, color: Color = if (selected) { MaterialTheme.colorScheme.tertiary } else { MaterialTheme.colorScheme.surface }, border1: BorderStroke? = if (selected) { BorderStroke( width = 4.dp, color = MaterialTheme.colorScheme.background ) } else { null }, border2: BorderStroke? = if (selected) { BorderStroke( width = 2.dp, color = MaterialTheme.colorScheme.primary ) } else { null }, modifier: Modifier, fontSize: TextUnit, elevation: Dp = 4.dp, shape: Shape = CircleShape )</ID>
-    <ID>LongParameterList:ModalBottomSheetLayout.kt$( sheetState: ModalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden), sheetElevation: Dp = 0.dp, sheetBackgroundColor: Color = Color.Transparent, sheetShape: Shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp), sheetContent: @Composable ColumnScope.() -> Unit, content: @Composable () -> Unit )</ID>
-    <ID>LongParameterList:StupidEnglishScaffold.kt$( modifier: Modifier = Modifier, scaffoldState: ScaffoldState = rememberScaffoldState(), topBar: @Composable (() -> Unit) = {}, bottomBar: @Composable (() -> Unit) = {}, snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost( modifier = Modifier .padding(bottom = BOTTOM_BAR_MARGIN_WITH_FAB) .navigationBarsPadding() .imePadding(), hostState = it ) }, floatingActionButton: @Composable (() -> Unit) = {}, floatingActionButtonPosition: FabPosition = FabPosition.End, isFloatingActionButtonDocked: Boolean = false, drawerContent: @Composable (ColumnScope.() -> Unit)? = null, drawerShape: Shape = MaterialTheme.shapes.large, drawerElevation: Dp = DrawerDefaults.Elevation, backgroundColor: Color = Color.Transparent, contentColor: Color = Color.Transparent, // drawerBackgroundColor: Color = JetsnackTheme.colors.uiBackground, // drawerContentColor: Color = JetsnackTheme.colors.textSecondary, // drawerScrimColor: Color = JetsnackTheme.colors.uiBorder, // backgroundColor: Color = JetsnackTheme.colors.uiBackground, // contentColor: Color = JetsnackTheme.colors.textSecondary, content: @Composable (PaddingValues) -> Unit )</ID>
-    <ID>LongParameterList:StupidEnglishTopAppBar.kt$( text: String, modifier: Modifier = Modifier, onNavigationClick: (() -> Unit)? = null, backgroundColor: Color = Color.Transparent, textColor: Color = MaterialTheme.colorScheme.onSurface, vararg actions: @Composable RowScope.() -> Unit )</ID>
-    <ID>LongParameterList:TextField.kt$( value: String, labelValue: String, hintValue: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier .fillMaxWidth(), labelColor: Color = MaterialTheme.colorScheme.secondary, isError: Boolean = false, isOnFocus: Boolean )</ID>
-    <ID>LongParameterList:Texts.kt$( text: AnnotatedString, maxLines: Int = 2, modifier: Modifier = Modifier, textAlign: TextAlign = TextAlign.Center, color: Color = MaterialTheme.colorScheme.onSurface, style: TextStyle = MaterialTheme.typography.titleSmall, selectable: Boolean = true )</ID>
-    <ID>LongParameterList:Texts.kt$( text: String, maxLines: Int = 2, modifier: Modifier = Modifier, textAlign: TextAlign = TextAlign.Center, color: Color = MaterialTheme.colorScheme.onSurface, style: TextStyle = MaterialTheme.typography.titleSmall, selectable: Boolean = true )</ID>
-    <ID>LongParameterList:Texts.kt$( text: String, modifier: Modifier = Modifier, maxLines: Int = 2, textAlign: TextAlign = TextAlign.Center, color: Color = MaterialTheme.colorScheme.onSurface, style: TextStyle = MaterialTheme.typography.labelLarge )</ID>
-    <ID>MagicNumber:AnimatingFabContent.kt$12f</ID>
+    <ID>LongMethod:AddGroupBottomSheetScreen.kt$@OptIn(ExperimentalComposeUiApi::class) @Composable fun AddGroupBottomSheetScreen( sheetTitle: String, modifier: Modifier = Modifier .fillMaxWidth() .navigationBarsPadding() .imePadding() .height(300.dp), onGroupNameChange: (String) -&gt; Unit, onAddGroup: () -&gt; Unit, group: String )</ID>
+    <ID>LongMethod:FAB.kt$@Composable fun MultiFloatingActionButton( modifier: Modifier = Modifier, items: List&lt;MultiFabItem&gt;, fabState: MutableState&lt;MultiFabState&gt; = rememberMultiFabState(), fabIcon: FabIcon, enlarged: Boolean, fabOption: FabOption = FabOption(), stateChanged: (fabState: MultiFabState) -&gt; Unit = {} )</ID>
     <ID>MagicNumber:AnimatingFabContent.kt$3</ID>
-    <ID>MagicNumber:AnimatingFabContent.kt$3f</ID>
-    <ID>MagicNumber:AnimatingFabContent.kt$5</ID>
     <ID>MagicNumber:Color.kt$0xFF151515</ID>
     <ID>MagicNumber:Color.kt$0xFF322419</ID>
     <ID>MagicNumber:Color.kt$0xFF383636</ID>
@@ -33,7 +16,10 @@
     <ID>MagicNumber:Color.kt$0xFFFF0000</ID>
     <ID>MagicNumber:Color.kt$0xFFFFFFFF</ID>
     <ID>MagicNumber:Color.kt$0xFFFFe3e3</ID>
-    <ID>MagicNumber:Theme.kt$0.4f</ID>
+    <ID>MagicNumber:GroupItemRow.kt$1.2f</ID>
+    <ID>MagicNumber:GroupUiModels.kt$GroupListTitleUI$3</ID>
+    <ID>MagicNumber:WordItem.kt$0.5f</ID>
+    <ID>MagicNumber:WordItem.kt$0.80f</ID>
     <ID>MaxLineLength:FabIcon.kt$*</ID>
     <ID>NewLineAtEndOfFile:Buttons.kt$io.taptap.uikit.Buttons.kt</ID>
     <ID>NewLineAtEndOfFile:DialogSheetScreen.kt$io.taptap.uikit.DialogSheetScreen.kt</ID>
@@ -42,16 +28,20 @@
     <ID>NewLineAtEndOfFile:ExampleUnitTest.kt$io.taptap.uikit.ExampleUnitTest.kt</ID>
     <ID>NewLineAtEndOfFile:FabIcon.kt$io.taptap.uikit.fab.FabIcon.kt</ID>
     <ID>NewLineAtEndOfFile:FabOption.kt$io.taptap.uikit.fab.FabOption.kt</ID>
-    <ID>NewLineAtEndOfFile:LetterRoundView.kt$io.taptap.uikit.LetterRoundView.kt</ID>
+    <ID>NewLineAtEndOfFile:GroupItemHeader.kt$io.taptap.uikit.group.GroupItemHeader.kt</ID>
     <ID>NewLineAtEndOfFile:LoadingBar.kt$io.taptap.uikit.LoadingBar.kt</ID>
     <ID>NewLineAtEndOfFile:ModalBottomSheetLayout.kt$io.taptap.uikit.ModalBottomSheetLayout.kt</ID>
     <ID>NewLineAtEndOfFile:NextButton.kt$io.taptap.uikit.fab.NextButton.kt</ID>
+    <ID>NewLineAtEndOfFile:PagerIndicator.kt$io.taptap.uikit.pager.PagerIndicator.kt</ID>
     <ID>NewLineAtEndOfFile:ResultNotification.kt$io.taptap.uikit.ResultNotification.kt</ID>
+    <ID>NewLineAtEndOfFile:RotatablePage.kt$io.taptap.uikit.pager.RotatablePage.kt</ID>
     <ID>NewLineAtEndOfFile:Settings.kt$io.taptap.uikit.prefs.Settings.kt</ID>
     <ID>NewLineAtEndOfFile:StupidEnglishTopAppBar.kt$io.taptap.uikit.StupidEnglishTopAppBar.kt</ID>
     <ID>NewLineAtEndOfFile:Switch.kt$io.taptap.uikit.Switch.kt</ID>
     <ID>NewLineAtEndOfFile:Texts.kt$io.taptap.uikit.Texts.kt</ID>
+    <ID>NewLineAtEndOfFile:WordItem.kt$io.taptap.uikit.complex.WordItem.kt</ID>
     <ID>TopLevelPropertyNaming:AnimatingFabContent.kt$private const val transitionDuration = 200</ID>
+    <ID>UseCheckOrError:ResultNotification.kt$throw IllegalStateException("Wrong ResultNotification.State ($resultNotificationState)")</ID>
     <ID>WildcardImport:BottomSheet.kt$import androidx.compose.foundation.layout.*</ID>
     <ID>WildcardImport:StupidEnglishScaffold.kt$import androidx.compose.material.*</ID>
   </CurrentIssues>
