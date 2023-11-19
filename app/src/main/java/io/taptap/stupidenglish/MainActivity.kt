@@ -275,23 +275,40 @@ class MainActivity : ComponentActivity() {
                     AddSentenceDestination(navController)
                 }
                 composable(
-                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
-                    deepLinks = listOf(navDeepLink {
-                        uriPattern = "$URI/learn/{${NavigationKeys.Arg.GROUP_ID}}"
-                    }),
+                    route = NavigationKeys.Route.SE_ADD_WORD,
                     arguments = listOf(navArgument(NavigationKeys.Arg.GROUP_ID) {
                         type = NavType.StringType
                         nullable = true
                     }),
                     enterTransition = {
                         fadeIn()
+//                        slideInHorizontally()
                     },
                     exitTransition = {
                         fadeOut()
+//                        slideOutHorizontally()
                     }
                 ) {
-                    AddSentenceDestination(navController)
+                    AddWordDestination(navController)
                 }
+//                composable(
+//                    route = NavigationKeys.Route.SE_ADD_SENTENCE,
+//                    deepLinks = listOf(navDeepLink {
+//                        uriPattern = "$URI/learn/{${NavigationKeys.Arg.GROUP_ID}}"
+//                    }),
+//                    arguments = listOf(navArgument(NavigationKeys.Arg.GROUP_ID) {
+//                        type = NavType.StringType
+//                        nullable = true
+//                    }),
+//                    enterTransition = {
+//                        fadeIn()
+//                    },
+//                    exitTransition = {
+//                        fadeOut()
+//                    }
+//                ) {
+//                    AddSentenceDestination(navController)
+//                }
                 composable(
                     route = NavigationKeys.Route.SE_REMEMBER,
                     deepLinks = listOf(navDeepLink {
@@ -498,7 +515,10 @@ private fun GroupDetailsDestination(
                     navController.popBackStack()
                 }
 
-                is GroupDetailsContract.Effect.Navigation.ToAddSentence -> Unit
+                is GroupDetailsContract.Effect.Navigation.ToAddSentence -> {
+                    val groupId = navigationEffect.group.id
+                    navController.navigate("${NavigationKeys.Route.IMPORT_WORDS}?${NavigationKeys.Arg.GROUP_ID}=${groupId}")
+                }
                 is GroupDetailsContract.Effect.Navigation.ToAddWordWithGroup -> {
                     val groupId = navigationEffect.group.id
                     navController.navigate("${NavigationKeys.Route.ADD_WORD}?${NavigationKeys.Arg.GROUP_ID}=${groupId}")
@@ -791,10 +811,8 @@ fun NavController.navigateToTab(
 
 
 //Следующий билд
-//2) https://stackoverflow.com/questions/64362801/how-to-handle-visibility-of-a-text-in-jetpack-compose ДЛЯ экрана импорта
 //1) Обложить все аналитикой, чтобы смотреть, куда нажимает пользователь (1) Катя не поняла, что внизу табы, 2) нажимала на слово, чтобы сделать предложение, 3) нажимала на слова в ADD_SENTENCE
 //6) Статистика по изучению
-//7) https://stackoverflow.com/questions/67252538/jetpack-compose-update-composable-when-list-changes
 
 
 ////-----------------------------------------------------------------
@@ -804,3 +822,10 @@ fun NavController.navigateToTab(
 //Переделать StackView экран, писать что за группа и сколько слов
 
 //Сделать WordListContract.Event.OnOnboardingClick и OnMotivationConfirmClick
+
+//
+//
+// - передавать группу и на месте определять из каких слов писать предложение
+// - писать на AddSentenceScreen что это за группа (StackView использовать)
+// - переписать AddSentenceVM под реактивную работу
+// - переделать БД с предложениями (тоже сделать многие ко многим как группы)
